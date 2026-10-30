@@ -1,0 +1,364 @@
+# Panell editorial d'ECONEXO (Sveltia CMS, compatible amb Decap CMS).
+# Cada article és un fitxer Markdown a content/<secció>/. Només es publiquen els que tenen estado: publicada.
+backend:
+  name: github
+  repo: comercelectronic/econexo
+  branch: main
+  commit_messages:
+    create: 'Nuevo: {{slug}}'
+    update: 'Actualizado: {{slug}}'
+    delete: 'Eliminado: {{slug}}'
+media_folder: public/media
+public_folder: /media
+locale: es
+site_url: https://econexo.com
+logo_url: /favicon.svg
+
+collections:
+  - name: actualidad
+    label: 'Actualidad'
+    folder: content/actualidad
+    create: true
+    extension: md
+    format: frontmatter
+    slug: '{{slug}}'
+    summary: '{{titulo}} · {{estado}} · {{fecha}}'
+    sortable_fields: [fecha, titulo, estado]
+    view_filters:
+      - { label: Publicadas, field: estado, pattern: publicada }
+      - { label: En revisión, field: estado, pattern: revision }
+      - { label: Borradores, field: estado, pattern: borrador }
+    fields:
+      - { name: titulo, label: Titular, widget: string }
+      - { name: subtitulo, label: Subtítulo / entradilla, widget: text }
+      - { name: descripcion, label: Descripción SEO (máx. 160 caracteres), widget: string, required: false }
+      - { name: tipo, label: Tipo de contenido, widget: select, options: [noticia, guia, financiero, caso, analisis, opinion] }
+      - { name: subseccion, label: Subsección, widget: select, required: false, options: [ultima-hora, empresas, mercados, emprendimiento, internacional] }
+      - { name: estado, label: Estado editorial, widget: select, default: borrador, options: [borrador, revision, aprobada, programada, publicada, archivada] }
+      - { name: fecha, label: Fecha de publicación (si es futura, se publica ese día), widget: datetime }
+      - { name: actualizado, label: Fecha de actualización, widget: datetime, required: false }
+      - { name: autor, label: Autor, widget: string, default: Redacción ECONEXO }
+      - { name: revisor, label: Revisor especializado, widget: string, required: false }
+      - { name: destacado, label: Destacado en portada, widget: boolean, default: false }
+      - { name: etiquetas, label: Etiquetas, widget: list, required: false }
+      - { name: pais, label: Países, widget: select, multiple: true, default: [global], options: [global, ES, MX, AR, CO, CL, PE] }
+      - { name: moneda, label: Moneda, widget: select, required: false, options: [EUR, MXN, ARS, COP, CLP, PEN, USD] }
+      - { name: fecha_datos, label: Fecha de referencia de los datos (finanzas), widget: string, required: false }
+      - { name: imagen, label: Imagen principal, widget: image, required: false }
+      - { name: imagen_alt, label: Texto alternativo de la imagen, widget: string, required: false }
+      - { name: herramienta, label: Herramienta relacionada, widget: select, required: false, options: [calculadora-roas, calculadora-roi, generador-utm, interes-compuesto] }
+      - name: ficha
+        label: Ficha del caso (empresa, año, sector, concepto)
+        widget: object
+        required: false
+        fields:
+          - { name: Empresa, widget: string, required: false }
+          - { name: Año, widget: string, required: false }
+          - { name: Sector, widget: string, required: false }
+          - { name: Concepto, widget: string, required: false }
+      - name: fuentes
+        label: Fuentes
+        widget: list
+        required: false
+        fields:
+          - { name: nombre, label: Fuente, widget: string }
+          - { name: url, label: Enlace, widget: string, required: false }
+      - name: faq
+        label: Preguntas frecuentes
+        widget: list
+        required: false
+        fields:
+          - { name: p, label: Pregunta, widget: string }
+          - { name: r, label: Respuesta, widget: text }
+      - { name: body, label: Texto, widget: markdown }
+  - name: marketing-digital
+    label: 'Marketing digital'
+    folder: content/marketing-digital
+    create: true
+    extension: md
+    format: frontmatter
+    slug: '{{slug}}'
+    summary: '{{titulo}} · {{estado}} · {{fecha}}'
+    sortable_fields: [fecha, titulo, estado]
+    view_filters:
+      - { label: Publicadas, field: estado, pattern: publicada }
+      - { label: En revisión, field: estado, pattern: revision }
+      - { label: Borradores, field: estado, pattern: borrador }
+    fields:
+      - { name: titulo, label: Titular, widget: string }
+      - { name: subtitulo, label: Subtítulo / entradilla, widget: text }
+      - { name: descripcion, label: Descripción SEO (máx. 160 caracteres), widget: string, required: false }
+      - { name: tipo, label: Tipo de contenido, widget: select, options: [noticia, guia, financiero, caso, analisis, opinion] }
+      - { name: subseccion, label: Subsección, widget: select, required: false, options: [seo, sem, meta-ads, email-marketing, analitica, contenidos, afiliacion, ecommerce, conversion, branding, estrategia] }
+      - { name: estado, label: Estado editorial, widget: select, default: borrador, options: [borrador, revision, aprobada, programada, publicada, archivada] }
+      - { name: fecha, label: Fecha de publicación (si es futura, se publica ese día), widget: datetime }
+      - { name: actualizado, label: Fecha de actualización, widget: datetime, required: false }
+      - { name: autor, label: Autor, widget: string, default: Redacción ECONEXO }
+      - { name: revisor, label: Revisor especializado, widget: string, required: false }
+      - { name: destacado, label: Destacado en portada, widget: boolean, default: false }
+      - { name: etiquetas, label: Etiquetas, widget: list, required: false }
+      - { name: pais, label: Países, widget: select, multiple: true, default: [global], options: [global, ES, MX, AR, CO, CL, PE] }
+      - { name: moneda, label: Moneda, widget: select, required: false, options: [EUR, MXN, ARS, COP, CLP, PEN, USD] }
+      - { name: fecha_datos, label: Fecha de referencia de los datos (finanzas), widget: string, required: false }
+      - { name: imagen, label: Imagen principal, widget: image, required: false }
+      - { name: imagen_alt, label: Texto alternativo de la imagen, widget: string, required: false }
+      - { name: herramienta, label: Herramienta relacionada, widget: select, required: false, options: [calculadora-roas, calculadora-roi, generador-utm, interes-compuesto] }
+      - name: ficha
+        label: Ficha del caso (empresa, año, sector, concepto)
+        widget: object
+        required: false
+        fields:
+          - { name: Empresa, widget: string, required: false }
+          - { name: Año, widget: string, required: false }
+          - { name: Sector, widget: string, required: false }
+          - { name: Concepto, widget: string, required: false }
+      - name: fuentes
+        label: Fuentes
+        widget: list
+        required: false
+        fields:
+          - { name: nombre, label: Fuente, widget: string }
+          - { name: url, label: Enlace, widget: string, required: false }
+      - name: faq
+        label: Preguntas frecuentes
+        widget: list
+        required: false
+        fields:
+          - { name: p, label: Pregunta, widget: string }
+          - { name: r, label: Respuesta, widget: text }
+      - { name: body, label: Texto, widget: markdown }
+  - name: inteligencia-artificial
+    label: 'Inteligencia artificial'
+    folder: content/inteligencia-artificial
+    create: true
+    extension: md
+    format: frontmatter
+    slug: '{{slug}}'
+    summary: '{{titulo}} · {{estado}} · {{fecha}}'
+    sortable_fields: [fecha, titulo, estado]
+    view_filters:
+      - { label: Publicadas, field: estado, pattern: publicada }
+      - { label: En revisión, field: estado, pattern: revision }
+      - { label: Borradores, field: estado, pattern: borrador }
+    fields:
+      - { name: titulo, label: Titular, widget: string }
+      - { name: subtitulo, label: Subtítulo / entradilla, widget: text }
+      - { name: descripcion, label: Descripción SEO (máx. 160 caracteres), widget: string, required: false }
+      - { name: tipo, label: Tipo de contenido, widget: select, options: [noticia, guia, financiero, caso, analisis, opinion] }
+      - { name: subseccion, label: Subsección, widget: select, required: false, options: [noticias-ia, herramientas-ia, ia-empresas, ia-marketing, automatizacion, tutoriales-ia] }
+      - { name: estado, label: Estado editorial, widget: select, default: borrador, options: [borrador, revision, aprobada, programada, publicada, archivada] }
+      - { name: fecha, label: Fecha de publicación (si es futura, se publica ese día), widget: datetime }
+      - { name: actualizado, label: Fecha de actualización, widget: datetime, required: false }
+      - { name: autor, label: Autor, widget: string, default: Redacción ECONEXO }
+      - { name: revisor, label: Revisor especializado, widget: string, required: false }
+      - { name: destacado, label: Destacado en portada, widget: boolean, default: false }
+      - { name: etiquetas, label: Etiquetas, widget: list, required: false }
+      - { name: pais, label: Países, widget: select, multiple: true, default: [global], options: [global, ES, MX, AR, CO, CL, PE] }
+      - { name: moneda, label: Moneda, widget: select, required: false, options: [EUR, MXN, ARS, COP, CLP, PEN, USD] }
+      - { name: fecha_datos, label: Fecha de referencia de los datos (finanzas), widget: string, required: false }
+      - { name: imagen, label: Imagen principal, widget: image, required: false }
+      - { name: imagen_alt, label: Texto alternativo de la imagen, widget: string, required: false }
+      - { name: herramienta, label: Herramienta relacionada, widget: select, required: false, options: [calculadora-roas, calculadora-roi, generador-utm, interes-compuesto] }
+      - name: ficha
+        label: Ficha del caso (empresa, año, sector, concepto)
+        widget: object
+        required: false
+        fields:
+          - { name: Empresa, widget: string, required: false }
+          - { name: Año, widget: string, required: false }
+          - { name: Sector, widget: string, required: false }
+          - { name: Concepto, widget: string, required: false }
+      - name: fuentes
+        label: Fuentes
+        widget: list
+        required: false
+        fields:
+          - { name: nombre, label: Fuente, widget: string }
+          - { name: url, label: Enlace, widget: string, required: false }
+      - name: faq
+        label: Preguntas frecuentes
+        widget: list
+        required: false
+        fields:
+          - { name: p, label: Pregunta, widget: string }
+          - { name: r, label: Respuesta, widget: text }
+      - { name: body, label: Texto, widget: markdown }
+  - name: finanzas
+    label: 'Finanzas'
+    folder: content/finanzas
+    create: true
+    extension: md
+    format: frontmatter
+    slug: '{{slug}}'
+    summary: '{{titulo}} · {{estado}} · {{fecha}}'
+    sortable_fields: [fecha, titulo, estado]
+    view_filters:
+      - { label: Publicadas, field: estado, pattern: publicada }
+      - { label: En revisión, field: estado, pattern: revision }
+      - { label: Borradores, field: estado, pattern: borrador }
+    fields:
+      - { name: titulo, label: Titular, widget: string }
+      - { name: subtitulo, label: Subtítulo / entradilla, widget: text }
+      - { name: descripcion, label: Descripción SEO (máx. 160 caracteres), widget: string, required: false }
+      - { name: tipo, label: Tipo de contenido, widget: select, options: [noticia, guia, financiero, caso, analisis, opinion] }
+      - { name: subseccion, label: Subsección, widget: select, required: false, options: [finanzas-personales, ahorro, inversiones, bancos, prestamos, finanzas-empresariales, fiscalidad] }
+      - { name: estado, label: Estado editorial, widget: select, default: borrador, options: [borrador, revision, aprobada, programada, publicada, archivada] }
+      - { name: fecha, label: Fecha de publicación (si es futura, se publica ese día), widget: datetime }
+      - { name: actualizado, label: Fecha de actualización, widget: datetime, required: false }
+      - { name: autor, label: Autor, widget: string, default: Redacción ECONEXO }
+      - { name: revisor, label: Revisor especializado, widget: string, required: false }
+      - { name: destacado, label: Destacado en portada, widget: boolean, default: false }
+      - { name: etiquetas, label: Etiquetas, widget: list, required: false }
+      - { name: pais, label: Países, widget: select, multiple: true, default: [global], options: [global, ES, MX, AR, CO, CL, PE] }
+      - { name: moneda, label: Moneda, widget: select, required: false, options: [EUR, MXN, ARS, COP, CLP, PEN, USD] }
+      - { name: fecha_datos, label: Fecha de referencia de los datos (finanzas), widget: string, required: false }
+      - { name: imagen, label: Imagen principal, widget: image, required: false }
+      - { name: imagen_alt, label: Texto alternativo de la imagen, widget: string, required: false }
+      - { name: herramienta, label: Herramienta relacionada, widget: select, required: false, options: [calculadora-roas, calculadora-roi, generador-utm, interes-compuesto] }
+      - name: ficha
+        label: Ficha del caso (empresa, año, sector, concepto)
+        widget: object
+        required: false
+        fields:
+          - { name: Empresa, widget: string, required: false }
+          - { name: Año, widget: string, required: false }
+          - { name: Sector, widget: string, required: false }
+          - { name: Concepto, widget: string, required: false }
+      - name: fuentes
+        label: Fuentes
+        widget: list
+        required: false
+        fields:
+          - { name: nombre, label: Fuente, widget: string }
+          - { name: url, label: Enlace, widget: string, required: false }
+      - name: faq
+        label: Preguntas frecuentes
+        widget: list
+        required: false
+        fields:
+          - { name: p, label: Pregunta, widget: string }
+          - { name: r, label: Respuesta, widget: text }
+      - { name: body, label: Texto, widget: markdown }
+  - name: casos
+    label: 'Casos'
+    folder: content/casos
+    create: true
+    extension: md
+    format: frontmatter
+    slug: '{{slug}}'
+    summary: '{{titulo}} · {{estado}} · {{fecha}}'
+    sortable_fields: [fecha, titulo, estado]
+    view_filters:
+      - { label: Publicadas, field: estado, pattern: publicada }
+      - { label: En revisión, field: estado, pattern: revision }
+      - { label: Borradores, field: estado, pattern: borrador }
+    fields:
+      - { name: titulo, label: Titular, widget: string }
+      - { name: subtitulo, label: Subtítulo / entradilla, widget: text }
+      - { name: descripcion, label: Descripción SEO (máx. 160 caracteres), widget: string, required: false }
+      - { name: tipo, label: Tipo de contenido, widget: select, options: [noticia, guia, financiero, caso, analisis, opinion] }
+      - { name: subseccion, label: Subsección, widget: select, required: false, options: [casos-marketing, casos-crisis, casos-crecimiento, casos-datos, casos-ia] }
+      - { name: estado, label: Estado editorial, widget: select, default: borrador, options: [borrador, revision, aprobada, programada, publicada, archivada] }
+      - { name: fecha, label: Fecha de publicación (si es futura, se publica ese día), widget: datetime }
+      - { name: actualizado, label: Fecha de actualización, widget: datetime, required: false }
+      - { name: autor, label: Autor, widget: string, default: Redacción ECONEXO }
+      - { name: revisor, label: Revisor especializado, widget: string, required: false }
+      - { name: destacado, label: Destacado en portada, widget: boolean, default: false }
+      - { name: etiquetas, label: Etiquetas, widget: list, required: false }
+      - { name: pais, label: Países, widget: select, multiple: true, default: [global], options: [global, ES, MX, AR, CO, CL, PE] }
+      - { name: moneda, label: Moneda, widget: select, required: false, options: [EUR, MXN, ARS, COP, CLP, PEN, USD] }
+      - { name: fecha_datos, label: Fecha de referencia de los datos (finanzas), widget: string, required: false }
+      - { name: imagen, label: Imagen principal, widget: image, required: false }
+      - { name: imagen_alt, label: Texto alternativo de la imagen, widget: string, required: false }
+      - { name: herramienta, label: Herramienta relacionada, widget: select, required: false, options: [calculadora-roas, calculadora-roi, generador-utm, interes-compuesto] }
+      - name: ficha
+        label: Ficha del caso (empresa, año, sector, concepto)
+        widget: object
+        required: false
+        fields:
+          - { name: Empresa, widget: string, required: false }
+          - { name: Año, widget: string, required: false }
+          - { name: Sector, widget: string, required: false }
+          - { name: Concepto, widget: string, required: false }
+      - name: fuentes
+        label: Fuentes
+        widget: list
+        required: false
+        fields:
+          - { name: nombre, label: Fuente, widget: string }
+          - { name: url, label: Enlace, widget: string, required: false }
+      - name: faq
+        label: Preguntas frecuentes
+        widget: list
+        required: false
+        fields:
+          - { name: p, label: Pregunta, widget: string }
+          - { name: r, label: Respuesta, widget: text }
+      - { name: body, label: Texto, widget: markdown }
+  - name: formacion
+    label: 'Aprende (formación)'
+    folder: content/formacion
+    create: true
+    extension: md
+    format: frontmatter
+    slug: '{{slug}}'
+    summary: '{{titulo}} · {{estado}} · {{fecha}}'
+    sortable_fields: [fecha, titulo, estado]
+    view_filters:
+      - { label: Publicadas, field: estado, pattern: publicada }
+      - { label: En revisión, field: estado, pattern: revision }
+      - { label: Borradores, field: estado, pattern: borrador }
+    fields:
+      - { name: titulo, label: Titular, widget: string }
+      - { name: subtitulo, label: Subtítulo / entradilla, widget: text }
+      - { name: descripcion, label: Descripción SEO (máx. 160 caracteres), widget: string, required: false }
+      - { name: tipo, label: Tipo de contenido, widget: select, options: [noticia, guia, financiero, caso, analisis, opinion] }
+      - { name: subseccion, label: Subsección, widget: select, required: false, options: [guias, tutoriales, diccionario, plantillas] }
+      - { name: estado, label: Estado editorial, widget: select, default: borrador, options: [borrador, revision, aprobada, programada, publicada, archivada] }
+      - { name: fecha, label: Fecha de publicación (si es futura, se publica ese día), widget: datetime }
+      - { name: actualizado, label: Fecha de actualización, widget: datetime, required: false }
+      - { name: autor, label: Autor, widget: string, default: Redacción ECONEXO }
+      - { name: revisor, label: Revisor especializado, widget: string, required: false }
+      - { name: destacado, label: Destacado en portada, widget: boolean, default: false }
+      - { name: etiquetas, label: Etiquetas, widget: list, required: false }
+      - { name: pais, label: Países, widget: select, multiple: true, default: [global], options: [global, ES, MX, AR, CO, CL, PE] }
+      - { name: moneda, label: Moneda, widget: select, required: false, options: [EUR, MXN, ARS, COP, CLP, PEN, USD] }
+      - { name: fecha_datos, label: Fecha de referencia de los datos (finanzas), widget: string, required: false }
+      - { name: imagen, label: Imagen principal, widget: image, required: false }
+      - { name: imagen_alt, label: Texto alternativo de la imagen, widget: string, required: false }
+      - { name: herramienta, label: Herramienta relacionada, widget: select, required: false, options: [calculadora-roas, calculadora-roi, generador-utm, interes-compuesto] }
+      - name: ficha
+        label: Ficha del caso (empresa, año, sector, concepto)
+        widget: object
+        required: false
+        fields:
+          - { name: Empresa, widget: string, required: false }
+          - { name: Año, widget: string, required: false }
+          - { name: Sector, widget: string, required: false }
+          - { name: Concepto, widget: string, required: false }
+      - name: fuentes
+        label: Fuentes
+        widget: list
+        required: false
+        fields:
+          - { name: nombre, label: Fuente, widget: string }
+          - { name: url, label: Enlace, widget: string, required: false }
+      - name: faq
+        label: Preguntas frecuentes
+        widget: list
+        required: false
+        fields:
+          - { name: p, label: Pregunta, widget: string }
+          - { name: r, label: Respuesta, widget: text }
+      - { name: body, label: Texto, widget: markdown }
+  - name: paginas
+    label: Páginas institucionales
+    folder: content/paginas
+    create: true
+    extension: md
+    format: frontmatter
+    fields:
+      - { name: titulo, label: Título, widget: string }
+      - { name: descripcion, label: Descripción, widget: string, required: false }
+      - { name: actualizado, label: Última actualización, widget: string, required: false }
+      - { name: body, label: Texto, widget: markdown }
