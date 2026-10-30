@@ -32,6 +32,20 @@ Publicadas en la fase 1: Actualidad, Marketing digital, Inteligencia artificial,
 
 URL: `/<sección>/` · `/<sección>/<subsección>/` · `/<sección>/<slug-del-artículo>/` · `/herramientas/<herramienta>/`.
 
+## Vídeos: CROMO
+
+Sección `/videos/` con el universo de **CROMO**, el camaleón que se cree gurú del marketing (personajes y series en `lib/cromo.ts`).
+
+- Cada vídeo es un archivo en `content/videos/<slug>.md` (o se crea desde `/admin` → «Vídeos · CROMO») con serie, formato (short o episodio), enlace de YouTube, personajes, concepto, puntos clave, **guía** y **herramienta** relacionadas y el **guion**.
+- La página del vídeo muestra el reproductor, «Lo que aprendes», enlaces a la guía y a la herramienta, y el guion completo (texto útil para Google).
+- Los artículos y las herramientas relacionados muestran el vídeo («▶ Míralo con CROMO»), y la portada tiene un bloque de CROMO.
+- Sin enlace de YouTube, el vídeo aparece como «Próximamente».
+- El reproductor no conecta con YouTube hasta que se pulsa play y usa youtube-nocookie.com.
+- Enlaces de los canales: variables `NEXT_PUBLIC_YOUTUBE_URL`, `NEXT_PUBLIC_INSTAGRAM_URL` y `NEXT_PUBLIC_TIKTOK_URL`.
+- Los retratos de los personajes (`components/Characters.tsx`) son provisionales hasta tener el diseño definitivo.
+
+En la descripción de cada vídeo de YouTube, enlaza la página del vídeo en ECONEXO, la guía y la herramienta.
+
 ## Plantillas por tipo de contenido
 
 - `noticia`: fecha y hora, fuentes, noticias relacionadas.

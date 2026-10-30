@@ -9,6 +9,8 @@ import { Newsletter } from '@/components/Newsletter';
 import { bySection, findArticle, formatDate, related, isPreview, type Article } from '@/lib/content';
 import { COUNTRIES, SITE, TYPES, liveSections, sectionBySlug } from '@/lib/site';
 import { toolBySlug } from '@/lib/tools';
+import { videosForGuide } from '@/lib/videos';
+import { VideoCard } from '@/components/VideoCard';
 
 export const dynamicParams = false;
 export function generateStaticParams() {
@@ -59,6 +61,7 @@ export default async function ArticlePage({ params }: Props) {
   const s = sectionBySlug(seccion)!;
   const tool = a.herramienta ? toolBySlug(a.herramienta) : undefined;
   const rel = related(a);
+  const vids = videosForGuide(a.url);
   const ld = {
     '@context': 'https://schema.org', '@type': a.tipo === 'noticia' ? 'NewsArticle' : 'Article', headline: a.titulo, description: a.descripcion,
     datePublished: a.fecha, dateModified: a.actualizado || a.fecha, inLanguage: 'es', mainEntityOfPage: SITE.url + a.url,
@@ -94,6 +97,7 @@ export default async function ArticlePage({ params }: Props) {
           <h2 className="mt-1 text-2xl font-extrabold">{tool.name}</h2><p className="mt-1 text-white/75">{tool.short}</p>
           <Link href={`/herramientas/${tool.slug}/`} className="mt-4 inline-block rounded-lg bg-teal px-4 py-2.5 font-semibold hover:bg-teal-dark">Abrir la herramienta →</Link></aside>
       )}
+      {vids.length > 0 && <section className="my-10"><h2 className="mb-4 text-xl font-extrabold text-navy">▶ Míralo con CROMO</h2><div className="grid gap-4 md:grid-cols-2">{vids.map((v) => <VideoCard key={v.slug} v={v} />)}</div></section>}
       {a.faq.length > 0 && (
         <section className="mt-10"><h2 className="text-2xl font-extrabold text-navy">Preguntas frecuentes</h2>
           {a.faq.map((f) => <details key={f.p} className="mt-3 rounded-xl border border-line p-4"><summary className="cursor-pointer font-bold text-navy">{f.p}</summary><p className="mt-2 text-muted">{f.r}</p></details>)}</section>

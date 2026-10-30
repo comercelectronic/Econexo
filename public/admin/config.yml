@@ -351,6 +351,29 @@ collections:
           - { name: p, label: Pregunta, widget: string }
           - { name: r, label: Respuesta, widget: text }
       - { name: body, label: Texto, widget: markdown }
+  - name: videos
+    label: 'Vídeos · CROMO'
+    folder: content/videos
+    create: true
+    extension: md
+    format: frontmatter
+    slug: '{{slug}}'
+    summary: '{{titulo}} · {{serie}} · {{estado}}'
+    fields:
+      - { name: titulo, label: Título, widget: string }
+      - { name: descripcion, label: Descripción (también para YouTube), widget: text }
+      - { name: serie, label: Serie, widget: select, options: [cromo-y-el-marketing, cromo-contra-google, cromo-y-la-ia, cromo-se-hace-empresario, cromo-pierde-dinero, cromo-aprende-excel, el-consejo-del-profe] }
+      - { name: formato, label: Formato, widget: select, default: short, options: [short, episodio] }
+      - { name: youtube, label: Enlace o ID de YouTube (vacío = próximamente), widget: string, required: false }
+      - { name: duracion, label: Duración, widget: string, required: false }
+      - { name: personajes, label: Personajes, widget: select, multiple: true, default: [cromo], options: [cromo, profe, presu, chatarra] }
+      - { name: concepto, label: Concepto que se aprende, widget: string }
+      - { name: aprendes, label: Puntos clave, widget: list, required: false }
+      - { name: guia, label: Guía relacionada (URL, por ejemplo /marketing-digital/como-calcular-el-roas/), widget: string, required: false }
+      - { name: herramienta, label: Herramienta relacionada, widget: select, required: false, options: [calculadora-roas, calculadora-roi, generador-utm, interes-compuesto] }
+      - { name: estado, label: Estado editorial, widget: select, default: borrador, options: [borrador, revision, aprobada, programada, publicada, archivada] }
+      - { name: fecha, label: Fecha de publicación, widget: datetime }
+      - { name: body, label: Guion, widget: markdown }
   - name: paginas
     label: Páginas institucionales
     folder: content/paginas

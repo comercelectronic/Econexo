@@ -6,6 +6,10 @@ import { JsonLd } from '@/components/JsonLd';
 import { published, bySection, byType, type Article } from '@/lib/content';
 import { SITE } from '@/lib/site';
 import { TOOLS } from '@/lib/tools';
+import { videos } from '@/lib/videos';
+import { VideoCard } from '@/components/VideoCard';
+import { Avatar } from '@/components/Characters';
+import { CHANNEL } from '@/lib/cromo';
 
 const Block = ({ n, kicker, title, href, children }: { n: string; kicker: string; title: string; href?: string; children: React.ReactNode }) => (
   <section className="mt-14">
@@ -28,6 +32,7 @@ export default function Home() {
   const finance = take(bySection('finanzas'), 3);
   const mkt = take([...bySection('marketing-digital'), ...bySection('inteligencia-artificial')].sort((a, b) => Date.parse(b.fecha) - Date.parse(a.fecha)), 4);
   const learn = take(all.filter((a) => a.tipo === 'guia'), 4);
+  const vids = videos().slice(0, 3);
   const analysis = take(all.filter((a) => a.tipo === 'caso' || a.tipo === 'analisis'), 6);
   return (
     <>
@@ -76,8 +81,16 @@ export default function Home() {
         </div>
       </Block>
 
+      <Block n="07" kicker="Vídeos" title="Aprende con CROMO" href="/videos/">
+        <div className="grid items-center gap-6 rounded-2xl bg-navy p-6 text-white md:grid-cols-[auto_1fr]">
+          <Avatar id="cromo" className="h-24 w-24" />
+          <div><p className="font-display text-2xl font-extrabold">{CHANNEL.claim}</p><p className="mt-1 text-white/75">El camaleón que se cree gurú del marketing comete todos los errores… para que tú no los cometas.</p></div>
+        </div>
+        {vids.length > 0 && <div className="mt-5 grid gap-5 md:grid-cols-3">{vids.map((v) => <VideoCard key={v.slug} v={v} />)}</div>}
+      </Block>
+
       {analysis.length > 0 && (
-        <Block n="07" kicker="Análisis" title="Más allá de la noticia: casos reales" href="/casos/">
+        <Block n="08" kicker="Análisis" title="Más allá de la noticia: casos reales" href="/casos/">
           <div className="grid gap-5 md:grid-cols-3">{analysis.map((a) => <ArticleCard key={a.url} a={a} />)}</div>
         </Block>
       )}

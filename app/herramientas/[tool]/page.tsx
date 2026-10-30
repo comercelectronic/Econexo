@@ -6,6 +6,8 @@ import { AdSlot } from '@/components/AdSlot';
 import { JsonLd } from '@/components/JsonLd';
 import { TOOLS, toolBySlug } from '@/lib/tools';
 import { SITE } from '@/lib/site';
+import { videosForTool } from '@/lib/videos';
+import { VideoCard } from '@/components/VideoCard';
 
 export const dynamicParams = false;
 export const generateStaticParams = () => TOOLS.map((t) => ({ tool: t.slug }));
@@ -38,6 +40,7 @@ export default async function ToolPage({ params }: Props) {
       {t.guide && <p className="mt-6"><Link href={t.guide} className="font-semibold text-blue underline">Lee la guía completa →</Link></p>}
       <section className="mt-10"><h2 className="text-2xl font-extrabold text-navy">Preguntas frecuentes</h2>
         {t.faq.map((f) => <details key={f.p} className="mt-3 rounded-xl border border-line p-4"><summary className="cursor-pointer font-bold text-navy">{f.p}</summary><p className="mt-2 text-muted">{f.r}</p></details>)}</section>
+      {videosForTool(t.slug).length > 0 && <section className="mt-10"><h2 className="mb-4 text-xl font-extrabold text-navy">▶ Míralo con CROMO</h2><div className="grid gap-4 md:grid-cols-2">{videosForTool(t.slug).map((v) => <VideoCard key={v.slug} v={v} />)}</div></section>}
       <AdSlot slot={`herramienta-${t.slug}`} />
     </div>
   );

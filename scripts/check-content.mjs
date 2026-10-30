@@ -19,6 +19,15 @@ for (const sec of fs.readdirSync(ROOT)) {
     const { data, content } = matter(fs.readFileSync(path.join(dir, file), 'utf8'));
     if (content.includes('[PENDIENTE')) warn(f, 'tiene datos [PENDIENTE] por completar');
     if (sec === 'paginas') continue;
+    if (sec === 'videos') {
+      if (!data.titulo || !data.serie || !data.concepto) err(f, 'faltan título, serie o concepto');
+      if (!ESTADOS.includes(data.estado)) err(f, `estado no válido: ${data.estado}`);
+      if (!data.fecha || Number.isNaN(Date.parse(data.fecha))) err(f, 'falta una fecha válida');
+      if (data.guia && !fs.existsSync(path.join(ROOT, data.guia.split('/')[1] || '', (data.guia.split('/')[2] || '') + '.md'))) err(f, `la guía relacionada no existe: ${data.guia}`);
+      if (!data.youtube) warn(f, 'sin vídeo de YouTube todavía (se muestra «Próximamente»)');
+      if (data.estado !== 'publicada') warn(f, `estado «${data.estado}»: no se publicará`);
+      continue;
+    }
     if (!/^[a-z0-9-]+$/.test(slug)) err(f, 'el nombre del archivo debe ir en minúsculas, sin acentos ni espacios');
     if (!data.titulo) err(f, 'falta el titular');
     if (!data.fecha || Number.isNaN(Date.parse(data.fecha))) err(f, 'falta una fecha válida');

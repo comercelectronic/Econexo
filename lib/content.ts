@@ -40,13 +40,13 @@ export type Article = {
   minutos: number;
 };
 
-const ROOT = path.join(process.cwd(), 'content');
-const SHOW_DRAFTS = process.env.ECONEXO_MOSTRAR_BORRADORES === '1';
-const PREVIEW_STATES: Estado[] = ['revision', 'aprobada', 'programada', 'publicada'];
+export const ROOT = path.join(process.cwd(), 'content');
+export const SHOW_DRAFTS = process.env.ECONEXO_MOSTRAR_BORRADORES === '1';
+export const PREVIEW_STATES: Estado[] = ['revision', 'aprobada', 'programada', 'publicada'];
 
 const slugify = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
-function render(md: string) {
+export function render(md: string) {
   const toc: { id: string; text: string }[] = [];
   const renderer = new marked.Renderer();
   renderer.heading = function ({ tokens, depth }) {
@@ -68,7 +68,7 @@ export function allArticles(): Article[] {
   if (!fs.existsSync(ROOT)) return (cache = out);
   for (const seccion of fs.readdirSync(ROOT)) {
     const dir = path.join(ROOT, seccion);
-    if (seccion === 'paginas' || !fs.statSync(dir).isDirectory()) continue;
+    if (seccion === 'paginas' || seccion === 'videos' || !fs.statSync(dir).isDirectory()) continue;
     for (const file of fs.readdirSync(dir).filter((f) => f.endsWith('.md'))) {
       const { data, content } = matter(fs.readFileSync(path.join(dir, file), 'utf8'));
       const slug = file.replace(/\.md$/, '');
