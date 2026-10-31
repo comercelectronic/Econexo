@@ -8,8 +8,7 @@ import { SITE } from '@/lib/site';
 import { TOOLS } from '@/lib/tools';
 import { videos } from '@/lib/videos';
 import { VideoCard } from '@/components/VideoCard';
-import { Avatar } from '@/components/Characters';
-import { CHANNEL } from '@/lib/cromo';
+import { UNIVERSE } from '@/lib/cromo';
 
 const Block = ({ n, kicker, title, href, children }: { n: string; kicker: string; title: string; href?: string; children: React.ReactNode }) => (
   <section className="mt-14">
@@ -81,11 +80,18 @@ export default function Home() {
         </div>
       </Block>
 
-      <Block n="07" kicker="Vídeos" title="Aprende con CROMO" href="/videos/">
-        <div className="grid items-center gap-6 rounded-2xl bg-navy p-6 text-white md:grid-cols-[auto_1fr]">
-          <Avatar id="cromo" className="h-24 w-24" />
-          <div><p className="font-display text-2xl font-extrabold">{CHANNEL.claim}</p><p className="mt-1 text-white/75">El camaleón que se cree gurú del marketing comete todos los errores… para que tú no los cometas.</p></div>
-        </div>
+      <Block n="07" kicker="Universo CROMO" title="Aprende con CROMO y el Profe Suricata" href="/universo-cromo/">
+        <Link href="/universo-cromo/" className="grid items-center gap-6 overflow-hidden rounded-2xl bg-navy text-white md:grid-cols-[1fr_auto]">
+          <div className="p-6 md:p-8">
+            <p className="font-display text-2xl font-extrabold md:text-3xl">{UNIVERSE.claim}</p>
+            <p className="mt-2 max-w-xl text-white/75">CROMO comete todos los errores de marketing, economía y tecnología. El Profe Suricata le explica lo que de verdad funciona. Tú te ríes… y aprendes.</p>
+            <span className="mt-4 inline-block rounded-lg bg-cromo px-4 py-2.5 font-semibold">Descubre el Universo CROMO →</span>
+          </div>
+          <div className="flex items-end justify-center gap-2 px-6 pt-4 md:pt-6">
+            <img src="/media/personajes/cromo-principal.webp" alt="CROMO" className="h-48 w-auto md:h-60" />
+            <img src="/media/personajes/profe-principal.webp" alt="Profe Suricata" className="h-44 w-auto rounded-t-xl md:h-56" />
+          </div>
+        </Link>
         {vids.length > 0 && <div className="mt-5 grid gap-5 md:grid-cols-3">{vids.map((v) => <VideoCard key={v.slug} v={v} />)}</div>}
       </Block>
 

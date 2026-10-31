@@ -10,6 +10,11 @@ autor: Redacción ECONEXO
 etiquetas: [métricas, kpi, roas, roi, analítica]
 pais: [global]
 herramienta: calculadora-roi
+dialogo:
+  - { quien: cromo, gesto: senalando, texto: "¡Mi anuncio tiene un CTR del 8 %! ¡Soy un genio!" }
+  - { quien: profe, gesto: pensativo, texto: "¿Y cuál es el CPA? ¿Y el ROAS? Un buen CTR solo dice que la gente hace clic." }
+  - { quien: cromo, gesto: confusion, texto: "CPA, ROAS, LTV… ¿Esto es marketing o una sopa de letras?" }
+  - { quien: profe, gesto: guino, texto: "Las dos cosas. Vamos letra por letra." }
 ---
 Las métricas de marketing se entienden mejor en orden: desde que alguien ve un anuncio hasta que se convierte en cliente fiel.
 

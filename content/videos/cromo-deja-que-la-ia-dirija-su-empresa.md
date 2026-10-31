@@ -30,11 +30,11 @@ fecha: 2026-10-28T12:00:00+01:00
 
 ### Escena 3 · La explicación
 
-**PROFE:** La IA es una ayuda fantástica para escribir borradores, buscar ideas o resumir información. Pero alguien tiene que revisar lo que se publica. Y si tu IA promete algo a un cliente, la responsable es tu empresa.
+**PROFE SURICATA:** La IA es una ayuda fantástica para escribir borradores, buscar ideas o resumir información. Pero alguien tiene que revisar lo que se publica. Y si tu IA promete algo a un cliente, la responsable es tu empresa.
 
 **CROMO:** O sea, que la IA es como un becario muy rápido.
 
-**PROFE:** Un becario muy rápido que necesita supervisión.
+**PROFE SURICATA:** Un becario muy rápido que necesita supervisión.
 
 ### Escena 4 · Remate
 

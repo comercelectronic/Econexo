@@ -15,6 +15,11 @@ faq:
 fuentes:
   - nombre: "Google Search Central: documentación sobre datos estructurados"
   - nombre: "Schema.org"
+dialogo:
+  - { quien: cromo, gesto: alegria, texto: "He preguntado a la IA por el mejor camaleón gurú de marketing y no salgo. ¡Debe de estar estropeada!" }
+  - { quien: profe, gesto: esceptico, texto: "O no hay ni una sola web fiable que hable de ti, CROMO." }
+  - { quien: cromo, gesto: sorpresa, texto: "¿La IA también lee reseñas?" }
+  - { quien: profe, gesto: pensativo, texto: "Lee lo que hay publicado. Por eso hay que darle buenas fuentes." }
 ---
 Preguntar «¿qué dentista me recomiendas en Valencia?» a un asistente de IA ya es un hábito para mucha gente. Las respuestas generadas por IA aparecen también en la parte superior de muchos resultados de búsqueda. Aparecer en esas respuestas se conoce como **GEO** (*generative engine optimization*).
 

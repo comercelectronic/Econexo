@@ -18,7 +18,7 @@ function all(): Video[] {
     const { data, content } = matter(fs.readFileSync(path.join(dir, f), 'utf8'));
     const slug = f.replace(/\.md$/, '');
     return {
-      slug, url: `/videos/${slug}/`, titulo: data.titulo, descripcion: data.descripcion || '', serie: data.serie, formato: data.formato || 'short',
+      slug, url: `/universo-cromo/${slug}/`, titulo: data.titulo, descripcion: data.descripcion || '', serie: data.serie, formato: data.formato || 'short',
       youtube: data.youtube ? String(data.youtube).trim() : undefined, duracion: data.duracion, personajes: data.personajes || ['cromo'],
       concepto: data.concepto || '', aprendes: data.aprendes || [], guia: data.guia, herramienta: data.herramienta,
       fecha: new Date(data.fecha).toISOString(), estado: data.estado || 'borrador', html: render(content).html

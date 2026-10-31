@@ -15,6 +15,11 @@ faq:
     r: "Por Urchin Tracking Module. Urchin era una empresa de analítica web que Google compró en 2005 y que dio origen a Google Analytics."
 fuentes:
   - nombre: "Ayuda de Google Analytics: recopilar datos de campañas con URLs personalizadas"
+dialogo:
+  - { quien: cromo, gesto: confusion, texto: "Analytics dice que casi todas mis visitas son «directas». ¡Tengo fans que se saben mi web de memoria!" }
+  - { quien: profe, gesto: esceptico, texto: "O no has etiquetado los enlaces de tu newsletter, CROMO." }
+  - { quien: cromo, gesto: verguenza, texto: "¿Etiquetar? ¿Como la ropa?" }
+  - { quien: profe, gesto: alegria, texto: "Casi. Se llaman parámetros UTM. Te lo explico." }
 ---
 Cuando alguien llega a tu web desde una newsletter, un anuncio o una publicación en redes, Google Analytics no siempre sabe de dónde viene. Los **parámetros UTM** son etiquetas que añades al final de un enlace para identificarlo.
 

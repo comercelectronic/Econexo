@@ -134,7 +134,31 @@ export function CompoundCalc() {
   );
 }
 
+export function EngagementCalc() {
+  const [f, setF] = useState(10000), [posts, setPosts] = useState(10), [likes, setLikes] = useState(1000), [com, setCom] = useState(120), [sh, setSh] = useState(50), [sv, setSv] = useState(30), [reach, setReach] = useState(0);
+  const total = likes + com + sh + sv, perPost = total / posts, rate = perPost / f * 100, rateReach = reach > 0 ? perPost / reach * 100 : NaN;
+  return (
+    <Box>
+      <div className="grid grid-cols-2 gap-4">
+        <div className="col-span-2"><Field label="Seguidores" value={f} onChange={setF} step="1" /></div>
+        <div className="col-span-2"><Field label="Publicaciones analizadas" value={posts} onChange={setPosts} step="1" /></div>
+        <Field label="Me gusta (total)" value={likes} onChange={setLikes} step="1" />
+        <Field label="Comentarios (total)" value={com} onChange={setCom} step="1" />
+        <Field label="Compartidos (total)" value={sh} onChange={setSh} step="1" />
+        <Field label="Guardados (total)" value={sv} onChange={setSv} step="1" />
+        <div className="col-span-2"><Field label="Alcance medio por publicación (opcional)" value={reach} onChange={setReach} step="1" /></div>
+      </div>
+      <div className="grid content-start gap-3">
+        <Result label="Interacciones por publicación" value={nf(perPost, 1)} />
+        <Result label="Tasa de interacción por seguidores" value={`${nf(rate, 2)} %`} tone="teal" />
+        {reach > 0 && <Result label="Tasa de interacción por alcance" value={`${nf(rateReach, 2)} %`} />}
+        <p className="text-sm text-muted">De cada 100 seguidores, unos {nf(rate, 1)} interactúan con cada publicación. Compara la cifra con tus meses anteriores y con cuentas parecidas a la tuya.</p>
+      </div>
+    </Box>
+  );
+}
+
 const CALCULATORS: Record<string, () => React.ReactElement> = {
-  'calculadora-roas': RoasCalc, 'calculadora-roi': RoiCalc, 'generador-utm': UtmCalc, 'interes-compuesto': CompoundCalc
+  'calculadora-engagement': EngagementCalc, 'calculadora-roas': RoasCalc, 'calculadora-roi': RoiCalc, 'generador-utm': UtmCalc, 'interes-compuesto': CompoundCalc
 };
 export function Calculator({ slug }: { slug: string }) { const C = CALCULATORS[slug]; return C ? <C /> : null; }

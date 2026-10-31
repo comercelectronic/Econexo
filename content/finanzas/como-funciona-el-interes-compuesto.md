@@ -20,6 +20,11 @@ faq:
 fuentes:
   - nombre: "Banco de España, Portal del Cliente Bancario: conceptos de interés"
   - nombre: "CNMV: guías de educación financiera"
+dialogo:
+  - { quien: cromo, gesto: hablando, texto: "Quiero ser rico en tres días. ¿Cuál es el truco?" }
+  - { quien: profe, gesto: guino, texto: "El truco tiene nombre: interés compuesto. Y el ingrediente principal no es la rentabilidad… es el tiempo." }
+  - { quien: cromo, gesto: confusion, texto: "¿Tres días no es tiempo?" }
+  - { quien: profe, gesto: paciencia, texto: "Piensa más bien en veinte años." }
 ---
 El **interés compuesto** es el efecto que se produce cuando los rendimientos de un ahorro o una inversión se suman al capital y, a su vez, generan nuevos rendimientos. Es «interés sobre interés».
 

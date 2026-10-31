@@ -34,6 +34,7 @@ export type Article = {
   faq: Faq[];
   herramienta?: string;
   ficha?: Record<string, string>;
+  dialogo: { quien: string; gesto?: string; texto: string }[];
   fecha_datos?: string;
   html: string;
   toc: { id: string; text: string }[];
@@ -82,7 +83,7 @@ export function allArticles(): Article[] {
         fecha: new Date(data.fecha).toISOString(), actualizado: data.actualizado ? new Date(data.actualizado).toISOString() : undefined,
         estado: data.estado || 'borrador', destacado: !!data.destacado,
         pais: data.pais || ['global'], moneda: data.moneda, imagen: data.imagen, imagen_alt: data.imagen_alt,
-        fuentes: data.fuentes || [], faq: data.faq || [], herramienta: data.herramienta, ficha: data.ficha, fecha_datos: data.fecha_datos,
+        fuentes: data.fuentes || [], faq: data.faq || [], herramienta: data.herramienta, ficha: data.ficha, dialogo: data.dialogo || [], fecha_datos: data.fecha_datos,
         html, toc, minutos: Math.max(1, Math.round(words / 220))
       });
     }

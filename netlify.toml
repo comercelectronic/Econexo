@@ -16,3 +16,9 @@
   [headers.values]
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+
+# La secció de vídeos ara forma part de l'Universo CROMO
+[[redirects]]
+  from = "/videos/*"
+  to = "/universo-cromo/:splat"
+  status = 301

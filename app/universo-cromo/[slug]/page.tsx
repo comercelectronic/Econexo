@@ -6,7 +6,7 @@ import { Avatar } from '@/components/Characters';
 import { JsonLd } from '@/components/JsonLd';
 import { Newsletter } from '@/components/Newsletter';
 import { VideoCard } from '@/components/VideoCard';
-import { CHANNEL, characterById, serieName } from '@/lib/cromo';
+import { UNIVERSE, characterById, serieName } from '@/lib/cromo';
 import { videos, videoBySlug, youtubeId } from '@/lib/videos';
 import { published, formatDate, isPreview } from '@/lib/content';
 import { toolBySlug } from '@/lib/tools';
@@ -36,7 +36,7 @@ export default async function VideoPage({ params }: Props) {
     <article className="mx-auto max-w-4xl py-10">
       {id && <JsonLd data={{ '@context': 'https://schema.org', '@type': 'VideoObject', name: v.titulo, description: v.descripcion, uploadDate: v.fecha, thumbnailUrl: `https://i.ytimg.com/vi/${id}/hqdefault.jpg`, embedUrl: `https://www.youtube-nocookie.com/embed/${id}`, inLanguage: 'es', publisher: { '@type': 'Organization', name: SITE.name } }} />}
       {isPreview && v.estado !== 'publicada' && <p className="mb-6 rounded-lg bg-amber-100 p-3 text-sm font-semibold text-warn">Vista previa · estado: {v.estado}. No se publicará hasta que se marque como «publicada».</p>}
-      <p className="text-sm font-semibold text-teal"><Link href="/videos/">Vídeos · CROMO</Link> · <Link href={`/videos/#${v.serie}`}>{serieName(v.serie)}</Link></p>
+      <p className="text-sm font-semibold text-teal"><Link href="/universo-cromo/">Universo CROMO</Link> · <Link href={`/universo-cromo/#${v.serie}`}>{serieName(v.serie)}</Link></p>
       <h1 className="mt-2 text-3xl font-extrabold leading-tight text-navy md:text-5xl">{v.titulo}</h1>
       <p className="mt-3 text-lg text-muted">{v.descripcion}</p>
       <p className="mt-3 text-sm text-muted">{v.formato === 'short' ? 'Short' : 'Episodio'}{v.duracion ? ` · ${v.duracion}` : ''} · {formatDate(v.fecha)}</p>
@@ -58,11 +58,11 @@ export default async function VideoPage({ params }: Props) {
         <h2 className="text-2xl font-extrabold text-navy">Guion</h2>
         <div className="mt-3 flex flex-wrap gap-3">{v.personajes.map((c) => { const ch = characterById(c); return ch ? <span key={c} className="flex items-center gap-2 rounded-full bg-mist py-1 pl-1 pr-3 text-sm font-bold" style={{ color: ch.color }}><Avatar id={c} className="h-8 w-8" />{ch.name}</span> : null; })}</div>
         <div className="prose-ec mt-5" dangerouslySetInnerHTML={{ __html: v.html }} />
-        <p className="mt-6 font-display text-lg font-extrabold text-teal">{CHANNEL.closing}</p>
+        <p className="mt-6 font-display text-lg font-extrabold text-teal">{UNIVERSE.closing}</p>
       </section>
 
       {more.length > 0 && <section className="mt-12"><h2 className="mb-4 text-xl font-extrabold text-navy">Más de {serieName(v.serie)}</h2><div className="grid gap-5 md:grid-cols-3">{more.map((x) => <VideoCard key={x.slug} v={x} />)}</div></section>}
-      <div className="mt-12"><Newsletter /></div>
+      <div className="mt-12"><Newsletter variant="profe" /></div>
     </article>
   );
 }

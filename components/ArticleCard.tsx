@@ -5,7 +5,7 @@ import { TYPES, sectionBySlug } from '@/lib/site';
 
 const Kicker = ({ a }: { a: Article }) => (
   <span className="text-xs font-bold uppercase tracking-wide text-teal">
-    {TYPES[a.tipo] || a.tipo} · {sectionBySlug(a.seccion)?.short || sectionBySlug(a.seccion)?.name}
+    {TYPES[a.tipo] || a.tipo}{a.seccion !== 'casos' && <> · {sectionBySlug(a.seccion)?.short || sectionBySlug(a.seccion)?.name}</>}
     {a.estado !== 'publicada' && <span className="ml-2 rounded bg-amber-100 px-1.5 py-0.5 text-[10px] text-warn">EN REVISIÓN</span>}
   </span>
 );

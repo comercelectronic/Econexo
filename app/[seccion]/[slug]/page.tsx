@@ -11,6 +11,7 @@ import { COUNTRIES, SITE, TYPES, liveSections, sectionBySlug } from '@/lib/site'
 import { toolBySlug } from '@/lib/tools';
 import { videosForGuide } from '@/lib/videos';
 import { VideoCard } from '@/components/VideoCard';
+import { Dialogue } from '@/components/Dialogue';
 
 export const dynamicParams = false;
 export function generateStaticParams() {
@@ -90,6 +91,7 @@ export default async function ArticlePage({ params }: Props) {
         <nav className="mt-6 rounded-xl border border-line p-5" aria-label="Índice"><p className="font-bold text-navy">En esta guía</p>
           <ol className="mt-2 list-decimal space-y-1 pl-5 text-sm">{a.toc.map((t) => <li key={t.id}><a className="text-blue hover:underline" href={`#${t.id}`}>{t.text}</a></li>)}</ol></nav>
       )}
+      {a.dialogo.length > 0 && <div className="mt-8"><Dialogue lines={a.dialogo} /></div>}
       <div className="prose-ec mt-8" dangerouslySetInnerHTML={{ __html: a.html }} />
       {a.tipo === 'financiero' && <Disclaimer />}
       {tool && (

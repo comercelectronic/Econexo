@@ -8,6 +8,7 @@ import { TOOLS, toolBySlug } from '@/lib/tools';
 import { SITE } from '@/lib/site';
 import { videosForTool } from '@/lib/videos';
 import { VideoCard } from '@/components/VideoCard';
+import { Dialogue } from '@/components/Dialogue';
 
 export const dynamicParams = false;
 export const generateStaticParams = () => TOOLS.map((t) => ({ tool: t.slug }));
@@ -28,6 +29,7 @@ export default async function ToolPage({ params }: Props) {
       <p className="text-sm font-semibold text-teal"><Link href="/herramientas/">Herramientas</Link> · {t.area}</p>
       <h1 className="mt-2 text-4xl font-extrabold text-navy">{t.name}</h1>
       <p className="mt-3 text-lg text-muted">{t.intro}</p>
+      {t.dialogo && <div className="mt-6"><Dialogue lines={t.dialogo} title="Antes de calcular" compact /></div>}
       <div className="mt-8"><Calculator slug={t.slug} /></div>
       <section className="mt-10 grid gap-6 md:grid-cols-2">
         <div><h2 className="text-xl font-extrabold text-navy">Fórmula</h2><p className="mt-2">{t.formula}</p></div>

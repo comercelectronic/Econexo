@@ -19,7 +19,7 @@ fecha: 2026-10-26T12:00:00+01:00
 
 **CROMO:** Profe, ya domino el SEO. He instalado un plugin y se ha puesto en verde.
 
-**PROFE:** ¿Y qué has escrito en la página?
+**PROFE SURICATA:** ¿Y qué has escrito en la página?
 
 **CROMO:** «Zapatos baratos zapatos buenos zapatos Vic zapatos zapatos zapatos…». Cuarenta veces. Mañana salgo el primero.
 
@@ -29,16 +29,16 @@ fecha: 2026-10-26T12:00:00+01:00
 
 ### Escena 3 · La explicación
 
-**PROFE:** Google no premia repetir palabras: premia responder bien lo que busca la gente. Una buena guía de tallas, fotos reales, opiniones, una web rápida en el móvil y otras webs que te enlacen. Y paciencia: el SEO tarda semanas o meses.
+**PROFE SURICATA:** Google no premia repetir palabras: premia responder bien lo que busca la gente. Una buena guía de tallas, fotos reales, opiniones, una web rápida en el móvil y otras webs que te enlacen. Y paciencia: el SEO tarda semanas o meses.
 
 **CROMO:** ¿Y el plugin?
 
-**PROFE:** El plugin es como una regla: ayuda a dibujar recto, pero el dibujo lo tienes que hacer tú.
+**PROFE SURICATA:** El plugin es como una regla: ayuda a dibujar recto, pero el dibujo lo tienes que hacer tú.
 
 ### Escena 4 · Remate
 
 **CROMO:** Entendido. Escribiré una guía útil… ¡con 80 palabras clave!
 
-**PROFE:** ¡CROMO!
+**PROFE SURICATA:** ¡CROMO!
 
 *Voz en off: «No seas CROMO. Aprende SEO de verdad».*

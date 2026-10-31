@@ -2,7 +2,7 @@
 // Formulari de subscripció. Netlify Forms el recull (vegeu public/__forms.html); més endavant es pot connectar a Brevo o Mailchimp.
 import { useState } from 'react';
 
-export function Newsletter() {
+export function Newsletter({ variant }: { variant?: 'profe' }) {
   const [state, setState] = useState<'idle' | 'sending' | 'ok' | 'error'>('idle');
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -16,8 +16,18 @@ export function Newsletter() {
   return (
     <section id="newsletter" className="rounded-2xl bg-navy p-6 text-white md:p-10">
       <p className="text-xs font-bold uppercase tracking-widest text-teal">Newsletter</p>
-      <h2 className="mt-2 text-2xl font-extrabold md:text-3xl">Lo importante, sin perder el tiempo.</h2>
-      <p className="mt-2 max-w-2xl text-white/75">Una selección semanal de actualidad, guías y herramientas sobre economía, marketing, tecnología e IA. Gratis y sin spam.</p>
+      {variant === 'profe' ? (
+        <div className="mt-2 flex items-center gap-4">
+          <img src="/media/personajes/profe-guino.webp" alt="" className="h-16 w-16 rounded-full ring-2 ring-white" />
+          <div><h2 className="text-2xl font-extrabold md:text-3xl">El consejo semanal del Profe Suricata</h2>
+            <p className="mt-1 max-w-2xl text-white/75">Cada semana, un concepto de marketing, economía o tecnología explicado en dos minutos (y el último desastre de CROMO). Gratis y sin spam.</p></div>
+        </div>
+      ) : (
+        <>
+          <h2 className="mt-2 text-2xl font-extrabold md:text-3xl">Lo importante, sin perder el tiempo.</h2>
+          <p className="mt-2 max-w-2xl text-white/75">Una selección semanal de actualidad, guías y herramientas sobre economía, marketing, tecnología e IA, con el consejo del Profe Suricata. Gratis y sin spam.</p>
+        </>
+      )}
       {state === 'ok' ? (
         <p className="mt-6 rounded-lg bg-white/10 p-4 font-semibold">¡Gracias! Te has suscrito correctamente. Recibirás la próxima newsletter en tu correo.</p>
       ) : (

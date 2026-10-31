@@ -1,9 +1,12 @@
 // Catàleg d'eines pròpies. Cada eina té la seva pàgina a /herramientas/<slug>/ amb calculadora, fórmula, exemple i limitacions.
-export type Tool = { slug: string; name: string; area: string; short: string; intro: string; formula: string; example: string; limits: string[]; faq: { p: string; r: string }[]; guide?: string };
+import type { Line } from './cromo';
+
+export type Tool = { slug: string; name: string; area: string; short: string; intro: string; formula: string; example: string; limits: string[]; faq: { p: string; r: string }[]; guide?: string; dialogo?: Line[] };
 
 export const TOOLS: Tool[] = [
   {
-    slug: 'calculadora-roas', name: 'Calculadora de ROAS', area: 'Marketing', short: 'Rentabilidad de tu inversión publicitaria y ROAS de equilibrio.',
+    slug: 'calculadora-roas',
+    dialogo: [{ quien: 'cromo', gesto: 'alegria', texto: '¡He gastado 100 € en anuncios y he facturado 500 €! ¿Soy rico?' }, { quien: 'profe', gesto: 'pensativo', texto: 'Tienes un ROAS de 5: 5 € de ventas por cada euro de publicidad. Ahora mete tu margen y veremos si ganas dinero… o solo vendes.' }], name: 'Calculadora de ROAS', area: 'Marketing', short: 'Rentabilidad de tu inversión publicitaria y ROAS de equilibrio.',
     intro: 'Calcula cuántos euros (o pesos) de ingresos genera cada unidad invertida en publicidad y, con tu margen bruto, a partir de qué ROAS empiezas a ganar dinero.',
     formula: 'ROAS = ingresos atribuidos ÷ inversión publicitaria. ROAS de equilibrio = 1 ÷ margen bruto (en tanto por uno).',
     example: 'Inviertes 500 € y la campaña genera 2.000 € de ventas: ROAS = 4. Si tu margen bruto es del 30 %, el ROAS de equilibrio es 1 ÷ 0,30 ≈ 3,33: con un ROAS de 4 ganas dinero; con 3, pierdes.',
@@ -12,7 +15,8 @@ export const TOOLS: Tool[] = [
     guide: '/marketing-digital/como-calcular-el-roas/'
   },
   {
-    slug: 'calculadora-roi', name: 'Calculadora de ROI', area: 'Rentabilidad', short: 'Retorno de una inversión en marketing o en un proyecto.',
+    slug: 'calculadora-roi',
+    dialogo: [{ quien: 'cromo', gesto: 'senalando', texto: 'La feria me costó 600 € y vendí 3.000 €. ¡ROI del 400 %!' }, { quien: 'profe', gesto: 'esceptico', texto: 'El ROI se calcula con el beneficio, no con las ventas. ¿Cuánto margen te dejaron esos 3.000 €?' }], name: 'Calculadora de ROI', area: 'Rentabilidad', short: 'Retorno de una inversión en marketing o en un proyecto.',
     intro: 'Calcula el retorno de la inversión (ROI) de una campaña, una herramienta o un proyecto a partir de lo que has invertido y del beneficio que ha generado.',
     formula: 'ROI (%) = (beneficio generado − inversión) ÷ inversión × 100. El beneficio generado es el margen, no la facturación.',
     example: 'Una feria cuesta 600 € y te trae dos clientes que dejan 1.500 € de margen: ROI = (1.500 − 600) ÷ 600 × 100 = 150 %.',
@@ -20,7 +24,8 @@ export const TOOLS: Tool[] = [
     faq: [{ p: '¿Un ROI negativo siempre es malo?', r: 'En el periodo medido, la inversión no se ha recuperado. Puede ser aceptable si capta clientes que seguirán comprando (mira también el LTV).' }]
   },
   {
-    slug: 'generador-utm', name: 'Generador de UTM', area: 'Analítica', short: 'Etiqueta los enlaces de tus campañas para medirlas en Analytics.',
+    slug: 'generador-utm',
+    dialogo: [{ quien: 'cromo', gesto: 'confusion', texto: 'Analytics dice que mis visitas vienen de «direct». ¿Tengo fans que escriben mi web de memoria?' }, { quien: 'profe', gesto: 'guino', texto: 'O no has etiquetado los enlaces de la newsletter. Prueba con esto.' }], name: 'Generador de UTM', area: 'Analítica', short: 'Etiqueta los enlaces de tus campañas para medirlas en Analytics.',
     intro: 'Crea enlaces con parámetros UTM para saber en Google Analytics de qué campaña, canal y fuente viene cada visita.',
     formula: 'URL?utm_source=fuente&utm_medium=medio&utm_campaign=campaña (y opcionalmente utm_term y utm_content).',
     example: 'Una newsletter de noviembre: https://tuweb.com/oferta/?utm_source=newsletter&utm_medium=email&utm_campaign=noviembre',
@@ -28,7 +33,17 @@ export const TOOLS: Tool[] = [
     faq: [{ p: '¿Qué significa UTM?', r: 'Urchin Tracking Module: viene de Urchin, la empresa que Google compró en 2005 y que dio origen a Google Analytics.' }]
   },
   {
-    slug: 'interes-compuesto', name: 'Calculadora de interés compuesto', area: 'Finanzas', short: 'Simula cómo crece un ahorro o una inversión con el tiempo.',
+    slug: 'calculadora-engagement', name: 'Calculadora de engagement', area: 'Redes sociales', short: 'Mide si tus seguidores interactúan de verdad con tu contenido.',
+    dialogo: [{ quien: 'cromo', gesto: 'alegria', texto: '¡Tengo 10.000 seguidores! Soy un influencer, ¿no?' }, { quien: 'profe', gesto: 'esceptico', texto: 'Con 3 «me gusta» por publicación… Vamos a calcular tu tasa de interacción, CROMO.' }],
+    intro: 'Calcula la tasa de interacción (engagement) de una cuenta o de una publicación a partir de los seguidores y de los «me gusta», comentarios, compartidos y guardados.',
+    formula: 'Tasa de interacción por seguidores = (me gusta + comentarios + compartidos + guardados) ÷ número de publicaciones ÷ seguidores × 100. Si conoces el alcance, también se puede calcular sobre el alcance.',
+    example: 'Una cuenta con 10.000 seguidores que suma 1.200 interacciones en 10 publicaciones tiene una media de 120 interacciones por publicación: 120 ÷ 10.000 × 100 = 1,2 %.',
+    limits: ['Cada red y cada sector tienen medias distintas: compárate sobre todo contigo mismo a lo largo del tiempo.', 'Las cuentas con muchos seguidores suelen tener tasas más bajas.', 'Interacción no es venta: mide también clics, contactos y conversiones.', 'Seguidores comprados o inactivos hunden la tasa y el alcance.'],
+    faq: [{ p: '¿Qué tasa de engagement es buena?', r: 'Depende de la red, del sector y del tamaño de la cuenta. Lo útil es seguir tu propia evolución y compararte con cuentas parecidas a la tuya.' }, { p: '¿Por qué los comentarios valen más que los «me gusta»?', r: 'Porque requieren más esfuerzo y suelen indicar un interés mayor. Algunas marcas ponderan cada tipo de interacción.' }]
+  },
+  {
+    slug: 'interes-compuesto',
+    dialogo: [{ quien: 'cromo', gesto: 'hablando', texto: 'Quiero hacerme rico en tres días. ¿Qué rentabilidad pongo? ¿El 300 %?' }, { quien: 'profe', gesto: 'paciencia', texto: 'Pon algo prudente y sube los años. Verás que el ingrediente secreto no es el porcentaje: es el tiempo.' }], name: 'Calculadora de interés compuesto', area: 'Finanzas', short: 'Simula cómo crece un ahorro o una inversión con el tiempo.',
     intro: 'Simula cómo evoluciona un capital con aportaciones periódicas y una rentabilidad anual supuesta, y compáralo con lo que has aportado y con el efecto de la inflación.',
     formula: 'Cada mes: saldo = saldo × (1 + r/12) + aportación, donde r es la rentabilidad anual supuesta. Valor real = valor nominal ÷ (1 + inflación)^años.',
     example: '10.000 € iniciales y 100 € al mes durante 20 años a un 5 % anual suponen 34.000 € aportados y unos 68.200 € finales (en términos nominales, sin impuestos ni comisiones).',

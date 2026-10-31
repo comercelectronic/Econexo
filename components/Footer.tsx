@@ -20,7 +20,7 @@ export function Footer() {
           <h2 className="mb-3 text-sm font-bold text-white">Secciones</h2>
           <ul className="space-y-1.5 text-sm">
             {SECTIONS.filter((s) => s.live).map((s) => <li key={s.slug}><Link className="hover:text-teal" href={`/${s.slug}/`}>{s.name}</Link></li>)}
-            <li><Link className="hover:text-teal" href="/videos/">Vídeos · CROMO</Link></li>
+            <li><Link className="hover:text-teal" href="/universo-cromo/">Universo CROMO</Link></li>
             <li><Link className="hover:text-teal" href="/herramientas/">Herramientas</Link></li>
           </ul>
         </div>

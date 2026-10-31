@@ -1,31 +1,12 @@
-// Retrats provisionals dels personatges (SVG pla). Se substituiran pels dissenys definitius del canal.
-export function Avatar({ id, className = 'h-16 w-16' }: { id: string; className?: string }) {
-  const common = { viewBox: '0 0 80 80', className, 'aria-hidden': true } as const;
-  if (id === 'cromo')
-    return (
-      <svg {...common}>
-        <circle cx="40" cy="40" r="40" fill="#e7f7ee" />
-        <path d="M58 58 q14 0 12 -12 q-2 -8 -9 -5 q-5 3 -1 7" fill="none" stroke="#2fb36a" strokeWidth="5" strokeLinecap="round" />
-        <path d="M14 46 Q14 22 38 20 Q60 20 62 40 Q63 58 40 60 Q20 60 14 46 Z" fill="#2fb36a" stroke="#10243D" strokeWidth="2.5" />
-        <path d="M24 22 l4 -7 l4 6 l4 -7 l4 7 l4 -6 l3 8" fill="#f2b134" stroke="#10243D" strokeWidth="2" strokeLinejoin="round" />
-        <circle cx="45" cy="36" r="10" fill="#fff" stroke="#10243D" strokeWidth="2.5" />
-        <circle cx="48" cy="37" r="4.5" fill="#10243D" />
-        <path d="M22 48 Q34 56 50 49" fill="none" stroke="#10243D" strokeWidth="2.5" strokeLinecap="round" />
-        <circle cx="26" cy="38" r="2.2" fill="#10243D" />
-      </svg>
-    );
-  if (id === 'profe')
-    return (
-      <svg {...common}>
-        <circle cx="40" cy="40" r="40" fill="#e6eff9" />
-        <path d="M18 44 Q16 16 40 15 Q64 16 62 44 L62 60 L18 60 Z" fill="#5a3b2a" />
-        <circle cx="40" cy="42" r="19" fill="#f3d0b4" stroke="#10243D" strokeWidth="2" />
-        <path d="M22 36 Q30 20 46 24 Q56 26 59 36 Q46 30 22 36 Z" fill="#5a3b2a" />
-        <g fill="none" stroke="#3478C5" strokeWidth="2.5"><circle cx="33" cy="42" r="5.5" /><circle cx="47" cy="42" r="5.5" /><path d="M38.5 42 h3" /></g>
-        <path d="M34 52 Q40 55 46 52" fill="none" stroke="#10243D" strokeWidth="2" strokeLinecap="round" />
-        <path d="M22 74 Q24 62 40 62 Q56 62 58 74" fill="#3478C5" />
-      </svg>
-    );
+// Retrats dels personatges. CROMO i el PROFE SURICATA fan servir les il·lustracions oficials (amb expressions);
+// els secundaris, un retrat SVG provisional.
+import { characterById } from '@/lib/cromo';
+
+export function Avatar({ id, gesto = 'neutral', className = 'h-16 w-16' }: { id: string; gesto?: string; className?: string }) {
+  const c = characterById(id);
+  const src = c?.faces?.[gesto] || c?.faces?.neutral;
+  if (src) return <img src={src} alt={c!.name} className={`${className} shrink-0 rounded-full object-cover ring-2 ring-white`} loading="lazy" />;
+  const common = { viewBox: '0 0 80 80', className: `${className} shrink-0`, 'aria-hidden': true } as const;
   if (id === 'presu')
     return (
       <svg {...common}>
