@@ -6,7 +6,7 @@ import { Dialogue } from '@/components/Dialogue';
 import { VideoCard } from '@/components/VideoCard';
 import { ArticleCard } from '@/components/ArticleCard';
 import { Newsletter } from '@/components/Newsletter';
-import { CHANNEL, CHARACTERS, SERIES, UNIVERSE } from '@/lib/universo';
+import { CHANNEL, CHARACTERS, POSES, SERIES, UNIVERSE } from '@/lib/universo';
 import { videos } from '@/lib/videos';
 import { published } from '@/lib/content';
 import { TOOLS } from '@/lib/tools';
@@ -65,7 +65,7 @@ export default function Universe() {
                 {c.gag && <p className="mt-3 text-sm"><b className="text-navy">Su sello:</b> {c.gag}</p>}
                 {c.represents && <p className="mt-3 text-sm"><b className="text-navy">Qué representa:</b> {c.represents}</p>}
                 <ul className="mt-3 space-y-1 text-sm font-semibold italic text-navy">{c.phrases.map((p) => <li key={p}>{p}</li>)}</ul>
-                {c.faces && <div className="mt-4 flex flex-wrap gap-1.5">{Object.keys(c.faces).filter((k) => k !== 'neutral').map((k) => <Avatar key={k} id={c.id} gesto={k} className="h-11 w-11" />)}</div>}
+                {POSES[c.id] && <div className="mt-4 flex flex-wrap gap-2">{POSES[c.id].map((p) => <img key={p} src={`/media/personajes/${c.id}-${p}.webp`} alt={`${c.name}: ${p}`} title={p} loading="lazy" className="h-16 w-auto rounded-lg border border-line bg-white p-1" />)}</div>}
               </div>
             </article>
           ))}

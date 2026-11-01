@@ -19,9 +19,20 @@ export type Character = {
   image?: string; faces?: Record<string, string>;
 };
 
-// Expressions disponibles: quan arribin les làmines d'expressions, s'afegeixen aquí (p. ex. alegria: '/media/personajes/eco-alegria.webp').
-// Mentrestant, qualsevol gest mostra el retrat neutre.
+// Poses en dibuix de línia (public/media/personajes/<id>-<pose>.webp) i cares retallades (cara-<id>-<pose>.webp).
+// Els guions fan servir gestos (alegria, sorpresa, confusion…): GESTOS els tradueix a la pose dibuixada que hi encaixa.
 const P = '/media/personajes/';
+export const POSES: Record<string, string[]> = {
+  eco: ['contento', 'sorprendido', 'avergonzado', 'confuso', 'hablando'],
+  nexo: ['esceptica', 'explicando', 'tapandose', 'satisfecha', 'enfadada']
+};
+const GESTOS: Record<string, Record<string, string>> = {
+  eco: { neutral: 'contento', alegria: 'contento', sorpresa: 'sorprendido', enfado: 'sorprendido', confusion: 'confuso', verguenza: 'avergonzado', hablando: 'hablando', senalando: 'hablando' },
+  nexo: { neutral: 'esceptica', esceptico: 'esceptica', pensativo: 'explicando', sorpresa: 'explicando', paciencia: 'tapandose', guino: 'satisfecha', alegria: 'satisfecha', enfado: 'enfadada' }
+};
+// Pose del personatge per a un gest (o la pose base si el gest no existeix)
+export const poseFor = (id: string, gesto?: string) => (GESTOS[id] && (GESTOS[id][gesto || 'neutral'] || GESTOS[id].neutral)) || '';
+const faces = (id: string) => Object.fromEntries(Object.keys(GESTOS[id]).map((g) => [g, `${P}cara-${id}-${GESTOS[id][g]}.webp`]));
 
 export const CHARACTERS: Character[] = [
   {
@@ -31,7 +42,7 @@ export const CHARACTERS: Character[] = [
     represents: 'A quienes quieren emprender, hacer marketing o ganar dinero en internet sin formarse antes. Todos hemos hecho alguna vez algo parecido.',
     traits: ['Entusiasta', 'Impulsivo', 'Optimista', 'Presumido', 'Simpático'],
     phrases: ['«¡Esto con inteligencia artificial lo petamos!»', '«¡Lo ha dicho un gurú en un vídeo de 15 segundos!»', '«Esto es facilísimo, ¡lo hago yo!»', '«¡Pero si tengo 10.000 seguidores!»', '«Tranquila, ¡mañana me regenero!»'],
-    image: P + 'eco-principal.webp', faces: { neutral: P + 'eco-neutral.webp' }
+    image: P + 'eco-principal.webp', faces: faces('eco')
   },
   {
     id: 'nexo', name: 'NEXO', title: 'La Profe NEXO', role: 'La pulpo que lo conecta todo', main: true, color: '#0c8a85',
@@ -40,7 +51,7 @@ export const CHARACTERS: Character[] = [
     represents: 'El pensamiento crítico, la formación y las decisiones basadas en datos.',
     traits: ['Inteligente', 'Paciente', 'Irónica', 'Didáctica', 'Con sentido del humor'],
     phrases: ['«Antes de hacerlo, ¿has pensado si es rentable?»', '«ECO, una cosa es tener seguidores y otra, vender».', '«Los datos no mienten. Tu interpretación, quizá sí».', '«Primero aprende. Después invierte».', '«Tengo ocho brazos y ninguno da abasto contigo».'],
-    image: P + 'nexo-principal.webp', faces: { neutral: P + 'nexo-neutral.webp' }
+    image: P + 'nexo-principal.webp', faces: faces('nexo')
   },
   { id: 'presu', name: 'DON PRESU', role: 'El financiero', main: false, color: '#c8932a',
     bio: 'Solo piensa en costes, márgenes y rentabilidad. Aparece cada vez que ECO quiere gastar dinero.', phrases: ['«Muy bonito. ¿Y el ROI dónde está?»'] },

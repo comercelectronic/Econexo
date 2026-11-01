@@ -1,15 +1,10 @@
 // Tira còmica en blanc i negre: tres vinyetes amb ECO i NEXO que introdueixen la lliçó.
-// Els personatges surten de public/media/personajes/<id>-tira.webp (dibuix en blanc i negre);
-// si encara no existeix, es fa servir la il·lustració a color passada a escala de grisos.
-import fs from 'node:fs';
-import path from 'node:path';
+// Cada personatge surt amb la pose que correspon al gest del seu bocadillo (public/media/personajes/<id>-<pose>.webp).
 import type { Bocadillo } from '@/lib/estudios';
+import { poseFor } from '@/lib/universo';
 
 const NAMES: Record<string, string> = { eco: 'ECO', nexo: 'NEXO' };
-function img(id: string) {
-  const bw = `/media/personajes/${id}-tira.webp`;
-  return fs.existsSync(path.join(process.cwd(), 'public', bw)) ? { src: bw, bw: true } : { src: `/media/personajes/${id}-principal.webp`, bw: false };
-}
+const img = (id: string, gesto?: string) => { const p = poseFor(id, gesto); return p ? `/media/personajes/${id}-${p}.webp` : `/media/personajes/${id}-tira.webp`; };
 
 export function Tira({ panels, titulo }: { panels: Bocadillo[][]; titulo: string }) {
   if (!panels?.length) return null;
@@ -17,7 +12,8 @@ export function Tira({ panels, titulo }: { panels: Bocadillo[][]; titulo: string
     <figure className="font-comic">
       <div className="grid gap-3 sm:grid-cols-3">
         {panels.map((bubbles, i) => {
-          const cast = [...new Set(bubbles.map((b) => b.quien))];
+          // cada personatge, amb el gest del seu últim bocadillo de la vinyeta
+          const cast = [...new Set(bubbles.map((b) => b.quien))].map((q) => ({ q, gesto: [...bubbles].reverse().find((b) => b.quien === q)?.gesto }));
           return (
             <div key={i} className="relative flex min-h-52 flex-col sm:min-h-72 overflow-hidden rounded-sm border-[3px] border-black bg-white p-3">
               <span className="absolute right-2 top-1 text-xs font-bold text-black/40">{i + 1}</span>
@@ -29,8 +25,8 @@ export function Tira({ panels, titulo }: { panels: Bocadillo[][]; titulo: string
                   </p>
                 ))}
               </div>
-              <div className={`mt-auto flex items-end pt-3 ${cast.length > 1 ? 'justify-between' : cast[0] === 'eco' ? 'justify-start' : 'justify-end'}`}>
-                {cast.map((c) => { const im = img(c); return <img key={c} src={im.src} alt={NAMES[c]} loading="lazy" className={`h-32 w-auto object-contain ${im.bw ? '' : 'grayscale contrast-125'}`} />; })}
+              <div className={`mt-auto flex items-end pt-3 ${cast.length > 1 ? 'justify-between' : cast[0].q === 'eco' ? 'justify-start' : 'justify-end'}`}>
+                {cast.map((c) => <img key={c.q} src={img(c.q, c.gesto)} alt={NAMES[c.q]} loading="lazy" className="h-32 w-auto object-contain" />)}
               </div>
             </div>
           );
