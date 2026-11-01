@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   alternates: { canonical: '/' },
   icons: { icon: '/favicon.png' },
   // Verificació del web a AdSense (només si hi ha el client configurat a Netlify)
-  ...(process.env.NEXT_PUBLIC_ADSENSE_CLIENT ? { other: { 'google-adsense-account': process.env.NEXT_PUBLIC_ADSENSE_CLIENT } } : {})
+  other: { 'google-adsense-account': SITE.adsenseAccount }
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

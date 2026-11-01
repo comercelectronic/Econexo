@@ -9,6 +9,8 @@ export const SITE = {
   description: 'Lecciones, tiras cómicas, tests, simuladores y herramientas para estudiar los ciclos de FP de Comercio y Marketing, con la actualidad de lo que estudias.',
   url: process.env.NEXT_PUBLIC_SITE_URL || 'https://ecoynexo.com',
   locale: 'es',
+  // Identificador de editor de Google AdSense (no es secreto: se ve en el código de cualquier web con anuncios)
+  adsenseAccount: process.env.NEXT_PUBLIC_ADSENSE_CLIENT || 'ca-pub-6602866907047778',
   defaultAuthor: 'Redacción ECOyNEXO'
 };
 
