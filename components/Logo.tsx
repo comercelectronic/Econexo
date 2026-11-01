@@ -18,7 +18,7 @@ export function Logo({ dark = false }: { dark?: boolean }) {
       <LogoMark />
       <span className="leading-none">
         <span className={`block font-display text-xl font-extrabold tracking-tight ${dark ? 'text-white' : 'text-navy'}`}>ECO<span className="text-teal">NEXO</span></span>
-        <span className={`hidden text-[10px] font-semibold tracking-[0.18em] sm:block ${dark ? 'text-white/70' : 'text-muted'}`}>ECONOMÍA · TECNOLOGÍA · NEGOCIOS</span>
+        <span className={`hidden text-[10px] font-semibold tracking-[0.18em] sm:block ${dark ? 'text-white/70' : 'text-muted'}`}>COMERCIO Y MARKETING · FP</span>
       </span>
     </span>
   );

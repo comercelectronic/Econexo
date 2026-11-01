@@ -1,4 +1,6 @@
 ---
+modulos: [comercio-electronico]
+codigos: ['1.12']
 titulo: "Ice Bucket Challenge: anatomía de una campaña viral solidaria"
 subtitulo: "En el verano de 2014, millones de personas se echaron un cubo de agua helada por la ELA. La asociación estadounidense recaudó más de 100 millones de dólares."
 tipo: caso

@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
-import { Inter, Manrope } from 'next/font/google';
+import { Comic_Neue, Inter, Manrope } from 'next/font/google';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { SITE } from '@/lib/site';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
+const comic = Comic_Neue({ subsets: ['latin'], variable: '--font-comic-neue', weight: ['400', '700'], display: 'swap' });
 const manrope = Manrope({ subsets: ['latin'], variable: '--font-manrope', weight: ['600', '700', '800'], display: 'swap' });
 
 export const metadata: Metadata = {
@@ -19,7 +20,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" className={`${inter.variable} ${manrope.variable}`}>
+    <html lang="es" className={`${inter.variable} ${manrope.variable} ${comic.variable}`}>
       <body>
         <a href="#contenido" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-white focus:p-2">Saltar al contenido</a>
         <Header />

@@ -1,4 +1,6 @@
 ---
+modulos: [comercio-electronico]
+codigos: ['1.6']
 titulo: "Cómo calcular el ROAS y saber si tu publicidad es rentable"
 subtitulo: "El ROAS indica cuánto vendes por cada euro invertido en anuncios. Pero solo tiene sentido si lo comparas con tu margen: te explicamos cómo calcular el ROAS de equilibrio."
 descripcion: "Qué es el ROAS, cómo se calcula, qué es el ROAS de equilibrio y por qué un ROAS alto no siempre significa beneficio. Con ejemplos y calculadora gratuita."

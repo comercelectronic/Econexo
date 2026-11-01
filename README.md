@@ -4,6 +4,22 @@
 
 Medio digital independiente para España y Latinoamérica que combina **actualidad**, **formación** y **herramientas** sobre economía, finanzas, marketing, tecnología e inteligencia artificial.
 
+## Enfoque: estudiar Comercio y Marketing
+
+La parte principal de ECONEXO es **educativa**: contenidos de todos los ciclos de FP de grado medio y superior de la familia de Comercio y Marketing, con un buscador para elegir qué estudiar y un simulador para cada módulo. La actualidad y las herramientas están relacionadas con lo que estudia el alumnado.
+
+- **Estudios** (`lib/estudios.ts`): grados, ciclos, módulos (`live: true` cuando tienen contenido) y simuladores.
+- **Lecciones**: `content/modulos/<módulo>/<lección>.md`, con objetivo, puntos del temario (`codigos`), capítulo del simulador, **tira cómica** (`tira`: tres viñetas con bocadillos de ECO y NEXO), explicación, ejemplo, errores frecuentes y **test** (5 preguntas con explicación).
+- **Temario oficial** de cada módulo: `data/<módulo>.json` (bloques, puntos y cómo se trabaja hoy cada punto).
+- **Rutas**: `/estudiar/` (buscador por grado, ciclo y módulo) · `/estudiar/<ciclo>/` · `/estudiar/<ciclo>/<módulo>/` (lecciones, progreso, temario, simulador, herramientas, actualidad y lecturas del módulo) · `/estudiar/<ciclo>/<módulo>/<lección>/` · `/simuladores/`.
+- **Progreso**: se guarda en el navegador del alumno (`localStorage`); una lección se supera con 3 de 5.
+- **Tiras cómicas**: `components/Tira.tsx` dibuja las viñetas en blanco y negro. Usa `public/media/personajes/eco-tira.webp` y `nexo-tira.webp` si existen (dibujos en blanco y negro); si no, la ilustración a color en escala de grises.
+- **Actualidad y lecturas**: cualquier artículo con `modulos: [comercio-electronico]` y `codigos: [...]` aparece en la página del módulo y en las lecciones de esos puntos.
+
+### Primer módulo: Comercio electrónico (Actividades Comerciales, grado medio)
+
+53 lecciones (las del juego Agència Digital, en castellano), con tira y test, y el juego como simulador (`https://agenciadigitalosona.netlify.app/?lang=es`). Las lecciones de gestión de la agencia que no son del temario aparecen como complementarias.
+
 ## Tecnología
 
 | Componente | Elección |

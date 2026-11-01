@@ -1,4 +1,6 @@
 ---
+modulos: [comercio-electronico]
+codigos: ['1.6', '1.9']
 titulo: "Airbnb recortó la publicidad y el tráfico casi no lo notó"
 subtitulo: "Durante la pandemia, Airbnb redujo drásticamente su inversión en publicidad de resultados. El tráfico volvió casi al nivel anterior. Qué nos dice sobre la incrementalidad."
 tipo: caso

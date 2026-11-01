@@ -24,8 +24,8 @@ export function Newsletter({ variant }: { variant?: 'nexo' }) {
         </div>
       ) : (
         <>
-          <h2 className="mt-2 text-2xl font-extrabold md:text-3xl">Lo importante, sin perder el tiempo.</h2>
-          <p className="mt-2 max-w-2xl text-white/75">Una selección semanal de actualidad, guías y herramientas sobre economía, marketing, tecnología e IA, con el consejo de NEXO. Gratis y sin spam.</p>
+          <h2 className="mt-2 text-2xl font-extrabold md:text-3xl">Lo importante para tu ciclo, sin perder el tiempo.</h2>
+          <p className="mt-2 max-w-2xl text-white/75">Cada semana: lecciones nuevas, noticias relacionadas con lo que estudias, una herramienta para practicar y el consejo de NEXO. Gratis y sin spam.</p>
         </>
       )}
       {state === 'ok' ? (
@@ -36,7 +36,7 @@ export function Newsletter({ variant }: { variant?: 'nexo' }) {
           <p hidden><label>No rellenar: <input name="bot-field" /></label></p>
           <label className="sr-only" htmlFor="nl-email">Correo electrónico</label>
           <div className="flex flex-col gap-2 sm:flex-row">
-            <input id="nl-email" name="email" type="email" required placeholder="tu@correo.com" className="flex-1 rounded-lg px-4 py-3 text-ink" />
+            <input id="nl-email" name="email" type="email" required placeholder="tu@correo.com" className="flex-1 rounded-lg bg-white px-4 py-3 text-ink" />
             <button disabled={state === 'sending'} className="rounded-lg bg-teal px-5 py-3 font-semibold hover:bg-teal-dark disabled:opacity-60">{state === 'sending' ? 'Enviando…' : 'Suscribirme'}</button>
           </div>
           <label className="flex items-start gap-2 text-sm text-white/75">

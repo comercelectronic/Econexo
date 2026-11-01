@@ -35,6 +35,8 @@ export type Article = {
   herramienta?: string;
   ficha?: Record<string, string>;
   dialogo: { quien: string; gesto?: string; texto: string }[];
+  modulos: string[];
+  codigos: string[];
   fecha_datos?: string;
   html: string;
   toc: { id: string; text: string }[];
@@ -69,7 +71,7 @@ export function allArticles(): Article[] {
   if (!fs.existsSync(ROOT)) return (cache = out);
   for (const seccion of fs.readdirSync(ROOT)) {
     const dir = path.join(ROOT, seccion);
-    if (seccion === 'paginas' || seccion === 'videos' || !fs.statSync(dir).isDirectory()) continue;
+    if (seccion === 'paginas' || seccion === 'videos' || seccion === 'modulos' || !fs.statSync(dir).isDirectory()) continue;
     for (const file of fs.readdirSync(dir).filter((f) => f.endsWith('.md'))) {
       const { data, content } = matter(fs.readFileSync(path.join(dir, file), 'utf8'));
       const slug = file.replace(/\.md$/, '');
@@ -83,7 +85,7 @@ export function allArticles(): Article[] {
         fecha: new Date(data.fecha).toISOString(), actualizado: data.actualizado ? new Date(data.actualizado).toISOString() : undefined,
         estado: data.estado || 'borrador', destacado: !!data.destacado,
         pais: data.pais || ['global'], moneda: data.moneda, imagen: data.imagen, imagen_alt: data.imagen_alt,
-        fuentes: data.fuentes || [], faq: data.faq || [], herramienta: data.herramienta, ficha: data.ficha, dialogo: data.dialogo || [], fecha_datos: data.fecha_datos,
+        fuentes: data.fuentes || [], faq: data.faq || [], herramienta: data.herramienta, ficha: data.ficha, dialogo: data.dialogo || [], modulos: data.modulos || [], codigos: data.codigos || [], fecha_datos: data.fecha_datos,
         html, toc, minutos: Math.max(1, Math.round(words / 220))
       });
     }

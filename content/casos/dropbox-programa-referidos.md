@@ -1,4 +1,6 @@
 ---
+modulos: [comercio-electronico]
+codigos: ['1.12']
 titulo: "Dropbox y el programa de referidos que multiplicó sus usuarios"
 subtitulo: "Regalar espacio a quien invitaba a un amigo, y también al amigo, llevó a Dropbox de 100.000 a 4 millones de usuarios en unos 15 meses."
 tipo: caso

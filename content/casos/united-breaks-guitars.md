@@ -1,4 +1,6 @@
 ---
+modulos: [comercio-electronico]
+codigos: ['2.7']
 titulo: "United Breaks Guitars: la queja que se hizo canción (y viral)"
 subtitulo: "Un músico pasó meses reclamando a una aerolínea por una guitarra rota. Sin respuesta, publicó una canción en YouTube que vieron millones de personas."
 tipo: caso

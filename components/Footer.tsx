@@ -17,16 +17,14 @@ export function Footer() {
           <p className="mt-4 text-sm">{SITE.slogan}</p>
         </div>
         <div>
-          <h2 className="mb-3 text-sm font-bold text-white">Secciones</h2>
+          <h2 className="mb-3 text-sm font-bold text-white">Aprende</h2>
           <ul className="space-y-1.5 text-sm">
-            {SECTIONS.filter((s) => s.live).map((s) => <li key={s.slug}><Link className="hover:text-teal" href={`/${s.slug}/`}>{s.name}</Link></li>)}
-            <li><Link className="hover:text-teal" href="/eco-y-nexo/">ECO y NEXO</Link></li>
-            <li><Link className="hover:text-teal" href="/herramientas/">Herramientas</Link></li>
+            {[['/estudiar/', 'Estudiar'], ['/simuladores/', 'Simuladores'], ['/herramientas/', 'Herramientas'], ['/actualidad/', 'Actualidad'], ['/eco-y-nexo/', 'ECO y NEXO']].map(([h, n]) => <li key={h}><Link className="hover:text-teal" href={h}>{n}</Link></li>)}
           </ul>
         </div>
         <div>
-          <h2 className="mb-3 text-sm font-bold text-white">Próximamente</h2>
-          <ul className="space-y-1.5 text-sm text-white/60">{SECTIONS.filter((s) => !s.live).map((s) => <li key={s.slug}>{s.name}</li>)}</ul>
+          <h2 className="mb-3 text-sm font-bold text-white">Recursos</h2>
+          <ul className="space-y-1.5 text-sm">{SECTIONS.filter((s) => s.live && s.slug !== 'actualidad').map((s) => <li key={s.slug}><Link className="hover:text-teal" href={`/${s.slug}/`}>{s.name}</Link></li>)}</ul>
         </div>
         <div>
           <h2 className="mb-3 text-sm font-bold text-white">ECONEXO</h2>

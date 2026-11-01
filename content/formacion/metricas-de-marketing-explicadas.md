@@ -1,4 +1,6 @@
 ---
+modulos: [comercio-electronico]
+codigos: ['1.1', '1.6']
 titulo: "CTR, CPC, CPA, ROAS, ROI, CAC y LTV: las métricas de marketing explicadas con ejemplos"
 subtitulo: "Un diccionario práctico de las siglas que más se usan en marketing digital, con la fórmula y un ejemplo de cada una."
 descripcion: "Definición, fórmula y ejemplo de CTR, CPC, CPM, CPA, tasa de conversión, ROAS, ROI, CAC y LTV."

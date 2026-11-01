@@ -1,4 +1,6 @@
 ---
+modulos: [comercio-electronico]
+codigos: ['5.3']
 titulo: "«No compres esta chaqueta»: el anuncio de Patagonia que reforzó su marca"
 subtitulo: "En el Black Friday de 2011, Patagonia pidió a sus clientes que no compraran lo que no necesitaban. Por qué un mensaje anticonsumo fortaleció a la marca."
 tipo: caso

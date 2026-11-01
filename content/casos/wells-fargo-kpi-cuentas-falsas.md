@@ -1,4 +1,6 @@
 ---
+modulos: [comercio-electronico]
+codigos: ['1.1']
 titulo: "Wells Fargo: cuando un KPI convirtió a miles de empleados en falsificadores"
 subtitulo: "Objetivos agresivos de productos por cliente llevaron a abrir millones de cuentas sin permiso. El caso más citado sobre los peligros de medir mal."
 tipo: caso

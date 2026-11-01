@@ -1,4 +1,6 @@
 ---
+modulos: [comercio-electronico]
+codigos: ['1.1']
 titulo: "Kodak inventó la cámara digital y quebró por no usarla"
 subtitulo: "Un ingeniero de Kodak construyó la primera cámara digital en 1975. Treinta y siete años después, la empresa se declaraba en quiebra. Qué falló y qué podemos aprender."
 tipo: caso

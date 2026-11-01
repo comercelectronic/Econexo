@@ -1,4 +1,6 @@
 ---
+modulos: [comercio-electronico]
+codigos: ['1.1', '1.3']
 titulo: "New Coke: cuando 200.000 catas no bastaron"
 subtitulo: "En 1985, Coca-Cola cambió su fórmula después de una investigación enorme. A los 79 días tuvo que dar marcha atrás. Lo que la investigación de mercado no midió."
 tipo: caso

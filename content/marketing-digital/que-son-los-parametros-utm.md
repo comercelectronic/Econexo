@@ -1,4 +1,6 @@
 ---
+modulos: [comercio-electronico]
+codigos: ['1.1', '3.10']
 titulo: "Parámetros UTM: qué son y cómo usarlos para medir tus campañas"
 subtitulo: "Con cinco etiquetas en tus enlaces, Google Analytics sabrá de qué campaña, canal y anuncio viene cada visita."
 descripcion: "Guía de los parámetros UTM: qué es cada uno, ejemplos de nomenclatura, errores frecuentes y generador gratuito de enlaces."

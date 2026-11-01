@@ -1,4 +1,6 @@
 ---
+modulos: [comercio-electronico]
+codigos: ['1.14', '1.6']
 titulo: "Whopper Detour: Burger King usó a McDonald's para que descargaras su app"
 subtitulo: "En 2018, la app de Burger King vendía un Whopper por un céntimo, pero solo si hacías el pedido cerca de un McDonald's. Una lección de geolocalización y objetivos claros."
 tipo: caso

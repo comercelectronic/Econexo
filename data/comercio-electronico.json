@@ -1,0 +1,277 @@
+{
+ "bloques": {
+  "1": "Aplicación de las directrices del plan de marketing digital",
+  "2": "Realización de acciones de compraventa en línea",
+  "3": "Realización del mantenimiento de la página web",
+  "4": "Establecimiento y gestión de relaciones con otros usuarios de la red",
+  "5": "Uso de entornos web 2.0"
+ },
+ "temario": [
+  [
+   "1.1",
+   "Plan de marketing digital"
+  ],
+  [
+   "1.2",
+   "Alta en buscadores y en directorios especializados"
+  ],
+  [
+   "1.3",
+   "Características específicas del cliente en línea"
+  ],
+  [
+   "1.4",
+   "Boletines electrónicos enviados con e-mail marketing"
+  ],
+  [
+   "1.5",
+   "Diseño de blogs corporativos: modalidades y objetivos"
+  ],
+  [
+   "1.6",
+   "Marketing en buscadores: SEM, SEO y campañas en páginas afines"
+  ],
+  [
+   "1.7",
+   "Normativa sobre comunicaciones electrónicas y privacidad"
+  ],
+  [
+   "1.8",
+   "Pagos con dinero electrónico y pagos en línea"
+  ],
+  [
+   "1.9",
+   "Marketing de afiliación"
+  ],
+  [
+   "1.10",
+   "Marketing relacional y gestión de la relación con los clientes (CRM)"
+  ],
+  [
+   "1.11",
+   "Cross marketing"
+  ],
+  [
+   "1.12",
+   "Marketing viral"
+  ],
+  [
+   "1.13",
+   "Marketing one-to-one"
+  ],
+  [
+   "1.14",
+   "Marketing móvil y TDT. Banca móvil. Pago con el móvil"
+  ],
+  [
+   "1.15",
+   "Internet TV, videoblogs y web TV"
+  ],
+  [
+   "2.1",
+   "Idea y diseño de una tienda virtual"
+  ],
+  [
+   "2.2",
+   "Catálogo de productos en línea"
+  ],
+  [
+   "2.3",
+   "Selección y registro de dominio"
+  ],
+  [
+   "2.4",
+   "Modelos de negocio digital: portales horizontales, B2B y B2C"
+  ],
+  [
+   "2.5",
+   "Escaparate web. Catálogo electrónico"
+  ],
+  [
+   "2.6",
+   "Control logístico de las mercancías vendidas en línea"
+  ],
+  [
+   "2.7",
+   "La reclamación como instrumento de fidelización del cliente"
+  ],
+  [
+   "2.8",
+   "Medios de pago electrónico"
+  ],
+  [
+   "2.9",
+   "Periodos de reflexión y cancelaciones"
+  ],
+  [
+   "2.10",
+   "Seguridad en las transacciones: cifrado, firma digital, certificados digitales y DNI electrónico"
+  ],
+  [
+   "2.11",
+   "Encriptación"
+  ],
+  [
+   "2.12",
+   "Negocios electrónicos: e-procurement, e-shop, e-mail, e-marketplace y e-auction"
+  ],
+  [
+   "3.1",
+   "Estructura de una página web corporativa"
+  ],
+  [
+   "3.2",
+   "El lenguaje HTML"
+  ],
+  [
+   "3.3",
+   "Creación de páginas web con los editores web más habituales"
+  ],
+  [
+   "3.4",
+   "Elección del servidor para alojar páginas web"
+  ],
+  [
+   "3.5",
+   "Publicación de páginas web vía FTP"
+  ],
+  [
+   "3.6",
+   "Alta en buscadores"
+  ],
+  [
+   "3.7",
+   "Programas de diseño gráfico y otras utilidades para la web"
+  ],
+  [
+   "3.8",
+   "Catálogo en línea"
+  ],
+  [
+   "3.9",
+   "Flujos de caja de la tienda en línea"
+  ],
+  [
+   "3.10",
+   "Zonas calientes y zonas de usuario"
+  ],
+  [
+   "3.11",
+   "El carrito de la compra en línea"
+  ],
+  [
+   "4.1",
+   "Grupos de conversación o chat: IRC y webchat"
+  ],
+  [
+   "4.2",
+   "Servicio de mensajería instantánea"
+  ],
+  [
+   "4.3",
+   "Telefonía por Internet"
+  ],
+  [
+   "4.4",
+   "Los foros: leer y escribir en un foro"
+  ],
+  [
+   "4.5",
+   "Los grupos de discusión"
+  ],
+  [
+   "4.6",
+   "Redes sociales"
+  ],
+  [
+   "4.7",
+   "Weblogs, blogs y otras herramientas de comunicación"
+  ],
+  [
+   "4.8",
+   "Redes sociales para empresas"
+  ],
+  [
+   "4.9",
+   "Añadir elementos a una página de una red social"
+  ],
+  [
+   "4.10",
+   "Elementos fotográficos y audiovisuales en una página de una red social"
+  ],
+  [
+   "4.11",
+   "Añadir aplicaciones profesionales a una página"
+  ],
+  [
+   "4.12",
+   "Cómo buscar un grupo interesante"
+  ],
+  [
+   "4.13",
+   "Crear una red de contactos influyentes"
+  ],
+  [
+   "4.14",
+   "Comprar y vender en redes sociales"
+  ],
+  [
+   "5.1",
+   "Web 2.0: concepto y características"
+  ],
+  [
+   "5.2",
+   "Funcionalidades: opiniones y foros de usuarios"
+  ],
+  [
+   "5.3",
+   "Reputación corporativa en línea"
+  ],
+  [
+   "5.4",
+   "Objetivos a alcanzar en la web 2.0"
+  ],
+  [
+   "5.5",
+   "Herramientas del marketing en línea de la web 2.0"
+  ],
+  [
+   "5.6",
+   "Webs integradas"
+  ],
+  [
+   "5.7",
+   "Redes sociales que integran a los consumidores como prescriptores"
+  ],
+  [
+   "5.8",
+   "Consumidores proactivos: opiniones, ofertas cruzadas y comparativas"
+  ],
+  [
+   "5.9",
+   "Implementación de estrategias de seguridad informática"
+  ]
+ ],
+ "ahora": {
+  "1.2": "Hoy también: aparecer en la búsqueda con IA (GEO), Google Business Profile y Google Shopping.",
+  "1.6": "Hoy también: retail media (anuncios dentro de tiendas en línea) y campañas automatizadas.",
+  "1.7": "Hoy también: Ley europea de accesibilidad, Ley de servicios digitales y modo de consentimiento.",
+  "1.14": "Hoy: TV conectada y streaming con anuncios, WhatsApp Business, Bizum y pago con el móvil.",
+  "1.15": "Hoy: vídeo corto vertical, YouTube, directos, live shopping, videopódcasts y creadores.",
+  "2.12": "Hoy también: D2C, suscripciones, social commerce y marketplaces.",
+  "3.3": "Hoy: CMS, constructores visuales, Figma y editores de código con IA.",
+  "3.4": "Hoy: publicación desde el CMS o con Git (Netlify, Vercel); si hace falta FTP, siempre SFTP.",
+  "3.6": "Hoy también: aparecer en la búsqueda con IA (GEO).",
+  "4.1": "Hoy: chat web con chatbot de IA, WhatsApp Business y Discord.",
+  "4.2": "Hoy: WhatsApp Business, Instagram Direct y Telegram.",
+  "4.3": "Hoy: centralitas en la nube, videollamadas y atención omnicanal.",
+  "4.4": "Hoy: Reddit, grupos de LinkedIn y Facebook, comunidades de WhatsApp y Discord.",
+  "4.5": "Hoy: Reddit, grupos de LinkedIn y Facebook, comunidades de WhatsApp y Discord.",
+  "4.10": "Hoy: vídeo corto y colaboraciones con creadores.",
+  "4.14": "Hoy: TikTok Shop, Instagram Shopping y live shopping.",
+  "5.1": "Hoy: web social, contenido generado por los usuarios y economía de los creadores.",
+  "5.3": "Hoy: contenido generado por los usuarios, escucha social y programas de embajadores.",
+  "5.6": "Hoy: integraciones por API y automatizaciones sin código (Zapier, Make).",
+  "5.7": "Hoy: reseñas, creadores, embajadores y comunidades de marca."
+ }
+}

@@ -1,4 +1,6 @@
 ---
+modulos: [comercio-electronico]
+codigos: ['1.2', '3.6']
 titulo: "Cómo conseguir que la IA recomiende tu negocio: guía práctica de GEO"
 subtitulo: "Cada vez más personas preguntan a asistentes de IA en lugar de buscar en Google. Qué es la optimización para motores generativos y qué puede hacer una empresa pequeña."
 descripcion: "Qué es el GEO (optimización para motores generativos), en qué se diferencia del SEO y siete acciones para que asistentes de IA citen tu empresa."
