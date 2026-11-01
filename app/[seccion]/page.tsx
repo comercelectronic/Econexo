@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation';
 import { PageHero } from '@/components/Mascotas';
 import { ArticleCard } from '@/components/ArticleCard';
 import { AdSlot } from '@/components/AdSlot';
-import { bySection, byType, pages, sectionHasContent } from '@/lib/content';
+import { bySection, pages, published, sectionHasContent } from '@/lib/content';
 import { liveSections, sectionBySlug } from '@/lib/site';
 
 export const dynamicParams = false;
@@ -42,7 +42,7 @@ export default async function SectionPage({ params }: Props) {
     );
   const s = sectionBySlug(seccion);
   if (!s || !s.live) notFound();
-  const list = seccion === 'actualidad' ? byType('noticia') : bySection(seccion);
+  const list = seccion === 'actualidad' ? published() : bySection(seccion);
   const used = new Set(list.map((a) => a.subseccion));
   return (
     <div className="py-10">

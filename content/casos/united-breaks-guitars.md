@@ -5,7 +5,7 @@ titulo: "United Breaks Guitars: la queja que se hizo canción (y viral)"
 subtitulo: "Un músico pasó meses reclamando a una aerolínea por una guitarra rota. Sin respuesta, publicó una canción en YouTube que vieron millones de personas."
 tipo: caso
 subseccion: casos-crisis
-estado: revision
+estado: publicada
 fecha: 2026-10-26T07:00:00+01:00
 autor: Redacción ECOyNEXO
 etiquetas: [atención al cliente, reclamaciones, redes sociales, united airlines]
@@ -15,7 +15,7 @@ fuentes:
 ---
 ## Qué pasó
 
-En 2008, el músico canadiense Dave Carroll vio desde la ventanilla del avión cómo el personal de tierra manipulaba sin cuidado el equipaje. Su guitarra llegó rota. Durante meses reclamó a United Airlines que le compensara la reparación, sin éxito. En julio de 2009 publicó en YouTube la canción «United Breaks Guitars», que se convirtió en uno de los primeros grandes fenómenos virales de atención al cliente.
+En 2008, el músico canadiense Dave Carroll vio desde el avión cómo se manipulaba sin cuidado el equipaje en la pista, según su relato. Su guitarra llegó rota. Durante meses reclamó a United Airlines que le compensara la reparación, sin éxito. En julio de 2009 publicó en YouTube la canción «United Breaks Guitars», que se convirtió en uno de los primeros grandes fenómenos virales de atención al cliente.
 
 ## Por qué fue un problema tan grande
 

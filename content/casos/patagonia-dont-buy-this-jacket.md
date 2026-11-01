@@ -5,7 +5,7 @@ titulo: "«No compres esta chaqueta»: el anuncio de Patagonia que reforzó su m
 subtitulo: "En el Black Friday de 2011, Patagonia pidió a sus clientes que no compraran lo que no necesitaban. Por qué un mensaje anticonsumo fortaleció a la marca."
 tipo: caso
 subseccion: casos-marketing
-estado: revision
+estado: publicada
 fecha: 2026-10-28T07:00:00+01:00
 autor: Redacción ECOyNEXO
 destacado: false

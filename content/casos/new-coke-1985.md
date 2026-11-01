@@ -5,7 +5,7 @@ titulo: "New Coke: cuando 200.000 catas no bastaron"
 subtitulo: "En 1985, Coca-Cola cambió su fórmula después de una investigación enorme. A los 79 días tuvo que dar marcha atrás. Lo que la investigación de mercado no midió."
 tipo: caso
 subseccion: casos-marketing
-estado: revision
+estado: publicada
 fecha: 2026-10-29T07:00:00+01:00
 autor: Redacción ECOyNEXO
 etiquetas: [investigación de mercados, marca, coca-cola]

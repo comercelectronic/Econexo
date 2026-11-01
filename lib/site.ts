@@ -15,7 +15,7 @@ export const SITE = {
 export type Section = { slug: string; name: string; short?: string; desc: string; live: boolean; subs: [string, string][] };
 
 export const SECTIONS: Section[] = [
-  { slug: 'actualidad', name: 'Actualidad', desc: 'Noticias relacionadas con lo que estudias: comercio, marketing, e-commerce, consumo y tecnología, conectadas con los módulos y el temario.', live: true,
+  { slug: 'actualidad', name: 'Actualidad', desc: 'Noticias, casos reales y guías relacionadas con lo que estudias: comercio, marketing, e-commerce, consumo y tecnología, conectadas con los módulos y el temario.', live: true,
     subs: [['ultima-hora', 'Última hora'], ['empresas', 'Empresas'], ['mercados', 'Mercados'], ['emprendimiento', 'Emprendimiento'], ['internacional', 'Internacional']] },
   { slug: 'marketing-digital', name: 'Marketing digital', short: 'Marketing', desc: 'SEO, SEM, publicidad digital, analítica, email, contenidos, e-commerce y estrategia.', live: true,
     subs: [['seo', 'SEO'], ['sem', 'SEM y Google Ads'], ['meta-ads', 'Meta Ads'], ['email-marketing', 'Email marketing'], ['analitica', 'Analítica digital'], ['contenidos', 'Marketing de contenidos'], ['afiliacion', 'Afiliación'], ['ecommerce', 'E-commerce'], ['conversion', 'CRO y conversión'], ['branding', 'Branding'], ['estrategia', 'Estrategias digitales']] },

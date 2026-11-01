@@ -4,7 +4,7 @@ subtitulo: "El interés compuesto hace que los rendimientos generen nuevos rendi
 descripcion: "Qué es el interés compuesto, cómo se calcula, ejemplo con aportaciones mensuales, efecto de la inflación y errores habituales. Con simulador gratuito."
 tipo: financiero
 subseccion: ahorro
-estado: revision
+estado: publicada
 fecha: 2026-10-30T09:00:00+01:00
 autor: Redacción ECOyNEXO
 etiquetas: [interés compuesto, ahorro, inversión, inflación]

@@ -4,7 +4,7 @@ subtitulo: "La inflación reduce lo que puedes comprar con el mismo dinero. Te e
 descripcion: "Qué es la inflación, cómo se mide con el IPC, cómo calcular la pérdida de poder adquisitivo y qué es la rentabilidad real."
 tipo: financiero
 subseccion: ahorro
-estado: revision
+estado: publicada
 fecha: 2026-10-26T10:00:00+01:00
 autor: Redacción ECOyNEXO
 etiquetas: [inflación, ipc, ahorro, poder adquisitivo]

@@ -5,7 +5,7 @@ titulo: "KFC sin pollo: cómo tres letras convirtieron una crisis en un ejemplo"
 subtitulo: "En 2018, cientos de restaurantes de KFC en el Reino Unido se quedaron sin pollo. La disculpa pública de la marca se estudia hoy en las escuelas de negocio."
 tipo: caso
 subseccion: casos-crisis
-estado: revision
+estado: publicada
 fecha: 2026-10-27T07:00:00+01:00
 autor: Redacción ECOyNEXO
 etiquetas: [comunicación de crisis, reputación, kfc]

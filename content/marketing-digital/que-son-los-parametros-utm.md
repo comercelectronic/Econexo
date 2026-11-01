@@ -6,7 +6,7 @@ subtitulo: "Con cinco etiquetas en tus enlaces, Google Analytics sabrá de qué 
 descripcion: "Guía de los parámetros UTM: qué es cada uno, ejemplos de nomenclatura, errores frecuentes y generador gratuito de enlaces."
 tipo: guia
 subseccion: analitica
-estado: revision
+estado: publicada
 fecha: 2026-10-29T10:00:00+01:00
 autor: Redacción ECOyNEXO
 etiquetas: [utm, google analytics, analítica, campañas]
@@ -49,6 +49,6 @@ Los tres primeros son los imprescindibles.
 
 ## Errores frecuentes
 
-1. Poner UTM en enlaces internos de tu propia web: crean sesiones nuevas y estropean la atribución.
+1. Poner UTM en enlaces internos de tu propia web: sustituyen la fuente real de la visita (por ejemplo, Google) por la de tu etiqueta y estropean la atribución.
 2. Usar nombres diferentes para la misma campaña en cada canal.
 3. Olvidar las UTM en los enlaces de la biografía de redes sociales.

@@ -5,7 +5,7 @@ titulo: "Whopper Detour: Burger King usó a McDonald's para que descargaras su a
 subtitulo: "En 2018, la app de Burger King vendía un Whopper por un céntimo, pero solo si hacías el pedido cerca de un McDonald's. Una lección de geolocalización y objetivos claros."
 tipo: caso
 subseccion: casos-marketing
-estado: revision
+estado: publicada
 fecha: 2026-10-23T07:00:00+01:00
 autor: Redacción ECOyNEXO
 etiquetas: [geolocalización, apps, publicidad digital, burger king]

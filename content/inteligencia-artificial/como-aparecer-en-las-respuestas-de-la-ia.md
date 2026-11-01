@@ -6,7 +6,7 @@ subtitulo: "Cada vez más personas preguntan a asistentes de IA en lugar de busc
 descripcion: "Qué es el GEO (optimización para motores generativos), en qué se diferencia del SEO y siete acciones para que asistentes de IA citen tu empresa."
 tipo: guia
 subseccion: ia-marketing
-estado: revision
+estado: publicada
 fecha: 2026-10-28T10:00:00+01:00
 autor: Redacción ECOyNEXO
 etiquetas: [geo, seo, inteligencia artificial, búsqueda]

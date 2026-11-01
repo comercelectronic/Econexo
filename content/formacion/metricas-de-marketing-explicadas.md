@@ -6,7 +6,7 @@ subtitulo: "Un diccionario práctico de las siglas que más se usan en marketing
 descripcion: "Definición, fórmula y ejemplo de CTR, CPC, CPM, CPA, tasa de conversión, ROAS, ROI, CAC y LTV."
 tipo: guia
 subseccion: diccionario
-estado: revision
+estado: publicada
 fecha: 2026-10-27T10:00:00+01:00
 autor: Redacción ECOyNEXO
 etiquetas: [métricas, kpi, roas, roi, analítica]

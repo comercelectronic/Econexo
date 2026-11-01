@@ -1,8 +1,12 @@
 ---
 titulo: "Contacto"
-descripcion: "Cómo contactar con la redacción de ECOyNEXO."
+descripcion: "Cómo contactar con ECOyNEXO."
 ---
-- **Redacción y propuestas de temas:** [PENDIENTE: correo de redacción]
-- **Correcciones:** [PENDIENTE: correo de correcciones]
-- **Publicidad y colaboraciones:** [PENDIENTE: correo comercial]
-- **Privacidad y protección de datos:** [PENDIENTE: correo de privacidad]
+Puedes escribirnos a **davidmartinezcabeza@gmail.com** para:
+
+- Propuestas de temas, dudas sobre las lecciones o sugerencias para nuevos módulos.
+- Avisarnos de un error en un contenido (indica el enlace y el dato que crees incorrecto).
+- Publicidad y colaboraciones.
+- Ejercer tus derechos de protección de datos (consulta la [política de privacidad](/privacidad/)).
+
+Respondemos lo antes posible, normalmente en unos días laborables.

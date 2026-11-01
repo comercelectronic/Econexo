@@ -1,11 +1,11 @@
 ---
 modulos: [comercio-electronico]
 codigos: ['1.1']
-titulo: "Kodak inventó la cámara digital y quebró por no usarla"
-subtitulo: "Un ingeniero de Kodak construyó la primera cámara digital en 1975. Treinta y siete años después, la empresa se declaraba en quiebra. Qué falló y qué podemos aprender."
+titulo: "Kodak inventó la cámara digital, pero no supo cambiar su negocio a tiempo"
+subtitulo: "Un ingeniero de Kodak construyó la primera cámara digital en 1975. Treinta y siete años después, la empresa se acogía a la protección por quiebra. Una lección clásica sobre la miopía de marketing."
 tipo: caso
 subseccion: casos-marketing
-estado: revision
+estado: publicada
 fecha: 2026-10-30T07:00:00+01:00
 autor: Redacción ECOyNEXO
 etiquetas: [estrategia, innovación, disrupción, kodak]
@@ -16,11 +16,11 @@ fuentes:
 ---
 ## Qué pasó
 
-En 1975, Steven Sasson, ingeniero de Kodak, construyó un prototipo de cámara digital. Kodak dominaba entonces el mercado de los carretes y el revelado, un negocio con márgenes muy altos. La empresa siguió invirtiendo en la fotografía digital, pero su prioridad continuó siendo el negocio químico. Cuando la fotografía digital y después los móviles se impusieron, Kodak llegó tarde. En enero de 2012 se acogió a la protección por quiebra en Estados Unidos.
+En 1975, Steven Sasson, ingeniero de Kodak, construyó un prototipo de cámara digital. Kodak dominaba entonces el mercado de los carretes y el revelado, un negocio con márgenes muy altos. La empresa siguió invirtiendo en la fotografía digital, pero su prioridad continuó siendo el negocio químico. Llegó a vender muchas cámaras digitales, pero ese negocio nunca sustituyó los ingresos de los carretes y el revelado, y los móviles acabaron de transformar el mercado. En enero de 2012 se acogió a la protección por quiebra en Estados Unidos.
 
-## Por qué falló
+## Qué se suele señalar
 
-Kodak se definía por el producto que vendía (carretes) y no por la necesidad que cubría: **guardar y compartir recuerdos**. Es lo que el profesor Theodore Levitt llamó *miopía de marketing*. Cuando la forma de hacer fotos cambió, la empresa protegió su negocio actual en lugar de adaptarse.
+El análisis más extendido es que Kodak se definía por el producto que vendía (carretes) y no por la necesidad que cubría: **guardar y compartir recuerdos**. Es lo que el profesor Theodore Levitt llamó *miopía de marketing*. Cuando la forma de hacer fotos cambió, le costó adaptar un modelo de negocio construido alrededor del producto químico.
 
 ## Qué aprendemos
 

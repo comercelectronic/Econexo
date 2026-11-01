@@ -18,7 +18,7 @@ descripcion: "ECOyNEXO es una web para aprender los ciclos de FP de Comercio y M
 
 ## Equipo
 
-**[PENDIENTE: nombre, cargo y breve biografía del director o directora editorial y de cada autor.]**
+ECOyNEXO está creado y dirigido por **David Martínez Cabeza**, responsable de los contenidos y del simulador Agència Digital. Puedes escribirle a davidmartinezcabeza@gmail.com.
 
 ## Independencia
 

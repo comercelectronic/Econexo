@@ -6,7 +6,7 @@ subtitulo: "El ROAS indica cuánto vendes por cada euro invertido en anuncios. P
 descripcion: "Qué es el ROAS, cómo se calcula, qué es el ROAS de equilibrio y por qué un ROAS alto no siempre significa beneficio. Con ejemplos y calculadora gratuita."
 tipo: guia
 subseccion: analitica
-estado: revision
+estado: publicada
 fecha: 2026-10-30T08:00:00+01:00
 autor: Redacción ECOyNEXO
 destacado: true

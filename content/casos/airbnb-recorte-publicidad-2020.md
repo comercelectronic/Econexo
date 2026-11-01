@@ -5,7 +5,7 @@ titulo: "Airbnb recortó la publicidad y el tráfico casi no lo notó"
 subtitulo: "Durante la pandemia, Airbnb redujo drásticamente su inversión en publicidad de resultados. El tráfico volvió casi al nivel anterior. Qué nos dice sobre la incrementalidad."
 tipo: caso
 subseccion: casos-datos
-estado: revision
+estado: publicada
 fecha: 2026-10-21T07:00:00+01:00
 autor: Redacción ECOyNEXO
 etiquetas: [atribución, incrementalidad, publicidad digital, airbnb]
@@ -19,7 +19,7 @@ En 2020, con el turismo paralizado, Airbnb recortó con fuerza su gasto en marke
 
 ## Qué revela
 
-Muchas de las visitas y reservas que las plataformas atribuían a los anuncios se habrían producido igualmente: la gente ya conocía Airbnb y la buscaba por su nombre. Los anuncios se «atribuían» ventas que no habían provocado.
+La lectura más habitual es que muchas de las visitas y reservas que se atribuían a los anuncios se habrían producido igualmente: la gente ya conocía Airbnb y la buscaba por su nombre.
 
 ## Qué aprendemos
 

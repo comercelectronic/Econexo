@@ -5,7 +5,7 @@ titulo: "Ice Bucket Challenge: anatomía de una campaña viral solidaria"
 subtitulo: "En el verano de 2014, millones de personas se echaron un cubo de agua helada por la ELA. La asociación estadounidense recaudó más de 100 millones de dólares."
 tipo: caso
 subseccion: casos-crecimiento
-estado: revision
+estado: publicada
 fecha: 2026-10-24T07:00:00+01:00
 autor: Redacción ECOyNEXO
 etiquetas: [marketing viral, causas sociales, redes sociales]

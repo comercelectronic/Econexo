@@ -5,7 +5,7 @@ titulo: "Dropbox y el programa de referidos que multiplicó sus usuarios"
 subtitulo: "Regalar espacio a quien invitaba a un amigo, y también al amigo, llevó a Dropbox de 100.000 a 4 millones de usuarios en unos 15 meses."
 tipo: caso
 subseccion: casos-crecimiento
-estado: revision
+estado: publicada
 fecha: 2026-10-25T07:00:00+01:00
 autor: Redacción ECOyNEXO
 etiquetas: [marketing viral, referidos, crecimiento, dropbox]

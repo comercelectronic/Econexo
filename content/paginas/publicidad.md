@@ -8,4 +8,4 @@ ECOyNEXO se financia con **publicidad**, **enlaces de afiliación**, **patrocini
 - Los patrocinadores no deciden el contenido editorial.
 - No aceptamos publicidad de productos financieros engañosos ni de servicios que no cumplan la normativa aplicable.
 
-Para propuestas comerciales, escríbenos a **[PENDIENTE: correo comercial]**.
+Para propuestas comerciales, escríbenos a **davidmartinezcabeza@gmail.com**.
