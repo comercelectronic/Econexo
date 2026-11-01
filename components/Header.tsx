@@ -5,7 +5,7 @@ import { SITE } from '@/lib/site';
 import { sectionHasContent } from '@/lib/content';
 
 export function Header() {
-  const nav = [...(sectionHasContent('actualidad') ? [{ href: '/actualidad/', label: 'Actualidad' }] : []), { href: '/aprender/', label: 'Aprender' }, { href: '/simuladores/', label: 'Simuladores' }, { href: '/herramientas/', label: 'Herramientas' }];
+  const nav = [{ href: '/aprender/', label: 'Aprender' }, ...(sectionHasContent('actualidad') ? [{ href: '/actualidad/', label: 'Actualidad' }] : []), { href: '/simuladores/', label: 'Simuladores' }, { href: '/herramientas/', label: 'Herramientas' }];
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-white/95 backdrop-blur">
       <div className="bg-navy text-white/80 text-xs">

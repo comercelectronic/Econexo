@@ -24,7 +24,7 @@ export function Footer() {
         <div>
           <h2 className="mb-3 text-sm font-bold text-white">Aprende</h2>
           <ul className="space-y-1.5 text-sm">
-            {[...(sectionHasContent('actualidad') ? [['/actualidad/', 'Actualidad']] : []), ['/aprender/', 'Aprender'], ['/simuladores/', 'Simuladores'], ['/herramientas/', 'Herramientas'], ['/eco-y-nexo/', 'ECO y NEXO']].map(([h, n]) => <li key={h}><Link className="hover:text-teal" href={h}>{n}</Link></li>)}
+            {[['/aprender/', 'Aprender'], ...(sectionHasContent('actualidad') ? [['/actualidad/', 'Actualidad']] : []), ['/simuladores/', 'Simuladores'], ['/herramientas/', 'Herramientas'], ['/eco-y-nexo/', 'ECO y NEXO']].map(([h, n]) => <li key={h}><Link className="hover:text-teal" href={h}>{n}</Link></li>)}
           </ul>
         </div>
         <div>
