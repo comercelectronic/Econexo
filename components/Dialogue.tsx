@@ -1,18 +1,18 @@
-// Diàleg breu entre CROMO i el PROFE SURICATA: introdueix un concepte abans de l'explicació tècnica
+// Diàleg breu entre ECO i NEXO: introdueix un concepte abans de l'explicació tècnica
 import Link from 'next/link';
-import { characterById, universeUrl, type Line } from '@/lib/cromo';
+import { characterById, universeUrl, type Line } from '@/lib/universo';
 import { Avatar } from './Characters';
 
 export function Dialogue({ lines, title = 'En 30 segundos', compact = false }: { lines: Line[]; title?: string; compact?: boolean }) {
   if (!lines?.length) return null;
   return (
-    <section className={`rounded-2xl border-2 border-cromo/30 bg-cromo-soft ${compact ? 'p-4' : 'p-5 md:p-6'}`} aria-label={title}>
-      <p className="mb-3 flex items-center justify-between gap-2 text-xs font-bold uppercase tracking-widest text-cromo-dark">
-        <span>{title}</span><Link href={universeUrl()} className="normal-case tracking-normal text-cromo-dark underline-offset-2 hover:underline">Universo CROMO →</Link>
+    <section className={`rounded-2xl border-2 border-uni/30 bg-uni-soft ${compact ? 'p-4' : 'p-5 md:p-6'}`} aria-label={title}>
+      <p className="mb-3 flex items-center justify-between gap-2 text-xs font-bold uppercase tracking-widest text-uni-dark">
+        <span>{title}</span><Link href={universeUrl()} className="normal-case tracking-normal text-uni-dark underline-offset-2 hover:underline">ECO y NEXO →</Link>
       </p>
       <ol className="space-y-3">
         {lines.map((l, i) => {
-          const c = characterById(l.quien), right = l.quien !== 'cromo';
+          const c = characterById(l.quien), right = l.quien !== 'eco';
           return (
             <li key={i} className={`flex items-end gap-3 ${right ? 'flex-row-reverse' : ''}`}>
               <Avatar id={l.quien} gesto={l.gesto} className={compact ? 'h-11 w-11' : 'h-14 w-14'} />

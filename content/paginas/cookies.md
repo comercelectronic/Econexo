@@ -15,6 +15,6 @@ Al activar Google AdSense o Google Analytics se mostrará un aviso de consentimi
 
 ## Vídeos de YouTube
 
-Los vídeos de CROMO no se cargan hasta que pulsas el botón de reproducir. Al hacerlo, el vídeo se sirve desde youtube-nocookie.com (modo de privacidad mejorada de YouTube), que puede usar almacenamiento local para su funcionamiento según la política de Google.
+Los vídeos de ECO no se cargan hasta que pulsas el botón de reproducir. Al hacerlo, el vídeo se sirve desde youtube-nocookie.com (modo de privacidad mejorada de YouTube), que puede usar almacenamiento local para su funcionamiento según la política de Google.
 
 Los lectores que acceden desde el juego educativo «Agència Digital» no ven publicidad.

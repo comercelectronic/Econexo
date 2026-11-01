@@ -48,11 +48,11 @@ collections:
       - { name: imagen_alt, label: Texto alternativo de la imagen, widget: string, required: false }
       - { name: herramienta, label: Herramienta relacionada, widget: select, required: false, options: [calculadora-roas, calculadora-roi, generador-utm, calculadora-engagement, interes-compuesto] }
       - name: dialogo
-        label: Diálogo con CROMO y el Profe Suricata (opcional)
+        label: Diálogo con ECO y NEXO (opcional)
         widget: list
         required: false
         fields:
-          - { name: quien, label: Personaje, widget: select, options: [cromo, profe, presu, chatarra] }
+          - { name: quien, label: Personaje, widget: select, options: [eco, nexo, presu, chatarra] }
           - { name: gesto, label: Expresión, widget: select, required: false, options: [neutral, alegria, sorpresa, enfado, confusion, verguenza, hablando, senalando, pensativo, guino, esceptico, paciencia] }
           - { name: texto, label: Texto, widget: text }
       - name: ficha
@@ -112,11 +112,11 @@ collections:
       - { name: imagen_alt, label: Texto alternativo de la imagen, widget: string, required: false }
       - { name: herramienta, label: Herramienta relacionada, widget: select, required: false, options: [calculadora-roas, calculadora-roi, generador-utm, calculadora-engagement, interes-compuesto] }
       - name: dialogo
-        label: Diálogo con CROMO y el Profe Suricata (opcional)
+        label: Diálogo con ECO y NEXO (opcional)
         widget: list
         required: false
         fields:
-          - { name: quien, label: Personaje, widget: select, options: [cromo, profe, presu, chatarra] }
+          - { name: quien, label: Personaje, widget: select, options: [eco, nexo, presu, chatarra] }
           - { name: gesto, label: Expresión, widget: select, required: false, options: [neutral, alegria, sorpresa, enfado, confusion, verguenza, hablando, senalando, pensativo, guino, esceptico, paciencia] }
           - { name: texto, label: Texto, widget: text }
       - name: ficha
@@ -176,11 +176,11 @@ collections:
       - { name: imagen_alt, label: Texto alternativo de la imagen, widget: string, required: false }
       - { name: herramienta, label: Herramienta relacionada, widget: select, required: false, options: [calculadora-roas, calculadora-roi, generador-utm, calculadora-engagement, interes-compuesto] }
       - name: dialogo
-        label: Diálogo con CROMO y el Profe Suricata (opcional)
+        label: Diálogo con ECO y NEXO (opcional)
         widget: list
         required: false
         fields:
-          - { name: quien, label: Personaje, widget: select, options: [cromo, profe, presu, chatarra] }
+          - { name: quien, label: Personaje, widget: select, options: [eco, nexo, presu, chatarra] }
           - { name: gesto, label: Expresión, widget: select, required: false, options: [neutral, alegria, sorpresa, enfado, confusion, verguenza, hablando, senalando, pensativo, guino, esceptico, paciencia] }
           - { name: texto, label: Texto, widget: text }
       - name: ficha
@@ -240,11 +240,11 @@ collections:
       - { name: imagen_alt, label: Texto alternativo de la imagen, widget: string, required: false }
       - { name: herramienta, label: Herramienta relacionada, widget: select, required: false, options: [calculadora-roas, calculadora-roi, generador-utm, calculadora-engagement, interes-compuesto] }
       - name: dialogo
-        label: Diálogo con CROMO y el Profe Suricata (opcional)
+        label: Diálogo con ECO y NEXO (opcional)
         widget: list
         required: false
         fields:
-          - { name: quien, label: Personaje, widget: select, options: [cromo, profe, presu, chatarra] }
+          - { name: quien, label: Personaje, widget: select, options: [eco, nexo, presu, chatarra] }
           - { name: gesto, label: Expresión, widget: select, required: false, options: [neutral, alegria, sorpresa, enfado, confusion, verguenza, hablando, senalando, pensativo, guino, esceptico, paciencia] }
           - { name: texto, label: Texto, widget: text }
       - name: ficha
@@ -304,11 +304,11 @@ collections:
       - { name: imagen_alt, label: Texto alternativo de la imagen, widget: string, required: false }
       - { name: herramienta, label: Herramienta relacionada, widget: select, required: false, options: [calculadora-roas, calculadora-roi, generador-utm, calculadora-engagement, interes-compuesto] }
       - name: dialogo
-        label: Diálogo con CROMO y el Profe Suricata (opcional)
+        label: Diálogo con ECO y NEXO (opcional)
         widget: list
         required: false
         fields:
-          - { name: quien, label: Personaje, widget: select, options: [cromo, profe, presu, chatarra] }
+          - { name: quien, label: Personaje, widget: select, options: [eco, nexo, presu, chatarra] }
           - { name: gesto, label: Expresión, widget: select, required: false, options: [neutral, alegria, sorpresa, enfado, confusion, verguenza, hablando, senalando, pensativo, guino, esceptico, paciencia] }
           - { name: texto, label: Texto, widget: text }
       - name: ficha
@@ -368,11 +368,11 @@ collections:
       - { name: imagen_alt, label: Texto alternativo de la imagen, widget: string, required: false }
       - { name: herramienta, label: Herramienta relacionada, widget: select, required: false, options: [calculadora-roas, calculadora-roi, generador-utm, calculadora-engagement, interes-compuesto] }
       - name: dialogo
-        label: Diálogo con CROMO y el Profe Suricata (opcional)
+        label: Diálogo con ECO y NEXO (opcional)
         widget: list
         required: false
         fields:
-          - { name: quien, label: Personaje, widget: select, options: [cromo, profe, presu, chatarra] }
+          - { name: quien, label: Personaje, widget: select, options: [eco, nexo, presu, chatarra] }
           - { name: gesto, label: Expresión, widget: select, required: false, options: [neutral, alegria, sorpresa, enfado, confusion, verguenza, hablando, senalando, pensativo, guino, esceptico, paciencia] }
           - { name: texto, label: Texto, widget: text }
       - name: ficha
@@ -400,7 +400,7 @@ collections:
           - { name: r, label: Respuesta, widget: text }
       - { name: body, label: Texto, widget: markdown }
   - name: videos
-    label: 'Universo CROMO · Vídeos'
+    label: 'ECO y NEXO · Vídeos'
     folder: content/videos
     create: true
     extension: md
@@ -410,11 +410,11 @@ collections:
     fields:
       - { name: titulo, label: Título, widget: string }
       - { name: descripcion, label: Descripción (también para YouTube), widget: text }
-      - { name: serie, label: Serie, widget: select, options: [cromo-y-el-marketing, cromo-contra-google, cromo-y-la-ia, cromo-se-hace-empresario, cromo-pierde-dinero, cromo-aprende-excel, el-consejo-del-profe] }
+      - { name: serie, label: Serie, widget: select, options: [eco-y-el-marketing, eco-contra-google, eco-y-la-ia, eco-se-hace-empresario, eco-pierde-dinero, eco-aprende-excel, el-consejo-de-nexo] }
       - { name: formato, label: Formato, widget: select, default: short, options: [short, episodio] }
       - { name: youtube, label: Enlace o ID de YouTube (vacío = próximamente), widget: string, required: false }
       - { name: duracion, label: Duración, widget: string, required: false }
-      - { name: personajes, label: Personajes, widget: select, multiple: true, default: [cromo], options: [cromo, profe, presu, chatarra] }
+      - { name: personajes, label: Personajes, widget: select, multiple: true, default: [eco], options: [eco, nexo, presu, chatarra] }
       - { name: concepto, label: Concepto que se aprende, widget: string }
       - { name: aprendes, label: Puntos clave, widget: list, required: false }
       - { name: guia, label: Guía relacionada (URL, por ejemplo /marketing-digital/como-calcular-el-roas/), widget: string, required: false }

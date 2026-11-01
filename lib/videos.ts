@@ -1,4 +1,4 @@
-// Vídeos del canal CROMO (content/videos/<slug>.md). Cada vídeo es relaciona amb una guia i una eina d'ECONEXO.
+// Vídeos del canal ECO y NEXO (content/videos/<slug>.md). Cada vídeo es relaciona amb una guia i una eina d'ECONEXO.
 import fs from 'node:fs';
 import path from 'node:path';
 import matter from 'gray-matter';
@@ -18,8 +18,8 @@ function all(): Video[] {
     const { data, content } = matter(fs.readFileSync(path.join(dir, f), 'utf8'));
     const slug = f.replace(/\.md$/, '');
     return {
-      slug, url: `/universo-cromo/${slug}/`, titulo: data.titulo, descripcion: data.descripcion || '', serie: data.serie, formato: data.formato || 'short',
-      youtube: data.youtube ? String(data.youtube).trim() : undefined, duracion: data.duracion, personajes: data.personajes || ['cromo'],
+      slug, url: `/eco-y-nexo/${slug}/`, titulo: data.titulo, descripcion: data.descripcion || '', serie: data.serie, formato: data.formato || 'short',
+      youtube: data.youtube ? String(data.youtube).trim() : undefined, duracion: data.duracion, personajes: data.personajes || ['eco'],
       concepto: data.concepto || '', aprendes: data.aprendes || [], guia: data.guia, herramienta: data.herramienta,
       fecha: new Date(data.fecha).toISOString(), estado: data.estado || 'borrador', html: render(content).html
     };

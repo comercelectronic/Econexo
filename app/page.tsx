@@ -8,7 +8,7 @@ import { SITE } from '@/lib/site';
 import { TOOLS } from '@/lib/tools';
 import { videos } from '@/lib/videos';
 import { VideoCard } from '@/components/VideoCard';
-import { UNIVERSE } from '@/lib/cromo';
+import { UNIVERSE } from '@/lib/universo';
 
 const Block = ({ n, kicker, title, href, children }: { n: string; kicker: string; title: string; href?: string; children: React.ReactNode }) => (
   <section className="mt-14">
@@ -80,16 +80,16 @@ export default function Home() {
         </div>
       </Block>
 
-      <Block n="07" kicker="Universo CROMO" title="Aprende con CROMO y el Profe Suricata" href="/universo-cromo/">
-        <Link href="/universo-cromo/" className="grid items-center gap-6 overflow-hidden rounded-2xl bg-navy text-white md:grid-cols-[1fr_auto]">
+      <Block n="07" kicker="ECO y NEXO" title="Aprende con ECO y NEXO" href="/eco-y-nexo/">
+        <Link href="/eco-y-nexo/" className="grid items-center gap-6 overflow-hidden rounded-2xl bg-navy text-white md:grid-cols-[1fr_auto]">
           <div className="p-6 md:p-8">
             <p className="font-display text-2xl font-extrabold md:text-3xl">{UNIVERSE.claim}</p>
-            <p className="mt-2 max-w-xl text-white/75">CROMO comete todos los errores de marketing, economía y tecnología. El Profe Suricata le explica lo que de verdad funciona. Tú te ríes… y aprendes.</p>
-            <span className="mt-4 inline-block rounded-lg bg-cromo px-4 py-2.5 font-semibold">Descubre el Universo CROMO →</span>
+            <p className="mt-2 max-w-xl text-white/75">ECO repite todo lo que oye a los gurús y comete todos los errores. NEXO conecta los datos y le explica lo que de verdad funciona. Juntos son ECONEXO: tú te ríes… y aprendes.</p>
+            <span className="mt-4 inline-block rounded-lg bg-uni px-4 py-2.5 font-semibold">Descubre el mundo de ECO y NEXO →</span>
           </div>
-          <div className="flex items-end justify-center gap-2 px-6 pt-4 md:pt-6">
-            <img src="/media/personajes/cromo-principal.webp" alt="CROMO" className="h-48 w-auto md:h-60" />
-            <img src="/media/personajes/profe-principal.webp" alt="Profe Suricata" className="h-44 w-auto rounded-t-xl md:h-56" />
+          <div className="m-4 flex items-end justify-center gap-2 rounded-2xl bg-gradient-to-b from-white to-uni-soft px-6 pt-4">
+            <img src="/media/personajes/eco-principal.webp" alt="ECO, el ajolote" className="h-44 w-auto md:h-56" />
+            <img src="/media/personajes/nexo-principal.webp" alt="NEXO, la pulpo" className="h-48 w-auto md:h-60" />
           </div>
         </Link>
         {vids.length > 0 && <div className="mt-5 grid gap-5 md:grid-cols-3">{vids.map((v) => <VideoCard key={v.slug} v={v} />)}</div>}

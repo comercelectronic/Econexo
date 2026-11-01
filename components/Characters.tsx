@@ -1,6 +1,6 @@
-// Retrats dels personatges. CROMO i el PROFE SURICATA fan servir les il·lustracions oficials (amb expressions);
+// Retrats dels personatges. ECO i NEXO fan servir les il·lustracions oficials (amb expressions);
 // els secundaris, un retrat SVG provisional.
-import { characterById } from '@/lib/cromo';
+import { characterById } from '@/lib/universo';
 
 export function Avatar({ id, gesto = 'neutral', className = 'h-16 w-16' }: { id: string; gesto?: string; className?: string }) {
   const c = characterById(id);

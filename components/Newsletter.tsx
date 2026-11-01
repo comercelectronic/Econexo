@@ -2,7 +2,7 @@
 // Formulari de subscripció. Netlify Forms el recull (vegeu public/__forms.html); més endavant es pot connectar a Brevo o Mailchimp.
 import { useState } from 'react';
 
-export function Newsletter({ variant }: { variant?: 'profe' }) {
+export function Newsletter({ variant }: { variant?: 'nexo' }) {
   const [state, setState] = useState<'idle' | 'sending' | 'ok' | 'error'>('idle');
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -16,16 +16,16 @@ export function Newsletter({ variant }: { variant?: 'profe' }) {
   return (
     <section id="newsletter" className="rounded-2xl bg-navy p-6 text-white md:p-10">
       <p className="text-xs font-bold uppercase tracking-widest text-teal">Newsletter</p>
-      {variant === 'profe' ? (
+      {variant === 'nexo' ? (
         <div className="mt-2 flex items-center gap-4">
-          <img src="/media/personajes/profe-guino.webp" alt="" className="h-16 w-16 rounded-full ring-2 ring-white" />
-          <div><h2 className="text-2xl font-extrabold md:text-3xl">El consejo semanal del Profe Suricata</h2>
-            <p className="mt-1 max-w-2xl text-white/75">Cada semana, un concepto de marketing, economía o tecnología explicado en dos minutos (y el último desastre de CROMO). Gratis y sin spam.</p></div>
+          <img src="/media/personajes/nexo-neutral.webp" alt="" className="h-16 w-16 rounded-full ring-2 ring-white" />
+          <div><h2 className="text-2xl font-extrabold md:text-3xl">El consejo semanal de NEXO</h2>
+            <p className="mt-1 max-w-2xl text-white/75">Cada semana, un concepto de marketing, economía o tecnología explicado en dos minutos (y el último desastre de ECO). Gratis y sin spam.</p></div>
         </div>
       ) : (
         <>
           <h2 className="mt-2 text-2xl font-extrabold md:text-3xl">Lo importante, sin perder el tiempo.</h2>
-          <p className="mt-2 max-w-2xl text-white/75">Una selección semanal de actualidad, guías y herramientas sobre economía, marketing, tecnología e IA, con el consejo del Profe Suricata. Gratis y sin spam.</p>
+          <p className="mt-2 max-w-2xl text-white/75">Una selección semanal de actualidad, guías y herramientas sobre economía, marketing, tecnología e IA, con el consejo de NEXO. Gratis y sin spam.</p>
         </>
       )}
       {state === 'ok' ? (

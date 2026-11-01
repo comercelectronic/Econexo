@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import type { Video } from '@/lib/videos';
-import { serieName } from '@/lib/cromo';
+import { serieName } from '@/lib/universo';
 import { Avatar } from './Characters';
 
 export function VideoCard({ v }: { v: Video }) {

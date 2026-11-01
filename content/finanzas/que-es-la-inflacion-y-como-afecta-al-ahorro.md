@@ -15,10 +15,10 @@ fuentes:
   - nombre: "INEGI (México): Índice Nacional de Precios al Consumidor"
   - nombre: "Banco Central Europeo: qué es la inflación"
 dialogo:
-  - { quien: cromo, gesto: alegria, texto: "Tengo 1.000 € guardados debajo del colchón desde hace diez años. ¡Intactos!" }
-  - { quien: profe, gesto: paciencia, texto: "Intactos en euros, sí. Pero hoy compran bastante menos que entonces." }
-  - { quien: cromo, gesto: sorpresa, texto: "¿Me han robado sin abrir el colchón?" }
-  - { quien: profe, gesto: guino, texto: "Se llama inflación. Te lo explico." }
+  - { quien: eco, gesto: alegria, texto: "Tengo 1.000 € guardados debajo del colchón desde hace diez años. ¡Intactos!" }
+  - { quien: nexo, gesto: paciencia, texto: "Intactos en euros, sí. Pero hoy compran bastante menos que entonces." }
+  - { quien: eco, gesto: sorpresa, texto: "¿Me han robado sin abrir el colchón?" }
+  - { quien: nexo, gesto: guino, texto: "Se llama inflación. Te lo explico." }
 ---
 La **inflación** es el aumento generalizado y sostenido de los precios. Cuando hay inflación, con la misma cantidad de dinero puedes comprar menos cosas: pierdes **poder adquisitivo**.
 

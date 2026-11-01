@@ -6,7 +6,7 @@ import { Avatar } from '@/components/Characters';
 import { JsonLd } from '@/components/JsonLd';
 import { Newsletter } from '@/components/Newsletter';
 import { VideoCard } from '@/components/VideoCard';
-import { UNIVERSE, characterById, serieName } from '@/lib/cromo';
+import { UNIVERSE, characterById, serieName } from '@/lib/universo';
 import { videos, videoBySlug, youtubeId } from '@/lib/videos';
 import { published, formatDate, isPreview } from '@/lib/content';
 import { toolBySlug } from '@/lib/tools';
@@ -36,7 +36,7 @@ export default async function VideoPage({ params }: Props) {
     <article className="mx-auto max-w-4xl py-10">
       {id && <JsonLd data={{ '@context': 'https://schema.org', '@type': 'VideoObject', name: v.titulo, description: v.descripcion, uploadDate: v.fecha, thumbnailUrl: `https://i.ytimg.com/vi/${id}/hqdefault.jpg`, embedUrl: `https://www.youtube-nocookie.com/embed/${id}`, inLanguage: 'es', publisher: { '@type': 'Organization', name: SITE.name } }} />}
       {isPreview && v.estado !== 'publicada' && <p className="mb-6 rounded-lg bg-amber-100 p-3 text-sm font-semibold text-warn">Vista previa · estado: {v.estado}. No se publicará hasta que se marque como «publicada».</p>}
-      <p className="text-sm font-semibold text-teal"><Link href="/universo-cromo/">Universo CROMO</Link> · <Link href={`/universo-cromo/#${v.serie}`}>{serieName(v.serie)}</Link></p>
+      <p className="text-sm font-semibold text-teal"><Link href="/eco-y-nexo/">ECO y NEXO</Link> · <Link href={`/eco-y-nexo/#${v.serie}`}>{serieName(v.serie)}</Link></p>
       <h1 className="mt-2 text-3xl font-extrabold leading-tight text-navy md:text-5xl">{v.titulo}</h1>
       <p className="mt-3 text-lg text-muted">{v.descripcion}</p>
       <p className="mt-3 text-sm text-muted">{v.formato === 'short' ? 'Short' : 'Episodio'}{v.duracion ? ` · ${v.duracion}` : ''} · {formatDate(v.fecha)}</p>
@@ -62,7 +62,7 @@ export default async function VideoPage({ params }: Props) {
       </section>
 
       {more.length > 0 && <section className="mt-12"><h2 className="mb-4 text-xl font-extrabold text-navy">Más de {serieName(v.serie)}</h2><div className="grid gap-5 md:grid-cols-3">{more.map((x) => <VideoCard key={x.slug} v={x} />)}</div></section>}
-      <div className="mt-12"><Newsletter variant="profe" /></div>
+      <div className="mt-12"><Newsletter variant="nexo" /></div>
     </article>
   );
 }

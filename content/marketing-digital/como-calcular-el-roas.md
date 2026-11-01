@@ -20,10 +20,10 @@ fuentes:
   - nombre: "Ayuda de Google Ads: ROAS objetivo"
   - nombre: "Ayuda de Meta para empresas: retorno de la inversión publicitaria"
 dialogo:
-  - { quien: cromo, gesto: alegria, texto: "He invertido 100 € en anuncios y he facturado 500 €. ¿Soy rico?" }
-  - { quien: profe, gesto: pensativo, texto: "Has conseguido un ROAS de 5: has facturado 5 € por cada euro de publicidad. Pero todavía hay que descontar los costes." }
-  - { quien: cromo, gesto: sorpresa, texto: "¿Costes? ¡Si el anuncio ya está pagado!" }
-  - { quien: profe, gesto: paciencia, texto: "Y el producto, el envío y las comisiones también se pagan, CROMO. Vamos a verlo." }
+  - { quien: eco, gesto: alegria, texto: "He invertido 100 € en anuncios y he facturado 500 €. ¿Soy rico?" }
+  - { quien: nexo, gesto: pensativo, texto: "Has conseguido un ROAS de 5: has facturado 5 € por cada euro de publicidad. Pero todavía hay que descontar los costes." }
+  - { quien: eco, gesto: sorpresa, texto: "¿Costes? ¡Si el anuncio ya está pagado!" }
+  - { quien: nexo, gesto: paciencia, texto: "Y el producto, el envío y las comisiones también se pagan, ECO. Vamos a verlo." }
 ---
 El **ROAS** (*return on ad spend*, retorno de la inversión publicitaria) es una de las métricas más usadas en publicidad digital. Responde a una pregunta sencilla: **¿cuánto he vendido por cada euro que he invertido en anuncios?**
 

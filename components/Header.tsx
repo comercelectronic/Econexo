@@ -4,7 +4,7 @@ import { liveSections } from '@/lib/site';
 import { Today } from './Today';
 
 export function Header() {
-  const nav = [...liveSections().map((s) => ({ href: `/${s.slug}/`, label: s.short || s.name })), { href: '/universo-cromo/', label: 'Universo CROMO' }, { href: '/herramientas/', label: 'Herramientas' }];
+  const nav = [...liveSections().map((s) => ({ href: `/${s.slug}/`, label: s.short || s.name })), { href: '/eco-y-nexo/', label: 'ECO y NEXO' }, { href: '/herramientas/', label: 'Herramientas' }];
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-white/95 backdrop-blur">
       <div className="bg-navy text-white/80 text-xs">

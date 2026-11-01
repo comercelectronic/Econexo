@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import { Avatar } from './Characters';
 
-export function YouTube({ id, title, vertical = false, cast = ['cromo'] }: { id?: string; title: string; vertical?: boolean; cast?: string[] }) {
+export function YouTube({ id, title, vertical = false, cast = ['eco'] }: { id?: string; title: string; vertical?: boolean; cast?: string[] }) {
   const [on, setOn] = useState(false);
   const box = `relative mx-auto w-full overflow-hidden rounded-2xl bg-navy ${vertical ? 'aspect-[9/16] max-w-sm' : 'aspect-video'}`;
   if (!id)
