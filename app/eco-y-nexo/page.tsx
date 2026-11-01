@@ -43,7 +43,7 @@ export default function Universe() {
             </nav>
             {social.length > 0 && <div className="mt-4 flex flex-wrap gap-3">{social.map(([n, u]) => <a key={n} href={u} target="_blank" rel="noopener" className="text-sm font-bold text-uni underline-offset-2 hover:underline">{n} →</a>)}</div>}
           </div>
-          <div className="m-4 flex items-end justify-center gap-2 rounded-2xl bg-gradient-to-b from-white to-uni-soft px-4 pt-6 md:m-6">
+          <div className="m-4 flex items-end justify-center gap-4 rounded-2xl bg-white p-6 md:m-6">
             <img src={eco.image} alt={`${eco.name}, el ajolote protagonista`} className="h-auto w-[45%] max-w-[260px] object-contain" />
             <img src={nexo.image} alt={`${nexo.title || nexo.name}, la pulpo experta`} className="h-auto w-[52%] max-w-[290px] object-contain" />
           </div>

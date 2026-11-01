@@ -13,7 +13,7 @@ La parte principal de ECONEXO es **educativa**: contenidos de todos los ciclos d
 - **Temario oficial** de cada módulo: `data/<módulo>.json` (bloques, puntos y cómo se trabaja hoy cada punto).
 - **Rutas**: `/estudiar/` (buscador por grado, ciclo y módulo) · `/estudiar/<ciclo>/` · `/estudiar/<ciclo>/<módulo>/` (lecciones, progreso, temario, simulador, herramientas, actualidad y lecturas del módulo) · `/estudiar/<ciclo>/<módulo>/<lección>/` · `/simuladores/`.
 - **Progreso**: se guarda en el navegador del alumno (`localStorage`); una lección se supera con 3 de 5.
-- **Tiras cómicas**: `components/Tira.tsx` dibuja las viñetas en blanco y negro. Usa `public/media/personajes/eco-tira.webp` y `nexo-tira.webp` si existen (dibujos en blanco y negro); si no, la ilustración a color en escala de grises.
+- **Tiras cómicas**: `components/Tira.tsx` dibuja las viñetas en blanco y negro con los dibujos de línea de `public/media/personajes/eco-tira.webp` y `nexo-tira.webp` (el original con los dos personajes es `eco-y-nexo.webp`). Por ahora hay una pose por personaje; si se añaden más poses o expresiones, cada viñeta puede usar la suya.
 - **Actualidad y lecturas**: cualquier artículo con `modulos: [comercio-electronico]` y `codigos: [...]` aparece en la página del módulo y en las lecciones de esos puntos.
 
 ### Primer módulo: Comercio electrónico (Actividades Comerciales, grado medio)
