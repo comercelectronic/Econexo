@@ -1,6 +1,6 @@
 ---
 titulo: "Cómo verificamos la información"
-descripcion: "El proceso de verificación de ECONEXO: fuentes primarias, doble revisión y fechas de actualización."
+descripcion: "El proceso de verificación de ECOyNEXO: fuentes primarias, doble revisión y fechas de actualización."
 ---
 ## Antes de publicar
 

@@ -66,7 +66,7 @@ export default async function ArticlePage({ params }: Props) {
   const ld = {
     '@context': 'https://schema.org', '@type': a.tipo === 'noticia' ? 'NewsArticle' : 'Article', headline: a.titulo, description: a.descripcion,
     datePublished: a.fecha, dateModified: a.actualizado || a.fecha, inLanguage: 'es', mainEntityOfPage: SITE.url + a.url,
-    author: { '@type': a.autor === SITE.defaultAuthor ? 'Organization' : 'Person', name: a.autor }, publisher: { '@type': 'Organization', name: SITE.name, logo: { '@type': 'ImageObject', url: SITE.url + '/favicon.svg' } }
+    author: { '@type': a.autor === SITE.defaultAuthor ? 'Organization' : 'Person', name: a.autor }, publisher: { '@type': 'Organization', name: SITE.name, logo: { '@type': 'ImageObject', url: SITE.url + '/favicon.png' } }
   };
   return (
     <article className="mx-auto max-w-3xl py-10">

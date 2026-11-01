@@ -6,7 +6,7 @@ tipo: financiero
 subseccion: ahorro
 estado: revision
 fecha: 2026-10-30T09:00:00+01:00
-autor: Redacción ECONEXO
+autor: Redacción ECOyNEXO
 etiquetas: [interés compuesto, ahorro, inversión, inflación]
 pais: [global]
 moneda: EUR

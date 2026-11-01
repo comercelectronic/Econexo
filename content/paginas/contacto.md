@@ -1,6 +1,6 @@
 ---
 titulo: "Contacto"
-descripcion: "Cómo contactar con la redacción de ECONEXO."
+descripcion: "Cómo contactar con la redacción de ECOyNEXO."
 ---
 - **Redacción y propuestas de temas:** [PENDIENTE: correo de redacción]
 - **Correcciones:** [PENDIENTE: correo de correcciones]

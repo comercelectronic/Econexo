@@ -64,7 +64,7 @@ export function lecciones(ciclo: string, modulo: string): Leccion[] {
     const { data, content } = matter(fs.readFileSync(path.join(dir, f), 'utf8'));
     const slug = f.replace(/\.md$/, '');
     return {
-      id: data.id || slug, slug, url: `/estudiar/${ciclo}/${modulo}/${slug}/`, titulo: data.titulo, objetivo: data.objetivo || '', orden: data.orden || 999,
+      id: data.id || slug, slug, url: `/aprender/${ciclo}/${modulo}/${slug}/`, titulo: data.titulo, objetivo: data.objetivo || '', orden: data.orden || 999,
       codigos: data.codigos || [], area: data.area || '', capitulo: data.capitulo, capitulo_titulo: data.capitulo_titulo,
       tira: data.tira || [], ejemplo: data.ejemplo || '', errores: data.errores || [], test: data.test || [], html: render(content).html
     } as Leccion;

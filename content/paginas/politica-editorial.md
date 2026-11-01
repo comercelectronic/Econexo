@@ -1,6 +1,6 @@
 ---
 titulo: "Política editorial"
-descripcion: "Principios editoriales de ECONEXO: rigor, independencia, separación entre información, opinión y publicidad, y uso responsable de la IA."
+descripcion: "Principios editoriales de ECOyNEXO: rigor, independencia, separación entre información, opinión y publicidad, y uso responsable de la IA."
 ---
 ## Nuestros principios
 

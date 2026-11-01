@@ -24,6 +24,7 @@ export function Newsletter({ variant }: { variant?: 'nexo' }) {
         </div>
       ) : (
         <>
+          <img src="/media/personajes/eco-y-nexo.webp" alt="" className="float-right ml-4 hidden h-32 w-auto rounded-xl bg-white p-2 sm:block" loading="lazy" />
           <h2 className="mt-2 text-2xl font-extrabold md:text-3xl">Lo importante para tu ciclo, sin perder el tiempo.</h2>
           <p className="mt-2 max-w-2xl text-white/75">Cada semana: lecciones nuevas, noticias relacionadas con lo que estudias, una herramienta para practicar y el consejo de NEXO. Gratis y sin spam.</p>
         </>

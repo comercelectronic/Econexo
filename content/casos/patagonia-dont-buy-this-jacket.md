@@ -7,7 +7,7 @@ tipo: caso
 subseccion: casos-marketing
 estado: revision
 fecha: 2026-10-28T07:00:00+01:00
-autor: Redacción ECONEXO
+autor: Redacción ECOyNEXO
 destacado: false
 etiquetas: [branding, valores de marca, sostenibilidad, patagonia]
 ficha: { Empresa: Patagonia, Año: "2011", Sector: Ropa outdoor, Concepto: "Marca con valores" }

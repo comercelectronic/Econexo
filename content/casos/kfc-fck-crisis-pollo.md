@@ -7,7 +7,7 @@ tipo: caso
 subseccion: casos-crisis
 estado: revision
 fecha: 2026-10-27T07:00:00+01:00
-autor: Redacción ECONEXO
+autor: Redacción ECOyNEXO
 etiquetas: [comunicación de crisis, reputación, kfc]
 ficha: { Empresa: KFC Reino Unido, Año: "2018", Sector: Restauración, Concepto: "Comunicación de crisis" }
 fuentes:

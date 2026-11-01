@@ -1,14 +1,20 @@
 ---
 titulo: "Quiénes somos"
-descripcion: "ECONEXO es un medio digital independiente que conecta actualidad, formación y herramientas sobre economía, finanzas, marketing, tecnología e IA."
+descripcion: "ECOyNEXO es una web para aprender los ciclos de FP de Comercio y Marketing con tiras cómicas, tests, simuladores, herramientas y la actualidad de lo que estudias."
 ---
-**ECONEXO** es un medio digital independiente para España y Latinoamérica. Conectamos tres mundos:
+**ECOyNEXO** es una web para aprender los ciclos formativos de **Comercio y Marketing** (grado medio y superior), acompañada de dos personajes:
 
-- **Actualidad**: informamos de lo que pasa en la economía, las empresas, el marketing, la tecnología y la inteligencia artificial.
-- **Formación**: lo explicamos con guías prácticas, casos reales y conceptos claros.
-- **Recursos**: ofrecemos herramientas gratuitas para que el lector pueda calcular, comparar y decidir.
+- **ECO**, el ajolote que lo repite todo y mete la pata con cada moda.
+- **NEXO**, la pulpo profe que lo conecta todo y lo explica con calma.
 
-*Información que se convierte en conocimiento.*
+*Aprende con NEXO, no hagas el ECO.*
+
+## Qué encontrarás
+
+- **Aprender**: lecciones por módulo, cada una con una tira cómica, una explicación paso a paso y un test de autoevaluación.
+- **Simuladores**: juegos para practicar lo aprendido tomando decisiones, como Agència Digital.
+- **Herramientas**: calculadoras gratuitas de marketing, ventas y finanzas, con su fórmula, un ejemplo y sus limitaciones.
+- **Actualidad**: noticias, casos reales y guías relacionadas con lo que estudias.
 
 ## Equipo
 

@@ -7,7 +7,7 @@ tipo: caso
 subseccion: casos-crisis
 estado: revision
 fecha: 2026-10-26T07:00:00+01:00
-autor: Redacción ECONEXO
+autor: Redacción ECOyNEXO
 etiquetas: [atención al cliente, reclamaciones, redes sociales, united airlines]
 ficha: { Empresa: United Airlines, Año: "2009", Sector: Aviación, Concepto: "Gestión de reclamaciones" }
 fuentes:

@@ -7,7 +7,7 @@ tipo: caso
 subseccion: casos-datos
 estado: revision
 fecha: 2026-10-21T07:00:00+01:00
-autor: Redacción ECONEXO
+autor: Redacción ECOyNEXO
 etiquetas: [atribución, incrementalidad, publicidad digital, airbnb]
 ficha: { Empresa: Airbnb, Año: "2020", Sector: Turismo, Concepto: "Incrementalidad" }
 fuentes:

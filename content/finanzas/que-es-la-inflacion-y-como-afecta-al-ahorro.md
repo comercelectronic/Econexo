@@ -6,7 +6,7 @@ tipo: financiero
 subseccion: ahorro
 estado: revision
 fecha: 2026-10-26T10:00:00+01:00
-autor: Redacción ECONEXO
+autor: Redacción ECOyNEXO
 etiquetas: [inflación, ipc, ahorro, poder adquisitivo]
 pais: [global]
 fecha_datos: "octubre de 2026 (ejemplos ilustrativos)"

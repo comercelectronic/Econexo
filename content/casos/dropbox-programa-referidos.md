@@ -7,7 +7,7 @@ tipo: caso
 subseccion: casos-crecimiento
 estado: revision
 fecha: 2026-10-25T07:00:00+01:00
-autor: Redacción ECONEXO
+autor: Redacción ECOyNEXO
 etiquetas: [marketing viral, referidos, crecimiento, dropbox]
 ficha: { Empresa: Dropbox, Año: "2008–2010", Sector: Software, Concepto: "Programa de referidos" }
 fuentes:

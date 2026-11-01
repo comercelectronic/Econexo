@@ -33,3 +33,9 @@
   to = "https://ecoynexo.com/:splat"
   status = 301
   force = true
+
+# La sección «Estudiar» ahora se llama «Aprender»
+[[redirects]]
+  from = "/estudiar/*"
+  to = "/aprender/:splat"
+  status = 301

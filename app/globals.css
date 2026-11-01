@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* Identitat visual d'ECONEXO */
+/* Identitat visual d'ECOyNEXO */
 @theme {
   --color-navy: #10243D;
   --color-navy-2: #1b3556;
@@ -12,7 +12,7 @@
   --color-ink: #1d2733;
   --color-muted: #5b6878;
   --color-warn: #b45309;
-  /* El mundo de ECO y NEXO: el coral d'ECO amb el turquesa de NEXO i el blau marí d'ECONEXO */
+  /* El mundo de ECO y NEXO: el coral d'ECO amb el turquesa de NEXO i el blau marí d'ECOyNEXO */
   --color-uni: #e8644a;
   --color-uni-dark: #b9452f;
   --color-uni-soft: #fff4f0;

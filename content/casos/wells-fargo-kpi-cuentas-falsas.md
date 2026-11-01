@@ -7,7 +7,7 @@ tipo: caso
 subseccion: casos-datos
 estado: revision
 fecha: 2026-10-22T07:00:00+01:00
-autor: Redacción ECONEXO
+autor: Redacción ECOyNEXO
 etiquetas: [kpi, ética, banca, medición]
 ficha: { Empresa: Wells Fargo, Año: "2016", Sector: Banca, Concepto: "KPI y ley de Goodhart" }
 fuentes:

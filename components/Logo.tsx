@@ -1,24 +1,20 @@
-// Símbol: tres nodes connectats que formen una fletxa ascendent (connexió, informació i creixement)
-export function LogoMark({ className = 'h-8 w-8' }: { className?: string }) {
+// Marca: les cares d'ECO i NEXO juntes + el nom. «ECO» en corall, «y» petita i «NEXO» en turquesa.
+export function LogoMark({ className = 'h-11' }: { className?: string }) {
   return (
-    <svg viewBox="0 0 40 40" className={className} aria-hidden="true">
-      <rect width="40" height="40" rx="10" fill="#10243D" />
-      <path d="M10 28 L20 18 L26 23 L31 12" fill="none" stroke="#12A6A0" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="10" cy="28" r="3.4" fill="#fff" />
-      <circle cx="20" cy="18" r="3.4" fill="#3478C5" stroke="#fff" strokeWidth="1.5" />
-      <circle cx="26" cy="23" r="2.6" fill="#fff" />
-      <circle cx="31" cy="12" r="3.6" fill="#12A6A0" stroke="#fff" strokeWidth="1.5" />
-    </svg>
+    <span className={`flex shrink-0 items-center ${className}`} aria-hidden="true">
+      <img src="/media/personajes/cara-eco-contento.webp" alt="" className="h-full w-auto rounded-full bg-white object-cover ring-[2.5px] ring-black" />
+      <img src="/media/personajes/cara-nexo-satisfecha.webp" alt="" className="-ml-3 h-full w-auto rounded-full bg-white object-cover ring-[2.5px] ring-black" />
+    </span>
   );
 }
 
 export function Logo({ dark = false }: { dark?: boolean }) {
   return (
-    <span className="flex items-center gap-2.5">
+    <span className="flex items-center gap-3">
       <LogoMark />
       <span className="leading-none">
-        <span className={`block font-display text-xl font-extrabold tracking-tight ${dark ? 'text-white' : 'text-navy'}`}>ECO<span className="text-teal">NEXO</span></span>
-        <span className={`hidden text-[10px] font-semibold tracking-[0.18em] sm:block ${dark ? 'text-white/70' : 'text-muted'}`}>COMERCIO Y MARKETING · FP</span>
+        <span className="block font-display text-2xl font-extrabold tracking-tight"><span className="text-uni">ECO</span><span className={`mx-0.5 text-base font-bold ${dark ? 'text-white/70' : 'text-muted'}`}>y</span><span className={dark ? 'text-teal' : 'text-teal-dark'}>NEXO</span></span>
+        <span className={`hidden text-[10px] font-semibold tracking-[0.16em] sm:block ${dark ? 'text-white/70' : 'text-muted'}`}>APRENDE CON NEXO · NO HAGAS EL ECO</span>
       </span>
     </span>
   );

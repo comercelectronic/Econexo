@@ -8,7 +8,7 @@ tipo: guia
 subseccion: ia-marketing
 estado: revision
 fecha: 2026-10-28T10:00:00+01:00
-autor: Redacción ECONEXO
+autor: Redacción ECOyNEXO
 etiquetas: [geo, seo, inteligencia artificial, búsqueda]
 pais: [global]
 faq:

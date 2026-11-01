@@ -8,7 +8,7 @@ tipo: guia
 subseccion: analitica
 estado: revision
 fecha: 2026-10-30T08:00:00+01:00
-autor: Redacción ECONEXO
+autor: Redacción ECOyNEXO
 destacado: true
 etiquetas: [roas, publicidad digital, rentabilidad, google ads, meta ads]
 pais: [global]

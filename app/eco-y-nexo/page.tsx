@@ -1,4 +1,4 @@
-// El mundo de ECO y NEXO: la marca educativa d'ECONEXO. Vídeos, guies il·lustrades i eines amb ECO i NEXO.
+// El mundo de ECO y NEXO: la marca educativa d'ECOyNEXO. Vídeos, guies il·lustrades i eines amb ECO i NEXO.
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Avatar } from '@/components/Characters';
@@ -34,10 +34,10 @@ export default function Universe() {
       <header className="relative overflow-hidden rounded-3xl bg-navy text-white">
         <div className="grid items-center gap-6 md:grid-cols-[1.2fr_1fr]">
           <div className="p-8 md:p-12">
-            <p className="text-xs font-bold uppercase tracking-widest text-uni">ECONEXO presenta</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-uni">ECOyNEXO presenta</p>
             <h1 className="mt-2 text-4xl font-extrabold md:text-6xl">{UNIVERSE.name}</h1>
             <p className="mt-3 text-xl text-white/85">{UNIVERSE.claim}</p>
-            <p className="mt-4 max-w-xl text-white/70">ECO repite todo lo que oye a los «gurús» y mete la pata en cada moda. NEXO conecta los datos, las ideas y las herramientas, y le explica con paciencia (e ironía) lo que de verdad funciona. Juntos son ECONEXO. Tú te ríes… y aprendes marketing, economía y tecnología sin sentir que estás en clase.</p>
+            <p className="mt-4 max-w-xl text-white/70">ECO repite todo lo que oye a los «gurús» y mete la pata en cada moda. NEXO conecta los datos, las ideas y las herramientas, y le explica con paciencia (e ironía) lo que de verdad funciona. Juntos son ECOyNEXO. Tú te ríes… y aprendes marketing, economía y tecnología sin sentir que estás en clase.</p>
             <nav className="mt-6 flex flex-wrap gap-2" aria-label="ECO y NEXO">
               {SUBS.map(([id, n]) => <a key={id} href={`#${id}`} className="rounded-full bg-white/10 px-4 py-2 text-sm font-semibold hover:bg-white/20">{n}</a>)}
             </nav>

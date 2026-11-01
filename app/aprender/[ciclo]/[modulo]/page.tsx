@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { PageHero } from '@/components/Mascotas';
 import { notFound } from 'next/navigation';
 import { ArticleCard } from '@/components/ArticleCard';
 import { Done, ModuleBar } from '@/components/Progress';
@@ -17,7 +18,7 @@ function find(ciclo: string, modulo: string) {
 }
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { ciclo, modulo } = await params; const f = find(ciclo, modulo);
-  return f ? { title: `${f.m.name} · ${f.c.name}`, description: f.m.resumen, alternates: { canonical: `/estudiar/${ciclo}/${modulo}/` } } : {};
+  return f ? { title: `${f.m.name} · ${f.c.name}`, description: f.m.resumen, alternates: { canonical: `/aprender/${ciclo}/${modulo}/` } } : {};
 }
 
 export default async function ModuloPage({ params }: Props) {
@@ -31,9 +32,7 @@ export default async function ModuloPage({ params }: Props) {
   const news = art.filter((a) => a.tipo === 'noticia'), resources = art.filter((a) => a.tipo !== 'noticia');
   return (
     <div className="py-10">
-      <p className="text-sm font-semibold text-teal"><Link href="/estudiar/">Estudiar</Link> · <Link href={`/estudiar/${c.slug}/`}>{c.name}</Link> · {c.grado === 'medio' ? 'Grado medio' : 'Grado superior'}</p>
-      <h1 className="mt-1 text-4xl font-extrabold text-navy md:text-5xl">{m.name}</h1>
-      <p className="mt-3 max-w-3xl text-lg text-muted">{m.resumen}</p>
+      <PageHero kicker={<><Link href="/aprender/">Aprender</Link> · <Link href={`/aprender/${c.slug}/`}>{c.name}</Link> · {c.grado === 'medio' ? 'Grado medio' : 'Grado superior'}</>} title={m.name} intro={m.resumen} nexo="explicando" eco="contento" dice={{ quien: 'nexo', texto: 'Empieza por la lección 1: tira, explicación y test.' }} />
 
       <div className="mt-8 grid gap-5 md:grid-cols-[1fr_360px]">
         <div className="rounded-2xl bg-mist p-5"><ModuleBar ids={lessons.map((l) => l.id)} />

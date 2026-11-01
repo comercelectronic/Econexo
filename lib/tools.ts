@@ -50,6 +50,96 @@ export const TOOLS: Tool[] = [
     limits: ['Es una simulación educativa: la rentabilidad real no es constante y puede ser negativa.', 'No incluye comisiones, impuestos ni cambios de aportación.', 'Las rentabilidades pasadas no garantizan rentabilidades futuras. No es asesoramiento financiero personalizado.'],
     faq: [{ p: '¿Qué rentabilidad debo poner?', r: 'Usa escenarios prudentes y compara varios (por ejemplo, 2 %, 4 % y 6 %). Ninguna cifra está garantizada.' }, { p: '¿Por qué importa la inflación?', r: 'Porque reduce el poder adquisitivo: el mismo dinero dentro de 20 años comprará menos cosas.' }],
     guide: '/finanzas/como-funciona-el-interes-compuesto/'
+  },
+  {
+    slug: 'calculadora-margen-precio', codigos: ['2.1', '2.2'], name: 'Calculadora de margen y precio de venta', area: 'Ventas',
+    short: 'Del coste de compra al precio de venta con IVA, con margen y markup.',
+    dialogo: [{ quien: 'eco', gesto: 'alegria', texto: 'Lo compro a 10 € y lo vendo a 15 €. ¡Un 50 % de beneficio!' }, { quien: 'nexo', gesto: 'esceptico', texto: 'Eso es el markup. Tu margen sobre la venta es del 33 %. Y aún no has contado el IVA ni tus gastos.' }],
+    intro: 'Calcula a qué precio vender un producto para conseguir el margen que quieres, y comprueba cuánto es en margen, en markup y con IVA incluido.',
+    formula: 'Precio sin IVA = coste ÷ (1 − margen). Markup = (precio − coste) ÷ coste. Precio con IVA = precio sin IVA × (1 + IVA).',
+    example: 'Compras a 10 € y quieres un margen del 40 % sobre la venta: precio = 10 ÷ 0,60 = 16,67 € sin IVA, que son 20,17 € con un IVA del 21 %. El markup es del 66,7 %.',
+    limits: ['Margen (sobre el precio de venta) y markup (sobre el coste) no son lo mismo: un margen del 40 % equivale a un markup del 66,7 %.', 'No incluye gastos fijos, comisiones de plataformas ni devoluciones.', 'Revisa el tipo de IVA aplicable a tu producto.'],
+    faq: [{ p: '¿Cuál es la diferencia entre margen y markup?', r: 'El margen se calcula sobre el precio de venta y el markup sobre el coste. Con el mismo producto, el markup siempre es mayor que el margen.' }, { p: '¿El margen incluye el IVA?', r: 'No. El IVA no es ingreso del comercio: se cobra al cliente y se ingresa a Hacienda. Los márgenes se calculan siempre sin IVA.' }]
+  },
+  {
+    slug: 'calculadora-iva', name: 'Calculadora de IVA', area: 'Ventas',
+    short: 'Añade o quita el IVA de un precio en un segundo.',
+    dialogo: [{ quien: 'eco', gesto: 'confusion', texto: 'El cliente paga 121 €. ¿Le quito el 21 % y ya tengo la base?' }, { quien: 'nexo', gesto: 'paciencia', texto: 'No: 121 ÷ 1,21 = 100. Si restas el 21 % de 121, te sale una base equivocada. Prueba con la calculadora.' }],
+    intro: 'Calcula el precio con IVA a partir de la base imponible, o la base y el IVA a partir de un precio final.',
+    formula: 'Total = base × (1 + IVA). Base = total ÷ (1 + IVA). IVA = total − base.',
+    example: 'Una base de 100 € con un IVA del 21 % da un total de 121 €. Si el cliente paga 121 €, la base es 121 ÷ 1,21 = 100 € y el IVA es 21 €.',
+    limits: ['Los tipos de IVA (general, reducido, superreducido) dependen del producto y del país o territorio.', 'No sustituye el asesoramiento fiscal: hay operaciones exentas y regímenes especiales.'],
+    faq: [{ p: '¿Qué tipos de IVA hay en España?', r: 'El general del 21 %, el reducido del 10 % y el superreducido del 4 %, según el producto o servicio. Consulta siempre la normativa vigente.' }, { p: '¿Por qué no se resta el porcentaje al total?', r: 'Porque el IVA se calcula sobre la base, no sobre el total. Para quitar un 21 % hay que dividir entre 1,21.' }]
+  },
+  {
+    slug: 'punto-de-equilibrio', codigos: ['3.9'], name: 'Calculadora del punto de equilibrio', area: 'Rentabilidad',
+    short: 'Cuántas unidades tienes que vender para no perder dinero.',
+    dialogo: [{ quien: 'eco', gesto: 'alegria', texto: '¡Abro la tienda online! Solo cuesta 800 € al mes entre web, herramientas y cuota.' }, { quien: 'nexo', gesto: 'pensativo', texto: '¿Y cuántos productos tienes que vender solo para llegar a cero? Ese es el punto de equilibrio.' }],
+    intro: 'Calcula cuántas unidades y cuánta facturación necesitas para cubrir tus costes fijos, y cuánto ganas (o pierdes) con las ventas que esperas.',
+    formula: 'Margen de contribución = precio − coste variable. Unidades de equilibrio = costes fijos ÷ margen de contribución. Ingresos de equilibrio = unidades × precio.',
+    example: 'Costes fijos de 800 €/mes, precio de 40 € y coste variable de 25 €: margen de contribución 15 €; equilibrio = 800 ÷ 15 ≈ 54 unidades al mes (2.133 € de facturación).',
+    limits: ['Supone un solo producto, precio y coste variable constantes.', 'Los costes fijos pueden cambiar al crecer (más personal, más espacio).', 'No tiene en cuenta cuánto tardan en llegar las ventas ni los cobros.'],
+    faq: [{ p: '¿Qué son costes fijos y variables?', r: 'Los fijos no cambian con las ventas (alquiler, cuotas, sueldos). Los variables sí (coste del producto, envío, comisión de pago).' }, { p: '¿Qué hago si el equilibrio es inalcanzable?', r: 'Sube el precio, baja el coste variable o reduce los costes fijos. Si ninguna es posible, el modelo no es viable tal como está.' }]
+  },
+  {
+    slug: 'calculadora-descuentos', codigos: ['2.1'], name: 'Calculadora de descuentos y rebajas', area: 'Ventas',
+    short: 'Precio final, ahorro y descuento real de una o dos rebajas seguidas.',
+    dialogo: [{ quien: 'eco', gesto: 'hablando', texto: '¡Rebajas del 30 % más un 20 % extra! ¡Es un 50 % de descuento!' }, { quien: 'nexo', gesto: 'guino', texto: 'Son un 44 %: el segundo descuento se aplica al precio ya rebajado. Compruébalo.' }],
+    intro: 'Calcula el precio final tras un descuento, o tras dos descuentos encadenados, y descubre el porcentaje real de rebaja.',
+    formula: 'Precio final = precio × (1 − d1) × (1 − d2). Descuento total = 1 − (1 − d1) × (1 − d2).',
+    example: 'Un producto de 100 € con un 30 % y un 20 % extra cuesta 100 × 0,70 × 0,80 = 56 €: el descuento real es del 44 %, no del 50 %.',
+    limits: ['Los descuentos se aplican en cadena, no se suman.', 'En España, al anunciar una rebaja hay que indicar también el precio anterior (el más bajo de los últimos 30 días, según la normativa de consumidores).'],
+    faq: [{ p: '¿Por qué no se suman los descuentos?', r: 'Porque el segundo se aplica sobre un precio que ya es más bajo. Un 30 % más un 20 % equivale a un 44 %.' }, { p: '¿Cómo calculo el precio antes del descuento?', r: 'Divide el precio final entre (1 − descuento): si pagas 70 € con un 30 % de rebaja, el original era 70 ÷ 0,70 = 100 €.' }]
+  },
+  {
+    slug: 'metricas-publicidad', codigos: ['1.6'], name: 'Calculadora de CTR, CPC, CPM y CPA', area: 'Marketing',
+    short: 'Las métricas clave de una campaña de anuncios, calculadas de una vez.',
+    dialogo: [{ quien: 'eco', gesto: 'sorpresa', texto: '¡Mi anuncio ha tenido 50.000 impresiones! ¡Soy viral!' }, { quien: 'nexo', gesto: 'esceptico', texto: 'Impresiones no es dinero. Mira el CTR, el CPC y cuánto te cuesta cada venta.' }],
+    intro: 'Introduce los datos de tu campaña (impresiones, clics, coste y conversiones) y obtén el CTR, CPC, CPM, tasa de conversión y CPA.',
+    formula: 'CTR = clics ÷ impresiones. CPC = coste ÷ clics. CPM = coste ÷ impresiones × 1.000. Tasa de conversión = conversiones ÷ clics. CPA = coste ÷ conversiones.',
+    example: '20.000 impresiones, 400 clics, 240 € de coste y 12 ventas: CTR 2 %, CPC 0,60 €, CPM 12 €, conversión 3 % y CPA 20 €.',
+    limits: ['Cada plataforma puede contar los clics y las conversiones de forma distinta.', 'Un CPA bajo no sirve si el cliente deja poco margen: compáralo con el beneficio por venta.'],
+    faq: [{ p: '¿Qué es un buen CTR?', r: 'Depende del canal y del sector. Compáralo con tus campañas anteriores y con las medias de tu sector.' }, { p: '¿Qué diferencia hay entre CPC y CPA?', r: 'El CPC es lo que pagas por cada clic; el CPA es lo que pagas por cada conversión (venta, contacto…).' }]
+  },
+  {
+    slug: 'tasa-conversion-ticket-medio', codigos: ['3.9', '3.10', '3.11'], name: 'Tasa de conversión y ticket medio', area: 'Comercio electrónico',
+    short: 'Mide tu tienda online y calcula cuánto ganarías si mejoras la conversión.',
+    dialogo: [{ quien: 'eco', gesto: 'confusion', texto: 'Tengo 5.000 visitas al mes y solo 40 pedidos. ¡La gente no sabe comprar!' }, { quien: 'nexo', gesto: 'pensativo', texto: 'Tu tasa de conversión es del 0,8 %. Veamos cuánto subirían las ventas si la mejoras un poco.' }],
+    intro: 'Calcula la tasa de conversión, el ticket medio y los ingresos por visita de una tienda online, y simula el efecto de mejorar la conversión.',
+    formula: 'Tasa de conversión = pedidos ÷ visitas. Ticket medio = ingresos ÷ pedidos. Ingresos por visita = ingresos ÷ visitas.',
+    example: '5.000 visitas, 40 pedidos y 2.000 € de ingresos: conversión 0,8 %, ticket medio 50 € y 0,40 € por visita. Si la conversión mejora un 25 % (de 0,8 a 1 %), serían 50 pedidos y 2.500 €.',
+    limits: ['La conversión depende de la fuente del tráfico: el de búsqueda y el de redes se comportan distinto.', 'Mejorar la conversión no sirve si baja el ticket medio o el margen.'],
+    faq: [{ p: '¿Qué conversión es normal en una tienda online?', r: 'Suele moverse entre el 1 % y el 3 %, pero varía mucho según el sector y el precio del producto.' }, { p: '¿Cómo mejoro la conversión?', r: 'Cuida la ficha de producto, simplifica el carrito y el pago, muestra opiniones y costes de envío claros y acelera la web.' }]
+  },
+  {
+    slug: 'calculadora-ltv-cac', codigos: ['1.10'], name: 'Calculadora de LTV y CAC', area: 'Marketing',
+    short: 'Cuánto vale un cliente a lo largo de su vida y cuánto cuesta conseguirlo.',
+    dialogo: [{ quien: 'eco', gesto: 'verguenza', texto: 'Conseguir un cliente me cuesta 60 € y en su primera compra me deja 20 €…' }, { quien: 'nexo', gesto: 'pensativo', texto: 'Depende de cuántas veces vuelva a comprar. Calculemos su valor de vida: el LTV.' }],
+    intro: 'Calcula el valor de vida de un cliente (LTV), lo que te cuesta conseguirlo (CAC) y en cuántos meses recuperas esa inversión.',
+    formula: 'LTV = ticket medio × compras al año × años de relación × margen. Ratio LTV/CAC = LTV ÷ CAC. Recuperación (meses) = CAC ÷ (margen mensual por cliente).',
+    example: 'Ticket de 40 €, 3 compras al año, 3 años de relación y un 30 % de margen: LTV = 40 × 3 × 3 × 0,30 = 108 €. Con un CAC de 36 €, el ratio es 3: se suele considerar saludable.',
+    limits: ['Es una estimación: asume que el comportamiento del cliente se mantiene.', 'Incluye en el CAC todos los costes de captación (publicidad, comisiones, tiempo del equipo), no solo los anuncios.'],
+    faq: [{ p: '¿Qué ratio LTV/CAC es bueno?', r: 'Como orientación se suele buscar 3 o más. Por debajo de 1 pierdes dinero con cada cliente.' }, { p: '¿Qué es el CAC?', r: 'El coste de adquisición de cliente: lo que gastas en marketing y ventas dividido entre los clientes nuevos que consigues.' }]
+  },
+  {
+    slug: 'stock-y-punto-de-pedido', codigos: ['2.6'], name: 'Calculadora de stock y punto de pedido', area: 'Almacén y logística',
+    short: 'Cuándo reponer el stock y cuántas veces rota al año.',
+    dialogo: [{ quien: 'eco', gesto: 'sorpresa', texto: '¡Se ha agotado el producto estrella y el proveedor tarda dos semanas!' }, { quien: 'nexo', gesto: 'paciencia', texto: 'Por eso existe el punto de pedido: se pide antes de quedarse sin stock. Vamos a calcularlo.' }],
+    intro: 'Calcula el punto de pedido (cuándo reponer) con tu demanda diaria, el plazo de entrega y un stock de seguridad, y la rotación de tu stock.',
+    formula: 'Punto de pedido = demanda diaria × plazo de entrega + stock de seguridad. Rotación = coste de las ventas del año ÷ stock medio valorado. Días de stock = 365 ÷ rotación.',
+    example: 'Vendes 8 unidades al día, el proveedor tarda 10 días y quieres 3 días de seguridad: punto de pedido = 8 × 10 + 24 = 104 unidades. Con 120.000 € de coste de ventas y 20.000 € de stock medio, rotación = 6 veces al año (61 días de stock).',
+    limits: ['Supone una demanda estable: las campañas y la temporada la cambian.', 'El plazo de entrega real del proveedor puede variar.', 'Una rotación alta no siempre es buena: puede indicar roturas de stock.'],
+    faq: [{ p: '¿Qué es el stock de seguridad?', r: 'Un colchón de unidades para cubrir imprevistos: retrasos del proveedor o ventas superiores a lo previsto.' }, { p: '¿Qué indica una rotación baja?', r: 'Que el dinero está parado en mercancía: stock excesivo, productos que no se venden o riesgo de obsolescencia.' }]
+  },
+  {
+    slug: 'contador-seo-titulo-descripcion', codigos: ['1.6', '3.6'], name: 'Contador SEO: título y descripción', area: 'SEO',
+    short: 'Comprueba la longitud de tu título y meta descripción y mira cómo se vería en Google.',
+    dialogo: [{ quien: 'eco', gesto: 'hablando', texto: 'Mi título tiene 140 caracteres: ¡todas las palabras clave del mundo!' }, { quien: 'nexo', gesto: 'esceptico', texto: 'Google lo cortará hacia los 60. Escribe para quien busca, no para el robot.' }],
+    intro: 'Escribe el título y la meta descripción de una página y comprueba si entran en la longitud recomendada y cómo se vería el resultado en Google.',
+    formula: 'Títulos de hasta unos 60 caracteres y meta descripciones de hasta unos 155. Son referencias: Google corta por ancho en píxeles, no por número de caracteres.',
+    example: 'Título: «Tienda de bicicletas en Vic · Reparación y venta» (49 caracteres). Descripción: una frase de 120–155 caracteres que diga qué ofreces y por qué elegirte.',
+    limits: ['Es una guía orientativa: Google puede reescribir el título y la descripción.', 'Incluir la palabra clave ayuda, pero lo que mejora los clics es que el texto sea claro y atractivo.'],
+    faq: [{ p: '¿Influye la meta descripción en el posicionamiento?', r: 'No directamente, pero un texto atractivo aumenta los clics, y eso sí te beneficia.' }, { p: '¿Cuántos caracteres debe tener un título SEO?', r: 'Alrededor de 50–60, para que no se corte en los resultados.' }]
   }
 ];
 

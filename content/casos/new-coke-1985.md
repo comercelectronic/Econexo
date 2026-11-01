@@ -7,7 +7,7 @@ tipo: caso
 subseccion: casos-marketing
 estado: revision
 fecha: 2026-10-29T07:00:00+01:00
-autor: Redacción ECONEXO
+autor: Redacción ECOyNEXO
 etiquetas: [investigación de mercados, marca, coca-cola]
 ficha: { Empresa: Coca-Cola, Año: "1985", Sector: Bebidas, Concepto: "Investigación de mercados" }
 fuentes:

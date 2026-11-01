@@ -2,14 +2,14 @@
 // Les àrees amb `live: false` ja tenen URL reservada però no es publiquen fins que tinguin contingut.
 
 export const SITE = {
-  name: 'ECONEXO',
-  claim: 'Aprende Comercio y Marketing',
-  tagline: 'Aprende. Practica. Avanza.',
-  slogan: 'Lecciones, simuladores y herramientas para estudiar los ciclos de Comercio y Marketing.',
+  name: 'ECOyNEXO',
+  claim: 'Aprende con NEXO',
+  tagline: 'Aprende con NEXO, no hagas el ECO.',
+  slogan: 'Aprende con NEXO, no hagas el ECO.',
   description: 'Lecciones, tiras cómicas, tests, simuladores y herramientas para estudiar los ciclos de FP de Comercio y Marketing, con la actualidad de lo que estudias.',
   url: process.env.NEXT_PUBLIC_SITE_URL || 'https://ecoynexo.com',
   locale: 'es',
-  defaultAuthor: 'Redacción ECONEXO'
+  defaultAuthor: 'Redacción ECOyNEXO'
 };
 
 export type Section = { slug: string; name: string; short?: string; desc: string; live: boolean; subs: [string, string][] };

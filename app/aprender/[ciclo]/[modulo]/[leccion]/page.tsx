@@ -32,7 +32,7 @@ export default async function LeccionPage({ params }: Props) {
   const reading = published().filter((a) => a.modulos.includes(modulo) && a.codigos.some((x) => l.codigos.includes(x))).slice(0, 3);
   return (
     <article className="mx-auto max-w-4xl py-10">
-      <p className="text-sm font-semibold text-teal"><Link href="/estudiar/">Estudiar</Link> · <Link href={`/estudiar/${c.slug}/`}>{c.name}</Link> · <Link href={`/estudiar/${c.slug}/${m.slug}/`}>{m.name}</Link></p>
+      <p className="text-sm font-semibold text-teal"><Link href="/aprender/">Aprender</Link> · <Link href={`/aprender/${c.slug}/`}>{c.name}</Link> · <Link href={`/aprender/${c.slug}/${m.slug}/`}>{m.name}</Link></p>
       <p className="mt-3 text-xs font-bold uppercase tracking-wide text-muted">Lección {l.orden} de {ls.length}{l.area ? ` · ${l.area}` : ''}</p>
       <h1 className="mt-1 text-3xl font-extrabold leading-tight text-navy md:text-5xl">{l.titulo}</h1>
       <p className="mt-3 text-lg text-muted">🎯 {l.objetivo}</p>
@@ -61,7 +61,7 @@ export default async function LeccionPage({ params }: Props) {
 
       <nav className="mt-12 flex justify-between gap-4 border-t border-line pt-6" aria-label="Lecciones">
         {prev ? <Link href={prev.url} className="max-w-[48%] text-sm"><span className="text-muted">← Anterior</span><br /><b className="text-navy">{prev.titulo}</b></Link> : <span />}
-        {next ? <Link href={next.url} className="max-w-[48%] text-right text-sm"><span className="text-muted">Siguiente →</span><br /><b className="text-navy">{next.titulo}</b></Link> : <Link href={`/estudiar/${c.slug}/${m.slug}/`} className="text-sm font-bold text-navy">Volver al módulo →</Link>}
+        {next ? <Link href={next.url} className="max-w-[48%] text-right text-sm"><span className="text-muted">Siguiente →</span><br /><b className="text-navy">{next.titulo}</b></Link> : <Link href={`/aprender/${c.slug}/${m.slug}/`} className="text-sm font-bold text-navy">Volver al módulo →</Link>}
       </nav>
     </article>
   );

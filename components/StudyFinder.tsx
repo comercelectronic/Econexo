@@ -27,13 +27,13 @@ export function StudyFinder({ ciclos, initialGrado = 'todos' }: { ciclos: C[]; i
         {list.map((c) => (
           <section key={c.slug} className="rounded-2xl border border-line p-5">
             <p className="text-xs font-bold uppercase tracking-wide text-teal">{c.grado === 'medio' ? 'Grado medio' : 'Grado superior'}</p>
-            <h2 className="mt-1 text-xl font-extrabold text-navy"><Link href={`/estudiar/${c.slug}/`} className="hover:text-blue">{c.name}</Link></h2>
+            <h2 className="mt-1 text-xl font-extrabold text-navy"><Link href={`/aprender/${c.slug}/`} className="hover:text-blue">{c.name}</Link></h2>
             <p className="mt-1 text-sm text-muted">{c.resumen}</p>
             {c.modulos.length > 0 ? (
               <ul className="mt-3 space-y-1.5">
                 {c.modulos.map((m) => (
                   <li key={m.slug}>
-                    {m.live ? <Link href={`/estudiar/${c.slug}/${m.slug}/`} className="flex items-center justify-between gap-2 rounded-lg bg-teal/10 px-3 py-2 font-semibold text-navy hover:bg-teal/20"><span>{m.name}</span><span className="text-xs font-bold text-teal-dark">{m.lecciones} lecciones · simulador →</span></Link>
+                    {m.live ? <Link href={`/aprender/${c.slug}/${m.slug}/`} className="flex items-center justify-between gap-2 rounded-lg bg-teal/10 px-3 py-2 font-semibold text-navy hover:bg-teal/20"><span>{m.name}</span><span className="text-xs font-bold text-teal-dark">{m.lecciones} lecciones · simulador →</span></Link>
                       : <span className="flex items-center justify-between gap-2 px-3 py-1.5 text-sm text-muted"><span>{m.name}</span><span className="text-xs">Próximamente</span></span>}
                   </li>
                 ))}

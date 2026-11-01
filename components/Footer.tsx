@@ -10,7 +10,11 @@ const INFO: [string, string][] = [
 
 export function Footer() {
   return (
-    <footer className="mt-16 bg-navy text-white/80">
+    <footer className="mt-28 bg-navy text-white/80">
+      <div className="mx-auto flex max-w-6xl items-end justify-between px-4" aria-hidden="true">
+        <img src="/media/personajes/nexo-satisfecha.webp" alt="" className="-mt-20 h-28 w-auto rounded-t-3xl bg-white px-3 pt-2" loading="lazy" />
+        <img src="/media/personajes/eco-contento.webp" alt="" className="-mt-20 h-28 w-auto rounded-t-3xl bg-white px-3 pt-2" loading="lazy" />
+      </div>
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 md:grid-cols-4">
         <div className="md:col-span-1">
           <Logo dark />
@@ -19,7 +23,7 @@ export function Footer() {
         <div>
           <h2 className="mb-3 text-sm font-bold text-white">Aprende</h2>
           <ul className="space-y-1.5 text-sm">
-            {[['/estudiar/', 'Estudiar'], ['/simuladores/', 'Simuladores'], ['/herramientas/', 'Herramientas'], ['/actualidad/', 'Actualidad'], ['/eco-y-nexo/', 'ECO y NEXO']].map(([h, n]) => <li key={h}><Link className="hover:text-teal" href={h}>{n}</Link></li>)}
+            {[['/actualidad/', 'Actualidad'], ['/aprender/', 'Aprender'], ['/simuladores/', 'Simuladores'], ['/herramientas/', 'Herramientas'], ['/eco-y-nexo/', 'ECO y NEXO']].map(([h, n]) => <li key={h}><Link className="hover:text-teal" href={h}>{n}</Link></li>)}
           </ul>
         </div>
         <div>
@@ -27,11 +31,11 @@ export function Footer() {
           <ul className="space-y-1.5 text-sm">{SECTIONS.filter((s) => s.live && s.slug !== 'actualidad').map((s) => <li key={s.slug}><Link className="hover:text-teal" href={`/${s.slug}/`}>{s.name}</Link></li>)}</ul>
         </div>
         <div>
-          <h2 className="mb-3 text-sm font-bold text-white">ECONEXO</h2>
+          <h2 className="mb-3 text-sm font-bold text-white">ECOyNEXO</h2>
           <ul className="space-y-1.5 text-sm">{INFO.map(([slug, label]) => <li key={slug}><Link className="hover:text-teal" href={`/${slug}/`}>{label}</Link></li>)}</ul>
         </div>
       </div>
-      <p className="border-t border-white/10 px-4 py-5 text-center text-xs text-white/50">© {new Date().getFullYear()} ECONEXO. Los contenidos son informativos y educativos; no constituyen asesoramiento financiero personalizado.</p>
+      <p className="border-t border-white/10 px-4 py-5 text-center text-xs text-white/50">© {new Date().getFullYear()} ECOyNEXO. Los contenidos son informativos y educativos; no constituyen asesoramiento financiero personalizado.</p>
     </footer>
   );
 }

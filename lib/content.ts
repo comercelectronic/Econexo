@@ -81,7 +81,7 @@ export function allArticles(): Article[] {
         seccion, slug, url: `/${seccion}/${slug}/`,
         titulo: data.titulo, subtitulo: data.subtitulo || '', descripcion: data.descripcion || data.subtitulo || '',
         tipo: data.tipo || 'guia', subseccion: data.subseccion, etiquetas: data.etiquetas || [],
-        autor: data.autor || 'Redacción ECONEXO', revisor: data.revisor,
+        autor: data.autor || 'Redacción ECOyNEXO', revisor: data.revisor,
         fecha: new Date(data.fecha).toISOString(), actualizado: data.actualizado ? new Date(data.actualizado).toISOString() : undefined,
         estado: data.estado || 'borrador', destacado: !!data.destacado,
         pais: data.pais || ['global'], moneda: data.moneda, imagen: data.imagen, imagen_alt: data.imagen_alt,

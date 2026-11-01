@@ -7,7 +7,7 @@ tipo: caso
 subseccion: casos-marketing
 estado: revision
 fecha: 2026-10-23T07:00:00+01:00
-autor: Redacción ECONEXO
+autor: Redacción ECOyNEXO
 etiquetas: [geolocalización, apps, publicidad digital, burger king]
 ficha: { Empresa: Burger King, Año: "2018", Sector: Restauración, Concepto: "Geofencing" }
 fuentes:

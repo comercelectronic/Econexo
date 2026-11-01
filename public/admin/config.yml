@@ -1,4 +1,4 @@
-# Panell editorial d'ECONEXO (Sveltia CMS, compatible amb Decap CMS).
+# Panell editorial d'ECOyNEXO (Sveltia CMS, compatible amb Decap CMS).
 # Cada article és un fitxer Markdown a content/<secció>/. Només es publiquen els que tenen estado: publicada.
 backend:
   name: github
@@ -12,7 +12,7 @@ media_folder: public/media
 public_folder: /media
 locale: es
 site_url: https://ecoynexo.com
-logo_url: /favicon.svg
+logo_url: /favicon.png
 
 collections:
   - name: actualidad
@@ -37,7 +37,7 @@ collections:
       - { name: estado, label: Estado editorial, widget: select, default: borrador, options: [borrador, revision, aprobada, programada, publicada, archivada] }
       - { name: fecha, label: Fecha de publicación (si es futura, se publica ese día), widget: datetime }
       - { name: actualizado, label: Fecha de actualización, widget: datetime, required: false }
-      - { name: autor, label: Autor, widget: string, default: Redacción ECONEXO }
+      - { name: autor, label: Autor, widget: string, default: Redacción ECOyNEXO }
       - { name: revisor, label: Revisor especializado, widget: string, required: false }
       - { name: destacado, label: Destacado en portada, widget: boolean, default: false }
       - { name: etiquetas, label: Etiquetas, widget: list, required: false }
@@ -101,7 +101,7 @@ collections:
       - { name: estado, label: Estado editorial, widget: select, default: borrador, options: [borrador, revision, aprobada, programada, publicada, archivada] }
       - { name: fecha, label: Fecha de publicación (si es futura, se publica ese día), widget: datetime }
       - { name: actualizado, label: Fecha de actualización, widget: datetime, required: false }
-      - { name: autor, label: Autor, widget: string, default: Redacción ECONEXO }
+      - { name: autor, label: Autor, widget: string, default: Redacción ECOyNEXO }
       - { name: revisor, label: Revisor especializado, widget: string, required: false }
       - { name: destacado, label: Destacado en portada, widget: boolean, default: false }
       - { name: etiquetas, label: Etiquetas, widget: list, required: false }
@@ -165,7 +165,7 @@ collections:
       - { name: estado, label: Estado editorial, widget: select, default: borrador, options: [borrador, revision, aprobada, programada, publicada, archivada] }
       - { name: fecha, label: Fecha de publicación (si es futura, se publica ese día), widget: datetime }
       - { name: actualizado, label: Fecha de actualización, widget: datetime, required: false }
-      - { name: autor, label: Autor, widget: string, default: Redacción ECONEXO }
+      - { name: autor, label: Autor, widget: string, default: Redacción ECOyNEXO }
       - { name: revisor, label: Revisor especializado, widget: string, required: false }
       - { name: destacado, label: Destacado en portada, widget: boolean, default: false }
       - { name: etiquetas, label: Etiquetas, widget: list, required: false }
@@ -229,7 +229,7 @@ collections:
       - { name: estado, label: Estado editorial, widget: select, default: borrador, options: [borrador, revision, aprobada, programada, publicada, archivada] }
       - { name: fecha, label: Fecha de publicación (si es futura, se publica ese día), widget: datetime }
       - { name: actualizado, label: Fecha de actualización, widget: datetime, required: false }
-      - { name: autor, label: Autor, widget: string, default: Redacción ECONEXO }
+      - { name: autor, label: Autor, widget: string, default: Redacción ECOyNEXO }
       - { name: revisor, label: Revisor especializado, widget: string, required: false }
       - { name: destacado, label: Destacado en portada, widget: boolean, default: false }
       - { name: etiquetas, label: Etiquetas, widget: list, required: false }
@@ -293,7 +293,7 @@ collections:
       - { name: estado, label: Estado editorial, widget: select, default: borrador, options: [borrador, revision, aprobada, programada, publicada, archivada] }
       - { name: fecha, label: Fecha de publicación (si es futura, se publica ese día), widget: datetime }
       - { name: actualizado, label: Fecha de actualización, widget: datetime, required: false }
-      - { name: autor, label: Autor, widget: string, default: Redacción ECONEXO }
+      - { name: autor, label: Autor, widget: string, default: Redacción ECOyNEXO }
       - { name: revisor, label: Revisor especializado, widget: string, required: false }
       - { name: destacado, label: Destacado en portada, widget: boolean, default: false }
       - { name: etiquetas, label: Etiquetas, widget: list, required: false }
@@ -357,7 +357,7 @@ collections:
       - { name: estado, label: Estado editorial, widget: select, default: borrador, options: [borrador, revision, aprobada, programada, publicada, archivada] }
       - { name: fecha, label: Fecha de publicación (si es futura, se publica ese día), widget: datetime }
       - { name: actualizado, label: Fecha de actualización, widget: datetime, required: false }
-      - { name: autor, label: Autor, widget: string, default: Redacción ECONEXO }
+      - { name: autor, label: Autor, widget: string, default: Redacción ECOyNEXO }
       - { name: revisor, label: Revisor especializado, widget: string, required: false }
       - { name: destacado, label: Destacado en portada, widget: boolean, default: false }
       - { name: etiquetas, label: Etiquetas, widget: list, required: false }

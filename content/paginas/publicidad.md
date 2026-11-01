@@ -1,8 +1,8 @@
 ---
 titulo: "Publicidad y colaboraciones"
-descripcion: "Opciones de publicidad, patrocinio y colaboración con ECONEXO."
+descripcion: "Opciones de publicidad, patrocinio y colaboración con ECOyNEXO."
 ---
-ECONEXO se financia con **publicidad**, **enlaces de afiliación**, **patrocinios** y **productos propios** (formación y recursos).
+ECOyNEXO se financia con **publicidad**, **enlaces de afiliación**, **patrocinios** y **productos propios** (formación y recursos).
 
 - Toda la publicidad y los contenidos patrocinados se identifican claramente.
 - Los patrocinadores no deciden el contenido editorial.

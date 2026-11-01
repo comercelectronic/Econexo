@@ -8,7 +8,7 @@ tipo: guia
 subseccion: diccionario
 estado: revision
 fecha: 2026-10-27T10:00:00+01:00
-autor: Redacción ECONEXO
+autor: Redacción ECOyNEXO
 etiquetas: [métricas, kpi, roas, roi, analítica]
 pais: [global]
 herramienta: calculadora-roi

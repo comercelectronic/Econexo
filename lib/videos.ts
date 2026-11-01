@@ -1,4 +1,4 @@
-// Vídeos del canal ECO y NEXO (content/videos/<slug>.md). Cada vídeo es relaciona amb una guia i una eina d'ECONEXO.
+// Vídeos del canal ECO y NEXO (content/videos/<slug>.md). Cada vídeo es relaciona amb una guia i una eina d'ECOyNEXO.
 import fs from 'node:fs';
 import path from 'node:path';
 import matter from 'gray-matter';

@@ -1,6 +1,6 @@
 ---
 titulo: "Política de privacidad"
-descripcion: "Cómo trata ECONEXO tus datos personales."
+descripcion: "Cómo trata ECOyNEXO tus datos personales."
 actualizado: "[PENDIENTE: fecha]"
 ---
 > **Plantilla pendiente de completar y revisar.** Debe adaptarse a los servicios que finalmente se usen (newsletter, analítica, publicidad).

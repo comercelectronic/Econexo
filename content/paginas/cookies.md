@@ -1,13 +1,13 @@
 ---
 titulo: "Política de cookies"
-descripcion: "Qué cookies usa ECONEXO y cómo gestionarlas."
+descripcion: "Qué cookies usa ECOyNEXO y cómo gestionarlas."
 actualizado: "[PENDIENTE: fecha]"
 ---
 > **Plantilla pendiente de completar.** Actualízala cuando se activen la analítica o la publicidad.
 
 ## Situación actual
 
-Actualmente ECONEXO **no utiliza cookies de analítica ni de publicidad**. Solo pueden usarse elementos técnicos necesarios para que la web funcione, que no requieren consentimiento.
+Actualmente ECOyNEXO **no utiliza cookies de analítica ni de publicidad**. Solo pueden usarse elementos técnicos necesarios para que la web funcione, que no requieren consentimiento.
 
 ## Cuando se active la publicidad
 

@@ -7,7 +7,7 @@ tipo: caso
 subseccion: casos-crecimiento
 estado: revision
 fecha: 2026-10-24T07:00:00+01:00
-autor: Redacción ECONEXO
+autor: Redacción ECOyNEXO
 etiquetas: [marketing viral, causas sociales, redes sociales]
 ficha: { Empresa: "ALS Association", Año: "2014", Sector: "Organización sin ánimo de lucro", Concepto: "Marketing viral" }
 fuentes:

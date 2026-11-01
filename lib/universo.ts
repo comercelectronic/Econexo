@@ -1,10 +1,10 @@
-// El mundo de ECO y NEXO: la marca educativa d'ECONEXO. Personatges, expressions, sèries i dades dels canals.
+// El mundo de ECO y NEXO: la marca educativa d'ECOyNEXO. Personatges, expressions, sèries i dades dels canals.
 // Junts formen el nom del mitjà: ECO (l'ajolot que repeteix tot el que sent) i NEXO (la pop que ho connecta tot).
 // Si canvia un disseny o un nom, només cal tocar aquest fitxer (i les imatges de public/media/personajes/).
 
 export const UNIVERSE = {
   slug: 'eco-y-nexo', name: 'El mundo de ECO y NEXO', short: 'ECO y NEXO',
-  claim: 'El marketing explicado sin tonterías.', closing: 'No repitas como ECO: aprende marketing de verdad.'
+  claim: 'Comercio y marketing explicados sin tonterías.', closing: 'Aprende con NEXO, no hagas el ECO.'
 };
 export const CHANNEL = {
   youtube: process.env.NEXT_PUBLIC_YOUTUBE_URL || '',

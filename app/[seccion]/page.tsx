@@ -2,6 +2,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { PageHero } from '@/components/Mascotas';
 import { ArticleCard } from '@/components/ArticleCard';
 import { AdSlot } from '@/components/AdSlot';
 import { bySection, byType, pages } from '@/lib/content';
@@ -12,6 +13,13 @@ export function generateStaticParams() {
   return [...liveSections().map((s) => ({ seccion: s.slug })), ...pages().map((p) => ({ seccion: p.slug }))];
 }
 
+const HERO: Record<string, { nexo?: string; eco?: string; dice: { quien: string; texto: string } }> = {
+  actualidad: { nexo: 'explicando', eco: 'sorprendido', dice: { quien: 'eco', texto: '¡Última hora! Bueno… me lo ha contado un primo.' } },
+  casos: { nexo: 'esceptica', eco: 'avergonzado', dice: { quien: 'nexo', texto: 'Aprende de los errores de otros. Los de ECO ya los conoces.' } },
+  finanzas: { nexo: 'explicando', eco: 'confuso', dice: { quien: 'nexo', texto: 'Primero aprende. Después invierte.' } },
+  'inteligencia-artificial': { nexo: 'esceptica', eco: 'contento', dice: { quien: 'eco', texto: '¡Con IA lo petamos!' } },
+  default: { nexo: 'explicando', eco: 'contento', dice: { quien: 'nexo', texto: 'Aquí lo explicamos paso a paso.' } }
+};
 type Props = { params: Promise<{ seccion: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -38,15 +46,13 @@ export default async function SectionPage({ params }: Props) {
   const used = new Set(list.map((a) => a.subseccion));
   return (
     <div className="py-10">
-      <header className="border-b-2 border-navy pb-4">
-        <h1 className="text-4xl font-extrabold text-navy">{s.name}</h1>
-        <p className="mt-2 max-w-3xl text-muted">{s.desc}</p>
+      <PageHero title={s.name} intro={s.desc} {...HERO[s.slug] || HERO.default}>
         {s.subs.some(([k]) => used.has(k)) && (
           <ul className="mt-4 flex flex-wrap gap-2">
             {s.subs.filter(([k]) => used.has(k)).map(([k, n]) => <li key={k}><Link href={`/${s.slug}/${k}/`} className="block rounded-full border border-line px-3 py-1 text-sm font-semibold text-navy hover:border-teal hover:text-teal">{n}</Link></li>)}
           </ul>
         )}
-      </header>
+      </PageHero>
       {list.length ? (
         <div className="mt-8 grid gap-5 md:grid-cols-3">
           {list.map((a, i) => <div key={a.url} className={i === 0 ? 'md:col-span-3' : ''}><ArticleCard a={a} variant={i === 0 ? 'hero' : 'card'} /></div>)}

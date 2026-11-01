@@ -7,7 +7,7 @@ tipo: caso
 subseccion: casos-marketing
 estado: revision
 fecha: 2026-10-30T07:00:00+01:00
-autor: Redacción ECONEXO
+autor: Redacción ECOyNEXO
 etiquetas: [estrategia, innovación, disrupción, kodak]
 ficha: { Empresa: Kodak, Año: "1975–2012", Sector: Fotografía, Concepto: "Miopía de marketing" }
 fuentes:
