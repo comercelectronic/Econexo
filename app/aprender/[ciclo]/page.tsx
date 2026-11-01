@@ -10,7 +10,7 @@ type Props = { params: Promise<{ ciclo: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const c = cicloBySlug((await params).ciclo);
-  return c ? { title: `${c.name} (${c.grado === 'medio' ? 'grado medio' : 'grado superior'})`, description: c.resumen, alternates: { canonical: `/aprender/${c.slug}/` } } : {};
+  return c ? { title: `${c.name} (${c.grado === 'medio' ? 'grado medio' : 'grado superior'})`, description: c.resumen, alternates: { canonical: `/aprender/${c.slug}/` }, ...(c.modulos.some((m) => m.live) ? {} : { robots: { index: false } }) } : {};
 }
 
 export default async function CicloPage({ params }: Props) {

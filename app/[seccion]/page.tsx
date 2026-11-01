@@ -5,12 +5,12 @@ import { notFound } from 'next/navigation';
 import { PageHero } from '@/components/Mascotas';
 import { ArticleCard } from '@/components/ArticleCard';
 import { AdSlot } from '@/components/AdSlot';
-import { bySection, byType, pages } from '@/lib/content';
+import { bySection, byType, pages, sectionHasContent } from '@/lib/content';
 import { liveSections, sectionBySlug } from '@/lib/site';
 
 export const dynamicParams = false;
 export function generateStaticParams() {
-  return [...liveSections().map((s) => ({ seccion: s.slug })), ...pages().map((p) => ({ seccion: p.slug }))];
+  return [...liveSections().filter((s) => sectionHasContent(s.slug)).map((s) => ({ seccion: s.slug })), ...pages().map((p) => ({ seccion: p.slug }))];
 }
 
 const HERO: Record<string, { nexo?: string; eco?: string; dice: { quien: string; texto: string } }> = {

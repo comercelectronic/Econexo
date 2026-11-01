@@ -102,6 +102,8 @@ export function published(): Article[] {
 }
 
 export const isPreview = SHOW_DRAFTS;
+// Seccions amb algun contingut visible en aquesta compilació (les buides no surten al menú, al mapa del web ni es generen)
+export const sectionHasContent = (slug: string) => (slug === 'actualidad' ? published().some((a) => a.tipo === 'noticia') : published().some((a) => a.seccion === slug));
 export const bySection = (s: string) => published().filter((a) => a.seccion === s);
 export const byType = (t: string) => published().filter((a) => a.tipo === t);
 export const findArticle = (s: string, slug: string) => published().find((a) => a.seccion === s && a.slug === slug);

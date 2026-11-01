@@ -15,7 +15,9 @@ export const metadata: Metadata = {
   description: SITE.description,
   openGraph: { siteName: SITE.name, locale: 'es_ES', type: 'website' },
   alternates: { canonical: '/' },
-  icons: { icon: '/favicon.png' }
+  icons: { icon: '/favicon.png' },
+  // Verificació del web a AdSense (només si hi ha el client configurat a Netlify)
+  ...(process.env.NEXT_PUBLIC_ADSENSE_CLIENT ? { other: { 'google-adsense-account': process.env.NEXT_PUBLIC_ADSENSE_CLIENT } } : {})
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

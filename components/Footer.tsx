@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Logo } from './Logo';
 import { SECTIONS, SITE } from '@/lib/site';
+import { sectionHasContent } from '@/lib/content';
 
 const INFO: [string, string][] = [
   ['quienes-somos', 'Quiénes somos'], ['politica-editorial', 'Política editorial'], ['como-verificamos', 'Cómo verificamos la información'],
@@ -23,12 +24,12 @@ export function Footer() {
         <div>
           <h2 className="mb-3 text-sm font-bold text-white">Aprende</h2>
           <ul className="space-y-1.5 text-sm">
-            {[['/actualidad/', 'Actualidad'], ['/aprender/', 'Aprender'], ['/simuladores/', 'Simuladores'], ['/herramientas/', 'Herramientas'], ['/eco-y-nexo/', 'ECO y NEXO']].map(([h, n]) => <li key={h}><Link className="hover:text-teal" href={h}>{n}</Link></li>)}
+            {[...(sectionHasContent('actualidad') ? [['/actualidad/', 'Actualidad']] : []), ['/aprender/', 'Aprender'], ['/simuladores/', 'Simuladores'], ['/herramientas/', 'Herramientas'], ['/eco-y-nexo/', 'ECO y NEXO']].map(([h, n]) => <li key={h}><Link className="hover:text-teal" href={h}>{n}</Link></li>)}
           </ul>
         </div>
         <div>
           <h2 className="mb-3 text-sm font-bold text-white">Recursos</h2>
-          <ul className="space-y-1.5 text-sm">{SECTIONS.filter((s) => s.live && s.slug !== 'actualidad').map((s) => <li key={s.slug}><Link className="hover:text-teal" href={`/${s.slug}/`}>{s.name}</Link></li>)}</ul>
+          <ul className="space-y-1.5 text-sm">{SECTIONS.filter((s) => s.live && s.slug !== 'actualidad' && sectionHasContent(s.slug)).map((s) => <li key={s.slug}><Link className="hover:text-teal" href={`/${s.slug}/`}>{s.name}</Link></li>)}</ul>
         </div>
         <div>
           <h2 className="mb-3 text-sm font-bold text-white">ECOyNEXO</h2>
