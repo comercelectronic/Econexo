@@ -23,11 +23,11 @@ export type Character = {
 // Els guions fan servir gestos (alegria, sorpresa, confusion…): GESTOS els tradueix a la pose dibuixada que hi encaixa.
 const P = '/media/personajes/';
 export const POSES: Record<string, string[]> = {
-  eco: ['contento', 'sorprendido', 'avergonzado', 'confuso', 'hablando'],
+  eco: ['contento', 'sorprendido', 'avergonzado', 'confuso', 'hablando', 'enfadado', 'senalando'],
   nexo: ['esceptica', 'explicando', 'tapandose', 'satisfecha', 'enfadada']
 };
 const GESTOS: Record<string, Record<string, string>> = {
-  eco: { neutral: 'contento', alegria: 'contento', sorpresa: 'sorprendido', enfado: 'sorprendido', confusion: 'confuso', verguenza: 'avergonzado', hablando: 'hablando', senalando: 'hablando' },
+  eco: { neutral: 'contento', alegria: 'contento', sorpresa: 'sorprendido', enfado: 'enfadado', confusion: 'confuso', verguenza: 'avergonzado', hablando: 'hablando', senalando: 'senalando' },
   nexo: { neutral: 'esceptica', esceptico: 'esceptica', pensativo: 'explicando', sorpresa: 'explicando', paciencia: 'tapandose', guino: 'satisfecha', alegria: 'satisfecha', enfado: 'enfadada' }
 };
 // Pose del personatge per a un gest (o la pose base si el gest no existeix)
