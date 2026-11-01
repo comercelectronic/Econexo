@@ -7,7 +7,7 @@ export const SITE = {
   tagline: 'Aprende. Practica. Avanza.',
   slogan: 'Lecciones, simuladores y herramientas para estudiar los ciclos de Comercio y Marketing.',
   description: 'Lecciones, tiras cómicas, tests, simuladores y herramientas para estudiar los ciclos de FP de Comercio y Marketing, con la actualidad de lo que estudias.',
-  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://econexo.com',
+  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://ecoynexo.com',
   locale: 'es',
   defaultAuthor: 'Redacción ECONEXO'
 };

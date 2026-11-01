@@ -78,7 +78,7 @@ Redes: `NEXT_PUBLIC_YOUTUBE_URL`, `NEXT_PUBLIC_INSTAGRAM_URL`, `NEXT_PUBLIC_TIKT
 
 1. Sube este repositorio a GitHub (`comercelectronic/econexo`) y conéctalo a Netlify (detecta `netlify.toml`).
 2. Variables de entorno en Netlify:
-   - `NEXT_PUBLIC_SITE_URL`: el dominio definitivo (por ejemplo, `https://econexo.com`).
+   - `NEXT_PUBLIC_SITE_URL`: el dominio definitivo (por ejemplo, `https://ecoynexo.com`).
    - `NEXT_PUBLIC_ADSENSE_CLIENT`: el identificador `ca-pub-…`, solo cuando AdSense apruebe la web.
 3. Panel editorial: entra en `/admin/` y accede con GitHub (Sveltia permite un *token* personal de GitHub con permiso de escritura en el repositorio).
 4. Completa los datos `[PENDIENTE]` del aviso legal, privacidad, cookies, contacto y quiénes somos.

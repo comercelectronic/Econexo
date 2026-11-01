@@ -11,7 +11,7 @@ backend:
 media_folder: public/media
 public_folder: /media
 locale: es
-site_url: https://econexo.com
+site_url: https://ecoynexo.com
 logo_url: /favicon.svg
 
 collections:
