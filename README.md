@@ -96,3 +96,10 @@ npm run dev                                   # http://localhost:3000
 ECONEXO_MOSTRAR_BORRADORES=1 npm run build    # compilación con artículos en revisión
 npm run check                                 # tipos y revisión del contenido
 ```
+
+## Idiomas (catalán y castellano)
+
+- La web existe en catalán (`/ca/…`, por defecto) y en castellano (`/es/…`). Netlify redirige `/` a `/ca/`; el selector de idioma de la cabecera lleva a la misma página en el otro idioma.
+- Los textos del código están en castellano y se traducen con `t('…')` (`lib/i18n.ts`). El diccionario castellano → catalán está en `scripts/i18n/p*.py` y se compila con `python3 scripts/i18n/build.py` (genera `lib/ca.json`). `python3 scripts/i18n/check.py` comprueba que no falte ninguna traducción.
+- Los contenidos largos tienen un fichero por idioma con el mismo nombre: `content/` (castellano) y `content-ca/` (catalán): lecciones, artículos y páginas legales. `scripts/i18n/gen_lessons_ca.js` y `gen_content_ca.py` regeneran los catalanes a partir del juego Agència Digital y de las traducciones de `scripts/i18n/`.
+- Solo se muestra lo que ya está disponible: los ciclos y módulos «en preparación» no aparecen en la web.

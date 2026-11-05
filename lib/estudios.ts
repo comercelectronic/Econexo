@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import matter from 'gray-matter';
 import { render } from './content';
+import type { Lang } from './i18n';
 
 export const GRADOS = [
   { id: 'medio', name: 'Grado medio' },
@@ -15,7 +16,7 @@ export const SIMULADORES: Simulador[] = [
   {
     id: 'agencia-digital', name: 'Agència Digital',
     desc: 'Dirige tu propia agencia de marketing digital en Vic: clientes reales, decisiones con consecuencias, proyectos que corrige la IA y tu profesor, mundo explorable y mercado entre las agencias de tu clase.',
-    url: 'https://agenciadigitalosona.netlify.app/?lang=ca', idiomas: 'Catalán (por defecto), castellano e inglés'
+    url: 'https://agenciadigitalosona.netlify.app/', idiomas: 'Catalán, castellano e inglés'
   }
 ];
 
@@ -43,6 +44,10 @@ export const CICLOS: Ciclo[] = [
   { slug: 'transporte-y-logistica', name: 'Transporte y Logística', grado: 'superior', resumen: 'Gestión del transporte, almacenes y cadena de suministro.', modulos: [] }
 ];
 
+// El simulador se abre en el idioma de la web (se puede cambiar dentro del juego)
+export const simUrl = (s: Simulador, lang: Lang) => `${s.url}?lang=${lang}`;
+// Solo se muestra lo que ya está disponible: ciclos con algún módulo activo y, dentro de cada uno, solo sus módulos activos
+export const ciclosLive = (): Ciclo[] => CICLOS.filter((c) => c.modulos.some((m) => m.live)).map((c) => ({ ...c, modulos: c.modulos.filter((m) => m.live) }));
 export const cicloBySlug = (s: string) => CICLOS.find((c) => c.slug === s);
 export const liveModules = () => CICLOS.flatMap((c) => c.modulos.filter((x) => x.live).map((x) => ({ ciclo: c, modulo: x })));
 export const simuladorById = (id?: string) => SIMULADORES.find((s) => s.id === id);
@@ -56,23 +61,23 @@ export type Leccion = {
 export type Temario = { bloques: Record<string, string>; temario: [string, string][]; ahora: Record<string, string> };
 
 const cache: Record<string, Leccion[]> = {};
-export function lecciones(ciclo: string, modulo: string): Leccion[] {
-  const key = `${ciclo}/${modulo}`;
+export function lecciones(lang: Lang, ciclo: string, modulo: string): Leccion[] {
+  const key = `${lang}/${ciclo}/${modulo}`;
   if (cache[key]) return cache[key];
-  const dir = path.join(process.cwd(), 'content', 'modulos', modulo);
+  const dir = path.join(process.cwd(), lang === 'ca' ? 'content-ca' : 'content', 'modulos', modulo);
   const list = !fs.existsSync(dir) ? [] : fs.readdirSync(dir).filter((f) => f.endsWith('.md')).map((f) => {
     const { data, content } = matter(fs.readFileSync(path.join(dir, f), 'utf8'));
     const slug = f.replace(/\.md$/, '');
     return {
       id: data.id || slug, slug, url: `/aprender/${ciclo}/${modulo}/${slug}/`, titulo: data.titulo, objetivo: data.objetivo || '', orden: data.orden || 999,
       codigos: data.codigos || [], area: data.area || '', capitulo: data.capitulo, capitulo_titulo: data.capitulo_titulo,
-      tira: data.tira || [], ejemplo: data.ejemplo || '', errores: data.errores || [], test: data.test || [], html: render(content).html
+      tira: data.tira || [], ejemplo: data.ejemplo || '', errores: data.errores || [], test: data.test || [], html: render(content, lang).html
     } as Leccion;
   }).filter((l) => l.titulo).sort((a, b) => a.orden - b.orden);
   return (cache[key] = list);
 }
 
-export function temario(modulo: string): Temario | null {
-  const f = path.join(process.cwd(), 'data', `${modulo}.json`);
+export function temario(lang: Lang, modulo: string): Temario | null {
+  const f = path.join(process.cwd(), 'data', lang === 'ca' ? `${modulo}.ca.json` : `${modulo}.json`);
   return fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, 'utf8')) : null;
 }

@@ -8,13 +8,16 @@ export function LogoMark({ className = 'h-11' }: { className?: string }) {
   );
 }
 
-export function Logo({ dark = false }: { dark?: boolean }) {
+import { tr, type Lang } from '@/lib/i18n';
+
+export function Logo({ dark = false, lang = 'ca' }: { dark?: boolean; lang?: Lang }) {
+  const t = tr(lang);
   return (
     <span className="flex items-center gap-3">
       <LogoMark />
       <span className="leading-none">
         <span className="block font-display text-2xl font-extrabold tracking-tight"><span className="text-uni">ECO</span><span className={`mx-0.5 text-base font-bold ${dark ? 'text-white/70' : 'text-muted'}`}>y</span><span className={dark ? 'text-teal' : 'text-teal-dark'}>NEXO</span></span>
-        <span className={`hidden text-[10px] font-semibold tracking-[0.16em] sm:block ${dark ? 'text-white/70' : 'text-muted'}`}>APRENDE CON NEXO · NO HAGAS EL ECO</span>
+        <span className={`hidden text-[10px] font-semibold tracking-[0.16em] sm:block ${dark ? 'text-white/70' : 'text-muted'}`}>{t('APRENDE CON NEXO · NO HAGAS EL ECO')}</span>
       </span>
     </span>
   );

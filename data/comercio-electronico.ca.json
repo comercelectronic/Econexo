@@ -1,0 +1,277 @@
+{
+ "bloques": {
+  "1": "Aplicació de les directrius del pla de màrqueting digital",
+  "2": "Realització d'accions de compravenda en línia",
+  "3": "Realització del manteniment de la pàgina web",
+  "4": "Establiment i gestió de relacions amb altres usuaris de la xarxa",
+  "5": "Ús d'entorns web 2.0"
+ },
+ "temario": [
+  [
+   "1.1",
+   "Pla de màrqueting digital"
+  ],
+  [
+   "1.2",
+   "Alta en cercadors i en directoris especialitzats"
+  ],
+  [
+   "1.3",
+   "Característiques específiques del client en línia"
+  ],
+  [
+   "1.4",
+   "Butlletins electrònics enviats amb e-mail màrqueting"
+  ],
+  [
+   "1.5",
+   "Disseny de blogs corporatius: modalitats i objectius"
+  ],
+  [
+   "1.6",
+   "Màrqueting en cercadors: SEM, SEO i campanyes en pàgines afins"
+  ],
+  [
+   "1.7",
+   "Normativa sobre comunicacions electròniques i privacitat"
+  ],
+  [
+   "1.8",
+   "Pagaments amb diners electrònics i pagaments en línia"
+  ],
+  [
+   "1.9",
+   "Màrqueting d'afiliació"
+  ],
+  [
+   "1.10",
+   "Màrqueting relacional i gestió de la relació amb els clients (CRM)"
+  ],
+  [
+   "1.11",
+   "Cross màrqueting"
+  ],
+  [
+   "1.12",
+   "Màrqueting viral"
+  ],
+  [
+   "1.13",
+   "Màrqueting one-to-one"
+  ],
+  [
+   "1.14",
+   "Màrqueting mòbil i TDT. Banca mòbil. Pagament amb el mòbil"
+  ],
+  [
+   "1.15",
+   "Internet TV, videoblogs i web TV"
+  ],
+  [
+   "2.1",
+   "Idea i disseny d'una botiga virtual"
+  ],
+  [
+   "2.2",
+   "Catàleg de productes en línia"
+  ],
+  [
+   "2.3",
+   "Selecció i registre de domini"
+  ],
+  [
+   "2.4",
+   "Models de negoci digital: portals horitzontals, B2B i B2C"
+  ],
+  [
+   "2.5",
+   "Aparador web. Catàleg electrònic"
+  ],
+  [
+   "2.6",
+   "Control logístic de les mercaderies venudes en línia"
+  ],
+  [
+   "2.7",
+   "La reclamació com a instrument de fidelització del client"
+  ],
+  [
+   "2.8",
+   "Mitjans de pagament electrònic"
+  ],
+  [
+   "2.9",
+   "Períodes de reflexió i cancel·lacions"
+  ],
+  [
+   "2.10",
+   "Seguretat en les transaccions: xifratge, firma digital, certificats digitals i DNI electrònic"
+  ],
+  [
+   "2.11",
+   "Encriptació"
+  ],
+  [
+   "2.12",
+   "Negocis electrònics: e-procurement, e-shop, e-mail, e-marketplace i e-auction"
+  ],
+  [
+   "3.1",
+   "Estructura d'una pàgina web corporativa"
+  ],
+  [
+   "3.2",
+   "El llenguatge HTML"
+  ],
+  [
+   "3.3",
+   "Creació de pàgines web amb els editors web més habituals"
+  ],
+  [
+   "3.4",
+   "Elecció del servidor per allotjar pàgines web"
+  ],
+  [
+   "3.5",
+   "Publicació de pàgines web via FTP"
+  ],
+  [
+   "3.6",
+   "Alta en cercadors"
+  ],
+  [
+   "3.7",
+   "Programes de disseny gràfic i altres utilitats per al web"
+  ],
+  [
+   "3.8",
+   "Catàleg en línia"
+  ],
+  [
+   "3.9",
+   "Fluxos de caixa de la botiga en línia"
+  ],
+  [
+   "3.10",
+   "Zones calentes i zones d'usuari"
+  ],
+  [
+   "3.11",
+   "El carretó de la compra en línia"
+  ],
+  [
+   "4.1",
+   "Grups de conversa o xat: IRC i webxat"
+  ],
+  [
+   "4.2",
+   "Servei de missatgeria instantània"
+  ],
+  [
+   "4.3",
+   "Telefonia per Internet"
+  ],
+  [
+   "4.4",
+   "Els fòrums: llegir i escriure en un fòrum"
+  ],
+  [
+   "4.5",
+   "Els grups de discussió"
+  ],
+  [
+   "4.6",
+   "Xarxes socials"
+  ],
+  [
+   "4.7",
+   "Weblogs, blogs i altres eines de comunicació"
+  ],
+  [
+   "4.8",
+   "Xarxes socials per a empreses"
+  ],
+  [
+   "4.9",
+   "Afegir elements a una pàgina d'una xarxa social"
+  ],
+  [
+   "4.10",
+   "Elements fotogràfics i audiovisuals en una pàgina d'una xarxa social"
+  ],
+  [
+   "4.11",
+   "Afegir aplicacions professionals a una pàgina"
+  ],
+  [
+   "4.12",
+   "Com buscar un grup interessant"
+  ],
+  [
+   "4.13",
+   "Crear una xarxa de contactes influents"
+  ],
+  [
+   "4.14",
+   "Comprar i vendre en xarxes socials"
+  ],
+  [
+   "5.1",
+   "Web 2.0: concepte i característiques"
+  ],
+  [
+   "5.2",
+   "Funcionalitats: opinions i fòrums d'usuaris"
+  ],
+  [
+   "5.3",
+   "Reputació corporativa en línia"
+  ],
+  [
+   "5.4",
+   "Objectius a assolir en la web 2.0"
+  ],
+  [
+   "5.5",
+   "Eines del màrqueting en línia de la web 2.0"
+  ],
+  [
+   "5.6",
+   "Webs integrats"
+  ],
+  [
+   "5.7",
+   "Xarxes socials que integren els consumidors com a prescriptors"
+  ],
+  [
+   "5.8",
+   "Consumidors proactius: opinions, ofertes creuades i comparatives"
+  ],
+  [
+   "5.9",
+   "Implementació d'estratègies de seguretat informàtica"
+  ]
+ ],
+ "ahora": {
+  "1.2": "Avui també: aparèixer a la cerca amb IA (GEO), Google Business Profile i Google Shopping.",
+  "1.6": "Avui també: retail media (anuncis dins de botigues en línia) i campanyes automatitzades.",
+  "1.7": "Avui també: Llei europea d'accessibilitat, Llei de serveis digitals i mode de consentiment.",
+  "1.14": "Avui: TV connectada i streaming amb anuncis, WhatsApp Business, Bizum i pagament amb el mòbil.",
+  "1.15": "Avui: vídeo curt vertical, YouTube, directes, live shopping, videopodcasts i creadors.",
+  "2.12": "Avui també: D2C, subscripcions, social commerce i marketplaces.",
+  "3.3": "Avui: CMS, constructors visuals, Figma i editors de codi amb IA.",
+  "3.4": "Avui: publicació des del CMS o amb Git (Netlify, Vercel); si cal FTP, sempre SFTP.",
+  "3.6": "Avui també: aparèixer a la cerca amb IA (GEO).",
+  "4.1": "Avui: xat web amb chatbot d'IA, WhatsApp Business i Discord.",
+  "4.2": "Avui: WhatsApp Business, Instagram Direct i Telegram.",
+  "4.3": "Avui: centraletes al núvol, videotrucades i atenció omnicanal.",
+  "4.4": "Avui: Reddit, grups de LinkedIn i Facebook, comunitats de WhatsApp i Discord.",
+  "4.5": "Avui: Reddit, grups de LinkedIn i Facebook, comunitats de WhatsApp i Discord.",
+  "4.10": "Avui: vídeo curt i col·laboracions amb creadors.",
+  "4.14": "Avui: TikTok Shop, Instagram Shopping i live shopping.",
+  "5.1": "Avui: web social, contingut generat pels usuaris i economia dels creadors.",
+  "5.3": "Avui: contingut generat pels usuaris, escolta social i programes d'ambaixadors.",
+  "5.6": "Avui: integracions per API i automatitzacions sense codi (Zapier, Make).",
+  "5.7": "Avui: ressenyes, creadors, ambaixadors i comunitats de marca."
+ }
+}

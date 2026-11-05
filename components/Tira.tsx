@@ -2,11 +2,13 @@
 // Cada personatge surt amb la pose que correspon al gest del seu bocadillo (public/media/personajes/<id>-<pose>.webp).
 import type { Bocadillo } from '@/lib/estudios';
 import { poseFor } from '@/lib/universo';
+import { tr, type Lang } from '@/lib/i18n';
 
 const NAMES: Record<string, string> = { eco: 'ECO', nexo: 'NEXO' };
 const img = (id: string, gesto?: string) => { const p = poseFor(id, gesto); return p ? `/media/personajes/${id}-${p}.webp` : `/media/personajes/${id}-tira.webp`; };
 
-export function Tira({ panels, titulo }: { panels: Bocadillo[][]; titulo: string }) {
+export function Tira({ panels, titulo, lang }: { panels: Bocadillo[][]; titulo: string; lang: Lang }) {
+  const t = tr(lang);
   if (!panels?.length) return null;
   return (
     <figure className="font-comic">
@@ -32,7 +34,7 @@ export function Tira({ panels, titulo }: { panels: Bocadillo[][]; titulo: string
           );
         })}
       </div>
-      <figcaption className="mt-2 text-center text-xs text-muted">Tira: {titulo}</figcaption>
+      <figcaption className="mt-2 text-center text-xs text-muted">{t('Tira')}: {titulo}</figcaption>
     </figure>
   );
 }

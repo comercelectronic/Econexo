@@ -4,6 +4,7 @@
 //  - si el visitant arriba des del joc educatiu «Agència Digital» (?des=joc), perquè els alumnes no vegin publicitat.
 // El consentiment de galetes el gestiona el missatge de privadesa certificat de Google (AdSense > Privacidad y mensajes).
 import { useEffect, useState } from 'react';
+import { useT } from './LangProvider';
 
 const CLIENT = process.env.NEXT_PUBLIC_ADSENSE_CLIENT;
 
@@ -19,6 +20,7 @@ export function useFromGame() {
 }
 
 export function AdSlot({ slot, label = 'Publicidad' }: { slot: string; label?: string }) {
+  const t = useT();
   const fromGame = useFromGame();
   useEffect(() => {
     if (!CLIENT || fromGame) return;
@@ -32,8 +34,8 @@ export function AdSlot({ slot, label = 'Publicidad' }: { slot: string; label?: s
   }, [fromGame]);
   if (!CLIENT || fromGame) return null;
   return (
-    <aside className="my-8 text-center" aria-label={label}>
-      <span className="mb-1 block text-[10px] uppercase tracking-widest text-muted">{label}</span>
+    <aside className="my-8 text-center" aria-label={t(label)}>
+      <span className="mb-1 block text-[10px] uppercase tracking-widest text-muted">{t(label)}</span>
       <ins className="adsbygoogle block" data-ad-client={CLIENT} data-ad-slot={slot} data-ad-format="auto" data-full-width-responsive="true" />
     </aside>
   );

@@ -3,24 +3,31 @@ import { published, pages, sectionHasContent } from '@/lib/content';
 import { SITE, liveSections } from '@/lib/site';
 import { TOOLS } from '@/lib/tools';
 import { videos } from '@/lib/videos';
-import { CICLOS, lecciones } from '@/lib/estudios';
+import { ciclosLive, lecciones } from '@/lib/estudios';
+import { LANGS, l } from '@/lib/i18n';
 
 export const dynamic = 'force-static';
 
+// Cada página existe en catalán y en castellano: se publica con su alternativa (hreflang)
 export default function sitemap(): MetadataRoute.Sitemap {
-  const u = (p: string) => SITE.url + p;
-  return [
-    { url: u('/'), changeFrequency: 'daily', priority: 1 },
-    ...liveSections().filter((s) => sectionHasContent(s.slug)).map((s) => ({ url: u(`/${s.slug}/`), changeFrequency: 'daily' as const, priority: 0.8 })),
-    { url: u('/herramientas/'), priority: 0.8 },
-    ...TOOLS.map((t) => ({ url: u(`/herramientas/${t.slug}/`), priority: 0.8 })),
-    ...published().filter((a) => a.estado === 'publicada').map((a) => ({ url: u(a.url), lastModified: a.actualizado || a.fecha, priority: 0.7 })),
-    { url: u('/aprender/'), changeFrequency: 'weekly' as const, priority: 0.95 },
-    { url: u('/simuladores/'), priority: 0.8 },
-    ...CICLOS.filter((c) => c.modulos.some((m) => m.live)).map((c) => ({ url: u(`/aprender/${c.slug}/`), priority: 0.8 })),
-    ...CICLOS.flatMap((c) => c.modulos.filter((m) => m.live).flatMap((m) => [{ url: u(`/aprender/${c.slug}/${m.slug}/`), priority: 0.9 }, ...lecciones(c.slug, m.slug).map((l) => ({ url: u(l.url), priority: 0.8 }))])),
-    { url: u('/eco-y-nexo/'), changeFrequency: 'weekly' as const, priority: 0.8 },
-    ...videos().filter((v) => v.estado === 'publicada').map((v) => ({ url: u(v.url), lastModified: v.fecha, priority: 0.7 })),
-    ...pages().map((p) => ({ url: u(`/${p.slug}/`), priority: 0.3 }))
-  ];
+  const out: MetadataRoute.Sitemap = [];
+  const add = (path: string, priority: number, extra: Partial<MetadataRoute.Sitemap[number]> = {}) => {
+    const languages = Object.fromEntries(LANGS.map((g) => [g, SITE.url + l(g, path)]));
+    LANGS.forEach((g) => out.push({ url: SITE.url + l(g, path), priority, alternates: { languages }, ...extra }));
+  };
+  add('/', 1, { changeFrequency: 'daily' });
+  add('/aprender/', 0.95, { changeFrequency: 'weekly' });
+  add('/simuladores/', 0.8);
+  add('/herramientas/', 0.8);
+  TOOLS.forEach((x) => add(`/herramientas/${x.slug}/`, 0.8));
+  liveSections().filter((s) => sectionHasContent('ca', s.slug) || sectionHasContent('es', s.slug)).forEach((s) => add(`/${s.slug}/`, 0.8, { changeFrequency: 'daily' }));
+  published('es').filter((a) => a.estado === 'publicada').forEach((a) => add(a.url, 0.7, { lastModified: a.actualizado || a.fecha }));
+  ciclosLive().forEach((c) => {
+    add(`/aprender/${c.slug}/`, 0.8);
+    c.modulos.forEach((m) => { add(`/aprender/${c.slug}/${m.slug}/`, 0.9); lecciones('es', c.slug, m.slug).forEach((x) => add(x.url, 0.8)); });
+  });
+  add('/eco-y-nexo/', 0.8, { changeFrequency: 'weekly' });
+  videos('es').filter((v) => v.estado === 'publicada').forEach((v) => add(v.url, 0.7, { lastModified: v.fecha }));
+  pages('es').forEach((p) => add(`/${p.slug}/`, 0.3));
+  return out;
 }

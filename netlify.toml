@@ -17,14 +17,101 @@
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
 
-# Adreces antigues dels personatges: ara és El mundo de ECO y NEXO
+# El domini principal porta a la versió en català; el castellà és a /es/
+[[redirects]]
+  from = "/"
+  to = "/ca/"
+  status = 302
+  force = true
+
+# Adreces anteriors a l'arribada dels idiomes: porten a la versió en català
+[[redirects]]
+  from = "/aprender/*"
+  to = "/ca/aprender/:splat"
+  status = 301
+[[redirects]]
+  from = "/herramientas/*"
+  to = "/ca/herramientas/:splat"
+  status = 301
+[[redirects]]
+  from = "/simuladores/*"
+  to = "/ca/simuladores/:splat"
+  status = 301
+[[redirects]]
+  from = "/actualidad/*"
+  to = "/ca/actualidad/:splat"
+  status = 301
+[[redirects]]
+  from = "/eco-y-nexo/*"
+  to = "/ca/eco-y-nexo/:splat"
+  status = 301
+[[redirects]]
+  from = "/marketing-digital/*"
+  to = "/ca/marketing-digital/:splat"
+  status = 301
+[[redirects]]
+  from = "/inteligencia-artificial/*"
+  to = "/ca/inteligencia-artificial/:splat"
+  status = 301
+[[redirects]]
+  from = "/finanzas/*"
+  to = "/ca/finanzas/:splat"
+  status = 301
+[[redirects]]
+  from = "/casos/*"
+  to = "/ca/casos/:splat"
+  status = 301
+[[redirects]]
+  from = "/formacion/*"
+  to = "/ca/formacion/:splat"
+  status = 301
+[[redirects]]
+  from = "/quienes-somos/*"
+  to = "/ca/quienes-somos/:splat"
+  status = 301
+[[redirects]]
+  from = "/politica-editorial/*"
+  to = "/ca/politica-editorial/:splat"
+  status = 301
+[[redirects]]
+  from = "/como-verificamos/*"
+  to = "/ca/como-verificamos/:splat"
+  status = 301
+[[redirects]]
+  from = "/correcciones/*"
+  to = "/ca/correcciones/:splat"
+  status = 301
+[[redirects]]
+  from = "/publicidad/*"
+  to = "/ca/publicidad/:splat"
+  status = 301
+[[redirects]]
+  from = "/contacto/*"
+  to = "/ca/contacto/:splat"
+  status = 301
+[[redirects]]
+  from = "/aviso-legal/*"
+  to = "/ca/aviso-legal/:splat"
+  status = 301
+[[redirects]]
+  from = "/privacidad/*"
+  to = "/ca/privacidad/:splat"
+  status = 301
+[[redirects]]
+  from = "/cookies/*"
+  to = "/ca/cookies/:splat"
+  status = 301
+[[redirects]]
+  from = "/estudiar/*"
+  to = "/ca/aprender/:splat"
+  status = 301
 [[redirects]]
   from = "/videos/*"
-  to = "/eco-y-nexo/"
+  to = "/ca/eco-y-nexo/"
   status = 301
 [[redirects]]
   from = "/universo-cromo/*"
-  to = "/eco-y-nexo/"
+  to = "/ca/eco-y-nexo/"
   status = 301
 
 # Domini principal: ecoynexo.com (sense www)
@@ -33,9 +120,3 @@
   to = "https://ecoynexo.com/:splat"
   status = 301
   force = true
-
-# La sección «Estudiar» ahora se llama «Aprender»
-[[redirects]]
-  from = "/estudiar/*"
-  to = "/aprender/:splat"
-  status = 301

@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import matter from 'gray-matter';
 import { marked } from 'marked';
+import { LOCALES, type Lang } from './i18n';
 
 export type Source = { nombre: string; url?: string };
 export type Faq = { p: string; r: string };
@@ -43,13 +44,17 @@ export type Article = {
   minutos: number;
 };
 
-export const ROOT = path.join(process.cwd(), 'content');
+// Cada idioma té la seva carpeta de continguts: content/ (castellà) i content-ca/ (català), amb les mateixes rutes i noms de fitxer
+export const rootFor = (lang: Lang) => path.join(process.cwd(), lang === 'ca' ? 'content-ca' : 'content');
 export const SHOW_DRAFTS = process.env.ECONEXO_MOSTRAR_BORRADORES === '1';
 export const PREVIEW_STATES: Estado[] = ['revision', 'aprobada', 'programada', 'publicada'];
 
 const slugify = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
-export function render(md: string) {
+// Los enlaces internos de los textos (/privacidad/) llevan el prefijo del idioma: /ca/privacidad/ o /es/privacidad/
+const prefix = (html: string, lang: Lang) => html.replace(/href="\/(?!ca\/|es\/|media\/)/g, `href="/${lang}/`);
+
+export function render(md: string, lang: Lang) {
   const toc: { id: string; text: string }[] = [];
   const renderer = new marked.Renderer();
   renderer.heading = function ({ tokens, depth }) {
@@ -59,23 +64,24 @@ export function render(md: string) {
     if (depth === 2) toc.push({ id, text });
     return `<h${depth} id="${id}">${inner}</h${depth}>`;
   };
-  const html = marked.parse(md, { renderer, async: false }) as string;
+  const html = prefix(marked.parse(md, { renderer, async: false }) as string, lang);
   return { html, toc };
 }
 
-let cache: Article[] | null = null;
+const cache: Partial<Record<Lang, Article[]>> = {};
 
-export function allArticles(): Article[] {
-  if (cache) return cache;
+export function allArticles(lang: Lang): Article[] {
+  if (cache[lang]) return cache[lang]!;
   const out: Article[] = [];
-  if (!fs.existsSync(ROOT)) return (cache = out);
+  const ROOT = rootFor(lang);
+  if (!fs.existsSync(ROOT)) return (cache[lang] = out);
   for (const seccion of fs.readdirSync(ROOT)) {
     const dir = path.join(ROOT, seccion);
     if (seccion === 'paginas' || seccion === 'videos' || seccion === 'modulos' || !fs.statSync(dir).isDirectory()) continue;
     for (const file of fs.readdirSync(dir).filter((f) => f.endsWith('.md'))) {
       const { data, content } = matter(fs.readFileSync(path.join(dir, file), 'utf8'));
       const slug = file.replace(/\.md$/, '');
-      const { html, toc } = render(content);
+      const { html, toc } = render(content, lang);
       const words = content.split(/\s+/).length;
       out.push({
         seccion, slug, url: `/${seccion}/${slug}/`,
@@ -90,38 +96,38 @@ export function allArticles(): Article[] {
       });
     }
   }
-  return (cache = out);
+  return (cache[lang] = out);
 }
 
 // Articles visibles en aquesta compilació, del més recent al més antic
-export function published(): Article[] {
+export function published(lang: Lang): Article[] {
   const now = Date.now();
-  return allArticles()
+  return allArticles(lang)
     .filter((a) => (SHOW_DRAFTS ? PREVIEW_STATES.includes(a.estado) : a.estado === 'publicada' && Date.parse(a.fecha) <= now))
     .sort((a, b) => Date.parse(b.fecha) - Date.parse(a.fecha));
 }
 
 export const isPreview = SHOW_DRAFTS;
 // Seccions amb algun contingut visible en aquesta compilació (les buides no surten al menú, al mapa del web ni es generen)
-export const sectionHasContent = (slug: string) => (slug === 'actualidad' ? published().length > 0 : published().some((a) => a.seccion === slug));
-export const bySection = (s: string) => published().filter((a) => a.seccion === s);
-export const byType = (t: string) => published().filter((a) => a.tipo === t);
-export const findArticle = (s: string, slug: string) => published().find((a) => a.seccion === s && a.slug === slug);
+export const sectionHasContent = (lang: Lang, slug: string) => (slug === 'actualidad' ? published(lang).length > 0 : published(lang).some((a) => a.seccion === slug));
+export const bySection = (lang: Lang, s: string) => published(lang).filter((a) => a.seccion === s);
+export const byType = (lang: Lang, t: string) => published(lang).filter((a) => a.tipo === t);
+export const findArticle = (lang: Lang, s: string, slug: string) => published(lang).find((a) => a.seccion === s && a.slug === slug);
 
-export function related(a: Article, n = 3): Article[] {
+export function related(lang: Lang, a: Article, n = 3): Article[] {
   const score = (b: Article) => (b.seccion === a.seccion ? 2 : 0) + b.etiquetas.filter((t) => a.etiquetas.includes(t)).length * 3 + (b.subseccion && b.subseccion === a.subseccion ? 2 : 0);
-  return published().filter((b) => b.url !== a.url).map((b) => [score(b), b] as const).filter(([s]) => s > 0).sort((x, y) => y[0] - x[0]).slice(0, n).map(([, b]) => b);
+  return published(lang).filter((b) => b.url !== a.url).map((b) => [score(b), b] as const).filter(([s]) => s > 0).sort((x, y) => y[0] - x[0]).slice(0, n).map(([, b]) => b);
 }
 
 export type Page = { slug: string; titulo: string; descripcion: string; html: string; actualizado?: string };
-export function pages(): Page[] {
-  const dir = path.join(ROOT, 'paginas');
+export function pages(lang: Lang): Page[] {
+  const dir = path.join(rootFor(lang), 'paginas');
   if (!fs.existsSync(dir)) return [];
   return fs.readdirSync(dir).filter((f) => f.endsWith('.md')).map((f) => {
     const { data, content } = matter(fs.readFileSync(path.join(dir, f), 'utf8'));
-    return { slug: f.replace(/\.md$/, ''), titulo: data.titulo, descripcion: data.descripcion || '', html: render(content).html, actualizado: data.actualizado };
+    return { slug: f.replace(/\.md$/, ''), titulo: data.titulo, descripcion: data.descripcion || '', html: render(content, lang).html, actualizado: data.actualizado };
   });
 }
 
-export const formatDate = (iso: string, withTime = false) =>
-  new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'long', year: 'numeric', ...(withTime ? { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Madrid' } : {}) }).format(new Date(iso));
+export const formatDate = (iso: string, lang: Lang, withTime = false) =>
+  new Intl.DateTimeFormat(LOCALES[lang], { day: 'numeric', month: 'long', year: 'numeric', ...(withTime ? { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Madrid' } : {}) }).format(new Date(iso));
