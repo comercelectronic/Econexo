@@ -15,7 +15,7 @@ export const SIMULADORES: Simulador[] = [
   {
     id: 'agencia-digital', name: 'Agència Digital',
     desc: 'Dirige tu propia agencia de marketing digital en Vic: clientes reales, decisiones con consecuencias, proyectos que corrige la IA y tu profesor, mundo explorable y mercado entre las agencias de tu clase.',
-    url: 'https://agenciadigitalosona.netlify.app/?lang=es', idiomas: 'Castellano, catalán e inglés'
+    url: 'https://agenciadigitalosona.netlify.app/?lang=ca', idiomas: 'Catalán (por defecto), castellano e inglés'
   }
 ];
 
