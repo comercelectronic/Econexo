@@ -27,7 +27,7 @@ export default async function Simuladores({ params }: Props) {
             <article key={s.id} className="rounded-2xl bg-navy p-6 text-white">
               <h2 className="text-2xl font-extrabold">{s.name}</h2>
               <p className="mt-2 text-white/80">{t(s.desc)}</p>
-              <p className="mt-3 text-sm text-white/70">{t('Para')}: {mods.map(({ ciclo, modulo }) => <Link key={modulo.slug} href={l(lang, `/aprender/${ciclo.slug}/${modulo.slug}/`)} className="underline">{t(modulo.name)} ({t(ciclo.name)})</Link>)} · {t('Idiomas')}: {t(s.idiomas)}</p>
+              <p className="mt-3 text-sm text-white/70">{(mods.length > 0 || s.modulos) && <>{t('Para')}: </>}{mods.map(({ ciclo, modulo }) => <Link key={modulo.slug} href={l(lang, `/aprender/${ciclo.slug}/${modulo.slug}/`)} className="underline">{t(modulo.name)} ({t(ciclo.name)})</Link>)}{s.modulos && t(s.modulos)}{(mods.length > 0 || s.modulos) && ' · '}{t('Idiomas')}: {t(s.idiomas)}</p>
               <a href={simUrl(s, lang)} target="_blank" rel="noopener" className="mt-4 inline-block rounded-lg bg-teal px-4 py-2.5 font-semibold hover:bg-teal-dark">{t('Jugar →')}</a>
             </article>
           );

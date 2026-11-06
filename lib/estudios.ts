@@ -11,12 +11,18 @@ export const GRADOS = [
   { id: 'superior', name: 'Grado superior' }
 ] as const;
 
-export type Simulador = { id: string; name: string; desc: string; url: string; idiomas: string };
+export type Simulador = { id: string; name: string; desc: string; url: string; idiomas: string; interno?: boolean; modulos?: string };
 export const SIMULADORES: Simulador[] = [
   {
     id: 'agencia-digital', name: 'Agència Digital',
     desc: 'Dirige tu propia agencia de marketing digital en Vic: clientes reales, decisiones con consecuencias, proyectos que corrige la IA y tu profesor, mundo explorable y mercado entre las agencias de tu clase.',
     url: 'https://agenciadigitalosona.netlify.app/', idiomas: 'Catalán, castellano e inglés'
+  },
+  {
+    id: 'supermercat-petit', name: 'Cas Supermercat Petit', interno: true,
+    desc: 'Un caso de clase en equipos y en dos sesiones: un escape room de una hora (dinamización del punto de venta y hojas de cálculo) y un murdoku para descubrir quién atacó a la profe en el supermercado del instituto.',
+    url: '/jocs/supermercat-petit/', idiomas: 'Catalán',
+    modulos: 'Aplicaciones informáticas para el comercio · Dinamización del punto de venta'
   }
 ];
 
@@ -45,7 +51,7 @@ export const CICLOS: Ciclo[] = [
 ];
 
 // El simulador se abre en el idioma de la web (se puede cambiar dentro del juego)
-export const simUrl = (s: Simulador, lang: Lang) => `${s.url}?lang=${lang}`;
+export const simUrl = (s: Simulador, lang: Lang) => (s.interno ? s.url : `${s.url}?lang=${lang}`);
 // Solo se muestra lo que ya está disponible: ciclos con algún módulo activo y, dentro de cada uno, solo sus módulos activos
 export const ciclosLive = (): Ciclo[] => CICLOS.filter((c) => c.modulos.some((m) => m.live)).map((c) => ({ ...c, modulos: c.modulos.filter((m) => m.live) }));
 export const cicloBySlug = (s: string) => CICLOS.find((c) => c.slug === s);

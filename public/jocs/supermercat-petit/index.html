@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Cas Supermercat Petit</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<!-- Tipografies allotjades al mateix web (sense connexió a Google) -->
+<link rel="stylesheet" href="fonts.css">
+<meta name="robots" content="noindex">
+<style>
+/* Layout: expedient policial de botiga — capçalera amb cinta de precinte, pestanyes, targetes de prova com a tiquets tèrmics */
+:root{
+  --bg:#e9edf0; --paper:#fbfcfd; --ink:#16212b; --muted:#5b6873; --line:#c9d1d8;
+  --tape:#f1c232; --tape-ink:#1a1a12; --alert:#c2362c; --ok:#1f7a4a; --okbg:#e2f2e8; --lock:#dfe4e9;
+  --r-K:#dfe7f6; --r-S:#f8e3c9; --r-M:#e4dccf; --r-I:#d9eef0; --r-P:#f2dbe6; --r-T:#dcecd5; --r-X:#e6e0f2;
+  --f-display:"Anton",Impact,"Arial Narrow",sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#11171d; --paper:#19222a; --ink:#e7edf2; --muted:#9aa8b4; --line:#2f3b46;
+  --tape:#e9b923; --tape-ink:#16130a; --alert:#ef6b5f; --ok:#5fcf8f; --okbg:#173326; --lock:#222c35;
+  --r-K:#25324a; --r-S:#43341f; --r-M:#3a342b; --r-I:#1f3d41; --r-P:#432a37; --r-T:#26392a; --r-X:#332c45;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11171d; --paper:#19222a; --ink:#e7edf2; --muted:#9aa8b4; --line:#2f3b46;
+  --tape:#e9b923; --tape-ink:#16130a; --alert:#ef6b5f; --ok:#5fcf8f; --okbg:#173326; --lock:#222c35;
+  --r-K:#25324a; --r-S:#43341f; --r-M:#3a342b; --r-I:#1f3d41; --r-P:#432a37; --r-T:#26392a; --r-X:#332c45;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55}
+.wrap{max-width:1080px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
+.tape{background:repeating-linear-gradient(-45deg,var(--tape) 0 22px,var(--tape-ink) 22px 30px);height:10px}
+header.top{padding-block:20px 8px;display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end;justify-content:space-between}
+h1{font-family:var(--f-display);font-weight:400;font-size:clamp(34px,6vw,56px);line-height:1;letter-spacing:.01em;margin:0;text-transform:uppercase;text-wrap:balance}
+.kicker{font-family:var(--f-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.hud{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.chip{font-family:var(--f-mono);font-size:13px;border:1.5px solid var(--ink);padding:5px 10px;border-radius:3px;font-variant-numeric:tabular-nums;background:var(--paper)}
+.chip.timer{background:var(--ink);color:var(--paper);font-weight:600;font-size:16px}
+.chip.timer.low{background:var(--alert);border-color:var(--alert)}
+nav.tabs{display:flex;gap:4px;border-bottom:2px solid var(--ink);margin-block:14px 22px;overflow-x:auto}
+nav.tabs a{font-family:var(--f-mono);font-size:13px;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;color:var(--ink);padding:9px 14px;border:2px solid transparent;border-bottom:none;border-radius:4px 4px 0 0;white-space:nowrap}
+nav.tabs a[aria-current="page"]{background:var(--ink);color:var(--paper)}
+nav.tabs a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--tape);outline-offset:2px}
+h2{font-family:var(--f-display);font-weight:400;font-size:30px;letter-spacing:.02em;text-transform:uppercase;margin:0 0 6px;text-wrap:balance}
+h3{font-size:17px;margin:0;text-wrap:balance}
+p{margin:0}
+.lead{max-width:66ch;color:var(--ink);font-size:16px}
+.muted{color:var(--muted)}
+.stack{display:flex;flex-direction:column;gap:14px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:16px}
+.panel{background:var(--paper);border:1.5px solid var(--line);border-radius:6px;padding:18px;min-width:0}
+.story{border-left:6px solid var(--alert);background:var(--paper);padding:18px 20px;border-radius:0 6px 6px 0}
+.story p+p{margin-top:10px}
+button,.btn{font:600 14px var(--f-body);background:var(--ink);color:var(--paper);border:0;border-radius:4px;padding:10px 16px;cursor:pointer}
+button.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}
+button.small{padding:6px 10px;font-size:13px}
+button:disabled{opacity:.45;cursor:not-allowed}
+input,select{font:500 15px var(--f-mono);color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:4px;padding:9px 10px;min-width:0;width:100%}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600;flex:1 1 160px;min-width:0}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+/* proves */
+.tests{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:18px}
+.ticket{background:var(--paper);border:1.5px solid var(--line);border-radius:6px;display:flex;flex-direction:column;min-width:0;position:relative}
+.ticket .hd{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 16px;border-bottom:1.5px dashed var(--line)}
+.ticket .bd{padding:14px 16px;display:flex;flex-direction:column;gap:12px;flex:1}
+.mod{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:3px 7px;border-radius:3px;border:1.5px solid currentColor}
+.mod.dpv{color:var(--alert)} .mod.ai{color:var(--muted)}
+.state{font-family:var(--f-mono);font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+.ticket.done{border-color:var(--ok)}
+.ticket.done .state{color:var(--ok)}
+.reward{background:var(--okbg);border:1.5px solid var(--ok);border-radius:4px;padding:10px 12px;font-size:14px}
+.reward b{font-family:var(--f-mono)}
+.err{color:var(--alert);font-size:13px;font-weight:600;min-height:1.2em}
+.hint{font-size:13px;border-left:3px solid var(--tape);padding-left:10px;color:var(--muted)}
+.code{font-family:var(--f-mono);font-size:13px;background:var(--bg);border:1.5px solid var(--line);border-radius:4px;padding:10px 12px;overflow-x:auto;white-space:pre;line-height:1.5}
+.barcode{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.barcode svg{height:56px;width:auto;max-width:100%}
+.barcode .digits{font-family:var(--f-mono);font-size:20px;letter-spacing:.14em}
+.barcode .q{background:var(--tape);color:var(--tape-ink);padding:0 4px;border-radius:2px}
+.tscroll{overflow-x:auto}
+table{border-collapse:collapse;font-size:13.5px;font-variant-numeric:tabular-nums;width:100%}
+th,td{border:1px solid var(--line);padding:5px 8px;text-align:left}
+th{font-family:var(--f-mono);font-size:12px;background:var(--bg);font-weight:600}
+td.n{text-align:right}
+.xl th.cl{text-align:center;width:28px;color:var(--muted)}
+/* ruta */
+.route{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+.stop{flex:1 0 120px;border:1.5px solid var(--line);background:var(--paper);border-radius:5px;padding:8px 10px;font-size:13px;min-width:0}
+.stop .n{font:600 11px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.stop.cur{border-color:var(--ink);box-shadow:inset 0 -4px 0 var(--tape)}
+.stop.ok{border-color:var(--ok);background:var(--okbg)}
+.go{border:2px dashed var(--ink);border-radius:6px;padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--bg)}
+.go .riddle{font-size:16px;font-weight:600}
+.ticket.locked{opacity:.6}
+.ticket.locked .bd{justify-content:center;align-items:flex-start}
+/* caixa final */
+.vault{display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:space-between;background:var(--ink);color:var(--paper);border-radius:6px;padding:18px 20px;margin-top:22px}
+.vault h3{font-family:var(--f-display);font-weight:400;font-size:24px;letter-spacing:.03em;text-transform:uppercase}
+.dials{display:flex;gap:8px}
+.dial{width:54px;height:64px;border:2px solid var(--paper);border-radius:4px;display:grid;place-items:center;font:600 30px var(--f-mono);font-variant-numeric:tabular-nums}
+.dial.on{background:var(--tape);color:var(--tape-ink);border-color:var(--tape)}
+.vault input{background:transparent;color:var(--paper);border-color:var(--paper);width:130px;font-size:20px;letter-spacing:.2em;text-align:center}
+.vault button{background:var(--tape);color:var(--tape-ink)}
+/* murdoku */
+.mk{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:820px){.mk{grid-template-columns:1fr}}
+.board-wrap{overflow-x:auto}
+.board{display:grid;grid-template-columns:28px repeat(7,minmax(42px,1fr));gap:0;min-width:330px;user-select:none}
+.board .lab{font:600 12px var(--f-mono);color:var(--muted);display:grid;place-items:center;padding:4px}
+.cell{aspect-ratio:1;position:relative;border:1px solid color-mix(in srgb,var(--ink) 18%,transparent);cursor:pointer;display:grid;place-items:center;padding:2px;background:var(--paper)}
+.cell:hover{outline:2px solid var(--ink);outline-offset:-2px;z-index:2}
+.cell.bt{border-top:3px solid var(--ink)} .cell.bb{border-bottom:3px solid var(--ink)}
+.cell.bl{border-left:3px solid var(--ink)} .cell.br{border-right:3px solid var(--ink)}
+.cell .obj{position:absolute;top:2px;left:3px;font:600 9.5px var(--f-mono);color:var(--muted);line-height:1;text-transform:uppercase}
+.cell .rn{position:absolute;bottom:2px;right:3px;font:500 8.5px var(--f-mono);color:var(--muted);text-transform:uppercase}
+.cell .tok{width:72%;aspect-ratio:1;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font:700 15px var(--f-body)}
+.cell .tok.v{background:var(--alert)}
+.cell.x::after{content:"×";font:400 22px var(--f-body);color:var(--muted)}
+.cell.clash .tok{background:var(--alert);outline:3px solid var(--tape)}
+.suspects{display:flex;flex-wrap:wrap;gap:6px}
+.sp{display:flex;align-items:center;gap:6px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);border-radius:999px;padding:4px 10px 4px 4px;font:600 13px var(--f-body);cursor:pointer}
+.sp .tok{width:24px;height:24px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font-size:12px}
+.sp .tok.v{background:var(--alert)}
+.sp[aria-pressed="true"]{border-color:var(--ink);box-shadow:0 0 0 2px var(--ink)}
+.sp.placed{opacity:.55}
+.legend{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12.5px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:14px;height:14px;border-radius:3px;border:1px solid var(--line);display:inline-block}
+.clues{display:flex;flex-direction:column;gap:8px;counter-reset:c}
+.clue{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;background:var(--paper);border:1.5px solid var(--line);border-radius:5px;padding:9px 12px;font-size:14px}
+.clue .tag{font:600 11px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;padding:2px 6px;border-radius:3px;background:var(--bg);white-space:nowrap}
+.clue.locked{background:var(--lock);color:var(--muted);border-style:dashed}
+.clue.locked .tag{background:transparent}
+.verdict{background:var(--paper);border:2px solid var(--ink);border-radius:6px;padding:16px}
+.solved{background:var(--okbg);border:2px solid var(--ok);border-radius:6px;padding:16px;font-size:15px}
+.gate{background:var(--paper);border:2px dashed var(--line);border-radius:6px;padding:28px;text-align:center}
+.steps{counter-reset:s;display:flex;flex-direction:column;gap:10px;padding:0;margin:0;list-style:none}
+.steps li{counter-increment:s;display:grid;grid-template-columns:34px 1fr;gap:10px}
+.steps li::before{content:counter(s);font:400 22px var(--f-display);background:var(--tape);color:var(--tape-ink);border-radius:3px;display:grid;place-items:center;height:34px}
+.sol{font-family:var(--f-mono);font-size:13px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:4px;font-weight:600;z-index:20;max-width:calc(100% - 32px)}
+@media (prefers-reduced-motion:no-preference){.ticket.flash{animation:fl .7s ease}@keyframes fl{0%{box-shadow:0 0 0 0 var(--ok)}100%{box-shadow:0 0 0 14px transparent}}}
+</style>
+</head>
+<body>
+
+
+<div class="tape" aria-hidden="true"></div>
+<div class="wrap">
+  <p style="margin:12px 0 0;font:500 12px var(--f-mono)"><a href="/ca/simuladores/" style="color:var(--muted)">← ECOyNEXO · Simuladors</a></p>
+  <header class="top">
+    <div>
+      <div class="kicker">CM12 · Activitats comercials · Expedient 042</div>
+      <h1>Cas Supermercat Petit</h1>
+    </div>
+    <div class="hud">
+      <span class="chip" id="teamChip">Equip —</span>
+      <span class="chip" id="scoreChip">Proves 0/6</span>
+      <span class="chip timer" id="timer" aria-live="off">60:00</span>
+    </div>
+  </header>
+  <nav class="tabs" aria-label="Seccions">
+    <a href="#inici">Expedient</a>
+    <a href="#escape">Fase 1 · Escape</a>
+    <a href="#murdoku">Fase 2 · Murdoku</a>
+    <a href="#docent">Docent</a>
+  </nav>
+
+  <!-- INICI -->
+  <section id="v-inici" class="stack">
+    <div class="story">
+      <p class="kicker">Avís de les 08:15</p>
+      <p class="lead">La profe de CM12 ha aparegut <b>desmaiada al Supermercat petit</b> de l'institut. Algú l'ha atacada. Al centre hi havia sis persones més i totes diuen que no han vist res.</p>
+      <p class="lead">Per saber <b>qui</b> ha estat, <b>amb què</b> i <b>on</b>, primer heu de recuperar les declaracions. Estan tancades dins de sis proves de botiga i d'ofimàtica. Cada prova resolta us dona una pista i, cada dues proves, un número de la caixa forta.</p>
+    </div>
+    <div class="grid2">
+      <div class="panel stack">
+        <h3>Identifiqueu el vostre equip</h3>
+        <div class="row">
+          <label class="f">Equip
+            <select id="teamSel">
+              <option value="">Tria…</option>
+              <option>Equip 1</option><option>Equip 2</option><option>Equip 3</option><option>Equip 4</option>
+              <option>Equip 5</option><option>Equip 6</option><option>Equip 7</option>
+            </select>
+          </label>
+          <label class="f">Noms (opcional)
+            <input id="teamNames" placeholder="Anna, Jordi, Iker, Mei">
+          </label>
+        </div>
+        <div class="row">
+          <button id="startEscape">Començar la Fase 1 (60 min)</button>
+        </div>
+      </div>
+      <div class="panel stack">
+        <h3>Com funciona</h3>
+        <ol class="steps">
+          <li><span><b>Fase 1 · Escape (1 h, amb pressió).</b> Sis parades repartides per l'aula. L'app us dona una endevinalla: aneu-hi, escanegeu el QR o escriviu el codi del cartell i es desbloqueja la prova (tres de Dinamització del PdV i tres d'Excel).</span></li>
+          <li><span><b>Caixa forta.</b> Amb els tres números obriu el sobre de pistes del Murdoku.</span></li>
+          <li><span><b>Fase 2 · Murdoku (sense cronòmetre).</b> Hi ha sis cartells amagats pel pati amb més pistes. Trobeu-los, creueu-ho tot, col·loqueu els 7 personatges a la graella i acuseu: qui, amb què i on.</span></li>
+        </ol>
+        <p class="muted">Cada equip té la seva ruta perquè no coincidiu tots al mateix lloc. A la Fase 1 hi ha cronòmetre: cada error suma 1 minut de penalització i, després de dos errors en una prova, apareix una ajuda. La Fase 2 no té temps ni penalitzacions.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ESCAPE -->
+  <section id="v-escape" class="stack" hidden>
+    <div>
+      <h2>Fase 1 · Escape room</h2>
+      <p class="lead muted">Seguiu la vostra ruta. A cada parada trobareu un cartell amb un QR i un codi. Escriviu els decimals amb coma o amb punt.</p>
+    </div>
+    <div class="route" id="route" aria-label="La vostra ruta"></div>
+    <div class="tests" id="tests"></div>
+    <div class="vault">
+      <div class="stack" style="gap:6px">
+        <h3>Caixa forta del sobre</h3>
+        <p style="opacity:.8;font-size:14px">Proves 1+2 → 1r número · Proves 3+4 → 2n · Proves 5+6 → 3r</p>
+      </div>
+      <div class="dials" id="dials"></div>
+      <form class="row" id="vaultForm" style="align-items:center">
+        <input id="vaultIn" inputmode="numeric" maxlength="3" placeholder="···" aria-label="Codi de la caixa">
+        <button type="submit">Obrir</button>
+      </form>
+    </div>
+    <p class="err" id="vaultErr" style="margin-top:-6px"></p>
+  </section>
+
+  <!-- MURDOKU -->
+  <section id="v-murdoku" class="stack" hidden>
+    <div>
+      <h2>Fase 2 · Murdoku</h2>
+      <p class="lead muted">Aquí no hi ha pressa: poseu-vos còmodes, discutiu i proveu coses. Regla del Murdoku: <b>a cada fila i a cada columna hi ha exactament una persona</b> (6 sospitosos i la víctima). Les sales estan marcades amb línies gruixudes. L'arma és l'objecte de la casella on és l'assassí.</p>
+    </div>
+    <div id="mkGate" class="gate stack" style="align-items:center">
+      <h3>El sobre encara és tancat</h3>
+      <p class="muted">Obriu la caixa forta de la Fase 1 per veure les declaracions.</p>
+      <a class="btn" href="#escape" style="text-decoration:none">Anar a la Fase 1</a>
+    </div>
+    <div id="mkBody" class="mk" hidden>
+      <div class="stack">
+        <div class="suspects" id="suspects" role="group" aria-label="Personatges"></div>
+        <p class="muted" style="font-size:13px">Tria un personatge i toca una casella per posar-lo. Toca'l de nou per treure'l. Amb <b>Marcar ×</b> pots descartar caselles.</p>
+        <div class="row"><button class="ghost small" id="xMode" aria-pressed="false">Marcar ×</button><button class="ghost small" id="clearBoard">Buidar graella</button></div>
+        <div class="board-wrap"><div class="board" id="board"></div></div>
+        <div class="legend" id="legend"></div>
+      </div>
+      <div class="stack">
+        <h3>Declaracions i cartells</h3>
+        <form class="row" id="cartForm">
+          <label class="f">Codi d'un cartell del pati<input id="cartIn" autocomplete="off" autocapitalize="characters" placeholder="Ex.: CANELA"></label>
+          <button type="submit">Desbloquejar</button>
+        </form>
+        <span class="err" id="cartErr"></span>
+        <div class="clues" id="clues"></div>
+        <form class="verdict stack" id="verdict">
+          <h3>Acusació</h3>
+          <div class="row">
+            <label class="f">Qui<select id="vWho"></select></label>
+            <label class="f">Amb què<select id="vWith"></select></label>
+            <label class="f">On<select id="vWhere"></select></label>
+          </div>
+          <div class="row"><button type="submit">Acusar</button><span class="err" id="vErr"></span></div>
+        </form>
+        <div id="solvedBox" hidden></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DOCENT -->
+  <section id="v-docent" class="stack" hidden>
+    <div>
+      <h2>Panell docent</h2>
+      <p class="lead muted">Solucions, guia de les dues sessions i material per imprimir.</p>
+    </div>
+    <form id="pinForm" class="panel row" style="max-width:420px">
+      <label class="f">PIN docent<input id="pinIn" type="password" inputmode="numeric" autocomplete="off"></label>
+      <button type="submit">Entrar</button>
+      <span class="err" id="pinErr"></span>
+    </form>
+    <div id="teacher" class="stack" hidden></div>
+  </section>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const D = JSON.parse(decodeURIComponent(escape(atob("eyJ0ZXN0cyI6IFt7ImlkIjogImVhbiIsICJtb2QiOiAiRFBWIiwgInRpdGxlIjogIkVsIGNvZGkgZGUgYmFycmVzIGVzYm9ycmF0IiwgImNsdWUiOiAwLCAiYm9keSI6ICI8cD5Tb2JyZSBsYSB0YXVsYSBkZSBsYSBwcm9mZSBoYSBhcGFyZWd1dCB1biBwYXF1ZXQgZGUgZ2FsZXRlcyBhbWIgbCfDumx0aW0gZMOtZ2l0IGRlbCBjb2RpIHRhcGF0IGFtYiB1bmEgZXRpcXVldGEgZGUgcHJldS4gU2Vuc2UgZWwgPGI+ZMOtZ2l0IGRlIGNvbnRyb2w8L2I+LCBsJ2VzY8OgbmVyIGRlbCBUUFYgbm8gZWwgbGxlZ2VpeC48L3A+XG48ZGl2IGNsYXNzPVwiYmFyY29kZVwiPjxzcGFuIGNsYXNzPVwiZGlnaXRzXCI+OCA0MjEyMzQgNTY3Nzg8c3BhbiBjbGFzcz1cInFcIj4/PC9zcGFuPjwvc3Bhbj48L2Rpdj5cbjxwIGNsYXNzPVwibXV0ZWRcIiBzdHlsZT1cImZvbnQtc2l6ZToxM3B4XCI+RUFOLTEzOiBzdW1hIGxlcyBwb3NpY2lvbnMgc2VuYXJzICgxYSwgM2EsIDVh4oCmKSArIDMgw5cgbGEgc3VtYSBkZSBsZXMgcGFyZWxsZXMgKDJhLCA0YeKApiksIGRlIGxlcyAxMiBwcmltZXJlcyB4aWZyZXMuIEVsIGTDrWdpdCBkZSBjb250cm9sIMOpcyBlbCBxdWUgZmFsdGEgcGVyIGFycmliYXIgYSBsYSBkZXNlbmEgc2Vnw7xlbnQuPC9wPiIsICJmaWVsZHMiOiBbeyJsYWJlbCI6ICJEw61naXQgZGUgY29udHJvbCIsICJudW0iOiB0cnVlLCAibW9kZSI6ICJudW1lcmljIiwgImFucyI6IFsiM3QyMSJdfV0sICJoaW50IjogIlNlbmFyczogOCsyKzIrNCs2KzguIFBhcmVsbGVzOiA0KzErMys1KzcrMiwgaSBtdWx0aXBsaWNhLWhvIHBlciAzLiBTdW1hLWhvIHRvdC4iLCAic3QiOiB7InBsYWNlIjogIlRhdWxhIGRlIGxhIHByb2ZlIiwgImNvZGUiOiAiMWdybjl1NiIsICJyaWRkbGUiOiAiT24gaGkgaGEgZWwgcG9ydMOgdGlsLCBlbCBjYWbDqCBkJ2FyYSBmYSB1bmEgaG9yYSBpIGxhIGxsaXN0YSBkJ2Fzc2lzdMOobmNpYS4gQXZ1aSDDqXMgbCdlc2NlbmEgZGVsIGNyaW0uIn19LCB7ImlkIjogIm1hcmdlIiwgIm1vZCI6ICJEUFYiLCAidGl0bGUiOiAiRWwgcHJldSBkZSBsJ29saSIsICJjbHVlIjogMSwgImJvZHkiOiAiPHA+VW5hIGFtcG9sbGEgZCdvbGkgY29zdGEgPGI+Miw0MCDigqw8L2I+IGFsIHByb3Zlw69kb3IgaSBlcyB2ZW4gYSA8Yj40LDgwIOKCrCBzZW5zZSBJVkE8L2I+LjwvcD5cbjxwPkNhbGN1bGV1IGVsIDxiPm1hcmdlIGNvbWVyY2lhbCBzb2JyZSBlbCBwcmV1IGRlIHZlbmRhPC9iPiAoZW4gJSkgaSBlbCA8Yj5QVlAgZmluYWwgYW1iIHVuIDIxJSBkJ0lWQTwvYj4gKGFycm9kb25pdCBhIGPDqG50aW1zKS48L3A+IiwgImZpZWxkcyI6IFt7ImxhYmVsIjogIk1hcmdlIHMvIHZlbmRhICglKSIsICJudW0iOiB0cnVlLCAibW9kZSI6ICJkZWNpbWFsIiwgImFucyI6IFsiM2hteDYiXX0sIHsibGFiZWwiOiAiUFZQIGFtYiBJVkEgKOKCrCkiLCAibnVtIjogdHJ1ZSwgIm1vZGUiOiAiZGVjaW1hbCIsICJhbnMiOiBbInlqZWIzbCJdfV0sICJoaW50IjogIk1hcmdlIHNvYnJlIHZlbmRhID0gKFBWIOKIkiBjb3N0KSAvIFBWIMOXIDEwMC4gUFZQIGFtYiBJVkEgPSBQViDDlyAxLDIxLiIsICJzdCI6IHsicGxhY2UiOiAiUGlzc2FycmEiLCAiY29kZSI6ICIzdGJwZ2ciLCAicmlkZGxlIjogIlBvdCBzZXIgdmVyZGEgbyBibGFuY2EsIGVzdMOgIHBsZW5hIGRlIGNvc2VzIGQnYWhpciBpIGxhIHNldmEgZmVpbmEgw6lzIHF1ZSBsJ2VzYm9ycmluLiJ9fSwgeyJpZCI6ICJlc3RvYyIsICJtb2QiOiAiRFBWIiwgInRpdGxlIjogIkwnaW52ZW50YXJpIGRlbCBtYWdhdHplbSIsICJjbHVlIjogMiwgImJvZHkiOiAiPHA+RmV1IGwnaW52ZW50YXJpIGRlIGxlcyB0cmVzIGNhaXhlcy4gVW5hIG5vIHF1YWRyYSBlbnRyZSBsJ2VzdG9jIHRlw7JyaWMgaSBlbCByZWNvbXB0ZSBmw61zaWMuPC9wPlxuPGRpdiBjbGFzcz1cInRzY3JvbGxcIj48dGFibGU+PHRoZWFkPjx0cj48dGg+Q2FpeGE8L3RoPjx0aD5Fc3RvYyBpbmljaWFsPC90aD48dGg+RW50cmFkZXM8L3RoPjx0aD5Tb3J0aWRlczwvdGg+PHRoPlJlY29tcHRlIGbDrXNpYzwvdGg+PC90cj48L3RoZWFkPlxuPHRib2R5Pjx0cj48dGQ+QSDCtyBBaWd1YSAxLDUgTDwvdGQ+PHRkIGNsYXNzPVwiblwiPjEyMDwvdGQ+PHRkIGNsYXNzPVwiblwiPjQwPC90ZD48dGQgY2xhc3M9XCJuXCI+MzU8L3RkPjx0ZCBjbGFzcz1cIm5cIj4xMjU8L3RkPjwvdHI+XG48dHI+PHRkPkIgwrcgRGV0ZXJnZW50PC90ZD48dGQgY2xhc3M9XCJuXCI+ODA8L3RkPjx0ZCBjbGFzcz1cIm5cIj4yNTwvdGQ+PHRkIGNsYXNzPVwiblwiPjMwPC90ZD48dGQgY2xhc3M9XCJuXCI+NzI8L3RkPjwvdHI+XG48dHI+PHRkPkMgwrcgR2FsZXRlczwvdGQ+PHRkIGNsYXNzPVwiblwiPjYwPC90ZD48dGQgY2xhc3M9XCJuXCI+MDwvdGQ+PHRkIGNsYXNzPVwiblwiPjEyPC90ZD48dGQgY2xhc3M9XCJuXCI+NDg8L3RkPjwvdHI+PC90Ym9keT48L3RhYmxlPjwvZGl2PlxuPHAgY2xhc3M9XCJtdXRlZFwiIHN0eWxlPVwiZm9udC1zaXplOjEzcHhcIj5Fc3RvYyB0ZcOycmljID0gaW5pY2lhbCArIGVudHJhZGVzIOKIkiBzb3J0aWRlcy48L3A+IiwgImZpZWxkcyI6IFt7ImxhYmVsIjogIkNhaXhhIHF1ZSBubyBxdWFkcmEiLCAibnVtIjogZmFsc2UsICJtb2RlIjogInRleHQiLCAiYW5zIjogWyIzdDNiIiwgIjF3ODVvZ2QiXX0sIHsibGFiZWwiOiAiVW5pdGF0cyBxdWUgZmFsdGVuIiwgIm51bSI6IHRydWUsICJtb2RlIjogIm51bWVyaWMiLCAiYW5zIjogWyIzdDIwIiwgIjNobXB4Il19XSwgImhpbnQiOiAiQ2FsY3VsZXUgbCdlc3RvYyB0ZcOycmljIGRlIGNhZGEgY2FpeGEgaSBjb21wYXJldS1sbyBhbWIgZWwgcmVjb21wdGUuIiwgInN0IjogeyJwbGFjZSI6ICJBcm1hcmkgZGVsIG1hdGVyaWFsIiwgImNvZGUiOiAiM3RzcGxuIiwgInJpZGRsZSI6ICJUw6kgcG9ydGVzLCB0YW5jYSBhbWIgY2xhdSBpIGd1YXJkYSBjYWl4ZXMgcXVlIG5pbmfDuiBubyByZWNvcmRhIGhhdmVyIGNvbXB0YXQuIn19LCB7ImlkIjogInN1bWFzaSIsICJtb2QiOiAiQUkiLCAidGl0bGUiOiAiRWwgZnVsbCBkZSB2ZW5kZXMiLCAiY2x1ZSI6IDMsICJib2R5IjogIjxwPkFsIGZ1bGwgZGUgY8OgbGN1bCBkZSB2ZW5kZXMgZGVsIGRpYSwgYSBsYSBjZWzCt2xhIEUyLCBoaSBoYSBhcXVlc3RhIGbDs3JtdWxhOjwvcD5cbjxkaXYgY2xhc3M9XCJjb2RlXCI+PVNVTUEuU0koQjI6Qjk7XCJOZXRlamFcIjtDMjpDOSk8L2Rpdj5cbjxkaXYgY2xhc3M9XCJ0c2Nyb2xsXCI+PHRhYmxlIGNsYXNzPVwieGxcIj48dGhlYWQ+PHRyPjx0aCBjbGFzcz1cImNsXCI+PC90aD48dGg+QSDCtyBQcm9kdWN0ZTwvdGg+PHRoPkIgwrcgU2VjY2nDszwvdGg+PHRoPkMgwrcgVmVuZGEgKOKCrCk8L3RoPjwvdHI+PC90aGVhZD48dGJvZHk+XG48dHI+PHRoIGNsYXNzPVwiY2xcIj4yPC90aD48dGQ+TGxlaXhpdTwvdGQ+PHRkPk5ldGVqYTwvdGQ+PHRkIGNsYXNzPVwiblwiPjM0LDUwPC90ZD48L3RyPlxuPHRyPjx0aCBjbGFzcz1cImNsXCI+MzwvdGg+PHRkPlJlZnJlc2M8L3RkPjx0ZD5CZWd1ZGVzPC90ZD48dGQgY2xhc3M9XCJuXCI+NTIsMDA8L3RkPjwvdHI+XG48dHI+PHRoIGNsYXNzPVwiY2xcIj40PC90aD48dGQ+RnJlZ2FsbDwvdGQ+PHRkPk5ldGVqYTwvdGQ+PHRkIGNsYXNzPVwiblwiPjE4LDI1PC90ZD48L3RyPlxuPHRyPjx0aCBjbGFzcz1cImNsXCI+NTwvdGg+PHRkPklvZ3VydDwvdGQ+PHRkPkzDoGN0aWNzPC90ZD48dGQgY2xhc3M9XCJuXCI+NDEsMDA8L3RkPjwvdHI+XG48dHI+PHRoIGNsYXNzPVwiY2xcIj42PC90aD48dGQ+RGV0ZXJnZW50PC90ZD48dGQ+TmV0ZWphPC90ZD48dGQgY2xhc3M9XCJuXCI+MjcsMjU8L3RkPjwvdHI+XG48dHI+PHRoIGNsYXNzPVwiY2xcIj43PC90aD48dGQ+QWlndWE8L3RkPjx0ZD5CZWd1ZGVzPC90ZD48dGQgY2xhc3M9XCJuXCI+MTIsMDA8L3RkPjwvdHI+XG48dHI+PHRoIGNsYXNzPVwiY2xcIj44PC90aD48dGQ+TGxldDwvdGQ+PHRkPkzDoGN0aWNzPC90ZD48dGQgY2xhc3M9XCJuXCI+OSw1MDwvdGQ+PC90cj5cbjx0cj48dGggY2xhc3M9XCJjbFwiPjk8L3RoPjx0ZD5Fc3BvbmphPC90ZD48dGQ+TmV0ZWphPC90ZD48dGQgY2xhc3M9XCJuXCI+MjAsMDA8L3RkPjwvdHI+PC90Ym9keT48L3RhYmxlPjwvZGl2PlxuPHA+UXVpbiByZXN1bHRhdCBtb3N0cmEgRTI/PC9wPiIsICJmaWVsZHMiOiBbeyJsYWJlbCI6ICJSZXN1bHRhdCBkZSBFMiAo4oKsKSIsICJudW0iOiB0cnVlLCAibW9kZSI6ICJkZWNpbWFsIiwgImFucyI6IFsiMzc1eDJ1Il19XSwgImhpbnQiOiAiU1VNQS5TSSBub23DqXMgc3VtYSBsYSBjb2x1bW5hIEMgZGUgbGVzIGZpbGVzIG9uIGxhIGNvbHVtbmEgQiBkaXUgZXhhY3RhbWVudCDCq05ldGVqYcK7LiIsICJzdCI6IHsicGxhY2UiOiAiRmluZXN0cmEiLCAiY29kZSI6ICIza3BjdmEiLCAicmlkZGxlIjogIlBlciBhcXXDrSBlbnRyYSBsYSBsbHVtIGkgc3VydGVuIHRvdGVzIGxlcyBkaXN0cmFjY2lvbnMgbWVudHJlIGxhIHByb2ZlIGV4cGxpY2EuIn19LCB7ImlkIjogImJ1c2NhcnYiLCAibW9kIjogIkFJIiwgInRpdGxlIjogIkxhIHRhcmlmYSBwZXJkdWRhIiwgImNsdWUiOiA0LCAiYm9keSI6ICI8cD5FbCBUUFYgYnVzY2EgZWwgcHJldSBkZSBjYWRhIHByb2R1Y3RlIGEgbGEgdGF1bGEgZGUgdGFyaWZlcyAoQTI6QzUpIGFtYiBhcXVlc3RhIGbDs3JtdWxhOjwvcD5cbjxkaXYgY2xhc3M9XCJjb2RlXCI+PUJVU0NBUlYoXCJQMTAyXCI7QTI6QzU7MztGQUxTKTwvZGl2PlxuPGRpdiBjbGFzcz1cInRzY3JvbGxcIj48dGFibGUgY2xhc3M9XCJ4bFwiPjx0aGVhZD48dHI+PHRoIGNsYXNzPVwiY2xcIj48L3RoPjx0aD5BIMK3IENvZGk8L3RoPjx0aD5CIMK3IFByb2R1Y3RlPC90aD48dGg+QyDCtyBQcmV1ICjigqwpPC90aD48L3RyPjwvdGhlYWQ+PHRib2R5PlxuPHRyPjx0aCBjbGFzcz1cImNsXCI+MjwvdGg+PHRkPlAxMDE8L3RkPjx0ZD5MbGV0IHNlbmNlcmE8L3RkPjx0ZCBjbGFzcz1cIm5cIj4wLDk1PC90ZD48L3RyPlxuPHRyPjx0aCBjbGFzcz1cImNsXCI+MzwvdGg+PHRkPlAxMDI8L3RkPjx0ZD5EZXRlcmdlbnQ8L3RkPjx0ZCBjbGFzcz1cIm5cIj40LDM1PC90ZD48L3RyPlxuPHRyPjx0aCBjbGFzcz1cImNsXCI+NDwvdGg+PHRkPlAxMDM8L3RkPjx0ZD5BaWd1YSAxLDUgTDwvdGQ+PHRkIGNsYXNzPVwiblwiPjAsNDA8L3RkPjwvdHI+XG48dHI+PHRoIGNsYXNzPVwiY2xcIj41PC90aD48dGQ+UDEwNDwvdGQ+PHRkPkdhbGV0ZXM8L3RkPjx0ZCBjbGFzcz1cIm5cIj4xLDg1PC90ZD48L3RyPjwvdGJvZHk+PC90YWJsZT48L2Rpdj5cbjxwPlF1aW4gdmFsb3IgcmV0b3JuYT88L3A+IiwgImZpZWxkcyI6IFt7ImxhYmVsIjogIlZhbG9yIHJldG9ybmF0ICjigqwpIiwgIm51bSI6IHRydWUsICJtb2RlIjogImRlY2ltYWwiLCAiYW5zIjogWyJ5amRqOHYiXX1dLCAiaGludCI6ICJCdXNjYSBQMTAyIGEgbGEgcHJpbWVyYSBjb2x1bW5hIGkgcmV0b3JuYSBsYSAzYSBjb2x1bW5hIGRlIGxhIG1hdGVpeGEgZmlsYS4gRkFMUyB2b2wgZGlyIGNvaW5jaWTDqG5jaWEgZXhhY3RhLiIsICJzdCI6IHsicGxhY2UiOiAiUGFwZXJlcmEgZGUgcmVjaWNsYXRnZSIsICJjb2RlIjogIjFsdmpjamciLCAicmlkZGxlIjogIkhpIGFjYWJlbiBlbHMgZnVsbHMgcGxlbnMgZCdlcnJvcnMsIHNlcGFyYXRzIHBlciBjb2xvcnMuIn19LCB7ImlkIjogInRyYW1zIiwgIm1vZCI6ICJBSSIsICJ0aXRsZSI6ICJFbCBkZXNjb21wdGUgcGVyIHZvbHVtIiwgImNsdWUiOiA1LCAiYm9keSI6ICI8cD5VbiBiYXIgZGVsIGJhcnJpIGNvbXByYSA8Yj4zNyBjYWl4ZXMgZCdhaWd1YSBhIDIsMDAg4oKsIGxhIGNhaXhhPC9iPi4gRWwgZnVsbCBkZSBjb21hbmRlcyBjYWxjdWxhIGVsIGRlc2NvbXB0ZSBhbWIgdW4gQlVTQ0FSViBwZXIgdHJhbXM6PC9wPlxuPGRpdiBjbGFzcz1cImNvZGVcIj49QlVTQ0FSVigzNztFMjpGNTsyO1ZFUlRBREVSKTwvZGl2PlxuPGRpdiBjbGFzcz1cInRzY3JvbGxcIj48dGFibGUgY2xhc3M9XCJ4bFwiPjx0aGVhZD48dHI+PHRoIGNsYXNzPVwiY2xcIj48L3RoPjx0aD5FIMK3IEEgcGFydGlyIGRlIChjYWl4ZXMpPC90aD48dGg+RiDCtyBEZXNjb21wdGU8L3RoPjwvdHI+PC90aGVhZD48dGJvZHk+XG48dHI+PHRoIGNsYXNzPVwiY2xcIj4yPC90aD48dGQgY2xhc3M9XCJuXCI+MDwvdGQ+PHRkIGNsYXNzPVwiblwiPjAgJTwvdGQ+PC90cj5cbjx0cj48dGggY2xhc3M9XCJjbFwiPjM8L3RoPjx0ZCBjbGFzcz1cIm5cIj4yMDwvdGQ+PHRkIGNsYXNzPVwiblwiPjUgJTwvdGQ+PC90cj5cbjx0cj48dGggY2xhc3M9XCJjbFwiPjQ8L3RoPjx0ZCBjbGFzcz1cIm5cIj41MDwvdGQ+PHRkIGNsYXNzPVwiblwiPjEwICU8L3RkPjwvdHI+XG48dHI+PHRoIGNsYXNzPVwiY2xcIj41PC90aD48dGQgY2xhc3M9XCJuXCI+MTAwPC90ZD48dGQgY2xhc3M9XCJuXCI+MTUgJTwvdGQ+PC90cj48L3Rib2R5PjwvdGFibGU+PC9kaXY+XG48cD5RdWluIGRlc2NvbXB0ZSByZXRvcm5hIGxhIGbDs3JtdWxhIGkgcXVpbiDDqXMgbCdpbXBvcnQgZGUgbGEgY29tYW5kYSBhbWIgZWwgZGVzY29tcHRlIGFwbGljYXQgKHNlbnNlIElWQSk/PC9wPiIsICJmaWVsZHMiOiBbeyJsYWJlbCI6ICJEZXNjb21wdGUgKCUpIiwgIm51bSI6IHRydWUsICJtb2RlIjogImRlY2ltYWwiLCAiYW5zIjogWyIzdDIyIl19LCB7ImxhYmVsIjogIkltcG9ydCBmaW5hbCAo4oKsKSIsICJudW0iOiB0cnVlLCAibW9kZSI6ICJkZWNpbWFsIiwgImFucyI6IFsieWpmdnpoIl19XSwgImhpbnQiOiAiQW1iIFZFUlRBREVSLCBCVVNDQVJWIGFnYWZhIGVsIHRyYW0gbcOpcyBncmFuIHF1ZSBubyBwYXNzaSBkZSAzNy4gSW1wb3J0OiAzNyDDlyAyLDAwIMOXICgxIOKIkiBkZXNjb21wdGUpLiIsICJzdCI6IHsicGxhY2UiOiAiUG9ydGEgZGUgbCdhdWxhIiwgImNvZGUiOiAiM3d6ODdnIiwgInJpZGRsZSI6ICLDiXMgZWwgcHJpbWVyIHF1ZSBlcyB2ZXUgZW4gZW50cmFyIGkgbCfDumx0aW0gZW4gc29ydGlyLiBTZW5zZSBlbGxhLCBsYSBjbGFzc2Ugbm8gdGluZHJpYSBkaW5zIG5pIGZvcmEuIn19XSwgImNsdWVzIjogW3sic3JjIjogImVhbiIsICJ0ZXh0IjogIkxhIFNhcmEgZXJhIGEgbGEgZmlsYSA0LCBhIGxhIFNhbGEgZCdlc3R1ZGlzLiJ9LCB7InNyYyI6ICJtYXJnZSIsICJ0ZXh0IjogIkVuIFBvbCBlcmEgYSBsYSBTYWxhIGQnZXN0dWRpcywgYSBsYSBjb2x1bW5hIEEuIn0sIHsic3JjIjogImVzdG9jIiwgInRleHQiOiAiRW4gTWFyYyBlcmEgYWwgUHJvdmFkb3IsIGRyZXQgYSBzb2JyZSBkJ3VuIG9iamVjdGUuIn0sIHsic3JjIjogInN1bWFzaSIsICJ0ZXh0IjogIkxhIExhaWEgZXJhIGEgbGEgZmlsYSA3LiJ9LCB7InNyYyI6ICJidXNjYXJ2IiwgInRleHQiOiAiTGEgTsO6cmlhIGVyYSBhIGxhIGNvbHVtbmEgRC4ifSwgeyJzcmMiOiAidHJhbXMiLCAidGV4dCI6ICJOaW5nw7ogbm8gZXJhIGEgU2VjcmV0YXJpYS4ifSwgeyJzcmMiOiAiY2FydGVsbCIsICJ0ZXh0IjogIkxhIHByb2ZlIChsYSB2w61jdGltYSkgdmEgc2VyIHRyb2JhZGEgYWwgU3VwZXJtZXJjYXQgcGV0aXQsIGEgbGEgZmlsYSAxLiIsICJjb2RlIjogIjFhdmNnY3AifSwgeyJzcmMiOiAiY2FydGVsbCIsICJ0ZXh0IjogIkwnQXJuYXUgZXN0YXZhIGRyZXQgYSBzb2JyZSBkJ3VuIG9iamVjdGUuIiwgImNvZGUiOiAiM3R2a2ZuIn0sIHsic3JjIjogImNhcnRlbGwiLCAidGV4dCI6ICJMYSBMYWlhIGkgbGEgTsO6cmlhIGVyZW4gYWwgUGF0aSAoZWwgVG9ybykuIiwgImNvZGUiOiAiM3JybGRtIn0sIHsic3JjIjogImNhcnRlbGwiLCAidGV4dCI6ICJFbiBQb2wgZXJhIGVuIHVuYSBmaWxhIGRlIG7Dum1lcm8gbcOpcyBwZXRpdCBxdWUgbGEgTsO6cmlhLiIsICJjb2RlIjogIjFrdXBrNHIifSwgeyJzcmMiOiAiY2FydGVsbCIsICJ0ZXh0IjogIkwnZXNjw6BuZXIgZXN0w6AgaW50YWN0ZTogbmluZ8O6IG5vIGVyYSBhIGxhIHNldmEgY2FzZWxsYS4iLCAiY29kZSI6ICIzdnd1MmEifSwgeyJzcmMiOiAiY2FydGVsbCIsICJ0ZXh0IjogIlJlZ2xhIGQnb3I6IGwnYXNzYXNzw60gw6lzIGwnw7puaWNhIHBlcnNvbmEgcXVlIGVyYSBhIGxhIG1hdGVpeGEgc2FsYSBxdWUgbGEgdsOtY3RpbWEuIiwgImNvZGUiOiAieWpvYjc0In1dLCAibWsiOiB7InJvb21zIjogWyJLS0tTU1NTIiwgIktLTVNTU1MiLCAiSUlNTVNQUCIsICJJSU1NUFBQIiwgIklJVFRUUFgiLCAiSVRUVFRYWCIsICJUVFRUVFhYIl0sICJyb29tTmFtZXMiOiB7IksiOiAiQ29uc2VyZ2VyaWEiLCAiUyI6ICJTdXBlcm1lcmNhdCBwZXRpdCIsICJNIjogIk1hZ2F0emVtIiwgIkkiOiAiU2FsYSBkJ2VzdHVkaXMiLCAiUCI6ICJQcm92YWRvciIsICJUIjogIlBhdGkgKGVsIFRvcm8pIiwgIlgiOiAiU2VjcmV0YXJpYSJ9LCAicm9vbVNob3J0IjogeyJLIjogIkNvbnNlcmcuIiwgIlMiOiAiU8O6cGVyIiwgIk0iOiAiTWFnYXR6ZW0iLCAiSSI6ICJFc3R1ZGlzIiwgIlAiOiAiUHJvdmFkb3IiLCAiVCI6ICJQYXRpIiwgIlgiOiAiU2VjcmV0LiJ9LCAicm9vbUxhYmVsQXQiOiB7IksiOiAiMCwwIiwgIlMiOiAiMCwzIiwgIk0iOiAiMSwyIiwgIkkiOiAiMiwwIiwgIlAiOiAiMiw1IiwgIlQiOiAiNCwyIiwgIlgiOiAiNCw2In0sICJvYmplY3RzIjogeyIxLDEiOiAiR3JhcGFkb3JhIiwgIjEsNCI6ICJFc2PDoG5lciIsICIxLDYiOiAiUGlzdG9sYSBkJ2V0aXF1ZXRlcyIsICIzLDEiOiAiTGxpYnJldGEiLCAiMywyIjogIlJvdGxsbyBkZSBmaWxtIiwgIjIsNSI6ICJQZW5qYWRvciIsICI1LDYiOiAiQ2FsY3VsYWRvcmEifSwgInBlb3BsZSI6IFt7ImlkIjogInByb2ZlIiwgIm5hbWUiOiAiTGEgcHJvZmUiLCAiaW5pIjogIlYiLCAidmljdGltIjogdHJ1ZX0sIHsiaWQiOiAiYXJuYXUiLCAibmFtZSI6ICJBcm5hdSIsICJpbmkiOiAiQSJ9LCB7ImlkIjogIm1hcmMiLCAibmFtZSI6ICJNYXJjIiwgImluaSI6ICJNIn0sIHsiaWQiOiAic2FyYSIsICJuYW1lIjogIlNhcmEiLCAiaW5pIjogIlMifSwgeyJpZCI6ICJwb2wiLCAibmFtZSI6ICJQb2wiLCAiaW5pIjogIlAifSwgeyJpZCI6ICJudXJpYSIsICJuYW1lIjogIk7DunJpYSIsICJpbmkiOiAiTiJ9LCB7ImlkIjogImxhaWEiLCAibmFtZSI6ICJMYWlhIiwgImluaSI6ICJMIn1dfSwgInBhaXJzIjogW1siZWFuIiwgIm1hcmdlIl0sIFsiZXN0b2MiLCAic3VtYXNpIl0sIFsiYnVzY2FydiIsICJ0cmFtcyJdXSwgInZhdWx0RGlnaXRzIjogWzQsIDcsIDldLCAidmF1bHRIYXNoIjogIjM3NXpzOSIsICJ2ZXJkaWN0SGFzaCI6ICJraTFxanAiLCAiYm9hcmRIYXNoIjogIjFiZm9sNWgiLCAicGluSGFzaCI6ICJ5amMxZnoiLCAidGVhY2hlckhUTUwiOiAiXG48ZGl2IGNsYXNzPVwiZ3JpZDJcIj5cbiA8ZGl2IGNsYXNzPVwicGFuZWwgc3RhY2tcIj48aDM+U2Vzc2nDsyAxIMK3IEVzY2FwZSAoNjAgbWluKTwvaDM+XG4gIDx1bCBzdHlsZT1cIm1hcmdpbjowO3BhZGRpbmctbGVmdDoxOHB4XCI+XG4gICA8bGk+PGI+MOKAkzUgbWluPC9iPiDCtyBMbGVnaXUgbCdleHBlZGllbnQgaSByZXBhcnRpdSBkaXNwb3NpdGl1cyAoMSBwZXIgZXF1aXAgZGUgNCkuPC9saT5cbiAgIDxsaT48Yj414oCTNTAgbWluPC9iPiDCtyBSdXRhIHBlciBsJ2F1bGEuIENhZGEgZXF1aXAgbGxlZ2VpeCBsJ2VuZGV2aW5hbGxhLCB2YSBhIGxhIHBhcmFkYSwgZXNjYW5lamEgZWwgUVIgKG8gZXNjcml1IGVsIGNvZGkpIGkgZmEgbGEgcHJvdmEgYWxsw6AgbWF0ZWl4LjwvbGk+XG4gICA8bGk+PGI+NTDigJM2MCBtaW48L2I+IMK3IENhaXhhIGZvcnRhIChjb2RpIDxzcGFuIGNsYXNzPVwic29sXCI+NDc5PC9zcGFuPikgaSBsbGl1cmFtZW50IGRlbCBzb2JyZSBmw61zaWMgYW1iIGxlcyBkZWNsYXJhY2lvbnMuPC9saT5cbiAgPC91bD5cbiAgPHAgY2xhc3M9XCJtdXRlZFwiPkF2YWx1YWNpw7MgZGUgY3VyczogcHJvdmVzIHJlc29sdGVzIGkgZXJyb3JzIHBlciBlcXVpcCAoZWxzIHZlaWV1IGEgY2FkYSBkaXNwb3NpdGl1LCBhbCBmaW5hbCBkJ2FxdWVzdCBwYW5lbGwpLjwvcD48L2Rpdj5cbiA8ZGl2IGNsYXNzPVwicGFuZWwgc3RhY2tcIj48aDM+U2Vzc2nDsyAyIMK3IE11cmRva3UgKDYwIG1pbik8L2gzPlxuICA8dWwgc3R5bGU9XCJtYXJnaW46MDtwYWRkaW5nLWxlZnQ6MThweFwiPlxuICAgPGxpPjxiPjDigJMxMCBtaW48L2I+IMK3IEV4cGxpY2FjacOzIGRlIGxhIHJlZ2xhOiB1bmEgcGVyc29uYSBwZXIgZmlsYSBpIHBlciBjb2x1bW5hLjwvbGk+XG4gICA8bGk+PGI+MTDigJM0NSBtaW48L2I+IMK3IENhY2VyYSBkZWxzIDYgY2FydGVsbHMgYW1hZ2F0cyBwZWwgcGF0aSBpIHJlc29sdWNpw7MgYSBsYSB0YXVsZXRhIGkgYSBsYSBncmFlbGxhIGdlZ2FudCAoN8OXNyBhbWIgY2ludGEsIGNhc2VsbGVzIGRlIDcwIGNtLCBzYWxlcyBtYXJjYWRlcyBhbWIgY2ludGEgZGUgY29sb3IpLjwvbGk+XG4gICA8bGk+PGI+NDXigJM2MCBtaW48L2I+IMK3IENhZGEgZXF1aXAgZXMgY29swrdsb2NhIGRyZXQgYSBsYSBncmFlbGxhIGdlZ2FudCBpIGZhIGwnYWN1c2FjacOzLiBQb3NhZGEgZW4gY29tw7ouPC9saT5cbiAgPC91bD5cbiAgPHAgY2xhc3M9XCJtdXRlZFwiPkF2YWx1YWNpw7MgZGUgbMOyZ2ljYTogZ3JhZWxsYSBjb21wbGV0YSBpIGNvcnJlY3RhICsganVzdGlmaWNhY2nDsyBvcmFsIGRlIGR1ZXMgZGVkdWNjaW9ucy48L3A+PC9kaXY+XG48L2Rpdj5cbjxkaXYgY2xhc3M9XCJwYW5lbCBzdGFja1wiPjxoMz5Tb2x1Y2lvbnMgZGUgbGVzIHByb3ZlczwvaDM+PGRpdiBjbGFzcz1cInRzY3JvbGxcIj48dGFibGU+XG48dGhlYWQ+PHRyPjx0aD4jPC90aD48dGg+UHJvdmE8L3RoPjx0aD5SZXNwb3N0YTwvdGg+PHRoPlJhb25hbWVudDwvdGg+PHRoPlBpc3RhPC90aD48L3RyPjwvdGhlYWQ+PHRib2R5PlxuPHRyPjx0ZD4xPC90ZD48dGQ+RUFOLTEzPC90ZD48dGQgY2xhc3M9XCJzb2xcIj40PC90ZD48dGQ+U2VuYXJzIDgrMisyKzQrNis4ID0gMzAuIFBhcmVsbGVzICg0KzErMys1KzcrMikgw5cgMyA9IDY2LiBUb3RhbCA5NiDihpIgMTAwIOKIkiA5NiA9IDQuIENvZGk6IDg0MjEyMzQ1Njc4MjQuPC90ZD48dGQ+U2FyYTwvdGQ+PC90cj5cbjx0cj48dGQ+MjwvdGQ+PHRkPk1hcmdlIGkgUFZQPC90ZD48dGQgY2xhc3M9XCJzb2xcIj41MCAlIMK3IDUsODEg4oKsPC90ZD48dGQ+KDQsODAg4oiSIDIsNDApIC8gNCw4MCA9IDUwICUuIDQsODAgw5cgMSwyMSA9IDUsODA4IOKGkiA1LDgxIOKCrC4gKFNvYnJlIGNvc3Qgc2VyaWEgMTAwICUuKTwvdGQ+PHRkPlBvbDwvdGQ+PC90cj5cbjx0cj48dGQ+MzwvdGQ+PHRkPkludmVudGFyaTwvdGQ+PHRkIGNsYXNzPVwic29sXCI+QiDCtyAzPC90ZD48dGQ+QTogMTI1ID0gMTI1LiBCOiA4MCArIDI1IOKIkiAzMCA9IDc1LCBmw61zaWMgNzIuIEM6IDQ4ID0gNDguPC90ZD48dGQ+TWFyYzwvdGQ+PC90cj5cbjx0cj48dGQ+NDwvdGQ+PHRkPlNVTUEuU0k8L3RkPjx0ZCBjbGFzcz1cInNvbFwiPjEwMDwvdGQ+PHRkPjM0LDUwICsgMTgsMjUgKyAyNywyNSArIDIwLDAwLjwvdGQ+PHRkPkxhaWE8L3RkPjwvdHI+XG48dHI+PHRkPjU8L3RkPjx0ZD5CVVNDQVJWPC90ZD48dGQgY2xhc3M9XCJzb2xcIj40LDM1PC90ZD48dGQ+RmlsYSBkZSBQMTAyLCAzYSBjb2x1bW5hLjwvdGQ+PHRkPk7DunJpYTwvdGQ+PC90cj5cbjx0cj48dGQ+NjwvdGQ+PHRkPkJVU0NBUlYgcGVyIHRyYW1zPC90ZD48dGQgY2xhc3M9XCJzb2xcIj41ICUgwrcgNzAsMzAg4oKsPC90ZD48dGQ+MzcgY2F1IGFsIHRyYW0gZGUgMjAg4oaSIDUgJS4gMzcgw5cgMiwwMCA9IDc0LDAwIMOXIDAsOTUgPSA3MCwzMCDigqwuPC90ZD48dGQ+U2VjcmV0YXJpYSBidWlkYTwvdGQ+PC90cj5cbjwvdGJvZHk+PC90YWJsZT48L2Rpdj5cbjxwIGNsYXNzPVwibXV0ZWRcIj5DYWl4YSBmb3J0YTogcHJvdmVzIDErMiDihpIgPGI+NDwvYj4sIHByb3ZlcyAzKzQg4oaSIDxiPjc8L2I+LCBwcm92ZXMgNSs2IOKGkiA8Yj45PC9iPi4gQ29kaSA8c3BhbiBjbGFzcz1cInNvbFwiPjQ3OTwvc3Bhbj4uPC9wPjwvZGl2PlxuPGRpdiBjbGFzcz1cInBhbmVsIHN0YWNrXCI+PGgzPlBhcmFkZXMgaSBjb2RpczwvaDM+PGRpdiBjbGFzcz1cInRzY3JvbGxcIj48dGFibGU+XG48dGhlYWQ+PHRyPjx0aD5Qcm92YTwvdGg+PHRoPk9uIHBlbmphciBlbCBjYXJ0ZWxsPC90aD48dGg+Q29kaTwvdGg+PC90cj48L3RoZWFkPjx0Ym9keT5cbjx0cj48dGQ+MSDCtyBFQU4tMTM8L3RkPjx0ZD5UYXVsYSBkZSBsYSBwcm9mZTwvdGQ+PHRkIGNsYXNzPVwic29sXCI+TEVDVE9SPC90ZD48L3RyPlxuPHRyPjx0ZD4yIMK3IE1hcmdlIGkgUFZQPC90ZD48dGQ+UGlzc2FycmE8L3RkPjx0ZCBjbGFzcz1cInNvbFwiPk9MSVZBPC90ZD48L3RyPlxuPHRyPjx0ZD4zIMK3IEludmVudGFyaTwvdGQ+PHRkPkFybWFyaSBkZWwgbWF0ZXJpYWw8L3RkPjx0ZCBjbGFzcz1cInNvbFwiPlBBTEVUPC90ZD48L3RyPlxuPHRyPjx0ZD40IMK3IFNVTUEuU0k8L3RkPjx0ZD5GaW5lc3RyYTwvdGQ+PHRkIGNsYXNzPVwic29sXCI+Q0VMTEE8L3RkPjwvdHI+XG48dHI+PHRkPjUgwrcgQlVTQ0FSVjwvdGQ+PHRkPlBhcGVyZXJhIGRlIHJlY2ljbGF0Z2U8L3RkPjx0ZCBjbGFzcz1cInNvbFwiPlRBUklGQTwvdGQ+PC90cj5cbjx0cj48dGQ+NiDCtyBCVVNDQVJWIHRyYW1zPC90ZD48dGQ+UG9ydGEgZGUgbCdhdWxhPC90ZD48dGQgY2xhc3M9XCJzb2xcIj5UUkFNUzwvdGQ+PC90cj5cbjwvdGJvZHk+PC90YWJsZT48L2Rpdj5cbjxwIGNsYXNzPVwibXV0ZWRcIj5SdXRlczogbCdlcXVpcCAxIGNvbWVuw6dhIGEgbGEgcGFyYWRhIDEsIGwnZXF1aXAgMiBhIGxhIDLigKYgaSBsJ2VxdWlwIDcgdG9ybmEgYSBjb21lbsOnYXIgYSBsYSAxIChjb21wYXJ0ZWl4IHJ1dGEgYW1iIGwnZXF1aXAgMSkuIENhZGEgZXF1aXAgbm9tw6lzIHBvdCBvYnJpciBsYSBwYXJhZGEgcXVlIGxpIHRvY2EuPC9wPlxuPHAgY2xhc3M9XCJtdXRlZFwiPkNhcnRlbGxzIGRlbCBwYXRpIChGYXNlIDIpOiBDQU5FTEEsIFBFQlJFLCBNRU5UQSwgUk9NQU5JLCBTQUZSQSwgQU5JUy4gTm9tw6lzIGZ1bmNpb25lbiB1biBjb3Agb2JlcnRhIGxhIGNhaXhhIGZvcnRhLjwvcD48L2Rpdj5cbjxkaXYgY2xhc3M9XCJwYW5lbCBzdGFja1wiPjxoMz5Tb2x1Y2nDsyBkZWwgTXVyZG9rdTwvaDM+XG48cD48Yj5Bcm5hdTwvYj4sIGFtYiBsYSA8Yj5waXN0b2xhIGQnZXRpcXVldGVzPC9iPiwgYWwgPGI+U3VwZXJtZXJjYXQgcGV0aXQ8L2I+LjwvcD5cbjxwIGNsYXNzPVwic29sXCI+UHJvZmUgRTEgwrcgQXJuYXUgRzIgwrcgTWFyYyBGMyDCtyBTYXJhIEI0IMK3IFBvbCBBNSDCtyBOw7pyaWEgRDYgwrcgTGFpYSBDNzwvcD5cbjxwIGNsYXNzPVwibXV0ZWRcIj5Tb2x1Y2nDsyDDum5pY2EgY29tcHJvdmFkYSBwZXIgb3JkaW5hZG9yIGFtYiBsZXMgMTIgcGlzdGVzLiBPcmRyZSBkZSBkZWR1Y2Npw7M6IFBvbCBBNSAoc2FsYSBkJ2VzdHVkaXMsIGNvbC4gQSwgaSBoYSBkJ2VzdGFyIHBlciBzb2JyZSBkZSBsYSBOw7pyaWEpIOKGkiBMYWlhIGZpbGEgNyBpIE7DunJpYSBjb2wuIEQgZGlucyBkZWwgUGF0aSDihpIgTsO6cmlhIEQ2LCBMYWlhIEM3IOKGkiBTYXJhIEI0IChzYWxhIGQnZXN0dWRpcywgZmlsYSA0KSDihpIgTWFyYyBhbCBQcm92YWRvciBzb2JyZSBlbCBwZW5qYWRvciBGMyDihpIgZmlsZXMgMSBpIDIgcXVlZGVuIHBlciBhIGxhIHByb2ZlIGkgbCdBcm5hdSwgY29sdW1uZXMgRSBpIEcg4oaSIGwnZXNjw6BuZXIgKEUyKSDDqXMgYnVpdCwgcGVyIHRhbnQgQXJuYXUgRzIgaSBwcm9mZSBFMS4gQXJuYXUgw6lzIGwnw7puaWMgYWwgU3VwZXJtZXJjYXQgYW1iIGxhIHbDrWN0aW1hLjwvcD48L2Rpdj5cbjxkaXYgY2xhc3M9XCJwYW5lbCBzdGFja1wiPjxoMz5NYXRlcmlhbCBwZXIgaW1wcmltaXI8L2gzPlxuPHVsIHN0eWxlPVwibWFyZ2luOjA7cGFkZGluZy1sZWZ0OjE4cHhcIj5cbiA8bGk+RWwgUERGIGQnaW1wcmltaWJsZXM6IDYgY2FydGVsbHMgZGUgcGFyYWRhIGFtYiBRUiwgNiBjYXJ0ZWxscyBkZSBwaXN0YSBhbWIgUVIgcGVyIGFtYWdhciBhbCBwYXRpIGkgNyBmaXR4ZXMgZCdvYmplY3RlLjwvbGk+XG4gPGxpPjcgY2FydGVsbHMgZCdvYmplY3RlIHBlciBhIGxhIGdyYWVsbGEgZ2VnYW50OiBHcmFwYWRvcmEgQjIsIEVzY8OgbmVyIEUyLCBQaXN0b2xhIGQnZXRpcXVldGVzIEcyLCBQZW5qYWRvciBGMywgTGxpYnJldGEgQjQsIFJvdGxsbyBkZSBmaWxtIEM0LCBDYWxjdWxhZG9yYSBHNi48L2xpPlxuIDxsaT5VbiBjYWRlbmF0IGRlIDMgeGlmcmVzIGFtYiBlbCBjb2RpIDQ3OSwgc2kgdm9sZXUgY2FpeGEgZsOtc2ljYS48L2xpPlxuPC91bD48L2Rpdj5cbiIsICJzb2x2ZWRUZXh0IjogIlZhIHNlciBsJ0FybmF1LCBhbWIgbGEgcGlzdG9sYSBkJ2V0aXF1ZXRlcywgYWwgU3VwZXJtZXJjYXQgcGV0aXQuIFZvbGlhIHJlZXRpcXVldGFyIGVscyBwcmV1cyBhYmFucyBkZSBsJ2F1ZGl0b3JpYSBkZSBtYXJnZXMgaSBsYSBwcm9mZSBlbCB2YSBlbnhhbXBhci4ifQ=="))));
+const $ = s => document.querySelector(s);
+const LS = "cas-super-petit-v1";
+let S = {team:"",names:"",solved:{},errors:{},vault:false,start:null,phase:1,board:{},xs:{},done:false,penalty:0,unlocked:{},cartells:{}};
+try{ const raw = localStorage.getItem(LS); if(raw) S = Object.assign(S, JSON.parse(raw)); }catch(e){}
+S.unlocked=S.unlocked||{}; S.cartells=S.cartells||{};
+function save(){ try{ localStorage.setItem(LS, JSON.stringify(S)); }catch(e){} }
+function h(s){ let x=5381; for(const c of s) x=((x<<5)+x+c.charCodeAt(0))>>>0; return x.toString(36); }
+function norm(v){ return String(v).trim().toLowerCase().replace(/\s|€|%/g,"").replace(",","."); }
+function normNum(v){ const n=norm(v); const f=parseFloat(n); return isNaN(f)? n : String(Math.round(f*100)/100); }
+function toast(t){ const el=$("#toast"); el.textContent=t; el.hidden=false; clearTimeout(toast._t); toast._t=setTimeout(()=>el.hidden=true,2600); }
+function esc(s){ return s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+/* ---------- router ---------- */
+const views=["inici","escape","murdoku","docent"];
+function route(){
+  let raw = location.hash.slice(1);
+  if(/^(st|ct)-/.test(raw)){
+    const code=raw.slice(3), isSt=raw.startsWith("st-");
+    const m = isSt ? unlockStation(code,true) : unlockCartell(code,true);
+    if(m) toast(m);
+    if(isSt) renderTests();
+    raw = isSt?"escape":"murdoku";
+    try{ history.replaceState(null,"","#"+raw); }catch(e){}
+  }
+  const v = views.includes(raw) ? raw : "inici";
+  views.forEach(n=>{ $("#v-"+n).hidden = n!==v; });
+  document.querySelectorAll("nav.tabs a").forEach(a=>{ if(a.getAttribute("href")==="#"+v) a.setAttribute("aria-current","page"); else a.removeAttribute("aria-current"); });
+  if(v==="murdoku") renderMurdoku();
+}
+addEventListener("hashchange",route);
+
+/* ---------- HUD + timer ---------- */
+function hud(){
+  $("#teamChip").textContent = S.team || "Equip —";
+  const n = Object.keys(S.solved).length;
+  $("#scoreChip").textContent = S.vault ? (S.done ? "Cas resolt" : "Fase 2") : `Proves ${n}/6`;
+}
+function tick(){
+  const el=$("#timer");
+  if(S.phase===2){ el.textContent="Sense temps"; el.classList.remove("low"); el.style.fontSize="13px"; return; }
+  el.style.fontSize="";
+  if(!S.start){ el.textContent="60:00"; el.classList.remove("low"); return; }
+  const left = 60*60 - Math.floor((Date.now()-S.start)/1000) - S.penalty*60;
+  const a=Math.abs(left), m=Math.floor(a/60), s=a%60;
+  el.textContent=(left<0?"+":"")+String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+  el.classList.toggle("low", left<300);
+}
+setInterval(tick,1000);
+
+/* ---------- inici ---------- */
+$("#teamSel").value=S.team; $("#teamNames").value=S.names;
+$("#teamSel").onchange=e=>{S.team=e.target.value; save(); hud(); renderTests();};
+$("#teamNames").oninput=e=>{S.names=e.target.value; save();};
+$("#startEscape").onclick=()=>{
+  if(!S.team){ toast("Tria primer el número d'equip"); $("#teamSel").focus(); return; }
+  if(!S.start || S.phase!==1){ S.start=Date.now(); S.phase=1; S.penalty=0; save(); }
+  location.hash="escape";
+};
+
+/* ---------- escape ---------- */
+function teamIdx(){ const n=parseInt((S.team||"").replace(/\D/g,""))||1; return (n-1)%D.tests.length; }
+function myRoute(){ const k=teamIdx(); return D.tests.map((_,i)=>D.tests[(i+k)%D.tests.length]); }
+function currentStop(){ return myRoute().find(t=>!S.solved[t.id]); }
+function unlockStation(code,fromQR){
+  const c=norm(code).toUpperCase(); const t=D.tests.find(t=>t.st.code===h(c));
+  if(!t) return "Aquest codi no és de cap parada.";
+  if(!S.team) return "Primer trieu el vostre equip a l'Expedient.";
+  if(S.unlocked[t.id]){ if(fromQR) toast("Aquesta parada ja la teníeu oberta"); return ""; }
+  const cur=currentStop();
+  if(!cur || cur.id!==t.id){ const m="Aquesta parada no us toca ara. Seguiu la vostra ruta."; if(fromQR) toast(m); return m; }
+  S.unlocked[t.id]=1; if(!S.start){ S.start=Date.now(); } save(); toast("Parada desbloquejada: "+t.st.place); 
+  if(!fromQR){ renderTests(); }
+  return "";
+}
+function unlockCartell(code,fromQR){
+  const c=norm(code).toUpperCase(); const i=D.clues.findIndex(x=>x.code===h(c));
+  if(i<0) return "Aquest codi no és de cap cartell.";
+  if(!S.vault){ const m="Primer heu d'obrir la caixa forta de la Fase 1."; if(fromQR) toast(m); return m; }
+  S.cartells[i]=1; save(); if(fromQR) toast("Cartell desbloquejat"); return "";
+}
+function renderRoute(){
+  const cur=currentStop();
+  $("#route").innerHTML=myRoute().map((t,i)=>{
+    const st=S.solved[t.id]?"ok":(cur&&cur.id===t.id?"cur":"");
+    const lbl=S.solved[t.id]?t.st.place:(S.unlocked[t.id]?t.st.place:"???");
+    return `<div class="stop ${st}"><div class="n">Parada ${i+1}${S.solved[t.id]?" · feta":cur&&cur.id===t.id?" · ara":""}</div>${lbl}</div>`;
+  }).join("");
+}
+function renderTests(){
+  renderRoute();
+  const box=$("#tests"); box.innerHTML=""; const cur=currentStop();
+  if(!S.team){ box.innerHTML=`<div class="gate stack" style="align-items:center"><h3>Falta l'equip</h3><p class="muted">Trieu el número d'equip a l'Expedient: cada equip té una ruta diferent.</p><a class="btn" href="#inici" style="text-decoration:none">Anar a l'Expedient</a></div>`; return; }
+  myRoute().forEach((t,i)=>{
+    const done=!!S.solved[t.id], open=!!S.unlocked[t.id], isCur=cur&&cur.id===t.id, errs=S.errors[t.id]||0;
+    const el=document.createElement("article"); el.className="ticket"+(done?" done":"")+(!open&&!isCur?" locked":""); el.id="t-"+t.id;
+    let inner;
+    if(done) inner=`<h3>${t.title}</h3><div class="reward">Pista desbloquejada: <b>${esc(D.clues[t.clue].text)}</b>${t.digit!=null?`<br>Número de la caixa: <b>${t.digit}</b>`:""}</div>`;
+    else if(open) inner=`<h3>${t.title}</h3><div>${t.body}</div>
+        <form class="stack" data-id="${t.id}">
+          <div class="row">${t.fields.map((f,k)=>`<label class="f">${f.label}<input id="in-${t.id}-${k}" autocomplete="off" inputmode="${f.mode||"decimal"}"></label>`).join("")}</div>
+          <div class="row"><button type="submit">Comprovar</button><span class="err" id="err-${t.id}"></span></div>
+          ${errs>=2?`<p class="hint">${t.hint}</p>`:""}
+        </form>`;
+    else if(isCur) inner=`<div class="go"><span class="kicker">On és la parada?</span><p class="riddle">${esc(t.st.riddle)}</p>
+        <p class="muted" style="font-size:13px">Quan hi sigueu, escanegeu el QR del cartell o escriviu-ne el codi.</p>
+        <form class="row" data-unlock="1"><label class="f">Codi de la parada<input id="st-in" autocomplete="off" autocapitalize="characters"></label><button type="submit">Obrir</button></form>
+        <span class="err" id="st-err"></span></div>`;
+    else inner=`<p class="muted">Bloquejada. Primer acabeu la parada anterior.</p>`;
+    el.innerHTML=`<div class="hd"><span class="mod ${t.mod==="DPV"?"dpv":"ai"}">${t.mod==="DPV"?"Dinamització PdV":"Aplicacions informàtiques"}</span><span class="state">${done?"Resolta":"Parada "+(i+1)}</span></div><div class="bd">${inner}</div>`;
+    box.appendChild(el);
+  });
+  const uf=box.querySelector("form[data-unlock]");
+  if(uf) uf.onsubmit=ev=>{ ev.preventDefault(); const m=unlockStation($("#st-in").value,false); if(m) $("#st-err").textContent=m; };
+  box.querySelectorAll("form[data-id]").forEach(f=>f.onsubmit=ev=>{
+    ev.preventDefault(); const t=D.tests.find(x=>x.id===f.dataset.id);
+    const ok=t.fields.every((fd,k)=>{ const v=$(`#in-${t.id}-${k}`).value; return fd.ans.includes(h(fd.num?normNum(v):norm(v))); });
+    if(ok){ S.solved[t.id]=1; save(); renderTests(); renderDials(); hud(); const e=$("#t-"+t.id); e.classList.add("flash"); e.scrollIntoView({block:"nearest"}); toast(currentStop()?"Prova superada! Ja teniu la pista de la següent parada":"Totes les parades fetes! Obriu la caixa forta"); }
+    else{ S.errors[t.id]=(S.errors[t.id]||0)+1; S.penalty++; save(); renderTests(); $("#err-"+t.id).textContent="No quadra. +1 minut de penalització."; tick(); }
+  });
+}
+function vaultDigits(){ return D.pairs.map(p=>p.every(id=>S.solved[id]) ? D.vaultDigits[D.pairs.indexOf(p)] : null); }
+function renderDials(){ $("#dials").innerHTML=vaultDigits().map(d=>`<div class="dial ${d!=null?"on":""}">${d!=null?d:"?"}</div>`).join(""); }
+$("#vaultForm").onsubmit=ev=>{
+  ev.preventDefault(); const v=$("#vaultIn").value.replace(/\D/g,"");
+  if(h(v)===D.vaultHash){ S.vault=true; S.phase=2; S.start=null; S.penalty=0; save(); hud(); tick(); toast("Sobre obert! Comença la Fase 2"); location.hash="murdoku"; }
+  else { $("#vaultErr").textContent="Codi incorrecte. Mireu els números que heu guanyat a les proves."; }
+};
+
+/* ---------- murdoku ---------- */
+const M=D.mk; let sel=null, xMode=false;
+function roomAt(r,c){ return M.rooms[r][c]; }
+function renderMurdoku(){
+  $("#mkGate").hidden=S.vault; $("#mkBody").hidden=!S.vault; if(!S.vault) return;
+  // suspects
+  const placed=Object.values(S.board);
+  $("#suspects").innerHTML=M.people.map(p=>`<button class="sp ${placed.includes(p.id)?"placed":""}" data-p="${p.id}" aria-pressed="${sel===p.id}"><span class="tok ${p.victim?"v":""}">${p.ini}</span>${p.name}</button>`).join("");
+  $("#suspects").querySelectorAll(".sp").forEach(b=>b.onclick=()=>{ sel = sel===b.dataset.p?null:b.dataset.p; xMode=false; $("#xMode").setAttribute("aria-pressed","false"); renderMurdoku(); });
+  // board
+  const cols="ABCDEFG"; let html=`<div></div>`+[...cols].map(c=>`<div class="lab">${c}</div>`).join("");
+  const counts={}; for(const [k,p] of Object.entries(S.board)){ const [r,c]=k.split(",").map(Number); counts["r"+r]=(counts["r"+r]||0)+1; counts["c"+c]=(counts["c"+c]||0)+1; }
+  for(let r=0;r<7;r++){
+    html+=`<div class="lab">${r+1}</div>`;
+    for(let c=0;c<7;c++){
+      const rm=roomAt(r,c), k=r+","+c, who=S.board[k], ob=M.objects[k];
+      const b=[(r===0||roomAt(r-1,c)!==rm)?"bt":"",(r===6||roomAt(r+1,c)!==rm)?"bb":"",(c===0||roomAt(r,c-1)!==rm)?"bl":"",(c===6||roomAt(r,c+1)!==rm)?"br":""].join(" ");
+      const showRn = (r===0||roomAt(r-1,c)!==rm)&&(c===0||roomAt(r,c-1)!==rm) && M.roomLabelAt[rm]===k;
+      const p=who&&M.people.find(x=>x.id===who);
+      const clash=who&&(counts["r"+r]>1||counts["c"+c]>1);
+      html+=`<div class="cell ${b} ${S.xs[k]&&!who?"x":""} ${clash?"clash":""}" style="background:var(--r-${rm})" data-k="${k}" role="button" tabindex="0" aria-label="${cols[c]}${r+1}, ${M.roomNames[rm]}${ob?", "+ob:""}${p?", "+p.name:""}">
+        ${ob?`<span class="obj">${ob}</span>`:""}${M.roomLabelAt[rm]===k?`<span class="rn">${M.roomShort[rm]}</span>`:""}
+        ${p?`<span class="tok ${p.victim?"v":""}">${p.ini}</span>`:""}</div>`;
+    }
+  }
+  $("#board").innerHTML=html;
+  $("#board").querySelectorAll(".cell").forEach(cell=>{
+    const act=()=>{
+      const k=cell.dataset.k;
+      if(xMode){ if(!S.board[k]){ S.xs[k]=!S.xs[k]; } }
+      else if(S.board[k]){ delete S.board[k]; }
+      else if(sel){ for(const kk in S.board) if(S.board[kk]===sel) delete S.board[kk]; S.board[k]=sel; delete S.xs[k]; }
+      else { toast("Tria primer un personatge"); return; }
+      save(); renderMurdoku();
+    };
+    cell.onclick=act; cell.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); act(); } };
+  });
+  $("#legend").innerHTML=Object.entries(M.roomNames).map(([k,n])=>`<span><i style="background:var(--r-${k})"></i>${n}</span>`).join("");
+  // clues
+  let cn=0;
+  $("#clues").innerHTML=D.clues.map((c,i)=>{
+    const isC=c.src==="cartell"; if(isC) cn++;
+    const unlocked = isC ? S.cartells[i] : S.solved[c.src];
+    const t = D.tests.find(t=>t.id===c.src);
+    const tag = isC ? "Cartell "+cn : "Prova · "+t.st.place;
+    return unlocked ? `<div class="clue"><span class="tag">${tag}</span><span>${esc(c.text)}</span></div>`
+                    : `<div class="clue locked"><span class="tag">${tag}</span><span>${isC?"Cartell amagat al pati. Trobeu-lo i escanegeu-lo.":"Declaració bloquejada. Feu la prova per llegir-la."}</span></div>`;
+  }).join("");
+  // verdict selects
+  if(!$("#vWho").options.length){
+    $("#vWho").innerHTML=`<option value="">—</option>`+M.people.filter(p=>!p.victim).map(p=>`<option value="${p.id}">${p.name}</option>`).join("");
+    $("#vWith").innerHTML=`<option value="">—</option>`+[...new Set(Object.values(M.objects))].map(o=>`<option>${o}</option>`).join("");
+    $("#vWhere").innerHTML=`<option value="">—</option>`+Object.values(M.roomNames).map(o=>`<option>${o}</option>`).join("");
+  }
+  if(S.done) showSolved();
+}
+$("#cartForm").onsubmit=ev=>{ ev.preventDefault(); const m=unlockCartell($("#cartIn").value,false); $("#cartErr").textContent=m; if(!m){ $("#cartIn").value=""; renderMurdoku(); } };
+$("#xMode").onclick=e=>{ xMode=!xMode; e.currentTarget.setAttribute("aria-pressed",xMode); e.currentTarget.textContent = xMode?"Marcant × (actiu)":"Marcar ×"; sel=null; renderMurdoku(); };
+$("#clearBoard").onclick=()=>{ if($("#clearBoard").dataset.c){ S.board={}; S.xs={}; save(); renderMurdoku(); delete $("#clearBoard").dataset.c; $("#clearBoard").textContent="Buidar graella"; } else { $("#clearBoard").dataset.c=1; $("#clearBoard").textContent="Segur? Toca de nou"; setTimeout(()=>{delete $("#clearBoard").dataset.c; $("#clearBoard").textContent="Buidar graella";},3000);} };
+$("#verdict").onsubmit=ev=>{
+  ev.preventDefault();
+  const a=[$("#vWho").value,$("#vWith").value,$("#vWhere").value];
+  if(a.some(x=>!x)){ $("#vErr").textContent="Falta triar qui, amb què o on."; return; }
+  if(h(a.join("|"))===D.verdictHash){
+    const full = h(JSON.stringify(Object.entries(S.board).sort()))===D.boardHash;
+    S.done=true; S.fullBoard=full; S.endTime=Date.now(); save(); hud(); showSolved();
+  } else { save(); $("#vErr").textContent="Acusació falsa. Torneu a mirar la graella amb calma i proveu de nou."; }
+};
+function showSolved(){
+  
+  $("#solvedBox").hidden=false;
+  $("#solvedBox").innerHTML=`<div class="solved stack"><h3>Cas resolt</h3><p>${esc(D.solvedText)}</p>
+  <p class="muted">${S.fullBoard?"Graella completa i correcta.":"L'acusació és correcta. Demaneu a la profe que revisi la graella completa."}</p></div>`;
+  $("#verdict").hidden=true;
+}
+
+/* ---------- docent ---------- */
+$("#pinForm").onsubmit=ev=>{
+  ev.preventDefault();
+  if(h($("#pinIn").value.trim())!==D.pinHash){ $("#pinErr").textContent="PIN incorrecte"; return; }
+  $("#pinForm").hidden=true; $("#teacher").hidden=false; $("#teacher").innerHTML=D.teacherHTML+`
+    <div class="panel stack"><h3>Aquest dispositiu</h3>
+    <p class="muted">${esc(S.team||"Sense equip")} · Proves: ${Object.keys(S.solved).length}/6 · Cartells: ${Object.keys(S.cartells).length}/6 · Errors: ${Object.values(S.errors).reduce((a,b)=>a+b,0)} · Fase ${S.phase}${S.done?" · Cas resolt":""}</p>
+    <div class="row"><button class="ghost" id="tSkip">Obrir la Fase 2 sense codi</button><button class="ghost" id="tReset">Reiniciar el dispositiu</button></div></div>`;
+  $("#tSkip").onclick=()=>{ S.vault=true; S.phase=2; S.start=null; S.penalty=0; save(); hud(); tick(); toast("Fase 2 oberta"); };
+  $("#tReset").onclick=e=>{ if(!e.target.dataset.c){ e.target.dataset.c=1; e.target.textContent="Segur? Esborra tot el progrés"; return; } try{localStorage.removeItem(LS);}catch(_){ } location.hash="inici"; location.reload(); };
+};
+
+renderTests(); renderDials(); hud(); tick(); route();
+</script>
+
+</body>
+</html>
