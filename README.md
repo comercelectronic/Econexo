@@ -18,7 +18,7 @@ La parte principal de ECOyNEXO es **educativa**: contenidos de todos los ciclos 
 
 ### Primer módulo: Comercio electrónico (Actividades Comerciales, grado medio)
 
-53 lecciones (las del juego Agència Digital), con tira y test, y el juego como simulador (`https://agenciadigitalosona.netlify.app/?lang=ca`). Las lecciones de gestión de la agencia que no son del temario aparecen como complementarias.
+53 lecciones (las del juego Agència Digital), con tira y test, y el juego como simulador (`/jocs/agencia-digital/?lang=ca`, fitxers copiats des del repositori `agenciadigital` amb `scripts/publicar-ecoynexo.sh`; les funcions es reenvien a `agenciadigitalosona.netlify.app`). Las lecciones de gestión de la agencia que no son del temario aparecen como complementarias.
 
 ## Tecnología
 

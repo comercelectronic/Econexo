@@ -17,6 +17,19 @@
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
 
+# Agència Digital s'allotja a ecoynexo.com/jocs/agencia-digital/ (fitxers estàtics de public/jocs/agencia-digital).
+# Les seves funcions (resultats, classe i correcció) viuen al projecte Netlify del joc i es reenvien des d'aquí.
+[[redirects]]
+  from = "/jocs/agencia-digital/.netlify/functions/*"
+  to = "https://agenciadigitalosona.netlify.app/.netlify/functions/:splat"
+  status = 200
+  force = true
+
+[[headers]]
+  for = "/jocs/agencia-digital/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache"
+
 # El domini principal porta a la versió en català; el castellà és a /es/
 [[redirects]]
   from = "/"
