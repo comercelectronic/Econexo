@@ -372,3 +372,25 @@ tr.clicable:hover td { background: var(--sup); }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 body.redueix *, body.redueix *::before, body.redueix *::after { animation: none !important; transition: none !important; }
+
+/* ---------- Créixer: fases de l'empresa ---------- */
+.caixa { border: 1px solid var(--sup2); border-radius: 12px; padding: 10px 12px; background: var(--sup, #1b2533); }
+.caixa.groc { border-color: color-mix(in srgb, var(--groc) 55%, transparent); }
+.caixa.verd { border-color: color-mix(in srgb, var(--verd) 60%, transparent); }
+.nomes-mobil { display: none; }
+@media (max-width: 860px) { .nomes-mobil { display: inline; } }
+.kpis-mini { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 8px 0; }
+.kpis-mini > div { background: var(--sup2); border-radius: 10px; padding: 6px 8px; }
+.kpis-mini span { display: block; font-size: 11px; color: var(--text2); }
+.escala { list-style: none; padding: 0; margin: 10px 0; display: grid; gap: 6px; }
+.escala li { display: flex; gap: 10px; align-items: flex-start; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--sup2); opacity: .6; }
+.escala li div { display: flex; flex-direction: column; gap: 2px; }
+.escala li.fet { opacity: .85; border-color: color-mix(in srgb, var(--verd) 50%, transparent); }
+.escala li.ara { opacity: 1; border-color: var(--groc); background: color-mix(in srgb, var(--groc) 10%, transparent); }
+.escala li .ic { flex: none; width: 28px; height: 28px; display: grid; place-items: center; }
+.escala.mini { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.escala.mini li { padding: 4px 8px; align-items: center; font-size: 12px; }
+.t tr.sub td { border-top: 1px dashed var(--sup2); font-weight: 600; }
+.fase-cartell { position: absolute; left: 14px; top: 8px; z-index: 3; font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: rgba(15, 23, 42, .78); color: #fff; display: flex; gap: 5px; align-items: center; pointer-events: none; }
+.fase-cartell svg { width: 14px; height: 14px; }
+.nevera { position: absolute; left: 30px; top: 470px; width: 46px; height: 92px; border-radius: 6px; background: linear-gradient(#dbeafe, #93c5fd); border: 2px solid #64748b; display: grid; place-items: center; font-size: 22px; color: #1e3a8a; z-index: 2; }
