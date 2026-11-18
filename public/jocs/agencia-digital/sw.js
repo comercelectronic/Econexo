@@ -20,6 +20,7 @@ self.addEventListener('fetch', (e) => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   const sameOrigin = url.origin === self.location.origin;
+  if (!sameOrigin && !url.hostname.endsWith('gstatic.com') && !url.hostname.endsWith('googleapis.com')) return; // anuncis i altres serveis externs: directes a la xarxa
   e.respondWith(
     fetch(req).then((res) => {
       if (res.ok && (sameOrigin || url.hostname.endsWith('gstatic.com') || url.hostname.endsWith('googleapis.com'))) {
