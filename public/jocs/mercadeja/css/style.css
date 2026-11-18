@@ -14,6 +14,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .num, .kpi b, td.n, .money { font-variant-numeric: tabular-nums; }
 a { color: var(--blau); }
 .ico { width: 1.15em; height: 1.15em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; vertical-align: -.2em; flex: none; }
+[hidden] { display: none !important; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 :focus-visible { outline: 3px solid var(--groc); outline-offset: 2px; border-radius: 6px; }
 
@@ -239,6 +240,54 @@ table.t tr.total td { font-weight: 700; border-top: 2px solid var(--vora); }
 
 /* ---------- Navegació inferior (mòbil) ---------- */
 .nav-mobil { display: none; }
+
+/* ---------- Lliçons ---------- */
+.llico p { margin: 0 0 10px; }
+.ll-ra { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; letter-spacing: .02em; color: var(--groc); }
+.llico h2 { margin: 6px 0 10px; }
+.ll-ex { background: #16263a; border: 1px solid #2c4a6e; border-left: 4px solid var(--blau); border-radius: 12px; padding: 12px 14px; margin: 12px 0; }
+.ll-ex b { display: flex; gap: 6px; align-items: center; font-size: 14px; color: #bfe0ff; }
+.ll-ex p { margin: 6px 0 0; font-size: 15px; }
+.ll-q { background: var(--sup); border: 1px solid var(--vora); border-radius: 12px; padding: 12px 14px; }
+.ll-q > p { margin: 6px 0 10px; }
+.ll-ops { display: grid; gap: 8px; }
+.ll-op { text-align: left; min-height: 44px; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--vora); background: var(--bg2); cursor: pointer; font-size: 15px; }
+.ll-op:hover:not(:disabled) { border-color: var(--groc); }
+.ll-op:disabled { cursor: default; opacity: .75; }
+.ll-op.ok { border-color: var(--verd); background: #143326; opacity: 1; }
+.ll-op.ko { border-color: var(--vermell); background: #3a1d22; opacity: 1; }
+.ll-fb { margin: 10px 0 0; font-size: 14px; }
+.ll-fb:empty { display: none; }
+.ll-prog { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.ll-prog div { background: var(--sup); border: 1px solid var(--vora); border-radius: 12px; padding: 10px 12px; }
+.ll-prog b { display: block; font-size: 24px; }
+.ll-prog span { color: var(--text2); font-size: 13px; }
+.ll-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; margin-top: 12px; }
+.llc { text-align: left; display: flex; flex-direction: column; gap: 6px; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--vora); background: var(--bg2); cursor: pointer; min-height: 44px; }
+.llc:hover:not(:disabled) { border-color: var(--groc); }
+.llc .ll-ra { font-size: 11px; }
+.llc.tancada { opacity: .5; cursor: default; }
+.llc.ok { border-color: #2f7a57; } .llc.ko { border-color: #7a3a3a; }
+.llc .small { color: var(--text2); }
+.ll-llista { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; font-size: 14px; }
+.ll-llista li { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.ll-llista li.tancada { opacity: .55; }
+.ll-llista li.ok > span { color: var(--verd); } .ll-llista li.ko > span { color: var(--vermell); }
+
+/* ---------- Reptes, codis i rànquing ---------- */
+.repte-box { background: var(--bg2); border: 2px solid #6d5a1f; border-radius: 18px; padding: 22px; text-align: center; display: grid; gap: 8px; justify-items: center; margin-bottom: 14px; }
+.repte-box .inp { max-width: 640px; text-align: center; font-size: 14px; }
+.codi-repte { font-size: clamp(34px, 8vw, 64px); font-weight: 800; letter-spacing: .08em; color: var(--groc); font-variant-numeric: tabular-nums; line-height: 1.1; }
+.qr { width: 220px; max-width: 70vw; background: #fff; border-radius: 12px; }
+.qr:empty { display: none; }
+.qr svg { display: block; width: 100%; height: auto; }
+.codi-in { font-size: 22px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; max-width: 320px; }
+.codi-res { font: 500 12px/1.4 ui-monospace, Menlo, Consolas, monospace; word-break: break-all; resize: vertical; }
+tr.clicable { cursor: pointer; }
+tr.clicable:hover td { background: var(--sup); }
+.seccio.envia { border-color: #6d5a1f; }
+@media (max-width: 860px) { .amaga-mobil { display: none; } .ll-prog b { font-size: 20px; } }
+
 @media (max-width: 1100px) { .cos { grid-template-columns: 1fr 330px; } }
 @media (max-width: 860px) {
   .joc { grid-template-rows: auto 1fr auto; }

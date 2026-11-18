@@ -26,7 +26,7 @@ export const SIMULADORES: Simulador[] = [
   },
   {
     id: 'mercadeja', name: 'Mercadeja', interno: true,
-    desc: 'Juego de mesa digital de simulación empresarial: de 2 a 6 empresas catalanas compiten en el mismo mercado decidiendo producto, precio, distribución y promoción. Tablero de Cataluña, cartas de mercado, IA rival y panel docente con informes.',
+    desc: 'Juego de simulación empresarial sobre las cuatro P: cada equipo dirige una empresa catalana desde su dispositivo en un reto de clase común, con lecciones del currículo de marketing que aparecen mientras juega y un ranking que el profesor monta con los códigos de resultado, sin servidores.',
     url: '/jocs/mercadeja/', idiomas: 'Catalán',
     modulos: 'Marketing en la actividad comercial · Políticas de marketing'
   }

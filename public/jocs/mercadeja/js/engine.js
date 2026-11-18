@@ -2,7 +2,9 @@
    El mateix codi funciona al navegador i a Node (proves i, en el futur, servidor multijugador).
    Totes les operacions econòmiques queden al registre (state.log) i les accions són idempotents (act.id). */
 (function (root) {
-  const MD = (typeof module !== 'undefined' && module.exports) ? require('./data.js') : root.MD;
+  const NODE = typeof module !== 'undefined' && module.exports;
+  const MD = NODE ? require('./data.js') : root.MD;
+  const LL = NODE ? require('./llicons.js') : root.MLL;
   const E = {};
 
   /* ---------- Utilitats ---------- */
@@ -351,8 +353,8 @@
         const of = s.ofertes.find(o => o.id === a.oferta); if (!of || of.estat !== 'pendent') return err('Aquesta oferta ja no és vàlida.');
         if (!a.accepta) { of.estat = 'rebutjada'; return { ok: true }; }
         const comp = s.empreses[of.de], ven = s.empreses[of.a];
-        if (s.propietaris[of.prop] !== ven.id) { of.estat = 'anul·lada'; return err('La propietat ja no és del venedor.'); }
-        if (!E.potPagar(comp, of.import)) { of.estat = 'anul·lada'; return err('El comprador ja no té prou tresoreria.'); }
+        if (s.propietaris[of.prop] !== ven.id) { of.estat = 'anul·lada'; return Object.assign(err('La propietat ja no és del venedor.'), { muta: true }); }
+        if (!E.potPagar(comp, of.import)) { of.estat = 'anul·lada'; return Object.assign(err('El comprador ja no té prou tresoreria.'), { muta: true }); }
         mou(s, comp, -of.import, 'Compra negociada: ' + propDef(of.prop).nom + ' a ' + ven.nom, 'inversio');
         mou(s, ven, of.import, 'Venda negociada: ' + propDef(of.prop).nom + ' a ' + comp.nom, 'altres');
         s.propietaris[of.prop] = comp.id; of.estat = 'acceptada';
@@ -398,6 +400,14 @@
         const pe = s.pendent; if (!pe || pe.emp !== emp.id) return err('No hi ha res pendent.');
         s.pendent = null; avancaTorn(s); return { ok: true };
       }
+      case 'llico': { // resposta a la pregunta d'una lliçó (es pot fer en qualsevol moment)
+        const l = LL && LL.per(a.llico); if (!l || !emp) return err('Lliçó desconeguda.');
+        s.llicons = s.llicons || {}; const m = (s.llicons[emp.id] = s.llicons[emp.id] || {});
+        if (m[a.llico]) return err('Aquesta lliçó ja està resposta.');
+        const ok = +a.resposta === l.pregunta.c;
+        m[a.llico] = { r: +a.resposta, ok, ronda: s.ronda }; emp.xp += ok ? 10 : 3;
+        return { ok: true, encert: ok };
+      }
       case 'continuar': { // fases sense decisió
         if (s.fase === 'esdeveniment') { s.fase = 'decisions'; s.torn = 0; return { ok: true }; }
         if (s.fase === 'mercat') { s.fase = 'resultats'; return { ok: true }; }
@@ -432,7 +442,7 @@
       case 'empresa': { const k = roba(s, 'empresa'); aplicaCartaEmpresa(s, emp, k); out.tipus = 'carta'; out.carta = k.id; out.text = k.titol; break; }
       case 'mercat': { const k = roba(s, 'mercat'); aplicaCartaMercat(s, k); out.tipus = 'carta'; out.carta = k.id; out.mercat = true; out.text = k.titol; break; }
       case 'imposts': { const b = emp.darrer ? emp.darrer.resultat : 0, t = Math.max(1000, r0(b * 0.1 / 100) * 100); mou(s, emp, -t, 'Impostos empresarials', 'altres'); out.text = 'Pagues ' + eur(t) + ' d\'impostos.'; break; }
-      case 'consultoria': { s.estudi = { emp: emp.id, atr: s.empreses.map(e => E.atractiu(s, e)) }; out.tipus = 'estudi'; out.text = 'Estudi de mercat gratuït.'; break; }
+      case 'consultoria': { emp.estudis = (emp.estudis || 0) + 1; s.estudi = { emp: emp.id, atr: s.empreses.map(e => E.atractiu(s, e)) }; out.tipus = 'estudi'; out.text = 'Estudi de mercat gratuït.'; break; }
       case 'promo': out.tipus = 'promo'; out.text = c.desc; return out;
       case 'fira': out.tipus = 'fira'; out.text = c.desc; return out;
       case 'auditoria': {
@@ -527,6 +537,57 @@
     const rows = [['Ronda', 'Fase', 'Empresa', 'Tipus', 'Concepte', 'Import', 'Saldo']];
     s.log.forEach(l => rows.push([l.ronda, l.fase, l.empresa, l.tipus, l.concepte, l.import, l.saldo == null ? '' : l.saldo]));
     return rows.map(r => r.map(v => /[;"\n]/.test(String(v)) ? '"' + String(v).replace(/"/g, '""') + '"' : v).join(';')).join('\n');
+  };
+
+  /* ---------- Registre d'accions: reproduir i verificar una partida sense servidor ----------
+     Cada partida desa la seqüència d'accions (S.reg). Com que el motor és determinista, a partir de la
+     configuració i del registre es torna a obtenir exactament el mateix estat. */
+  const CODI = { millorar: 'm', preu: 'p', canal: 'c', capacitat: 'k', campanya: 'a', prestec: 'l', retornar: 'r', oferta: 'o', respondre: 's', confirmar: 'f', tirar: 't', comprar: 'b', millorarProp: 'u', acceptar: 'x', passar: 'z', continuar: 'n', llico: 'q' };
+  const DECODI = Object.fromEntries(Object.entries(CODI).map(([k, v]) => [v, k]));
+  const ARGS = { millorar: ['atr'], preu: ['valor'], canal: ['canal', 'actiu'], campanya: ['camp'], prestec: ['import'], retornar: ['import'], oferta: ['prop', 'import'], respondre: ['oferta', 'accepta'], llico: ['llico', 'resposta'] };
+  E.compacta = (reg) => reg.map(r => {
+    if (r.ia) return [r.ia, r.emp == null ? -1 : r.emp];
+    return [CODI[r.tipus], r.emp == null ? -1 : r.emp].concat((ARGS[r.tipus] || []).map(k => typeof r[k] === 'boolean' ? (r[k] ? 1 : 0) : r[k]));
+  });
+  E.descompacta = (arr) => arr.map(x => {
+    if (['I', 'D', 'R', 'F'].includes(x[0])) return { ia: x[0], emp: x[1] < 0 ? null : x[1] };
+    const tipus = DECODI[x[0]], a = { tipus }; if (x[1] >= 0) a.emp = x[1];
+    (ARGS[tipus] || []).forEach((k, i) => { a[k] = x[2 + i]; }); if (tipus === 'canal') a.actiu = !!a.actiu; if (tipus === 'respondre') a.accepta = !!a.accepta;
+    return a;
+  });
+  // Aplica una entrada del registre (acció de jugador o torn de la IA)
+  E.aplica = function (s, r) {
+    if (r.ia === 'I') { E.iniciarRonda(s); return { ok: true }; }
+    if (r.ia === 'D') { E.decidirIA(s, r.emp); return { ok: true }; }
+    if (r.ia === 'R') { E.resoldreIA(s, r.emp); return { ok: true }; }
+    if (r.ia === 'F') { s.fase = 'final'; return { ok: true }; } // el docent acaba la partida abans d'hora
+    const a = Object.assign({}, r); delete a.id; return fer(s, a);
+  };
+  E.repetir = function (cfg, reg) {
+    const s = E.crearPartida(cfg); let errors = 0;
+    reg.forEach(r => { const x = E.aplica(s, r); if (!x.ok && !x.muta) errors++; }); // al registre només hi ha accions que han canviat la partida
+    s.reg = reg.slice(); return { s, errors };
+  };
+
+  /* ---------- Reptes de classe: tots els equips juguen la mateixa partida ----------
+     Codi llegible (per dictar o escriure a la pissarra): A8M-K3X9QZ = sector, rondes, dificultat i llavor. */
+  const SECT = { alimentacio: 'A', moda: 'M', tecnologia: 'T', turisme: 'U' }, SECT_R = Object.fromEntries(Object.entries(SECT).map(([k, v]) => [v, k]));
+  const DIF = { facil: 'F', mitja: 'M', dificil: 'D' }, DIF_R = Object.fromEntries(Object.entries(DIF).map(([k, v]) => [v, k]));
+  const RONDES = { 4: '4', 8: '8', 12: 'C' }, RONDES_R = { 4: 4, 8: 8, C: 12 };
+  E.codiRepte = (sector, rondes, dificultat, llavor) => SECT[sector] + RONDES[rondes] + DIF[dificultat] + '-' + (llavor >>> 0).toString(36).toUpperCase().padStart(6, '0');
+  E.llegirRepte = function (codi) {
+    const m = String(codi || '').trim().toUpperCase().replace(/\s/g, '').match(/^([AMTU])([48C])([FMD])-?([0-9A-Z]{1,7})$/);
+    if (!m) return null;
+    const llavor = parseInt(m[4], 36); if (!(llavor > 0)) return null;
+    return { codi: m[1] + m[2] + m[3] + '-' + m[4].padStart(6, '0'), sector: SECT_R[m[1]], rondes: RONDES_R[m[2]], dificultat: DIF_R[m[3]], llavor };
+  };
+  // Mateixos rivals per a tots els equips: tres empreses de la IA amb estratègies diferents
+  E.RIVALS = [['premium', 'diamant'], ['agressiva', 'llamp'], ['innovadora', 'corona']];
+  E.cfgRepte = function (rep, equip) {
+    const noms = MD.empresesSuggerides[rep.sector];
+    return { nom: equip.repteNom || 'Repte de classe', sector: rep.sector, rondes: rep.rondes, capital: 100000, dificultat: rep.dificultat, llavor: rep.llavor,
+      repte: { codi: rep.codi, nom: equip.repteNom || '' },
+      empreses: [{ nom: equip.nom, fitxa: 'coet', humana: true, membres: equip.membres || [] }].concat(E.RIVALS.map(([perfil, fitxa], i) => ({ nom: noms[i + 1], fitxa, perfil }))) };
   };
 
   if (typeof module !== 'undefined' && module.exports) module.exports = E; else root.ME = E;

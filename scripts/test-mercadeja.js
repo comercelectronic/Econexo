@@ -112,5 +112,64 @@ function unaRonda(mod) {
   s.empreses[0].diners = 100; t(!ME.accio(s, { tipus: 'capacitat', emp: 0 }).ok, 'no es pot comprar sense saldo');
   t(!ME.accio(s, { tipus: 'preu', emp: 0, valor: 1 }).ok, 'el preu ha d\'estar dins de l\'interval');
 }
+/* ---------- Reptes de classe, registre d'accions i lliçons ---------- */
+{
+  const LL = require(path.join(__dirname, '../public/jocs/mercadeja/js/llicons.js'));
+  // Codis de repte
+  const codi = ME.codiRepte('turisme', 12, 'dificil', 987654321), r = ME.llegirRepte(codi);
+  t(r && r.sector === 'turisme' && r.rondes === 12 && r.dificultat === 'dificil' && r.llavor === 987654321, 'codi de repte: anada i tornada');
+  t(ME.llegirRepte(' u cd-' + codi.split('-')[1].toLowerCase()) === null || ME.llegirRepte(codi.toLowerCase()).codi === codi, 'codi de repte en minúscules');
+  t(ME.llegirRepte('X9Z-123') === null && ME.llegirRepte('') === null, 'codis de repte no vàlids');
+  // Juga un repte com ho fa la interfície (registrant totes les accions) amb una estratègia d'equip
+  function jugaRepte(rep, nom, estrategia) {
+    const s = ME.crearPartida(ME.cfgRepte(rep, { nom, membres: ['A', 'B'] })); s.reg = [];
+    const fa = (a) => { const x = ME.accio(s, a); if (!x.repetida && (x.ok || x.muta)) { const c = Object.assign({}, a); delete c.id; s.reg.push(c); } return x; };
+    const fia = (k, emp) => { s.reg.push({ ia: k, emp: emp == null ? null : emp }); return ME.aplica(s, { ia: k, emp }); };
+    fia('I'); const traça = [];
+    let guarda = 0;
+    while (s.fase !== 'final' && guarda++ < 5000) {
+      const e = s.empreses[s.torn];
+      if (s.fase === 'esdeveniment') { traça.push('E' + s.esdeveniment); fa({ tipus: 'continuar' }); }
+      else if (s.fase === 'decisions') {
+        if (e.humana) { estrategia(s, e, fa); LL.llicons.filter(l => l.quan(s, e) && !((s.llicons || {})[e.id] || {})[l.id]).forEach((l, k) => fa({ tipus: 'llico', emp: e.id, llico: l.id, resposta: k % 3 ? l.pregunta.c : 2 })); fa({ tipus: 'confirmar', emp: e.id }); }
+        else fia('D', e.id);
+      } else if (s.fase === 'moviment') {
+        if (!s.pendent) { const x = fa({ tipus: 'tirar', emp: e.id }); traça.push(e.id + ':' + x.daus.join('') + (s.pendent.carta || '')); }
+        else if (e.humana) fa({ tipus: s.pendent.tipus === 'compra' && e.diners > 60000 ? 'comprar' : 'passar', emp: e.id });
+        else fia('R', e.id);
+      } else fa({ tipus: 'continuar' });
+    }
+    return { s, traça: traça.join(' ') };
+  }
+  const rep = ME.llegirRepte(ME.codiRepte('alimentacio', 8, 'mitja', 424242));
+  const prudent = jugaRepte(rep, 'Prudent', () => {});
+  const atrevit = jugaRepte(rep, 'Atrevit', (s, e, fa) => { fa({ tipus: 'preu', emp: e.id, valor: 10 }); fa({ tipus: 'campanya', emp: e.id, camp: 'xarxes' }); if (s.ronda === 1) fa({ tipus: 'canal', emp: e.id, canal: 'ecommerce', actiu: true }); if (e.diners > 50000) fa({ tipus: 'millorar', emp: e.id, atr: 'qualitat' }); });
+  t(prudent.s.fase === 'final' && atrevit.s.fase === 'final', 'els reptes arriben al final');
+  t(prudent.traça === atrevit.traça, 'repte just: mateixos esdeveniments, daus i cartes per a tots els equips');
+  t(ME.valorEmpresa(prudent.s, prudent.s.empreses[0]).total !== ME.valorEmpresa(atrevit.s, atrevit.s.empreses[0]).total, 'les decisions de l\'equip canvien el resultat');
+  // Reproducció: el registre compactat (com el que va dins del codi) torna a donar el mateix estat
+  [prudent, atrevit].forEach(({ s }) => {
+    const json = JSON.stringify({ cfg: s.config, reg: ME.compacta(s.reg) });
+    const p = JSON.parse(json), { s: s2, errors } = ME.repetir(p.cfg, ME.descompacta(p.reg));
+    t(errors === 0, 'reproducció sense accions no vàlides (' + s.empreses[0].nom + ')');
+    t(s2.fase === 'final' && JSON.stringify(s2.empreses.map(e => [e.diners, e.xp, e.hist.length, ME.valorEmpresa(s2, e).total])) === JSON.stringify(s.empreses.map(e => [e.diners, e.xp, e.hist.length, ME.valorEmpresa(s, e).total])), 'reproducció exacta del resultat (' + s.empreses[0].nom + ')');
+    t(JSON.stringify(s2.llicons) === JSON.stringify(s.llicons), 'reproducció de les respostes de les lliçons');
+    t(json.length < 30000, 'registre prou petit per enviar-lo com a codi (' + json.length + ' caràcters sense comprimir)');
+  });
+  // Un registre manipulat no dona el mateix resultat: la reproducció detecta accions impossibles
+  {
+    const p = { cfg: atrevit.s.config, reg: ME.compacta(atrevit.s.reg) };
+    p.reg.splice(3, 0, ['l', 0, 900000], ['k', 0], ['k', 0], ['k', 0]);
+    t(ME.repetir(p.cfg, ME.descompacta(p.reg)).errors > 0, 'una acció impossible afegida al registre es detecta');
+  }
+  // Lliçons
+  t(LL.llicons.length >= 15 && new Set(LL.llicons.map(l => l.id)).size === LL.llicons.length, 'lliçons amb identificador únic');
+  t(LL.llicons.every(l => l.ra && /RA\d/.test(l.ra) && l.cos.length && l.pregunta.o.length === 4), 'cada lliçó té RA, contingut i quatre opcions');
+  const s = prudent.s, e = s.empreses[0], resp = s.llicons[0];
+  t(LL.llicons.every(l => { try { return typeof l.exemple(s, e, ME, MD) === 'string'; } catch (x) { console.log(l.id, x.message); return false; } }), 'els exemples de les lliçons funcionen amb dades reals');
+  t(Object.keys(resp).length === LL.llicons.length, 'al llarg de 8 rondes es desbloquegen totes les lliçons');
+  t(!ME.accio(s, { tipus: 'llico', emp: 0, llico: 'mix', resposta: 0 }).ok, 'una lliçó no es pot respondre dues vegades');
+  t(Object.values(resp).some(x => !x.ok) && Object.values(resp).some(x => x.ok), 'es registren encerts i errors');
+}
 console.log(ko ? '✘ ' + ko + ' errors · ' + ok + ' correctes' : '✔ ' + ok + ' comprovacions del motor de Mercadeja');
 process.exit(ko ? 1 : 0);

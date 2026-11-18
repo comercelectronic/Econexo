@@ -66,6 +66,7 @@
   function toast(t, cls) {
     let w = $('.toasts'); if (!w) { w = document.createElement('div'); w.className = 'toasts'; w.setAttribute('role', 'status'); document.body.appendChild(w); }
     const d = document.createElement('div'); d.className = 'toast ' + (cls || ''); d.textContent = t; w.appendChild(d);
+    while (w.children.length > 3) w.firstChild.remove();
     setTimeout(() => d.remove(), 3800);
   }
   function animaDiners(antic, nou, x, y) {
@@ -99,11 +100,12 @@
         ${logo(true)}
         <p class="lema">Dirigeix una empresa catalana, competeix amb les altres i fes-la créixer amb les quatre P del màrqueting: producte, preu, distribució i promoció.</p>
         <nav class="menu" aria-label="Menú principal">
-          ${desat && desat.fase !== 'final' ? `<button class="btn prim big" data-a="continua">${I('play')} Continua la partida <small>${esc(desat.config.nom)} · ronda ${desat.ronda} de ${desat.config.rondes}</small></button>` : ''}
-          <button class="btn ${desat && desat.fase !== 'final' ? '' : 'prim'} big" data-a="nova">${I('equip')} Nova partida <small>2–6 empreses</small></button>
-          <button class="btn big" data-a="ia">${I('robot')} Juga contra la IA <small>1 jugador</small></button>
+          ${desat && desat.fase !== 'final' ? `<button class="btn prim big" data-a="continua">${I('play')} Continua la partida <small>${esc((desat.config.repte ? (desat.empreses.find(x => x.humana) || {}).nom : '') || desat.config.nom)} · ronda ${desat.ronda} de ${desat.config.rondes}</small></button>` : ''}
+          <button class="btn ${desat && desat.fase !== 'final' ? '' : 'prim'} big" data-a="repte">${I('equip')} Repte de classe <small>cada equip al seu dispositiu</small></button>
+          <button class="btn big" data-a="ia">${I('robot')} Juga contra la IA <small>1 equip</small></button>
+          <button class="btn big" data-a="nova">${I('tauler')} Partida en un sol dispositiu <small>2–6 empreses per torns</small></button>
           <button class="btn big" data-a="tutorial">${I('llibre')} Tutorial <small>partida guiada</small></button>
-          <button class="btn big" data-a="docent">${I('escut')} Mode docent <small>configura i avalua</small></button>
+          <button class="btn big" data-a="docent">${I('escut')} Mode docent <small>reptes i rànquing</small></button>
           <button class="btn big" data-a="ajuda">${I('ajuda')} Com es juga</button>
         </nav>
         <p class="peu">Joc educatiu de simulació empresarial · empreses fictícies · els referents reals només s'esmenten com a casos d'estudi.<br>
@@ -112,11 +114,12 @@
     $('#redu').onchange = (e) => { pref.redueix = e.target.checked; desaPref(); };
     $$('[data-a]').forEach(b => b.onclick = () => {
       const a = b.dataset.a;
-      if (a === 'continua') { S = desat; ui.empVista = primerHuma(); joc(); }
+      if (a === 'continua') { S = desat; ui.empVista = primerHuma(); ui.vista = 'tauler'; ui.mobil = 'tauler'; joc(); }
       else if (a === 'nova') configurar('nova');
       else if (a === 'ia') configurar('ia');
       else if (a === 'tutorial') comencar(cfgRapida(true));
-      else if (a === 'docent') configurar('docent');
+      else if (a === 'docent') docent();
+      else if (a === 'repte') repte();
       else if (a === 'ajuda') ajuda();
     });
   }
@@ -185,7 +188,7 @@
   function comencar(cfg) {
     S = ME.crearPartida(Object.assign({}, cfg, { llavor: (Date.now() % 2147483647) | 1 }));
     S.config.tutorial = !!cfg.tutorial; S.config.pin = cfg.pin || '';
-    ME.iniciarRonda(S);
+    S.reg = []; S.regOk = true; fia('I');
     ui.empVista = primerHuma(); ui.vista = 'tauler'; ui.tutDone = {}; ui.mobil = 'tauler';
     desa(); joc();
   }
@@ -199,27 +202,30 @@
       <nav class="nav-mobil" aria-label="Seccions"></nav></div>`;
     render();
   }
-  const VISTES = [['tauler', 'tauler', 'Tauler'], ['empresa', 'paquet', 'Quatre P'], ['finances', 'finances', 'Finances'], ['mercat', 'pastis', 'Mercat'], ['classificacio', 'trofeu', 'Classificació'], ['docent', 'escut', 'Docent']];
+  const VISTES_TOTES = [['tauler', 'tauler', 'Tauler'], ['empresa', 'paquet', 'Quatre P'], ['finances', 'finances', 'Finances'], ['mercat', 'pastis', 'Mercat'], ['classificacio', 'trofeu', 'Classificació'], ['llicons', 'llibre', 'Lliçons'], ['docent', 'escut', 'Docent']];
+  const vistes = () => VISTES_TOTES.filter(([k]) => !(k === 'docent' && S.config.repte) && !(k === 'llicons' && !S.empreses.some(e => e.humana)));
   function render() {
     if (!S) return;
     if (S.fase === 'final') return final();
     const top = $('.top'); if (!top) return joc();
+    if (!vistes().some(([k]) => k === ui.vista)) ui.vista = 'tauler';
     const torn = S.empreses[S.torn];
     top.innerHTML = `${logo(false)}<div class="info">
         <span class="chip">${I('rellotge')} Ronda ${S.ronda} de ${S.config.rondes}</span>
         <span class="chip fase">${esc(ME.NOM_FASE[S.fase])}${['decisions', 'moviment'].includes(S.fase) ? ' · ' + esc(torn.nom) : ''}</span>
-        <span class="chip sector">${I(sec().icona)} ${esc(sec().nom)}</span></div>
-      <div class="acc"><button class="btn small ghost" id="bAjuda" aria-label="Com es juga">${I('ajuda')}</button><button class="btn small ghost" id="bMenu">${I('tauler')} Menú</button></div>`;
+        <span class="chip sector">${I(sec().icona)} ${esc(sec().nom)}</span>${S.config.repte ? `<span class="chip">${I('equip')} Repte ${esc(S.config.repte.nom || S.config.repte.codi)}</span>` : ''}</div>
+      <div class="acc">${S.config.repte ? `<button class="btn small" id="bEnvia">${I('descarrega')} <span class="amaga-mobil">Envia el resultat</span></button>` : ''}<button class="btn small ghost" id="bAjuda" aria-label="Com es juga">${I('ajuda')}</button><button class="btn small ghost" id="bMenu">${I('tauler')} <span class="amaga-mobil">Menú</span></button></div>`;
+    if ($('#bEnvia')) $('#bEnvia').onclick = modalCodi;
     $('#bMenu').onclick = () => { desa(); portada(); };
     $('#bAjuda').onclick = ajuda;
     // Vista visible: a l'ordinador, el panell lateral sempre; al mòbil, una sola secció
     const main = $('#main'), lat = $('#lateral');
-    main.innerHTML = `<div class="tabs" role="tablist">${VISTES.map(([k, ic, n]) => `<button role="tab" aria-selected="${ui.vista === k}" class="${ui.vista === k ? 'on' : ''}" data-vista="${k}">${I(ic)} ${n}</button>`).join('')}</div><div id="vista"></div>`;
+    main.innerHTML = `<div class="tabs" role="tablist">${vistes().map(([k, ic, n]) => `<button role="tab" aria-selected="${ui.vista === k}" class="${ui.vista === k ? 'on' : ''}" data-vista="${k}">${I(ic)} ${n}</button>`).join('')}</div><div id="vista"></div>`;
     $$('[data-vista]', main).forEach(b => b.onclick = () => obreVista(b.dataset.vista));
     pintaVista($('#vista'));
     lat.innerHTML = lateral();
     lligaLateral(lat);
-    $('.nav-mobil').innerHTML = [['tauler', 'tauler', 'Tauler'], ['panell', 'edifici', 'Torn'], ['empresa', 'paquet', '4P'], ['finances', 'finances', 'Finances'], ['mercat', 'pastis', 'Mercat'], ['classificacio', 'trofeu', 'Rànquing']]
+    $('.nav-mobil').innerHTML = [['tauler', 'tauler', 'Tauler'], ['panell', 'edifici', 'Torn'], ['empresa', 'paquet', '4P'], ['mercat', 'pastis', 'Mercat'], ['llicons', 'llibre', 'Lliçons'], ['classificacio', 'trofeu', 'Rànquing']]
       .map(([k, ic, n]) => `<button class="${ui.mobil === k ? 'on' : ''}" data-mob="${k}">${I(ic)}<span>${n}</span></button>`).join('');
     $$('[data-mob]').forEach(b => b.onclick = () => { ui.mobil = b.dataset.mob; if (ui.mobil !== 'panell') ui.vista = ui.mobil; render(); });
     main.classList.toggle('amaga', ui.mobil === 'panell'); lat.classList.toggle('vista', ui.mobil === 'panell');
@@ -228,7 +234,7 @@
   }
   function obreVista(v) { ui.vista = v; ui.mobil = v; render(); const m = $('#main'); if (m) m.scrollTop = 0; }
   function pintaVista(el) {
-    ({ tauler: vTauler, empresa: vEmpresa, finances: vFinances, mercat: vMercat, classificacio: vClassificacio, docent: vDocent })[ui.vista](el);
+    ({ tauler: vTauler, empresa: vEmpresa, finances: vFinances, mercat: vMercat, classificacio: vClassificacio, llicons: vLlicons, docent: vDocent })[ui.vista](el);
   }
 
   /* ---------- Tauler ---------- */
@@ -329,9 +335,9 @@
     const sel = $('#selEmp', lat); if (sel) sel.onchange = () => { ui.empVista = +sel.value; render(); };
     $$('[data-acc]', lat).forEach(b => b.onclick = () => {
       const a = b.dataset.acc;
-      if (a === 'continuar') { const r = ME.accio(S, { tipus: 'continuar' }); if (S.fase === 'mercat' || S.fase === 'resultats') obreVista('mercat'); if (r.final) { desa(); return final(); } if (S.fase === 'esdeveniment') { obreVista('tauler'); mostraCarta(ME.carta(S.esdeveniment), 'Esdeveniment de la ronda ' + S.ronda, true); } desa(); render(); }
+      if (a === 'continuar') llAbansDeContinuar(() => { const r = fa({ tipus: 'continuar' }); if (S.fase === 'mercat' || S.fase === 'resultats') obreVista('mercat'); if (r.final) { desa(); return final(); } if (S.fase === 'esdeveniment') { obreVista('tauler'); mostraCarta(ME.carta(S.esdeveniment), 'Esdeveniment de la ronda ' + S.ronda, true); } desa(); render(); });
       else if (a === '4p') obreVista('empresa');
-      else if (a === 'confirmar') { const e = S.empreses[S.torn]; confirma(`<b>${esc(e.nom)}</b> confirma les decisions d'aquesta ronda? Després ja no les podreu canviar.`, () => { ME.accio(S, { id: uid(), tipus: 'confirmar', emp: e.id }); ui.vista = 'tauler'; ui.mobil = 'tauler'; desa(); render(); }); }
+      else if (a === 'confirmar') { const e = S.empreses[S.torn]; confirma(`<b>${esc(e.nom)}</b> confirma les decisions d'aquesta ronda? Després ja no les podreu canviar.`, () => { fa({ id: uid(), tipus: 'confirmar', emp: e.id }); ui.vista = 'tauler'; ui.mobil = 'tauler'; desa(); render(); }); }
       else if (a === 'tirar') tirar();
       else if (a === 'pendent') mostraPendent();
       else if (a === 'veure') obreVista('mercat');
@@ -343,9 +349,10 @@
   function tick() {
     clearTimeout(tm);
     if (!S || ui.animant || $('.modal') || $('.cobertor')) return;
+    if (llPausaDecisions()) return;
     const e = S.empreses[S.torn];
     if (S.fase === 'decisions') {
-      if (!e.humana) tm = setTimeout(() => { ME.decidirIA(S, e.id); toast(e.nom + ' ha pres les decisions de la ronda.'); desa(); render(); }, vel(650));
+      if (!e.humana) tm = setTimeout(() => { fia('D', e.id); toast(e.nom + ' ha pres les decisions de la ronda.'); desa(); render(); }, vel(650));
       else if (pref.privat && S.empreses.filter(x => x.humana).length > 1 && !cobertorVist[S.ronda + '-' + e.id]) cobertor(e);
     } else if (S.fase === 'moviment') {
       if (!e.humana) { if (!S.pendent) tm = setTimeout(tirar, vel(700)); else tm = setTimeout(() => { iaCasella(e); }, vel(500)); }
@@ -359,7 +366,7 @@
   }
   function tirar() {
     const e = S.empreses[S.torn], abans = e.diners;
-    const r = ME.accio(S, { id: uid(), tipus: 'tirar', emp: e.id });
+    const r = fa({ id: uid(), tipus: 'tirar', emp: e.id });
     if (!r.ok) return toast(r.err, 'neg');
     ui.animant = true;
     if (ui.vista !== 'tauler' && e.humana) { ui.vista = 'tauler'; ui.mobil = 'tauler'; }
@@ -376,7 +383,7 @@
   }
   function iaCasella(e) {
     const pe = S.pendent, c = MD.tauler[pe.casella], abans = e.diners;
-    ME.resoldreIA(S, e.id);
+    fia('R', e.id);
     let t = e.nom + ' cau a «' + c.nom + '»';
     if (pe.tipus === 'compra') t += S.propietaris[pe.prop] === e.id ? ' i la compra per ' + eur(ME.propDef(pe.prop).preu) + '.' : ' i no la compra.';
     else if (pe.tipus === 'propia') t += S.millores[pe.prop] ? ' i la millora.' : '.';
@@ -387,7 +394,7 @@
   function mostraPendent() {
     const pe = S.pendent; if (!pe) return;
     const e = S.empreses[pe.emp], c = MD.tauler[pe.casella];
-    const fer = (tipus) => { const abans = e.diners; const r = ME.accio(S, { id: uid(), tipus, emp: e.id }); if (!r.ok) return toast(r.err, 'neg'); tancaModal(); animaDiners(abans, e.diners); desa(); render(); };
+    const fer = (tipus) => { const abans = e.diners; const r = fa({ id: uid(), tipus, emp: e.id }); if (!r.ok) return toast(r.err, 'neg'); tancaModal(); animaDiners(abans, e.diners); desa(); render(); };
     if (pe.tipus === 'carta') { const k = ME.carta(pe.carta); return mostraCarta(k, pe.mercat ? 'Carta de mercat · afecta tothom aquesta ronda' : 'Carta per a ' + e.nom, false, () => fer('passar')); }
     if (pe.tipus === 'compra') {
       const p = ME.propDef(pe.prop), pot = e.diners >= p.preu;
@@ -504,13 +511,13 @@
     };
     pinta();
     if (!edit) return;
-    const setPreu = (v) => { const r = ME.accio(S, { tipus: 'preu', emp: e.id, valor: v }); if (!r.ok) toast(r.err, 'neg'); desa(); };
+    const setPreu = (v) => { const r = fa({ tipus: 'preu', emp: e.id, valor: v }); if (!r.ok) toast(r.err, 'neg'); desa(); };
     $('#preuR', el).oninput = () => { $('#preuN', el).value = $('#preuR', el).value; pinta(); };
     $('#preuR', el).onchange = () => setPreu(+$('#preuR', el).value);
     $('#preuN', el).onchange = () => { $('#preuR', el).value = $('#preuN', el).value; pinta(); setPreu(+$('#preuN', el).value); render(); };
     $$('[data-op]', el).forEach(b => b.onclick = () => {
       const op = b.dataset.op;
-      const executa = (a) => { const abans = e.diners; const r = ME.accio(S, Object.assign({ id: uid(), emp: e.id }, a)); ui.confirm = null; if (!r.ok) toast(r.err, 'neg'); else { const rect = b.getBoundingClientRect(); animaDiners(abans, e.diners, rect.left, rect.top); } desa(); render(); };
+      const executa = (a) => { const abans = e.diners; const r = fa(Object.assign({ id: uid(), emp: e.id }, a)); ui.confirm = null; if (!r.ok) toast(r.err, 'neg'); else { const rect = b.getBoundingClientRect(); animaDiners(abans, e.diners, rect.left, rect.top); } desa(); render(); };
       const dosClics = (a) => { if (ui.confirm === op) executa(a); else { ui.confirm = op; render(); } };
       if (op.startsWith('m-')) dosClics({ tipus: 'millorar', atr: op.slice(2) });
       else if (op.startsWith('c-')) dosClics({ tipus: 'canal', canal: op.slice(2), actiu: true });
@@ -522,20 +529,20 @@
       else if (op === 'oferta') ferOferta(e, $('#negProp', el).value, +$('#negImp', el).value);
     });
     const ng = $('#negProp', el); if (ng) ng.onchange = () => { $('#negImp', el).value = ME.propDef(ng.value).preu; };
-    $('#conf4p', el).onclick = () => confirma(`<b>${esc(e.nom)}</b> confirma les decisions d'aquesta ronda? Després ja no les podreu canviar.`, () => { ME.accio(S, { id: uid(), tipus: 'confirmar', emp: e.id }); ui.vista = 'tauler'; ui.mobil = 'tauler'; desa(); render(); });
+    $('#conf4p', el).onclick = () => confirma(`<b>${esc(e.nom)}</b> confirma les decisions d'aquesta ronda? Després ja no les podreu canviar.`, () => { fa({ id: uid(), tipus: 'confirmar', emp: e.id }); ui.vista = 'tauler'; ui.mobil = 'tauler'; desa(); render(); });
   }
   function ferOferta(e, prop, imp) {
-    const r = ME.accio(S, { id: uid(), tipus: 'oferta', emp: e.id, prop, import: imp });
+    const r = fa({ id: uid(), tipus: 'oferta', emp: e.id, prop, import: imp });
     if (!r.ok) return toast(r.err, 'neg');
     const of = r.oferta, ven = S.empreses[of.a], p = ME.propDef(prop);
     if (!ven.humana) {
-      const accepta = ME.respostaIA(S, of); const rr = ME.accio(S, { id: uid(), tipus: 'respondre', oferta: of.id, accepta });
+      const accepta = ME.respostaIA(S, of); const rr = fa({ id: uid(), tipus: 'respondre', oferta: of.id, accepta });
       toast(accepta && rr.ok ? ven.nom + ' accepta: ' + p.nom + ' ara és vostre.' : ven.nom + ' rebutja l\'oferta (demana com a mínim un 30 % més que el valor).', accepta ? 'pos' : 'neg'); desa(); render(); return;
     }
     modal(`<h2>${I('encaixada')} Oferta per a ${esc(ven.nom)}</h2><p><b>${esc(e.nom)}</b> ofereix <b>${eur(imp)}</b> per <b>${esc(p.nom)}</b> (valor de compra ${eur(p.preu)}).</p><p class="muted small">Ha de respondre l'equip de ${esc(ven.nom)}.</p>
       <div class="row"><button class="btn verd" id="si" data-focus>${esc(ven.nom)} accepta</button><button class="btn perill" id="no">Rebutja</button></div>`, (m) => {
-      m.querySelector('#si').onclick = () => { const rr = ME.accio(S, { id: uid(), tipus: 'respondre', oferta: of.id, accepta: true }); tancaModal(); toast(rr.ok ? 'Tracte fet!' : rr.err, rr.ok ? 'pos' : 'neg'); desa(); render(); };
-      m.querySelector('#no').onclick = () => { ME.accio(S, { id: uid(), tipus: 'respondre', oferta: of.id, accepta: false }); tancaModal(); toast('Oferta rebutjada.'); desa(); render(); };
+      m.querySelector('#si').onclick = () => { const rr = fa({ id: uid(), tipus: 'respondre', oferta: of.id, accepta: true }); tancaModal(); toast(rr.ok ? 'Tracte fet!' : rr.err, rr.ok ? 'pos' : 'neg'); desa(); render(); };
+      m.querySelector('#no').onclick = () => { fa({ id: uid(), tipus: 'respondre', oferta: of.id, accepta: false }); tancaModal(); toast('Oferta rebutjada.'); desa(); render(); };
     });
   }
 
@@ -664,7 +671,7 @@
     $('#csvL', el).onclick = () => baixa('mercadeja-' + base + '-registre.csv', ME.csvRegistre(S), 'text/csv');
     $('#json', el).onclick = () => baixa('mercadeja-' + base + '.json', JSON.stringify(S), 'application/json');
     $('#imp', el).onchange = (ev) => { const f = ev.target.files[0]; if (!f) return; f.text().then(t => { try { const n = JSON.parse(t); if (!n.empreses || !n.config) throw 0; S = n; desa(); toast('Partida carregada.', 'pos'); joc(); } catch (e) { toast('Aquest fitxer no és una partida de Mercadeja.', 'neg'); } }); };
-    $('#fi', el).onclick = () => confirma('Vols acabar la partida ara? La classificació serà la d\'aquest moment.', () => { S.fase = 'final'; desa(); final(); });
+    $('#fi', el).onclick = () => confirma('Vols acabar la partida ara? La classificació serà la d\'aquest moment.', () => { fia('F'); desa(); final(); });
     $('#filt', el).onchange = (ev) => { ui.filtreLog = ev.target.value; render(); };
   }
 
@@ -684,12 +691,16 @@
         ${S.empreses.map(e => `<tr><td>${esc(e.nom)}</td><td class="small">${MD.ATR.map(k => MD.atributs[k].nom + ' ' + e.atr[k]).join(' · ')}</td><td class="n">${eur(e.preu)}</td><td class="small">${MD.CAN.filter(k => e.canals[k]).map(k => MD.canals[k].nom).join(', ')}</td><td class="n">${eur(e.inversio.promocio)}</td><td class="n">${ME.propsDe(S, e).length}</td></tr>`).join('')}</tbody></table></div></div>
       <div class="seccio"><h2>${I('bombeta')} Reflexió</h2><p><b>Quina empresa ha aplicat millor les quatre P? Per què?</b> Escriviu la resposta de cada equip: queda desada a la partida i al fitxer que descarregueu.</p>
         ${S.empreses.filter(e => e.humana).map(e => `<label class="f" style="margin-bottom:10px">${esc(e.nom)}<textarea class="inp" data-refl="${e.id}" rows="3">${esc((S.reflexions || {})[e.id] || '')}</textarea></label>`).join('') || '<p class="muted">No hi ha equips humans en aquesta partida.</p>'}</div>
+      ${S.empreses.filter(e => e.humana).map(e => { const p = llProgres(e); return `<div class="seccio"><h2>${I('llibre')} Lliçons de ${esc(e.nom)}</h2><p>${p.des.length} de ${LL.length} lliçons descobertes · ${p.n} respostes · <b>${p.enc} encerts</b>. Encara podeu respondre les que teniu pendents.</p>${graellaLlicons(e)}</div>`; }).join('')}
+      ${S.config.repte ? `<div class="seccio envia"><h2>${I('descarrega')} Envia el resultat al professor</h2><p>Quan hàgiu escrit la reflexió, genereu el codi i feu-lo arribar al professor per entrar al rànquing del repte.</p><button class="btn prim big" id="envia">${I('descarrega')} Generar el codi de resultat</button></div>` : ''}
       <div class="row" style="justify-content:center"><button class="btn" id="baixa">${I('descarrega')} Descarregar els resultats (CSV)</button><button class="btn" id="json">${I('descarrega')} Partida completa (JSON)</button><button class="btn prim big" id="menu">${I('tauler')} Tornar al menú</button></div></main>`;
     $$('[data-refl]').forEach(t => t.oninput = () => { S.reflexions = S.reflexions || {}; S.reflexions[t.dataset.refl] = t.value; desa(); });
     const baixa = (nom, txt, tipus) => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['﻿' + txt], { type: tipus })); a.download = nom; a.click(); };
     $('#baixa').onclick = () => baixa('mercadeja-resultats.csv', ME.csvResultats(S), 'text/csv');
     $('#json').onclick = () => baixa('mercadeja-partida.json', JSON.stringify(S), 'application/json');
     $('#menu').onclick = portada;
+    if ($('#envia')) $('#envia').onclick = modalCodi;
+    $$('[data-ll]').forEach(b => b.onclick = () => mostraLlico(LL.find(l => l.id === b.dataset.ll), S.empreses[+b.dataset.e], () => final()));
     if (!pref.redueix) { const p = $('#podi'), cols = ['#F5C542', '#36B37E', '#4EA5F5', '#E879B9', '#9B7AE8', '#F29D49']; for (let k = 0; k < 60; k++) { const c = document.createElement('span'); c.className = 'confeti'; c.style.left = Math.random() * 100 + '%'; c.style.background = cols[k % 6]; c.style.animationDelay = Math.random() * 1.2 + 's'; p.appendChild(c); } }
     desa();
   }
@@ -731,8 +742,330 @@
     }, { tancable: true });
   }
 
-  // Avís del primer esdeveniment en començar
-  window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && $('.modal') && !$('.modal #si')) { tancaModal(); tick(); } });
-  portada();
-  window.MERCADEJA = { get S() { return S; }, render, tirar };
+  /* ---------- Registre d'accions: permet comprovar i recuperar la partida a partir d'un codi ---------- */
+  function fa(a) { const r = ME.accio(S, a); if (!r.repetida && (r.ok || r.muta)) { const c = Object.assign({}, a); delete c.id; (S.reg = S.reg || []).push(c); } return r; }
+  function fia(t, emp) { (S.reg = S.reg || []).push({ ia: t, emp: emp == null ? null : emp }); return ME.aplica(S, { ia: t, emp }); }
+
+  /* ---------- Lliçons ---------- */
+  const LL = window.MLL.llicons;
+  const respLl = (e, id) => ((S.llicons || {})[e.id] || {})[id];
+  const llDesbloquejades = (s, e) => LL.filter(l => { try { return l.quan(s, e); } catch (x) { return false; } });
+  const llPendents = (e) => llDesbloquejades(S, e).filter(l => !respLl(e, l.id));
+  const md = (t) => esc(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+  function ordreOpcions(l, e) { // ordre estable per a cada equip i lliçó (la correcta no surt sempre al mateix lloc)
+    let h = (2166136261 ^ (S.config.llavor || 1)) >>> 0;
+    (l.id + '|' + e.nom).split('').forEach(c => { h = Math.imul(h ^ c.charCodeAt(0), 16777619) >>> 0; });
+    const idx = l.pregunta.o.map((_, i) => i);
+    for (let i = idx.length - 1; i > 0; i--) { h = Math.imul(h ^ (h >>> 13), 1274126177) >>> 0; const j = h % (i + 1); [idx[i], idx[j]] = [idx[j], idx[i]]; }
+    return idx;
+  }
+  const exempleLl = (l, e) => { try { return l.exemple(S, e, ME, MD) || ''; } catch (x) { return ''; } };
+  function mostraLlico(l, e, fet) {
+    const ja = respLl(e, l.id), ex = exempleLl(l, e), ordre = ordreOpcions(l, e);
+    modal(`<div class="llico"><span class="ll-ra">${I('llibre')} Lliçó · ${esc(l.ra)}</span><h2>${esc(l.titol)}</h2>
+      ${l.cos.map(p => `<p>${md(p)}</p>`).join('')}
+      ${ex ? `<div class="ll-ex"><b>${I('lupa')} A la vostra partida</b><p>${esc(ex)}</p></div>` : ''}
+      <div class="ll-q"><b>Comprova-ho</b><p>${esc(l.pregunta.p)}</p><div class="ll-ops">${ordre.map(i => `<button class="ll-op" data-op="${i}">${esc(l.pregunta.o[i])}</button>`).join('')}</div><p class="ll-fb" aria-live="polite"></p></div>
+      <div class="row" style="margin-top:12px;justify-content:flex-end"><button class="btn ghost" id="llDes">${ja ? 'Tancar' : 'Ho miro després'}</button><button class="btn prim" id="llOk" ${ja ? '' : 'hidden'}>Continuar</button></div></div>`, (m) => {
+      const marca = (r) => $$('.ll-op', m).forEach(b => { const i = +b.dataset.op; b.disabled = true; if (i === l.pregunta.c) b.classList.add('ok'); else if (i === r) b.classList.add('ko'); });
+      if (ja) { marca(ja.r); $('.ll-fb', m).innerHTML = (ja.ok ? '<span class="pos">✔ Ho vau encertar.</span> ' : '<span class="neg">✘ No ho vau encertar.</span> ') + esc(l.pregunta.per); }
+      $$('.ll-op', m).forEach(b => b.onclick = () => {
+        const r = fa({ tipus: 'llico', emp: e.id, llico: l.id, resposta: +b.dataset.op }); if (!r.ok) return toast(r.err, 'neg');
+        marca(+b.dataset.op); desa();
+        $('.ll-fb', m).innerHTML = (r.encert ? '<span class="pos">✔ Correcte! +10 XP.</span> ' : '<span class="neg">✘ No és correcta (+3 XP per intentar-ho).</span> ') + esc(l.pregunta.per);
+        $('#llOk', m).hidden = false; $('#llDes', m).hidden = true; $('#llOk', m).focus();
+      });
+      $('#llOk', m).onclick = $('#llDes', m).onclick = () => { tancaModal(); if (fet) fet(); else render(); };
+    });
+  }
+  function mostraLlicons(e, max, fet) {
+    const cua = llPendents(e).slice(0, max);
+    const seg = () => { const l = cua.shift(); if (!l) { if (fet) fet(); else render(); return; } mostraLlico(l, e, seg); };
+    seg();
+  }
+  // Moments de pausa: a l'inici del torn de decisions de cada equip i (si només hi ha un equip) abans de la ronda següent
+  const llVist = {};
+  function llPausaDecisions() {
+    const humans = S.empreses.filter(x => x.humana), e = S.empreses[S.torn];
+    if (S.fase !== 'decisions' || !e.humana) return false;
+    if (pref.privat && humans.length > 1 && !cobertorVist[S.ronda + '-' + e.id]) return false;
+    const k = S.ronda + '-d-' + e.id; if (llVist[k]) return false; llVist[k] = 1;
+    if (!llPendents(e).length) return false;
+    mostraLlicons(e, humans.length > 1 ? 2 : 1, () => render()); return true;
+  }
+  function llAbansDeContinuar(fet) {
+    const humans = S.empreses.filter(x => x.humana);
+    if (S.fase !== 'resultats' || humans.length !== 1) return fet();
+    const e = humans[0], k = S.ronda + '-r-' + e.id; if (llVist[k] || !llPendents(e).length) return fet();
+    llVist[k] = 1; mostraLlicons(e, 2, fet);
+  }
+  function empLlicons() {
+    const h = S.empreses.filter(x => x.humana); if (!h.length) return null;
+    const t = S.empreses[S.torn]; if (['decisions', 'moviment'].includes(S.fase) && t.humana) return t;
+    const v = S.empreses[ui.empVista]; return v && v.humana ? v : h[0];
+  }
+  function llProgres(e) {
+    const des = llDesbloquejades(S, e), resp = (S.llicons || {})[e.id] || {};
+    return { des, resp, n: Object.keys(resp).length, enc: Object.values(resp).filter(x => x.ok).length };
+  }
+  function graellaLlicons(e) {
+    const { des, resp } = llProgres(e), ids = new Set(des.map(l => l.id));
+    return `<div class="ll-grid">${LL.map(l => { const r = resp[l.id], on = ids.has(l.id); return `<button class="llc ${on ? '' : 'tancada'} ${r ? (r.ok ? 'ok' : 'ko') : ''}" ${on ? `data-ll="${l.id}" data-e="${e.id}"` : 'disabled'}>
+        <span class="ll-ra">${esc(l.ra)}</span><b>${on ? '' : I('cadenat') + ' '}${esc(l.titol)}</b>
+        <span class="small">${!on ? 'Encara no l\'heu descoberta: continueu jugant.' : r ? (r.ok ? '✔ Resposta correcta' : '✘ Resposta incorrecta') : 'Pendent de respondre'}</span></button>`; }).join('')}</div>`;
+  }
+  function vLlicons(el) {
+    const e = empLlicons(); if (!e) { el.innerHTML = '<p class="muted">Les lliçons són per als equips d\'alumnes.</p>'; return; }
+    const p = llProgres(e);
+    el.innerHTML = `<div class="seccio"><h2>${I('llibre')} Lliçons de ${esc(e.nom)}</h2><p>Cada lliçó apareix quan la partida arriba a una situació on es fa servir aquell contingut del mòdul de màrqueting. Llegiu-la, mireu l'exemple amb les vostres dades i responeu la pregunta.</p>
+      <div class="ll-prog"><div><b>${p.des.length}</b><span>de ${LL.length} descobertes</span></div><div><b>${p.n}</b><span>respostes</span></div><div><b>${p.enc}</b><span>encerts</span></div></div>
+      <div class="barra-v" style="margin-top:10px"><i style="width:${p.des.length / LL.length * 100}%"></i></div></div>${graellaLlicons(e)}`;
+    $$('[data-ll]', el).forEach(b => b.onclick = () => mostraLlico(LL.find(l => l.id === b.dataset.ll), e));
+  }
+
+  /* ---------- Codis de partida: sense servidors ----------
+     El codi conté la configuració i el registre d'accions comprimits. Qui el rep torna a jugar la partida
+     amb el mateix motor i obté exactament el mateix resultat: així es comprova que és vàlid. */
+  const b64u = (bytes) => { let s = ''; for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000)); return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); };
+  const unb64u = (t) => { const s = atob(t.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((t.length + 3) % 4)); const b = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) b[i] = s.charCodeAt(i); return b; };
+  async function comprimeix(obj) {
+    const bytes = new TextEncoder().encode(JSON.stringify(obj));
+    if (window.CompressionStream) { try { const st = new Blob([bytes]).stream().pipeThrough(new CompressionStream('deflate-raw')); return 'MJ1Z' + b64u(new Uint8Array(await new Response(st).arrayBuffer())); } catch (e) { } }
+    return 'MJ1J' + b64u(bytes);
+  }
+  async function descomprimeix(codi) {
+    const t = String(codi || '').replace(/\s+/g, ''), pre = t.slice(0, 4); let bytes = unb64u(t.slice(4));
+    if (pre === 'MJ1Z') { const st = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw')); bytes = new Uint8Array(await new Response(st).arrayBuffer()); }
+    else if (pre !== 'MJ1J') throw new Error('codi');
+    return JSON.parse(new TextDecoder().decode(bytes));
+  }
+  async function codiDe(s) {
+    const cfg = Object.assign({}, s.config); delete cfg.pin; delete cfg.tutorial;
+    return comprimeix({ v: 1, cfg, reg: ME.compacta(s.reg || []), refl: s.reflexions || {}, t: Date.now() });
+  }
+  async function deCodi(codi) {
+    const p = await descomprimeix(codi);
+    if (!p || p.v !== 1 || !p.cfg || !Array.isArray(p.reg)) throw new Error('codi');
+    const { s, errors } = ME.repetir(p.cfg, ME.descompacta(p.reg));
+    s.reflexions = p.refl || {}; s.regOk = true;
+    return { s, errors, p };
+  }
+  const slug = (t) => String(t).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  function baixaFitxer(nom, txt, tipus) { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([txt], { type: tipus })); a.download = nom; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); }
+  function copia(t, camp) {
+    const alt = () => { if (camp) { camp.select(); try { document.execCommand('copy'); toast('Copiat!', 'pos'); } catch (e) { toast('Seleccioneu el text i copieu-lo.', 'neg'); } } };
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(t).then(() => toast('Copiat!', 'pos')).catch(alt); else alt();
+  }
+  async function modalCodi() {
+    if (!S.regOk) return toast('Aquesta partida es va començar amb una versió anterior del joc i no té codi.', 'neg');
+    const codi = await codiDe(S), e = S.empreses.find(x => x.humana), rep = S.config.repte;
+    modal(`<h2>${I('descarrega')} ${rep ? 'Envia el resultat al professor' : 'Codi de la partida'}</h2>
+      <p>Aquest codi conté tota la vostra partida (${S.fase === 'final' ? 'acabada' : 'fins a la ronda ' + S.ronda + ' de ' + S.config.rondes}). ${rep ? 'El professor l\'afegirà al rànquing de la classe i el joc tornarà a calcular la partida per comprovar-la.' : ''}</p>
+      ${S.fase === 'final' && e && !(S.reflexions || {})[e.id] ? '<p class="caixa groc small">Abans d\'enviar-lo, escriviu la reflexió final: també va dins del codi.</p>' : ''}
+      <textarea class="inp codi-res" readonly rows="5" aria-label="Codi de la partida">${esc(codi)}</textarea>
+      <div class="row" style="margin-top:10px"><button class="btn prim" id="cp" data-focus>${I('ok')} Copiar el codi</button><button class="btn" id="dl">${I('descarrega')} Descarregar el fitxer</button><button class="btn ghost" id="tc">Tancar</button></div>
+      <p class="small muted">Envieu-lo per on digui el professor (Classroom, Moodle, correu...). També serveix per continuar en un altre dispositiu: «Repte de classe» → «Continuar amb un codi».</p>`, (m) => {
+      $('#cp', m).onclick = () => copia(codi, $('.codi-res', m));
+      $('#dl', m).onclick = () => baixaFitxer('mercadeja-' + slug((e ? e.nom : 'partida') + (rep ? '-' + rep.codi : '')) + '.txt', codi, 'text/plain');
+      $('#tc', m).onclick = () => { tancaModal(); tick(); };
+    }, { tancable: true });
+  }
+
+  /* ---------- Repte de classe (alumnes) ---------- */
+  const NOM_DIF = { facil: 'fàcil', mitja: 'mitjana', dificil: 'difícil' };
+  function repte(prefill) {
+    clearTimeout(tm);
+    const q = new URLSearchParams(location.search), codi0 = prefill || q.get('repte') || '', nomR = (q.get('nom') || '').slice(0, 40);
+    app.innerHTML = `<main class="config" style="max-width:760px">
+      <button class="btn ghost small" id="enrere">← Tornar</button>
+      <h1>${I('equip')} Repte de classe</h1>
+      <p class="muted">Cada equip juga la mateixa partida al seu dispositiu: el mateix mercat, els mateixos esdeveniments, els mateixos daus i les mateixes tres empreses rivals de la IA. Només canvien les vostres decisions. Al final envieu el codi de resultat al professor per entrar al rànquing.</p>
+      <div class="seccio"><h2>Entrar al repte</h2>
+        <label class="f">Codi del repte<input class="inp codi-in" id="rc" value="${esc(codi0)}" placeholder="Ex.: A8M-K3X9QZ" autocomplete="off" autocapitalize="characters" spellcheck="false"></label>
+        <p class="small" id="rcInfo" style="margin:6px 0 12px"></p>
+        <label class="f">Nom de la vostra empresa<input class="inp" id="rn" maxlength="30" placeholder="Ex.: Formatges del Montseny"></label>
+        <label class="f" style="margin-top:10px">Membres de l'equip (separats per comes)<input class="inp" id="rm" maxlength="140" placeholder="Nom i cognom de cada membre"></label>
+        <div class="row" style="justify-content:flex-end;margin-top:14px"><button class="btn prim big" id="rgo">${I('play')} Començar el repte</button></div></div>
+      <div class="seccio"><h2>Continuar amb un codi</h2><p class="small">Si vau començar en un altre dispositiu, enganxeu-hi el codi que vau copiar amb «Envia el resultat».</p>
+        <textarea class="inp" id="rcod" rows="3" placeholder="MJ1…" spellcheck="false"></textarea><div class="row" style="margin-top:8px"><button class="btn" id="rcont">Recuperar la partida</button></div></div></main>`;
+    const info = () => { const v = $('#rc').value.trim(), r = ME.llegirRepte(v); $('#rcInfo').innerHTML = !v ? '' : r ? `<span class="pos">✔ ${esc(MD.sectors[r.sector].nom)} · ${r.rondes} rondes · IA ${esc(NOM_DIF[r.dificultat])}${nomR ? ' · ' + esc(nomR) : ''}</span>` : '<span class="neg">Aquest codi no és vàlid. Ha de tenir aquesta forma: A8M-K3X9QZ.</span>'; };
+    $('#rc').oninput = info; info();
+    $('#enrere').onclick = portada;
+    $('#rgo').onclick = () => {
+      const r = ME.llegirRepte($('#rc').value), nom = $('#rn').value.trim().slice(0, 30), membres = $('#rm').value.split(',').map(x => x.trim()).filter(Boolean).slice(0, 4);
+      if (!r) return toast('Escriviu un codi de repte vàlid.', 'neg');
+      if (!nom) return toast('Poseu nom a la vostra empresa.', 'neg');
+      if (MD.empresesSuggerides[r.sector].slice(1, 4).some(x => x.toLowerCase() === nom.toLowerCase())) return toast('Aquest nom ja el fa servir una empresa rival. Trieu-ne un altre.', 'neg');
+      const d = carrega(), mateix = d && d.config.repte && d.config.repte.codi === r.codi;
+      if (mateix && d.empreses[0].nom.toLowerCase() === nom.toLowerCase() && d.fase !== 'final') { S = d; ui.empVista = 0; toast('Continueu la partida que teníeu començada.'); return joc(); }
+      const comenca = () => { S = ME.crearPartida(ME.cfgRepte(r, { nom, membres, repteNom: nomR })); S.reg = []; S.regOk = true; fia('I'); ui.empVista = 0; ui.vista = 'tauler'; ui.mobil = 'tauler'; ui.tutDone = {}; desa(); joc(); };
+      if (d && d.fase !== 'final' && d.ronda > 0) confirma('En aquest navegador hi ha una altra partida a mitges («' + esc(d.empreses.find(x => x.humana) ? d.empreses.find(x => x.humana).nom : d.config.nom) + '»). Si comenceu ara, se substituirà. Voleu continuar?', comenca); else comenca();
+    };
+    $('#rcont').onclick = async () => {
+      try { const { s, errors } = await deCodi($('#rcod').value); S = s; ui.empVista = primerHuma(); ui.vista = 'tauler'; ui.mobil = 'tauler'; toast(errors ? 'Partida recuperada (amb ' + errors + ' accions no vàlides).' : 'Partida recuperada.', errors ? 'neg' : 'pos'); desa(); joc(); }
+      catch (x) { toast('Aquest codi no és vàlid o està incomplet.', 'neg'); }
+    };
+  }
+
+  /* ---------- Mode docent: crear reptes i rànquing ---------- */
+  function docent() {
+    clearTimeout(tm);
+    app.innerHTML = `<main class="config"><button class="btn ghost small" id="enrere">← Tornar</button>
+      <h1>${I('escut')} Mode docent</h1>
+      <p class="muted">Funciona sense servidors ni comptes: el repte és un codi i els resultats arriben com a codis que el joc torna a calcular per comprovar-los. El rànquing queda desat en aquest navegador.</p>
+      <div class="cards">
+        <button class="opcio" data-h="crear"><b>${I('mes')} Crear un repte de classe</b><span>Genera un codi i un enllaç. Cada equip juga al seu dispositiu la mateixa partida.</span></button>
+        <button class="opcio" data-h="ranking"><b>${I('trofeu')} Rànquing de la classe</b><span>Enganxeu els codis de resultat: classificació, lliçons apreses i decisions de cada equip.</span></button>
+        <button class="opcio" data-h="local"><b>${I('tauler')} Partida en un sol dispositiu</b><span>Tots els equips a la mateixa pantalla (pissarra digital), per torns.</span></button>
+      </div></main>`;
+    $('#enrere').onclick = portada;
+    $$('[data-h]').forEach(b => b.onclick = () => ({ crear: crearRepte, ranking: () => ranking(), local: () => configurar('docent') })[b.dataset.h]());
+  }
+  function crearRepte() {
+    const c = { nom: '', sector: 'alimentacio', rondes: 8, dificultat: 'mitja' };
+    const draw = () => {
+      app.innerHTML = `<main class="config" style="max-width:900px"><button class="btn ghost small" id="enrere">← Mode docent</button>
+        <h1>Crear un repte de classe</h1>
+        <label class="f" style="max-width:420px">Nom del repte (opcional)<input class="inp" id="cn" maxlength="40" value="${esc(c.nom)}" placeholder="Ex.: CM10-2A · Repte 1"></label>
+        <h2>1. Sector</h2><div class="cards">${Object.entries(MD.sectors).map(([k, s]) => `<button class="opcio ${c.sector === k ? 'on' : ''}" data-sector="${k}"><b>${I(s.icona)} ${esc(s.nom)}</b><span>${esc(s.producte)}</span></button>`).join('')}</div>
+        <h2>2. Durada i dificultat</h2><div class="row"><div class="seg" role="group" aria-label="Rondes">${[4, 8, 12].map(r => `<button data-rondes="${r}" class="${c.rondes === r ? 'on' : ''}">${r} rondes</button>`).join('')}</div>
+          <div class="seg" role="group" aria-label="Dificultat">${[['facil', 'IA fàcil'], ['mitja', 'IA mitjana'], ['dificil', 'IA difícil']].map(([k, n]) => `<button data-dif="${k}" class="${c.dificultat === k ? 'on' : ''}">${n}</button>`).join('')}</div></div>
+        <p class="small muted">Orientació: unes 4 rondes per sessió de classe. Cada equip té la partida desada al seu dispositiu i la pot continuar un altre dia.</p>
+        <div class="barra"><button class="btn prim big" id="gen">${I('ok')} Generar el repte</button></div></main>`;
+      const llegeix = () => { c.nom = $('#cn').value.trim(); };
+      $('#enrere').onclick = docent;
+      $$('[data-sector]').forEach(b => b.onclick = () => { llegeix(); c.sector = b.dataset.sector; draw(); });
+      $$('[data-rondes]').forEach(b => b.onclick = () => { llegeix(); c.rondes = +b.dataset.rondes; draw(); });
+      $$('[data-dif]').forEach(b => b.onclick = () => { llegeix(); c.dificultat = b.dataset.dif; draw(); });
+      $('#gen').onclick = () => { llegeix(); const llavor = 1 + Math.floor(Math.random() * 2e9); mostraRepte(ME.codiRepte(c.sector, c.rondes, c.dificultat, llavor), c.nom); };
+    };
+    draw();
+  }
+  function enllacRepte(codi, nom) { const u = new URL(location.href); u.search = ''; u.hash = ''; u.searchParams.set('repte', codi); if (nom) u.searchParams.set('nom', nom); return u.href; }
+  function carregaQR(cb) { // generador de QR (només per al docent; si no carrega, queda l'enllaç i el codi)
+    if (window.qrcode) return cb();
+    const s = document.createElement('script'); s.src = 'js/vendor/qrcode.js'; /* qrcode-generator 1.4.4 (MIT, Kazuhiko Arase) */ s.onload = cb; s.onerror = () => { }; document.head.appendChild(s);
+  }
+  function mostraRepte(codi, nom) {
+    const r = ME.llegirRepte(codi), link = enllacRepte(codi, nom);
+    desaClasse(codi, nom);
+    app.innerHTML = `<main class="config" style="max-width:900px"><button class="btn ghost small" id="enrere">← Mode docent</button>
+      <h1>${esc(nom || 'Repte de classe')}</h1>
+      <div class="repte-box"><span class="muted">Codi del repte</span><div class="codi-repte">${esc(r.codi)}</div>
+        <span class="muted">${esc(MD.sectors[r.sector].nom)} · ${r.rondes} rondes · IA ${esc(NOM_DIF[r.dificultat])}</span>
+        <div id="qr" class="qr" aria-label="Codi QR de l'enllaç"></div>
+        <input class="inp" readonly value="${esc(link)}" id="lk" aria-label="Enllaç del repte">
+        <div class="row" style="justify-content:center;margin-top:10px"><button class="btn prim" id="cpl">${I('ok')} Copiar l'enllaç</button><button class="btn" id="rk">${I('trofeu')} Obrir el rànquing</button></div></div>
+      <div class="seccio"><h2>Com funciona</h2><ol class="small" style="padding-left:18px;display:grid;gap:6px">
+        <li>Projecteu aquesta pantalla o compartiu l'enllaç. També poden obrir Mercadeja, entrar a «Repte de classe» i escriure el codi.</li>
+        <li>Cada equip escriu el nom de la seva empresa i els membres, i juga contra les mateixes tres empreses de la IA.</li>
+        <li>Al final de cada sessió (o de la partida), premen «Envia el resultat» i us fan arribar el codi.</li>
+        <li>A «Rànquing de la classe» enganxeu tots els codis: el joc torna a jugar cada partida per comprovar-la i en fa la classificació.</li></ol>
+        <p class="small muted">Deseu el codi del repte: si el torneu a generar, serà una partida diferent.</p></div></main>`;
+    $('#enrere').onclick = docent;
+    $('#cpl').onclick = () => copia(link, $('#lk'));
+    $('#rk').onclick = () => ranking(r.codi);
+    carregaQR(() => { try { const q = window.qrcode(0, 'M'); q.addData(link); q.make(); $('#qr').innerHTML = q.createSvgTag({ cellSize: 5, margin: 3, scalable: true }); } catch (e) { } });
+  }
+  const KCL = 'mercadeja-classes-v1';
+  const classes = () => { try { return JSON.parse(localStorage.getItem(KCL) || '{}'); } catch (e) { return {}; } };
+  const desaClasses = (c) => { try { localStorage.setItem(KCL, JSON.stringify(c)); return true; } catch (e) { toast('No s\'ha pogut desar el rànquing: el navegador no té espai.', 'neg'); return false; } };
+  function desaClasse(codi, nom) { const c = classes(); c[codi] = c[codi] || { nom: nom || '', equips: {}, creat: Date.now() }; if (nom) c[codi].nom = nom; desaClasses(c); }
+  function fitxaEquip(s, e, errors) {
+    const h = e.hist, cl = ME.classificacio(s), resp = (s.llicons || {})[e.id] || {};
+    return { equip: e.nom, membres: e.membres || [], ronda: s.ronda, rondes: s.config.rondes, acabada: s.fase === 'final', valor: ME.valorEmpresa(s, e).total,
+      resultat: h.reduce((a, x) => a + x.resultat, 0), quota: h.length ? h.reduce((a, x) => a + x.quota, 0) / h.length : 0, rep: Math.round(e.rep), xp: e.xp,
+      posJoc: cl.findIndex(x => x.e.id === e.id) + 1, nJoc: s.empreses.length,
+      llDesc: llDesbloquejades(s, e).length, llResp: Object.keys(resp).length, llEnc: Object.values(resp).filter(x => x.ok).length,
+      p4: h.map(x => (x.us4P || []).length), refl: (s.reflexions || {})[e.id] || '', errors, t: Date.now() };
+  }
+  async function afegeixCodis(text) {
+    const codis = String(text || '').match(/MJ1[ZJ][A-Za-z0-9_-]{8,}/g) || [];
+    const c = classes(); let ok = 0, ko = 0, darrera = null;
+    for (const k of codis) {
+      try {
+        const { s, errors } = await deCodi(k);
+        const rc = (s.config.repte && s.config.repte.codi) || ('PARTIDA-' + s.config.llavor);
+        c[rc] = c[rc] || { nom: (s.config.repte && s.config.repte.nom) || (s.config.repte ? '' : s.config.nom) || '', equips: {}, creat: Date.now() };
+        s.empreses.filter(e => e.humana).forEach(e => {
+          const f = fitxaEquip(s, e, errors); f.codi = k; f.empId = e.id;
+          const key = e.nom.toLowerCase(), ant = c[rc].equips[key];
+          if (!ant || f.ronda >= ant.ronda) c[rc].equips[key] = f; // es queda amb el codi més avançat
+        });
+        darrera = rc; ok++;
+      } catch (x) { ko++; }
+    }
+    if (ok) desaClasses(c);
+    toast(ok ? ok + ' codi' + (ok > 1 ? 's afegits' : ' afegit') + ' al rànquing' + (ko ? ' · ' + ko + ' no vàlid' + (ko > 1 ? 's' : '') : '') + '.' : 'No s\'ha trobat cap codi vàlid.', ok ? 'pos' : 'neg');
+    return darrera;
+  }
+  function ordenaEquips(cl) { return Object.values(cl.equips).sort((a, b) => b.valor - a.valor); }
+  function ranking(sel) {
+    clearTimeout(tm);
+    const c = classes(), keys = Object.keys(c).sort((a, b) => (c[b].creat || 0) - (c[a].creat || 0));
+    sel = sel && c[sel] ? sel : keys[0];
+    const cl = sel ? c[sel] : null, eq = cl ? ordenaEquips(cl) : [], rep = sel && ME.llegirRepte(sel);
+    app.innerHTML = `<main class="config" style="max-width:1180px"><button class="btn ghost small" id="enrere">← Mode docent</button>
+      <h1>${I('trofeu')} Rànquing de la classe</h1>
+      ${keys.length > 1 ? `<label class="f" style="max-width:480px">Repte<select class="inp" id="selC">${keys.map(k => `<option value="${esc(k)}" ${k === sel ? 'selected' : ''}>${esc((c[k].nom ? c[k].nom + ' · ' : '') + k)} (${Object.keys(c[k].equips).length} equips)</option>`).join('')}</select></label>` : ''}
+      <div class="seccio"><h2>Afegir resultats</h2><p class="small">Enganxeu els codis que us han enviat els equips (un o molts alhora) o carregueu els fitxers .txt. Si un equip envia un codi més avançat, substitueix l'anterior.</p>
+        <textarea class="inp" id="codis" rows="4" placeholder="MJ1…" spellcheck="false"></textarea>
+        <div class="row" style="margin-top:8px"><button class="btn prim" id="afg">${I('mes')} Afegir al rànquing</button><label class="btn">${I('document')} Carregar fitxers<input type="file" id="fit" accept=".txt,text/plain" multiple hidden></label></div></div>
+      ${cl ? `<div class="seccio"><h2>${esc(cl.nom || 'Repte')} <span class="muted small">· ${esc(sel)}${rep ? ' · ' + esc(MD.sectors[rep.sector].nom) + ' · ' + rep.rondes + ' rondes' : ''}</span></h2>
+        ${eq.length ? `<div class="taula-w"><table class="t"><thead><tr><th>#</th><th>Equip</th><th class="n">Valor empresarial</th><th class="n">Ronda</th><th class="n">Resultat acumulat</th><th class="n">Quota mitjana</th><th class="n">Posició a la seva partida</th><th class="n">Lliçons</th><th class="n">Encerts</th><th>Comprovació</th></tr></thead><tbody>
+          ${eq.map((x, k) => `<tr class="${k === 0 ? 'primer' : ''} clicable" data-eq="${esc(x.equip.toLowerCase())}" tabindex="0"><td><b>${k + 1}</b></td><td><b>${esc(x.equip)}</b>${x.membres.length ? '<br><small class="muted">' + esc(x.membres.join(', ')) + '</small>' : ''}</td><td class="n"><b>${eur(x.valor)}</b></td><td class="n">${x.acabada ? 'Acabada' : x.ronda + ' / ' + x.rondes}</td><td class="n ${x.resultat >= 0 ? 'pos' : 'neg'}">${eur(x.resultat)}</td><td class="n">${pct(x.quota)}</td><td class="n">${x.posJoc}a de ${x.nJoc}</td><td class="n">${x.llDesc} / ${LL.length}</td><td class="n">${x.llEnc} / ${x.llResp}</td><td>${x.errors ? '<span class="neg">⚠ ' + x.errors + ' accions no vàlides</span>' : '<span class="pos">✔ Verificat</span>'}</td></tr>`).join('')}</tbody></table></div>
+          <p class="small muted">Feu clic a un equip per veure'n el detall (rondes, quatre P, lliçons i reflexió). Si un equip no ha acabat, surt amb el valor de la ronda on és.</p>
+          <div class="row"><button class="btn" id="csv">${I('descarrega')} Descarregar (CSV)</button><button class="btn" id="comp">${I('equip')} Compartir el rànquing amb la classe</button><button class="btn perill" id="esb">Esborrar aquest rànquing</button></div>` : '<p class="muted">Encara no hi ha resultats d\'aquest repte. Enganxeu-hi els codis dels equips.</p>'}</div>` : '<p class="muted">Encara no hi ha cap repte. Creeu-ne un des del mode docent o enganxeu-hi codis de resultat.</p>'}</main>`;
+    $('#enrere').onclick = docent;
+    const sc = $('#selC'); if (sc) sc.onchange = () => ranking(sc.value);
+    $('#afg').onclick = async () => { const d = await afegeixCodis($('#codis').value); if (d) ranking(d); };
+    $('#fit').onchange = async (ev) => { let t = ''; for (const f of ev.target.files) t += '\n' + await f.text(); const d = await afegeixCodis(t); if (d) ranking(d); };
+    if (!cl || !eq.length) return;
+    $$('[data-eq]').forEach(tr => { tr.onclick = () => detallEquip(cl.equips[tr.dataset.eq]); tr.onkeydown = (ev) => { if (ev.key === 'Enter') tr.onclick(); }; });
+    $('#csv').onclick = () => {
+      const rows = [['Posició', 'Equip', 'Membres', 'Valor empresarial', 'Ronda', 'Acabada', 'Resultat acumulat', 'Quota mitjana %', 'Reputació', 'XP', 'Posició a la seva partida', 'Lliçons descobertes', 'Lliçons respostes', 'Encerts', 'Comprovació', 'Reflexió']];
+      eq.forEach((x, k) => rows.push([k + 1, x.equip, x.membres.join(', '), x.valor, x.ronda, x.acabada ? 'sí' : 'no', x.resultat, Math.round(x.quota * 10) / 10, x.rep, x.xp, x.posJoc, x.llDesc, x.llResp, x.llEnc, x.errors ? 'amb errors' : 'verificat', x.refl]));
+      baixaFitxer('mercadeja-ranquing-' + slug((cl.nom || '') + '-' + sel) + '.csv', '﻿' + rows.map(r => r.map(v => /[;"\n]/.test(String(v)) ? '"' + String(v).replace(/"/g, '""') + '"' : v).join(';')).join('\n'), 'text/csv');
+    };
+    $('#comp').onclick = async () => {
+      const codi = await comprimeix({ n: cl.nom || '', c: sel, r: eq.map(x => [x.equip, x.valor, x.acabada ? 0 : x.ronda, x.llEnc, x.llDesc]) });
+      const u = new URL(location.href); u.search = ''; u.hash = 'rk=' + codi;
+      modal(`<h2>${I('equip')} Compartir el rànquing</h2><p>Qui obri aquest enllaç veurà la classificació (nom de l'equip, valor, ronda i lliçons), sense noms dels membres ni detalls.</p>
+        <textarea class="inp codi-res" readonly rows="4">${esc(u.href)}</textarea><div class="row" style="margin-top:10px"><button class="btn prim" id="cp" data-focus>Copiar l'enllaç</button><button class="btn ghost" id="tc">Tancar</button></div>`, (m) => {
+        $('#cp', m).onclick = () => copia(u.href, $('.codi-res', m)); $('#tc', m).onclick = tancaModal; }, { tancable: true });
+    };
+    $('#esb').onclick = () => confirma('Voleu esborrar el rànquing «' + esc(cl.nom || sel) + '» d\'aquest navegador? Els codis dels equips continuaran sent vàlids.', () => { const c2 = classes(); delete c2[sel]; desaClasses(c2); ranking(); });
+  }
+  async function detallEquip(x) {
+    let s; try { s = (await deCodi(x.codi)).s; } catch (e) { return toast('No s\'ha pogut obrir aquest codi.', 'neg'); }
+    const e = s.empreses[x.empId] || s.empreses.find(k => k.humana), resp = (s.llicons || {})[e.id] || {}, ids = new Set(llDesbloquejades(s, e).map(l => l.id));
+    const nomP = { producte: 'Producte', preu: 'Preu', distribucio: 'Distribució', promocio: 'Promoció' };
+    modal(`<h2>${esc(e.nom)}</h2><p class="muted small">${esc((e.membres || []).join(', ') || 'Sense membres indicats')} · ${s.fase === 'final' ? 'partida acabada' : 'ronda ' + s.ronda + ' de ' + s.config.rondes}</p>
+      <div class="taula-w"><table class="t"><thead><tr><th>Ronda</th><th class="n">Preu</th><th class="n">Unitats</th><th class="n">Quota</th><th class="n">Resultat</th><th class="n">Valor</th><th>Quatre P treballades</th></tr></thead><tbody>
+        ${e.hist.map(h => `<tr><td>${h.ronda}</td><td class="n">${eur(h.preu)}</td><td class="n">${nf(h.unitats)}</td><td class="n">${pct(h.quota)}</td><td class="n ${h.resultat >= 0 ? 'pos' : 'neg'}">${eur(h.resultat)}</td><td class="n">${eur(h.valor)}</td><td class="small">${(h.us4P || []).map(k => nomP[k]).join(', ') || '—'}</td></tr>`).join('')}</tbody></table></div>
+      <h3 style="margin-top:14px">Estat final de les quatre P</h3>
+      <p class="small">Producte: ${MD.ATR.map(k => MD.atributs[k].nom + ' ' + e.atr[k]).join(' · ')}<br>Preu: ${eur(e.preu)} · Canals: ${MD.CAN.filter(k => e.canals[k]).map(k => MD.canals[k].nom).join(', ')} · Promoció total: ${eur(e.inversio.promocio)} · Notorietat ${Math.round(e.not)} · Reputació ${Math.round(e.rep)}</p>
+      <h3>Lliçons</h3><ul class="ll-llista">${LL.map(l => { const r = resp[l.id]; return `<li class="${r ? (r.ok ? 'ok' : 'ko') : ids.has(l.id) ? '' : 'tancada'}"><span>${r ? (r.ok ? '✔' : '✘') : ids.has(l.id) ? '·' : '🔒'}</span><b>${esc(l.titol)}</b> <small class="muted">${esc(l.ra)}${r ? ' · ronda ' + r.ronda : ids.has(l.id) ? ' · sense respondre' : ' · no descoberta'}</small></li>`; }).join('')}</ul>
+      <h3>Reflexió final</h3><p class="small">${x.refl ? esc(x.refl) : '<span class="muted">Encara no l\'han escrita.</span>'}</p>
+      <div class="row" style="margin-top:12px"><button class="btn ghost" id="tc" data-focus>Tancar</button></div>`, (m) => { $('#tc', m).onclick = tancaModal; }, { tancable: true });
+  }
+  async function rankingCompartit(codi) {
+    let d; try { d = await descomprimeix(codi); } catch (e) { return portada(); }
+    app.innerHTML = `<main class="config" style="max-width:900px">${logo(true)}
+      <h1>${I('trofeu')} Rànquing${d.n ? ': ' + esc(d.n) : ''}</h1><p class="muted">Repte ${esc(d.c || '')} · classificació per valor empresarial.</p>
+      <div class="taula-w"><table class="t"><thead><tr><th>#</th><th>Equip</th><th class="n">Valor empresarial</th><th class="n">Ronda</th><th class="n">Lliçons (encerts)</th></tr></thead><tbody>
+        ${(d.r || []).map((x, k) => `<tr class="${k === 0 ? 'primer' : ''}"><td><b>${k + 1}</b></td><td><b>${esc(x[0])}</b></td><td class="n"><b>${eur(x[1])}</b></td><td class="n">${x[2] ? x[2] : 'Acabada'}</td><td class="n">${x[4]} (${x[3]})</td></tr>`).join('')}</tbody></table></div>
+      <div class="row" style="margin-top:14px"><button class="btn prim" id="menu">${I('play')} Anar a Mercadeja</button></div></main>`;
+    $('#menu').onclick = () => { history.replaceState(null, '', location.pathname + location.search); portada(); };
+  }
+
+  window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && $('.modal') && !$('.modal #si')) { tancaModal(); if (S && S.fase !== 'final') tick(); } });
+  // Arrencada: rànquing compartit (#rk=), enllaç d'un repte (?repte=) o portada
+  (function inici() {
+    if (location.hash.startsWith('#rk=')) return rankingCompartit(location.hash.slice(4));
+    const codi = new URLSearchParams(location.search).get('repte'), r = codi && ME.llegirRepte(codi), d = carrega();
+    if (r && !(d && d.config.repte && d.config.repte.codi === r.codi && d.fase !== 'final')) return repte(r.codi);
+    portada();
+  })();
+  window.MERCADEJA = { get S() { return S; }, render, tirar, deCodi, codiDe };
 })();
