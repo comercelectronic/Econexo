@@ -1,12 +1,13 @@
 'use client';
-// Espai publicitari d'AdSense. No es mostra mai:
-//  - si encara no hi ha client d'AdSense configurat (NEXT_PUBLIC_ADSENSE_CLIENT),
+// Espai publicitari fix d'AdSense (el script el carrega <AdSense /> al layout). No es mostra mai:
+//  - si el bloc no té l'identificador numèric d'un bloc d'anuncis creat a AdSense (mentrestant, Google col·loca anuncis automàtics),
 //  - si el visitant arriba des del joc educatiu «Agència Digital» (?des=joc), perquè els alumnes no vegin publicitat.
 // El consentiment de galetes el gestiona el missatge de privadesa certificat de Google (AdSense > Privacidad y mensajes).
 import { useEffect, useState } from 'react';
 import { useT } from './LangProvider';
+import { SITE } from '@/lib/site';
 
-const CLIENT = process.env.NEXT_PUBLIC_ADSENSE_CLIENT;
+const CLIENT = SITE.adsenseAccount;
 
 export function useFromGame() {
   const [fromGame, setFromGame] = useState(true);
@@ -22,17 +23,12 @@ export function useFromGame() {
 export function AdSlot({ slot, label = 'Publicidad' }: { slot: string; label?: string }) {
   const t = useT();
   const fromGame = useFromGame();
+  const real = /^\d+$/.test(slot);
   useEffect(() => {
-    if (!CLIENT || fromGame) return;
-    if (!document.querySelector('script[data-adsense]')) {
-      const s = document.createElement('script');
-      s.async = true; s.dataset.adsense = '1'; s.crossOrigin = 'anonymous';
-      s.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${CLIENT}`;
-      document.head.appendChild(s);
-    }
+    if (!CLIENT || fromGame || !real) return;
     try { ((window as unknown as { adsbygoogle: unknown[] }).adsbygoogle ||= []).push({}); } catch { /* sense anuncis */ }
-  }, [fromGame]);
-  if (!CLIENT || fromGame) return null;
+  }, [fromGame, real]);
+  if (!CLIENT || fromGame || !real) return null;
   return (
     <aside className="my-8 text-center" aria-label={t(label)}>
       <span className="mb-1 block text-[10px] uppercase tracking-widest text-muted">{t(label)}</span>
