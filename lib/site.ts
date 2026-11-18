@@ -13,6 +13,8 @@ export const SITE = {
   adsenseAccount: process.env.NEXT_PUBLIC_ADSENSE_CLIENT || 'ca-pub-6602866907047778',
   // Bloc d'anuncis de display «Anuncis1» (adaptable), creat a AdSense
   adSlot: '8367079092',
+  // Bloc multiplex (graella d'anuncis amb aspecte de contingut recomanat)
+  adSlotMultiplex: '1698950158',
   defaultAuthor: 'Redacción ECOyNEXO'
 };
 

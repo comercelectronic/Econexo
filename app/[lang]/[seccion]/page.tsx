@@ -62,6 +62,7 @@ export default async function SectionPage({ params }: Props) {
         {list.map((a, i) => <div key={a.url} className={i === 0 ? 'md:col-span-3' : ''}><ArticleCard a={a} lang={lang} variant={i === 0 ? 'hero' : 'card'} /></div>)}
       </div>
       <AdSlot slot={`seccion-${seccion}`} />
+      <AdSlot slot={`seccion-${seccion}-multiplex`} multiplex />
     </div>
   );
 }

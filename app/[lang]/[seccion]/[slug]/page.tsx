@@ -119,6 +119,7 @@ export default async function ArticlePage({ params }: Props) {
       {a.etiquetas.length > 0 && <p className="mt-6 flex flex-wrap gap-2">{a.etiquetas.map((e) => <span key={e} className="rounded-full bg-mist px-3 py-1 text-xs font-semibold text-navy">#{e}</span>)}</p>}
       <AdSlot slot="articulo-final" />
       {rel.length > 0 && <section className="mt-10"><h2 className="mb-4 text-xl font-extrabold text-navy">{t('Te puede interesar')}</h2><div className="grid gap-4 md:grid-cols-3">{rel.map((r: Article) => <ArticleCard key={r.url} a={r} lang={lang} />)}</div></section>}
+      <AdSlot slot="articulo-multiplex" multiplex />
       <div className="mt-12"><Newsletter /></div>
     </article>
   );
