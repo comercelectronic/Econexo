@@ -1,175 +1,142 @@
-// Proves del motor de Mercadeja: fórmules econòmiques, coherència del mercat, determinisme i equilibri.
+// Proves del motor de Mercadeja (la botiga del barri): clients, comptes, determinisme, verificació i equilibri.
 // Ús: node scripts/test-mercadeja.js
 const path = require('path');
 const MD = require(path.join(__dirname, '../public/jocs/mercadeja/js/data.js'));
 const ME = require(path.join(__dirname, '../public/jocs/mercadeja/js/engine.js'));
+const LL = require(path.join(__dirname, '../public/jocs/mercadeja/js/llicons.js'));
 
 let ok = 0, ko = 0;
 const t = (cond, nom) => { if (cond) ok++; else { ko++; console.log('✘', nom); } };
-const near = (a, b, tol = 1) => Math.abs(a - b) <= tol;
+const near = (a, b, tol = 0.05) => Math.abs(a - b) <= tol;
+const R = Math.round;
 
-function partida(cfg) {
-  return ME.crearPartida(Object.assign({ sector: 'alimentacio', rondes: 8, llavor: 12345, dificultat: 'mitja',
-    empreses: ['agressiva', 'premium', 'equilibrada', 'innovadora'].map((p, i) => ({ nom: 'E' + i, perfil: p, humana: false })) }, cfg));
-}
-// Juga una partida sencera amb la IA (o amb una funció de decisió pròpia per a l'empresa 0)
-function juga(s, decisio0) {
-  ME.iniciarRonda(s);
-  let guard = 0;
-  while (s.fase !== 'final' && guard++ < 5000) {
-    if (s.fase === 'esdeveniment' || s.fase === 'mercat' || s.fase === 'resultats') { ME.accio(s, { tipus: 'continuar' }); continue; }
-    const i = s.torn;
-    if (s.fase === 'decisions') { if (i === 0 && decisio0) { decisio0(s); ME.accio(s, { tipus: 'confirmar', emp: 0 }); } else ME.decidirIA(s, i); continue; }
-    if (s.fase === 'moviment') { if (!s.pendent) ME.accio(s, { tipus: 'tirar', emp: i }); else ME.resoldreIA(s, i); continue; }
+// Juga una partida com la interfície: registra les accions i simula el que passa a la botiga amb una «habilitat»
+function juga(cfg, estrategia, habilitat = 0.9, rondes) {
+  const s = ME.crearPartida(Object.assign({ llavor: 777, rondes: rondes || 8, dificultat: 'mitja', empreses: [{ nom: 'Jo', humana: true, membres: ['A'] }] }, cfg));
+  s.reg = [];
+  const fa = (a) => { const x = ME.accio(s, a); if (!x.repetida && (x.ok || x.muta)) { const c = Object.assign({}, a); delete c.id; s.reg.push(c); } return x; };
+  const fia = (k) => { s.reg.push({ ia: k }); return ME.aplica(s, { ia: k }); };
+  fia('I');
+  const rnd = ME.rngDe(cfg && cfg.llavor || 777, 'proves');
+  while (s.fase !== 'final') {
+    if (s.fase === 'planificacio') {
+      const e = ME.jugador(s);
+      estrategia(s, e, fa);
+      e.prestatges.slice(0, e.nPrest).filter(x => x && x.prod).forEach(x => {
+        const n = e.prestatges.slice(0, e.nPrest).filter(y => y && y.prod).length, falta = Math.ceil(240 / n) - (e.estoc[x.prod] || 0);
+        if (falta > 0) fa({ tipus: 'comanda', prod: x.prod, caixes: Math.min(20, Math.ceil(falta / 10)) });
+      });
+      LL.llicons.filter(l => l.quan(s, e) && !(s.llicons[0] || {})[l.id]).forEach((l, k) => fa({ tipus: 'llico', llico: l.id, resposta: k % 3 ? l.pregunta.c : 2 }));
+      const r = fa({ tipus: 'obrir' }); if (!r.ok) throw new Error(r.err);
+    } else if (s.fase === 'botiga') {
+      const st = Object.assign({}, s.dia.estocInici), res = [];
+      s.dia.clients.forEach(c => {
+        if (c.motiu) return res.push([c.id, 0, c.motiu]);
+        if (rnd() > habilitat) return res.push([c.id, 0, rnd() < 0.5 ? 4 : 3]);
+        const v = Math.min(c.qty, st[c.prod] || 0); st[c.prod] -= v; res.push([c.id, v, v ? 0 : 3]);
+      });
+      const r = fa({ tipus: 'tancar', res }); if (!r.ok) throw new Error(r.err);
+    } else fa({ tipus: 'continuar' });
   }
   return s;
 }
+const ESTR = {
+  res: () => {},
+  equilibrada: (s, e, fa) => {
+    if (s.ronda === 1) { [['motlle', 0], ['pages', 1], ['fruita', 2], ['kombutxa', 3]].forEach(([p, k]) => fa({ tipus: 'producte', slot: k, prod: p })); fa({ tipus: 'prestatge' }); fa({ tipus: 'producte', slot: 4, prod: 'granel' }); fa({ tipus: 'servei', servei: 'online', actiu: true }); fa({ tipus: 'servei', servei: 'dependent', actiu: true }); }
+    fa({ tipus: 'promo', promo: 'cartell' }); fa({ tipus: 'promo', promo: 'xarxes' }); fa({ tipus: 'aparador', tema: 'eco' }); fa({ tipus: 'objectiu', valor: 500 });
+  },
+  cara: (s, e, fa) => { e.prestatges.forEach((x, k) => x && x.prod && fa({ tipus: 'preu', slot: k, valor: MD.productes[x.prod].ref * 1.8 })); },
+  radio: (s, e, fa) => { fa({ tipus: 'promo', promo: 'radio' }); fa({ tipus: 'promo', promo: 'fullets' }); fa({ tipus: 'promo', promo: 'tast' }); }
+};
 
-// 1. Fórmules econòmiques (cas de l'enunciat): preu 20, cost 8, 1.000 unitats, fixos 3.000
+/* ---------- Dades ---------- */
+t(MD.PROD.every(p => ['q', 'eco', 'nou', 'bas'].every(k => MD.productes[p][k] >= 0 && MD.productes[p][k] <= 100) && MD.productes[p].cost < MD.productes[p].ref), 'productes amb atributs vàlids i marge positiu');
+t(Math.abs(MD.SEG.reduce((a, k) => a + MD.segments[k].pes, 0) - 1) < 1e-9, 'els pesos dels tipus de client sumen 1');
+t(MD.SEG.every(k => Math.abs(Object.values(MD.segments[k].w).reduce((a, b) => a + b, 0) - 1) < 1e-9), 'els pesos de l\'atractiu sumen 1');
+t(MD.SEG.every(k => MD.PROD.some(p => ME.encaix(k, p) >= MD.segments[k].min + 0.1)), 'cada tipus de client té productes que li agraden');
+t(MD.SEG.every(k => MD.PROD.filter(p => ME.encaix(k, p) >= MD.segments[k].min).length < MD.PROD.length), 'cap tipus de client no vol tots els productes');
+
+/* ---------- Un dia ---------- */
 {
-  const ing = 1000 * 20, cv = 1000 * 8, mb = ing - cv, bo = ing - cv - 3000;
-  t(ing === 20000 && cv === 8000 && mb === 12000 && bo === 9000, 'fórmules bàsiques');
+  const s = ME.crearPartida({ llavor: 99, empreses: [{ nom: 'Jo', humana: true }] }); ME.iniciarDia(s);
+  const e = ME.jugador(s);
+  t(s.fase === 'planificacio' && s.ronda === 1 && s.esdeveniment === 'normal', 'el primer dia és un dia normal');
+  t(!ME.accio(s, { tipus: 'producte', slot: 1, prod: 'motlle' }).ok, 'un producte no pot estar en dues prestatgeries');
+  t(!ME.accio(s, { tipus: 'preu', slot: 0, valor: 50 }).ok, 'el preu ha d\'estar dins de l\'interval');
+  t(ME.accio(s, { tipus: 'preu', slot: 0, valor: 1.92 }).ok && e.prestatges[0].preu === 1.9, 'els preus s\'arrodoneixen a 5 cèntims');
+  const d0 = e.diners; ME.accio(s, { tipus: 'comanda', prod: 'motlle', caixes: 2 });
+  t(near(d0 - e.diners, 2 * MD.CAIXA * MD.productes.motlle.cost) && e.estoc.motlle === 40, 'comprar estoc paga el cost i omple el magatzem');
+  t(!ME.accio(s, { tipus: 'tancar', res: [] }).ok, 'no es pot tancar si no s\'ha obert');
+  const v0 = ME.valorEmpresa(s, e);
+  t(ME.accio(s, { tipus: 'obrir' }).ok && s.fase === 'botiga' && s.dia.clients.length > 10, 'obrir la botiga genera els clients del dia');
+  t(!ME.accio(s, { tipus: 'preu', slot: 0, valor: 2 }).ok, 'amb la botiga oberta no es poden canviar els preus');
+  const cl = s.dia.clients;
+  t(cl.every((c, i) => c.id === i && c.t >= 0 && c.t <= 1 && (c.motiu ? !c.prod : MD.productes[c.prod])), 'clients ben formats');
+  t(cl.every(c => c.motiu || e.prestatges.some(x => x.prod === c.prod)), 'cada client vol un producte que hi ha a les prestatgeries');
+  // Resultats incoherents
+  const bo = cl.find(c => !c.motiu), dolent = cl.find(c => c.motiu);
+  t(!ME.accio(s, { tipus: 'tancar', res: [[bo.id, bo.qty + 1, 0]] }).ok, 'no es pot vendre més del que vol un client');
+  if (dolent) t(!ME.accio(s, { tipus: 'tancar', res: [[dolent.id, 1, 0]] }).ok, 'no es pot vendre a qui ha marxat per preu o assortiment');
+  t(!ME.accio(s, { tipus: 'tancar', res: cl.filter(c => !c.motiu).map(c => [c.id, c.qty, 0]).concat([[bo.id, 9999, 0]]) }).ok, 'no es pot vendre més estoc del que hi ha');
+  // Tancament correcte: tothom atès fins on arriba l'estoc
+  const st = Object.assign({}, s.dia.estocInici), res = cl.map(c => { if (c.motiu) return [c.id, 0, c.motiu]; const v = Math.min(c.qty, st[c.prod] || 0); st[c.prod] -= v; return [c.id, v, v ? 0 : 3]; });
+  const dAbans = e.diners, eAbans = ME.valorEmpresa(s, e).estoc;
+  const r = ME.accio(s, { tipus: 'tancar', res }); t(r.ok && s.fase === 'resultats', 'tancar el dia');
+  const h = r.h;
+  t(h.servits + Object.values(h.perduts).reduce((a, b) => a + b, 0) === h.clients, 'cada client compta una vegada');
+  t(near(h.ingressos, res.filter(x => x[1] > 0).reduce((a, x) => a + x[1] * e.prestatges.find(y => y.prod === cl[x[0]].prod).preu, 0), 0.05), 'les vendes són unitats × preu');
+  t(near(h.resultat, h.ingressos - h.cogs - h.merma - h.fixos - h.serveis - h.comissions - h.promocio - h.estudi, 0.05), 'el resultat quadra');
+  // Sense inversions, el resultat és la variació de (tresoreria + estoc a cost)
+  t(near(h.resultat, (e.diners - dAbans) + (ME.valorEmpresa(s, e).estoc - eAbans) + (v0.estoc - v0.estoc), 2), 'resultat = variació de diners + estoc');
+  t(Object.values(e.estoc).every(u => u >= 0), 'l\'estoc no és mai negatiu');
+  t(s.empreses.every(x => x.darrer && x.darrer.posicio >= 1), 'totes les botigues tenen posició');
+  t(ME.accio(s, { tipus: 'continuar' }).ok && s.ronda === 2 && s.fase === 'planificacio', 'passar al dia següent');
 }
-// 2. Tresoreria = registre: la suma de moviments explica el saldo
+
+/* ---------- Reptes: mateix carrer per a tothom, reproducció i verificació ---------- */
 {
-  const s = juga(partida({}));
-  s.empreses.forEach(e => {
-    const suma = s.log.filter(l => l.emp === e.id).reduce((a, l) => a + l.import, 0);
-    t(near(s.config.capital + suma, e.diners, 2), 'registre quadra amb la tresoreria de ' + e.nom + ' (' + (s.config.capital + suma) + ' vs ' + e.diners + ')');
-    t(e.hist.length === 8, '8 rondes de resultats');
-    e.hist.forEach(h => { t(Number.isFinite(h.resultat) && Number.isFinite(h.valor) && h.unitats >= 0, 'sense NaN'); t(h.unitats <= h.capacitat, 'mai no ven més que la capacitat'); });
-    const v = ME.valorEmpresa(s, e); t(v.total === v.tresoreria + v.propietats + v.altresActius + v.marca - v.deute, 'valor empresarial = tresoreria + actius − deute');
-  });
-  const q = s.resultats[s.resultats.length - 1].empreses.reduce((a, x) => a + x.quota, 0);
-  t(near(q, 100, 0.2), 'les quotes sumen 100 %');
-}
-// 3. Determinisme: mateixa llavor → mateix resultat
-{
-  const a = juga(partida({ llavor: 777 })), b = juga(partida({ llavor: 777 }));
-  t(JSON.stringify(a.resultats) === JSON.stringify(b.resultats), 'determinista amb la mateixa llavor');
-}
-// 4. Coherència del mercat (comparacions ceteris paribus en una sola ronda)
-function unaRonda(mod) {
-  const s = partida({ llavor: 5 });
-  s.ronda = 1; s.fase = 'mercat'; s.esdeveniment = null; s.efectesMercat = [];
-  mod(s);
-  return ME.resoldreMercat(s);
-}
-{
-  const base = unaRonda(() => {});
-  const barat = unaRonda(s => { s.empreses[0].preu = 10; });
-  t(barat[0].segAssignat.preu > base[0].segAssignat.preu, 'abaixar el preu atrau més clients sensibles al preu');
-  t(barat[0].ingressos / Math.max(1, barat[0].unitats) < base[0].ingressos / Math.max(1, base[0].unitats), 'però baixa l\'ingrés per unitat');
-  const qual = unaRonda(s => { s.empreses[0].atr.qualitat = 90; s.empreses[0].atr.servei = 90; });
-  t(qual[0].segAssignat.qualitat > base[0].segAssignat.qualitat, 'millorar la qualitat atrau el segment de qualitat');
-  const not = unaRonda(s => { s.empreses[0].not = 70; });
-  t(not[0].assignat > base[0].assignat, 'més notorietat, més demanda');
-  const dist = unaRonda(s => { s.empreses[0].canals.ecommerce = true; s.empreses[0].canals.distribuidor = true; });
-  t(dist[0].unitats > base[0].unitats, 'ampliar la distribució permet vendre més');
-  const sense = unaRonda(s => { s.empreses[0].ampliacions = 0; s.empreses[0].canals = { directa: true }; });
-  t(sense[0].unitats <= sense[0].capacitat && sense[0].perdudes > 0, 'sense capacitat suficient es perden vendes');
-  const car = unaRonda(s => { s.empreses[0].preu = 23; });
-  t(car[0].assignat < base[0].assignat, 'un preu molt alt fa perdre demanda');
-}
-// 5. Equilibri: cap perfil guanya sempre (200 partides, 4 sectors)
-{
-  const guanys = {}; MD.PERFILS.forEach(p => guanys[p] = 0);
-  const vals = [];
-  for (let k = 0; k < 200; k++) {
-    const sectors = Object.keys(MD.sectors);
-    const ordre = ['agressiva', 'premium', 'equilibrada', 'innovadora'];
-    const s = juga(partida({ llavor: 1000 + k, sector: sectors[k % 4], dificultat: ['facil', 'mitja', 'dificil'][k % 3] }));
-    const c = ME.classificacio(s); guanys[c[0].e.perfil]++;
-    c.forEach(x => vals.push(x.v.total));
-    t(ordre.length === 4, '');
-  }
-  const max = Math.max(...Object.values(guanys));
-  console.log('Victòries per perfil (200 partides):', JSON.stringify(guanys));
-  console.log('Valor empresarial final: mínim', Math.min(...vals), '· mitjana', Math.round(vals.reduce((a, b) => a + b, 0) / vals.length), '· màxim', Math.max(...vals));
-  t(max < 200 * 0.55, 'cap perfil guanya més del 55 % de les partides');
-  t(Object.values(guanys).filter(v => v > 0).length >= 3, 'almenys tres perfils guanyen alguna partida');
-}
-// 6. Estratègies dominants: només preu baix o només publicitat no haurien de guanyar fàcilment
-{
-  let winsBarat = 0, winsTV = 0;
-  for (let k = 0; k < 60; k++) {
-    const a = juga(partida({ llavor: 3000 + k }), s => { ME.accio(s, { tipus: 'preu', emp: 0, valor: 6.5 }); });
-    if (ME.classificacio(a)[0].e.id === 0) winsBarat++;
-    const b = juga(partida({ llavor: 3000 + k }), s => { ME.accio(s, { tipus: 'campanya', emp: 0, camp: 'televisio' }); });
-    if (ME.classificacio(b)[0].e.id === 0) winsTV++;
-  }
-  console.log('Només preu mínim guanya:', winsBarat, '/ 60 · Només televisió guanya:', winsTV, '/ 60');
-  t(winsBarat < 20, 'el preu mínim no és una estratègia dominant');
-  t(winsTV < 20, 'gastar-ho tot en televisió no és una estratègia dominant');
-}
-// 7. Idempotència i validacions
-{
-  const s = partida({}); ME.iniciarRonda(s); ME.accio(s, { tipus: 'continuar' });
-  const d0 = s.empreses[0].diners;
-  ME.accio(s, { id: 'x1', tipus: 'campanya', emp: 0, camp: 'radio' }); ME.accio(s, { id: 'x1', tipus: 'campanya', emp: 0, camp: 'radio' });
-  t(s.empreses[0].diners === d0 - 4500, 'una acció repetida només es cobra una vegada');
-  t(!ME.accio(s, { tipus: 'campanya', emp: 1, camp: 'radio' }).ok, 'no es pot decidir fora del torn');
-  s.empreses[0].diners = 100; t(!ME.accio(s, { tipus: 'capacitat', emp: 0 }).ok, 'no es pot comprar sense saldo');
-  t(!ME.accio(s, { tipus: 'preu', emp: 0, valor: 1 }).ok, 'el preu ha d\'estar dins de l\'interval');
-}
-/* ---------- Reptes de classe, registre d'accions i lliçons ---------- */
-{
-  const LL = require(path.join(__dirname, '../public/jocs/mercadeja/js/llicons.js'));
-  // Codis de repte
-  const codi = ME.codiRepte('turisme', 12, 'dificil', 987654321), r = ME.llegirRepte(codi);
-  t(r && r.sector === 'turisme' && r.rondes === 12 && r.dificultat === 'dificil' && r.llavor === 987654321, 'codi de repte: anada i tornada');
-  t(ME.llegirRepte(' u cd-' + codi.split('-')[1].toLowerCase()) === null || ME.llegirRepte(codi.toLowerCase()).codi === codi, 'codi de repte en minúscules');
-  t(ME.llegirRepte('X9Z-123') === null && ME.llegirRepte('') === null, 'codis de repte no vàlids');
-  // Juga un repte com ho fa la interfície (registrant totes les accions) amb una estratègia d'equip
-  function jugaRepte(rep, nom, estrategia) {
-    const s = ME.crearPartida(ME.cfgRepte(rep, { nom, membres: ['A', 'B'] })); s.reg = [];
-    const fa = (a) => { const x = ME.accio(s, a); if (!x.repetida && (x.ok || x.muta)) { const c = Object.assign({}, a); delete c.id; s.reg.push(c); } return x; };
-    const fia = (k, emp) => { s.reg.push({ ia: k, emp: emp == null ? null : emp }); return ME.aplica(s, { ia: k, emp }); };
-    fia('I'); const traça = [];
-    let guarda = 0;
-    while (s.fase !== 'final' && guarda++ < 5000) {
-      const e = s.empreses[s.torn];
-      if (s.fase === 'esdeveniment') { traça.push('E' + s.esdeveniment); fa({ tipus: 'continuar' }); }
-      else if (s.fase === 'decisions') {
-        if (e.humana) { estrategia(s, e, fa); LL.llicons.filter(l => l.quan(s, e) && !((s.llicons || {})[e.id] || {})[l.id]).forEach((l, k) => fa({ tipus: 'llico', emp: e.id, llico: l.id, resposta: k % 3 ? l.pregunta.c : 2 })); fa({ tipus: 'confirmar', emp: e.id }); }
-        else fia('D', e.id);
-      } else if (s.fase === 'moviment') {
-        if (!s.pendent) { const x = fa({ tipus: 'tirar', emp: e.id }); traça.push(e.id + ':' + x.daus.join('') + (s.pendent.carta || '')); }
-        else if (e.humana) fa({ tipus: s.pendent.tipus === 'compra' && e.diners > 60000 ? 'comprar' : 'passar', emp: e.id });
-        else fia('R', e.id);
-      } else fa({ tipus: 'continuar' });
-    }
-    return { s, traça: traça.join(' ') };
-  }
-  const rep = ME.llegirRepte(ME.codiRepte('alimentacio', 8, 'mitja', 424242));
-  const prudent = jugaRepte(rep, 'Prudent', () => {});
-  const atrevit = jugaRepte(rep, 'Atrevit', (s, e, fa) => { fa({ tipus: 'preu', emp: e.id, valor: 10 }); fa({ tipus: 'campanya', emp: e.id, camp: 'xarxes' }); if (s.ronda === 1) fa({ tipus: 'canal', emp: e.id, canal: 'ecommerce', actiu: true }); if (e.diners > 50000) fa({ tipus: 'millorar', emp: e.id, atr: 'qualitat' }); });
-  t(prudent.s.fase === 'final' && atrevit.s.fase === 'final', 'els reptes arriben al final');
-  t(prudent.traça === atrevit.traça, 'repte just: mateixos esdeveniments, daus i cartes per a tots els equips');
-  t(ME.valorEmpresa(prudent.s, prudent.s.empreses[0]).total !== ME.valorEmpresa(atrevit.s, atrevit.s.empreses[0]).total, 'les decisions de l\'equip canvien el resultat');
-  // Reproducció: el registre compactat (com el que va dins del codi) torna a donar el mateix estat
-  [prudent, atrevit].forEach(({ s }) => {
-    const json = JSON.stringify({ cfg: s.config, reg: ME.compacta(s.reg) });
-    const p = JSON.parse(json), { s: s2, errors } = ME.repetir(p.cfg, ME.descompacta(p.reg));
-    t(errors === 0, 'reproducció sense accions no vàlides (' + s.empreses[0].nom + ')');
-    t(s2.fase === 'final' && JSON.stringify(s2.empreses.map(e => [e.diners, e.xp, e.hist.length, ME.valorEmpresa(s2, e).total])) === JSON.stringify(s.empreses.map(e => [e.diners, e.xp, e.hist.length, ME.valorEmpresa(s, e).total])), 'reproducció exacta del resultat (' + s.empreses[0].nom + ')');
+  const codi = ME.codiRepte('alimentacio', 12, 'dificil', 987654321), r = ME.llegirRepte(codi);
+  t(r && r.rondes === 12 && r.dificultat === 'dificil' && r.llavor === 987654321, 'codi de repte: anada i tornada');
+  t(ME.llegirRepte(codi.toLowerCase()).codi === codi && ME.llegirRepte('X9Z-123') === null && ME.llegirRepte('') === null, 'codis de repte vàlids i no vàlids');
+  const rep = ME.llegirRepte(ME.codiRepte('alimentacio', 8, 'mitja', 4242));
+  const a = juga(ME.cfgRepte(rep, { nom: 'Alfa' }), ESTR.res), b = juga(ME.cfgRepte(rep, { nom: 'Beta' }), ESTR.equilibrada);
+  t(a.fase === 'final' && b.fase === 'final', 'les partides arriben al final');
+  t(JSON.stringify(a.log.filter(l => l.tipus === 'esdeveniment').map(l => l.concepte)) === JSON.stringify(b.log.filter(l => l.tipus === 'esdeveniment').map(l => l.concepte)), 'repte just: els mateixos esdeveniments per a tots els equips');
+  t(ME.valorEmpresa(a, a.empreses[0]).total !== ME.valorEmpresa(b, b.empreses[0]).total, 'les decisions de l\'equip canvien el resultat');
+  [a, b].forEach(s => {
+    const json = JSON.stringify({ cfg: s.config, reg: ME.compacta(s.reg) }), p = JSON.parse(json), { s: s2, errors } = ME.repetir(p.cfg, ME.descompacta(p.reg));
+    t(errors === 0, 'reproducció sense accions no vàlides');
+    t(JSON.stringify(s2.empreses.map(e => [e.diners, e.xp, e.hist.length, ME.valorEmpresa(s2, e).total])) === JSON.stringify(s.empreses.map(e => [e.diners, e.xp, e.hist.length, ME.valorEmpresa(s, e).total])), 'reproducció exacta del resultat');
     t(JSON.stringify(s2.llicons) === JSON.stringify(s.llicons), 'reproducció de les respostes de les lliçons');
-    t(json.length < 30000, 'registre prou petit per enviar-lo com a codi (' + json.length + ' caràcters sense comprimir)');
+    t(json.length < 60000, 'registre prou petit per enviar-lo (' + json.length + ' caràcters sense comprimir)');
   });
-  // Un registre manipulat no dona el mateix resultat: la reproducció detecta accions impossibles
-  {
-    const p = { cfg: atrevit.s.config, reg: ME.compacta(atrevit.s.reg) };
-    p.reg.splice(3, 0, ['l', 0, 900000], ['k', 0], ['k', 0], ['k', 0]);
-    t(ME.repetir(p.cfg, ME.descompacta(p.reg)).errors > 0, 'una acció impossible afegida al registre es detecta');
-  }
-  // Lliçons
+  // Manipulació: vendre més del que hi ha a l'estoc
+  const p = JSON.parse(JSON.stringify({ cfg: b.config, reg: ME.compacta(b.reg) }));
+  const k = p.reg.findIndex(x => x[0] === 't'); p.reg[k][1] = p.reg[k][1].map(x => [x[0], 99, 0]);
+  t(ME.repetir(p.cfg, ME.descompacta(p.reg)).errors > 0, 'uns resultats inventats es detecten');
+}
+
+/* ---------- Lliçons ---------- */
+{
+  const s = juga({ llavor: 31 }, ESTR.equilibrada), e = s.empreses[0], resp = s.llicons[0] || {};
   t(LL.llicons.length >= 15 && new Set(LL.llicons.map(l => l.id)).size === LL.llicons.length, 'lliçons amb identificador únic');
-  t(LL.llicons.every(l => l.ra && /RA\d/.test(l.ra) && l.cos.length && l.pregunta.o.length === 4), 'cada lliçó té RA, contingut i quatre opcions');
-  const s = prudent.s, e = s.empreses[0], resp = s.llicons[0];
+  t(LL.llicons.every(l => /RA\d/.test(l.ra) && l.cos.length && l.pregunta.o.length === 4), 'cada lliçó té RA, contingut i quatre opcions');
   t(LL.llicons.every(l => { try { return typeof l.exemple(s, e, ME, MD) === 'string'; } catch (x) { console.log(l.id, x.message); return false; } }), 'els exemples de les lliçons funcionen amb dades reals');
-  t(Object.keys(resp).length === LL.llicons.length, 'al llarg de 8 rondes es desbloquegen totes les lliçons');
-  t(!ME.accio(s, { tipus: 'llico', emp: 0, llico: 'mix', resposta: 0 }).ok, 'una lliçó no es pot respondre dues vegades');
+  t(Object.keys(resp).length === LL.llicons.length, 'en 8 dies es desbloquegen totes les lliçons (' + Object.keys(resp).length + ')');
   t(Object.values(resp).some(x => !x.ok) && Object.values(resp).some(x => x.ok), 'es registren encerts i errors');
 }
+
+/* ---------- Equilibri ---------- */
+{
+  const N = 24, mitj = (est, hab) => { let v = 0, pos = 0; for (let k = 1; k <= N; k++) { const s = juga({ llavor: k * 101 }, est, hab); v += ME.valorEmpresa(s, s.empreses[0]).total; pos += ME.classificacio(s).findIndex(x => x.e.humana) + 1; } return { v: R(v / N), pos: pos / N }; };
+  const bona = mitj(ESTR.equilibrada, 0.95), normal = mitj(ESTR.equilibrada, 0.8), res = mitj(ESTR.res, 0.8), cara = mitj(ESTR.cara, 0.9), radio = mitj(ESTR.radio, 0.9);
+  console.log('Valor i posició mitjana · bona estratègia i bona atenció:', bona.v, bona.pos.toFixed(2), '· bona estratègia i atenció normal:', normal.v, normal.pos.toFixed(2), '· no fer res:', res.v, res.pos.toFixed(2), '· preus molt cars:', cara.v, '· molta promoció:', radio.v);
+  t(bona.v > normal.v && normal.v > res.v, 'jugar millor dona més valor');
+  t(bona.pos <= 2, 'qui juga bé pot guanyar les rivals');
+  t(res.pos >= 3, 'no fer res queda a la cua del carrer');
+  t(cara.v < res.v && radio.v < normal.v, 'apujar molt els preus o gastar molt en promoció no és una drecera');
+}
+
 console.log(ko ? '✘ ' + ko + ' errors · ' + ok + ' correctes' : '✔ ' + ok + ' comprovacions del motor de Mercadeja');
 process.exit(ko ? 1 : 0);
