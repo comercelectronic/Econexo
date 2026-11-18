@@ -5,30 +5,36 @@
      En acabar, crida opcions.onFi(res) amb [idClient, unitatsVenudes, motiu] per a cada client. */
 (function () {
   const MD = window.MD, ME = window.ME, I = window.MI.icon;
-  const W = 1000, H = 640;
+  const H = 640;
+  let W = 1000;
   const esc = (t) => String(t == null ? '' : t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
   const preuTxt = (v) => (Math.round(v * 100) / 100).toLocaleString('ca-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
 
-  /* ---------- Plànol ---------- */
-  const SLOTS = [[320, 230], [500, 230], [680, 230], [320, 380], [500, 380], [680, 380]]; // centre-x i y superior de cada prestatgeria
+  /* ---------- Plànol (creix amb la fase de l'empresa) ---------- */
   const PW = 150, PH = 70;
-  const N = { // nodes per on es camina
-    porta: [130, 168], dins: [130, 215], c1: [200, 215], cA: [200, 325], pq: [200, 395], cB: [200, 475], cC: [200, 565],
-    sA0: [320, 325], sA1: [500, 325], sA2: [680, 325], rA: [790, 325], sB0: [320, 475], sB1: [500, 475], sB2: [680, 475], rB: [790, 475], rC: [790, 565],
-    caixa: [105, 268], magatzem: [930, 565], paquets: [895, 345]
-  };
-  const ARESTES = [['porta', 'dins'], ['dins', 'c1'], ['dins', 'caixa'], ['c1', 'cA'], ['cA', 'pq'], ['pq', 'cB'], ['cB', 'cC'], ['cC', 'rC'], ['rC', 'magatzem'], ['rC', 'rB'], ['rB', 'rA'], ['rA', 'paquets'],
-    ['cA', 'sA0'], ['sA0', 'sA1'], ['sA1', 'sA2'], ['sA2', 'rA'], ['cB', 'sB0'], ['sB0', 'sB1'], ['sB1', 'sB2'], ['sB2', 'rB']];
-  const VEI = {}; Object.keys(N).forEach(k => { VEI[k] = []; });
-  ARESTES.forEach(([a, b]) => { VEI[a].push(b); VEI[b].push(a); });
+  let SLOTS = [], N = {}, VEI = {}, COLS = 3, CAP = 12;
+  function aplicaPla(e) {
+    const F = ME.faseDe(e); COLS = Math.ceil(F.slots / 2); CAP = F.cap; W = 1000 + (COLS - 3) * 180;
+    SLOTS = []; for (let r = 0; r < 2; r++) for (let c = 0; c < COLS; c++) SLOTS.push([320 + c * 180, r ? 380 : 230]);
+    const xr = 320 + (COLS - 1) * 180 + 110;
+    N = { porta: [130, 168], dins: [130, 215], c1: [200, 215], cA: [200, 325], pq: [200, 395], cB: [200, 475], cC: [200, 565],
+      rA: [xr, 325], rB: [xr, 475], rC: [xr, 565], caixa: [105, 268], caixa2: [160, 262], magatzem: [W - 70, 565], paquets: [W - 105, 345] };
+    const ar = [['porta', 'dins'], ['dins', 'c1'], ['dins', 'caixa'], ['dins', 'caixa2'], ['c1', 'cA'], ['cA', 'pq'], ['pq', 'cB'], ['cB', 'cC'], ['cC', 'rC'], ['rC', 'magatzem'], ['rC', 'rB'], ['rB', 'rA'], ['rA', 'paquets']];
+    for (let c = 0; c < COLS; c++) {
+      N['sA' + c] = [320 + c * 180, 325]; N['sB' + c] = [320 + c * 180, 475];
+      ar.push([c ? 'sA' + (c - 1) : 'cA', 'sA' + c], [c ? 'sB' + (c - 1) : 'cB', 'sB' + c]);
+    }
+    ar.push(['sA' + (COLS - 1), 'rA'], ['sB' + (COLS - 1), 'rB']);
+    VEI = {}; Object.keys(N).forEach(k => { VEI[k] = []; }); ar.forEach(([x, y]) => { VEI[x].push(y); VEI[y].push(x); });
+  }
   const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
   function cami(de, a) { // Dijkstra entre nodes
     const d = {}, prev = {}, q = new Set(Object.keys(N)); Object.keys(N).forEach(k => { d[k] = Infinity; }); d[de] = 0;
     while (q.size) { let u = null; q.forEach(k => { if (u == null || d[k] < d[u]) u = k; }); q.delete(u); if (u === a) break; VEI[u].forEach(v => { const nd = d[u] + dist(N[u], N[v]); if (nd < d[v]) { d[v] = nd; prev[v] = u; } }); }
     const out = []; let k = a; while (k) { out.unshift(k); k = prev[k]; } return out;
   }
-  const nodeProper = (x, y) => Object.keys(N).filter(k => !['magatzem', 'paquets', 'caixa', 'porta'].includes(k)).sort((a, b) => dist(N[a], [x, y]) - dist(N[b], [x, y]))[0];
-  const frontSlot = (i) => (i < 3 ? 'sA' : 'sB') + (i % 3);
+  const nodeProper = (x, y) => Object.keys(N).filter(k => !['magatzem', 'paquets', 'caixa', 'caixa2', 'porta'].includes(k)).sort((a, b) => dist(N[a], [x, y]) - dist(N[b], [x, y]))[0];
+  const frontSlot = (i) => (i < COLS ? 'sA' : 'sB') + (i % COLS);
   const CUA = [[105, 398], [105, 440], [105, 482], [105, 524], [150, 560], [150, 602], [105, 602], [60, 560], [60, 520]];
 
   /* ---------- Dibuixos ---------- */
@@ -54,6 +60,7 @@
     if (tipus === 'ninot') { samarreta = '#334155'; davantal = '<rect x="13" y="30" width="14" height="17" rx="3" fill="#F5C542"/><circle cx="20" cy="37" r="2.5" fill="#1D293B"/>'; }
     if (tipus === 'dependenta') { samarreta = '#334155'; davantal = '<rect x="13" y="30" width="14" height="17" rx="3" fill="#4EA5F5"/>'; }
     if (tipus === 'repartidor') { samarreta = '#36B37E'; }
+    if (tipus === 'reposador') { samarreta = '#334155'; davantal = '<rect x="13" y="30" width="14" height="17" rx="3" fill="#36B37E"/>'; }
     const cabell = tipus === 'ninot' ? `<path d="M10 14q10-11 20 0v2H10z" fill="#F5C542"/><rect x="24" y="13" width="10" height="3" rx="1.5" fill="#F5C542"/>`
       : st === 0 ? `<path d="M11 15q9-12 18 0q-3-4-9-4t-9 4z" fill="${hc}"/>` : st === 1 ? `<path d="M10 17q10-14 20 0l1 10q-2-8-4-12q-6 2-13 0q-2 4-4 12z" fill="${hc}"/>` : `<circle cx="20" cy="9" r="5" fill="${hc}"/><path d="M11 15q9-10 18 0q-3-3-9-3t-9 3z" fill="${hc}"/>`;
     return `<svg class="pers" width="40" height="64" viewBox="0 0 40 64" aria-hidden="true">
@@ -83,17 +90,18 @@
 
   /* ---------- Construcció de l'escena ---------- */
   function construeix(el, s, mode) {
-    const e = ME.jugador(s);
+    const e = ME.jugador(s), F = ME.faseDe(e); aplicaPla(e);
     el.innerHTML = `<div class="esc"><div class="esc-in" style="width:${W}px;height:${H}px">
       <svg width="0" height="0" style="position:absolute"><defs><pattern id="maons" width="20" height="10" patternUnits="userSpaceOnUse"><path d="M0 10h20M10 0v5M0 5h20M20 5v5" stroke="#0f1724" stroke-width="1"/></pattern></defs></svg>
-      <div class="carrer"><div class="cel"></div>${s.empreses.slice(1).map((r, i) => facanaRival(r, i)).join('')}<div class="vorera"></div>
+      <div class="carrer" style="width:${W}px"><div class="cel"></div>${s.empreses.slice(1).map((r, i) => facanaRival(r, i)).join('')}<div class="vorera"></div>
         <div class="arbre" style="left:20px"></div><div class="arbre" style="left:400px"></div><div class="fanal" style="left:455px"></div></div>
-      <div class="paret"><div class="porta-b"></div><div class="aparador ${e.aparador ? 'tema-' + e.aparador : ''}">${aparadorHTML(e)}</div><div class="rotol">${esc(e.nom)}</div></div>
-      <div class="terra"></div>
-      ${SLOTS.map((_, i) => i < e.nPrest ? prestatgeHTML(i, e.prestatges[i], s, mode) : (mode === 'plan' ? `<button class="prest nou" data-nou="${i}" style="left:${SLOTS[i][0] - PW / 2}px;top:${SLOTS[i][1]}px;width:${PW}px;height:${PH}px">${I('mes')}<span>Prestatgeria nova<br>${MD.PRESTATGE_COST} €</span></button>` : '')).join('')}
+      <div class="paret" style="width:${W}px"><div class="porta-b"></div><div class="aparador ${e.aparador ? 'tema-' + e.aparador : ''}">${aparadorHTML(e)}</div><div class="rotol">${esc(e.nom)}</div></div>
+      <div class="terra" style="width:${W}px"></div><div class="fase-cartell">${I(F.icona)} ${esc(F.nom)}</div>
+      ${e.millores && e.millores.nevera ? '<div class="nevera" title="Nevera de frescos">❄</div>' : ''}
+      ${SLOTS.slice(0, F.slots).map((_, i) => i < e.nPrest ? prestatgeHTML(i, e.prestatges[i], s, mode) : (mode === 'plan' ? `<button class="prest nou" data-nou="${i}" style="left:${SLOTS[i][0] - PW / 2}px;top:${SLOTS[i][1]}px;width:${PW}px;height:${PH}px">${I('mes')}<span>Prestatgeria nova<br>${MD.PRESTATGE_COST} €</span></button>` : '')).join('')}
       <button class="taulell" aria-label="Taulell: cobrar els clients"><svg viewBox="0 0 130 64" width="130" height="64" aria-hidden="true"><rect x="0" y="8" width="130" height="50" rx="8" fill="#8a5a33"/><rect x="0" y="4" width="130" height="14" rx="6" fill="#b07a4a"/><rect x="74" y="-10" width="40" height="22" rx="4" fill="#1f2937"/><rect x="80" y="-6" width="28" height="8" rx="2" fill="#36B37E"/></svg><span class="lbl">Taulell</span></button>
-      <button class="tauleta ${e.serveis.online ? '' : 'off'}" aria-label="Comandes en línia"><svg viewBox="0 0 130 70" width="130" height="70" aria-hidden="true"><rect x="0" y="12" width="130" height="50" rx="6" fill="#6b7a90"/><rect x="0" y="8" width="130" height="12" rx="5" fill="#8b9bb2"/><rect x="12" y="-6" width="40" height="28" rx="4" fill="#0f1724"/><rect x="16" y="-2" width="32" height="20" rx="2" fill="#4EA5F5"/><rect x="70" y="0" width="22" height="18" rx="2" fill="#c9a66b"/><rect x="96" y="4" width="22" height="16" rx="2" fill="#b98f55"/></svg><span class="lbl">Comandes en línia</span><span class="badge" hidden>0</span></button>
-      <button class="magatzem" aria-label="Magatzem"><span>MAGATZEM</span></button>
+      <button class="tauleta ${e.serveis.online ? '' : 'off'}" style="left:${W - 170}px" aria-label="Comandes en línia"><svg viewBox="0 0 130 70" width="130" height="70" aria-hidden="true"><rect x="0" y="12" width="130" height="50" rx="6" fill="#6b7a90"/><rect x="0" y="8" width="130" height="12" rx="5" fill="#8b9bb2"/><rect x="12" y="-6" width="40" height="28" rx="4" fill="#0f1724"/><rect x="16" y="-2" width="32" height="20" rx="2" fill="#4EA5F5"/><rect x="70" y="0" width="22" height="18" rx="2" fill="#c9a66b"/><rect x="96" y="4" width="22" height="16" rx="2" fill="#b98f55"/></svg><span class="lbl">${e.millores && e.millores.online ? 'Logística automàtica' : 'Comandes en línia'}</span><span class="badge" hidden>0</span></button>
+      <button class="magatzem" style="left:${W - 38}px" aria-label="Magatzem"><span>MAGATZEM</span></button>
       <div class="ags"></div><div class="fx"></div>
     </div></div>`;
     const inn = el.querySelector('.esc-in'), cont = el.querySelector('.esc');
@@ -115,10 +123,10 @@
   // Contingut d'una prestatgeria: productes a la vista, preu, estoc
   function pintaPrest(btn, x, unitats, magatzem, mode) {
     if (!x || !x.prod) { btn.innerHTML = `<span class="buida">${mode === 'plan' ? 'Tria un producte' : 'Buida'}</span>`; btn.classList.add('buit'); return; }
-    const P = MD.productes[x.prod], n = Math.min(8, Math.ceil(unitats * 8 / MD.PRESTATGE_MAX));
+    const P = MD.productes[x.prod], n = Math.min(8, Math.ceil(unitats * 8 / CAP));
     btn.classList.remove('buit');
     btn.classList.toggle('esgotat', mode !== 'plan' && unitats <= 0);
-    btn.classList.toggle('baix', mode !== 'plan' && unitats > 0 && unitats <= 2);
+    btn.classList.toggle('baix', mode !== 'plan' && unitats > 0 && unitats <= Math.max(2, Math.round(CAP * 0.2)));
     btn.innerHTML = `<svg class="fusta" viewBox="0 0 150 70" width="150" height="70" aria-hidden="true"><rect x="0" y="0" width="150" height="70" rx="6" fill="#6d4a2b"/><rect x="4" y="30" width="142" height="5" fill="#8a5f38"/><rect x="4" y="62" width="142" height="5" fill="#8a5f38"/></svg>
       <span class="items">${Array.from({ length: n }, (_, k) => `<i style="left:${8 + (k % 4) * 34}px;top:${k < 4 ? 4 : 36}px">${iconaProd(x.prod, 26)}</i>`).join('')}</span>
       <span class="nomp">${esc(P.nom)}</span><span class="preu">${preuTxt(x.preu)}</span>
@@ -130,7 +138,7 @@
   /* ---------- Botiga tancada (planificació) ---------- */
   function estatica(el, s, op) {
     const e = ME.jugador(s), { ro } = construeix(el, s, 'plan');
-    el.querySelectorAll('.prest[data-slot]').forEach(b => { const i = +b.dataset.slot, x = e.prestatges[i]; pintaPrest(b, x, x && x.prod ? Math.min(MD.PRESTATGE_MAX, e.estoc[x.prod] || 0) : 0, x && x.prod ? (e.estoc[x.prod] || 0) : 0, 'plan'); b.onclick = () => op.onPrestatge && op.onPrestatge(i); });
+    el.querySelectorAll('.prest[data-slot]').forEach(b => { const i = +b.dataset.slot, x = e.prestatges[i]; pintaPrest(b, x, x && x.prod ? Math.min(CAP, e.estoc[x.prod] || 0) : 0, x && x.prod ? (e.estoc[x.prod] || 0) : 0, 'plan'); b.onclick = () => op.onPrestatge && op.onPrestatge(i); });
     el.querySelectorAll('[data-nou]').forEach(b => { b.onclick = () => op.onNou && op.onNou(); });
     el.querySelector('.taulell').onclick = () => op.onTaulell && op.onTaulell();
     el.querySelector('.tauleta').onclick = () => op.onTauleta && op.onTauleta();
@@ -138,7 +146,10 @@
     el.querySelector('.aparador').onclick = () => op.onAparador && op.onAparador();
     // Ninot quiet darrere el taulell i, si n'hi ha, la dependenta
     const ags = el.querySelector('.ags');
-    ags.innerHTML = `<div class="ag ninot" style="transform:translate(${N.caixa[0] + 40}px,${N.caixa[1] - 64}px)">${persona('ninot', 0)}</div>` + (e.serveis.dependent ? `<div class="ag" style="transform:translate(${N.caixa[0] - 20}px,${N.caixa[1] - 64}px)">${persona('dependenta', 5)}</div>` : '');
+    const pos = (x, y) => `style="transform:translate(${x - 20}px,${y - 64}px)"`;
+    ags.innerHTML = `<div class="ag ninot" ${pos(N.dins[0] + 40, N.dins[1] + 20)}>${persona('ninot', 0)}</div>`
+      + Array.from({ length: e.personal.caixera }, (_, k) => `<div class="ag" ${pos(N[k ? 'caixa2' : 'caixa'][0], N[k ? 'caixa2' : 'caixa'][1])}>${persona('dependenta', 5 + k * 7)}</div>`).join('')
+      + Array.from({ length: e.personal.reposador }, (_, k) => `<div class="ag" ${pos(W - 130 - k * 40, 565)}>${persona('reposador', 11 + k * 5)}</div>`).join('');
     return { destrueix: () => ro.disconnect() };
   }
 
@@ -150,7 +161,7 @@
     let temps = 0, vel = 1, pausa = !!op.pausa, auto = !!op.auto, acabat = false, raf = 0, darrerT = 0;
     // Estoc: a la prestatgeria (com a molt 8) i al magatzem
     const prest = [], mag = Object.assign({}, d.estocInici);
-    for (let i = 0; i < e.nPrest; i++) { const x = e.prestatges[i]; const u = x && x.prod ? Math.min(MD.PRESTATGE_MAX, mag[x.prod] || 0) : 0; if (x && x.prod) mag[x.prod] -= u; prest.push(u); }
+    for (let i = 0; i < e.nPrest; i++) { const x = e.prestatges[i]; const u = x && x.prod ? Math.min(CAP, mag[x.prod] || 0) : 0; if (x && x.prod) mag[x.prod] -= u; prest.push(u); }
     const slotDe = (p) => e.prestatges.slice(0, e.nPrest).findIndex(x => x && x.prod === p);
     const btnPrest = [...inn.querySelectorAll('.prest[data-slot]')];
     const pinta = (i) => { const x = e.prestatges[i]; pintaPrest(btnPrest[i], x, prest[i], x && x.prod ? mag[x.prod] || 0 : 0, 'dia'); };
@@ -164,7 +175,7 @@
     function nouAgent(tipus, look, seg, x, y) {
       const div = document.createElement('div'); div.className = 'ag ' + tipus; div.innerHTML = persona(tipus, look, seg) + (seg ? `<span class="xapa" style="background:${MD.segments[seg].color}">${I(MD.segments[seg].icona)}</span><span class="pac"><i></i></span>` : '') + '<span class="carrega"></span><span class="bomb" hidden></span>';
       ags.appendChild(div);
-      const a = { tipus, x, y, path: [], div, v: tipus === 'ninot' ? 300 : tipus === 'repartidor' ? 220 : 150, timer: 0, estat: 'quiet', bombT: 0 };
+      const a = { tipus, x, y, path: [], div, v: tipus === 'ninot' ? 300 : tipus === 'reposador' ? 230 : tipus === 'repartidor' ? 220 : 150, timer: 0, estat: 'quiet', bombT: 0 };
       agents.push(a); posa(a); return a;
     }
     function posa(a) { a.div.style.transform = `translate(${a.x - 20}px,${a.y - 64}px)`; a.div.style.zIndex = Math.round(a.y); }
@@ -180,12 +191,15 @@
     const treu = (a) => { a.div.remove(); agents.splice(agents.indexOf(a), 1); };
     function monedes(x, y, t, cls) { const m = document.createElement('div'); m.className = 'fxm ' + (cls || ''); m.style.left = x + 'px'; m.style.top = y + 'px'; m.textContent = t; fx.appendChild(m); setTimeout(() => m.remove(), 1200); }
 
-    // Ninot i dependenta
-    const ninot = nouAgent('ninot', 0, null, N.caixa[0], N.caixa[1]);
-    ninot.tasca = { tipus: 'cobrar' }; ninot.fase = 'anar'; ninot.persist = 'cobrar';
-    let dependenta = null; if (e.serveis.dependent) { dependenta = nouAgent('dependenta', 5, null, N.caixa[0] - 40, N.caixa[1]); ninot.tasca = null; ninot.persist = null; ninot.x = N.dins[0] + 30; ninot.y = N.dins[1] + 30; posa(ninot); }
+    // Ninot, personal de caixa i reposadors
+    const F = ME.faseDe(e), nCaixes = e.personal.caixera, totesCaixes = nCaixes >= F.caixes;
+    const caixaNinot = nCaixes ? 'caixa2' : 'caixa';
+    const ninot = nouAgent('ninot', 0, null, N[caixaNinot][0], N[caixaNinot][1]);
+    if (!totesCaixes) { ninot.tasca = { tipus: 'cobrar' }; ninot.fase = 'anar'; ninot.persist = 'cobrar'; } else { ninot.x = N.dins[0] + 30; ninot.y = N.dins[1] + 30; posa(ninot); }
+    const caixers = Array.from({ length: nCaixes }, (_, k) => ({ ag: nouAgent('dependenta', 5 + k * 7, null, N[k ? 'caixa2' : 'caixa'][0], N[k ? 'caixa2' : 'caixa'][1]), vel: 1.4, act: null, t: 0 }));
+    const srvNinot = { ag: ninot, vel: 1, act: null, t: 0, ninot: true };
+    const reposadors = Array.from({ length: e.personal.reposador }, (_, k) => { const r = nouAgent('reposador', 11 + k * 5, null, W - 130 - k * 40, 565); r.tasca = null; return r; });
     const cua = [];  // agents a la cua del taulell
-    let cobrant = null, cobrarT = 0;
     const online = []; // comandes pendents
     let empaquetant = null, empT = 0;
     const tauleta = inn.querySelector('.tauleta'), badge = tauleta.querySelector('.badge');
@@ -196,13 +210,14 @@
       const cur = ninot.tasca;
       if (cur && cur.tipus === t.tipus && (t.tipus !== 'reposar' || cur.slot === t.slot)) return; // ja ho està fent
       const avis = (x) => { if (!silenci && op.avis) op.avis(x); };
-      if (t.tipus === 'cobrar' && dependenta) { avis('La dependenta ja cobra al taulell. Tu pots reposar i preparar comandes.'); return; }
-      if (t.tipus === 'reposar') { const x = e.prestatges[t.slot]; if (!x || !x.prod) return; if ((mag[x.prod] || 0) <= 0) { avis('No queda ' + MD.productes[x.prod].nom.toLowerCase() + ' al magatzem. Demà en pots demanar més.'); return; } if (prest[t.slot] >= MD.PRESTATGE_MAX) { avis('Aquesta prestatgeria ja és plena.'); return; } }
+      if (t.tipus === 'cobrar' && totesCaixes) { avis('Ja hi ha personal a totes les caixes. Tu pots reposar i preparar comandes.'); return; }
+      if (t.tipus === 'empaquetar' && e.millores.online) { avis('La logística del magatzem central ja prepara les comandes en línia.'); return; }
+      if (t.tipus === 'reposar') { const x = e.prestatges[t.slot]; if (!x || !x.prod) return; if ((mag[x.prod] || 0) <= 0) { avis('No queda ' + MD.productes[x.prod].nom.toLowerCase() + ' al magatzem. Demà en pots demanar més.'); return; } if (prest[t.slot] >= CAP) { avis('Aquesta prestatgeria ja és plena.'); return; } }
       if (t.tipus === 'empaquetar' && !e.serveis.online) { avis('No tens botiga en línia. La pots activar a la planificació (Distribució).'); return; }
       if (ninot.porta) { mag[ninot.porta.prod] += ninot.porta.n; ninot.porta = null; ninot.div.querySelector('.carrega').innerHTML = ''; }
       if (t.tipus !== 'reposar') ninot.persist = t.tipus;
       ninot.tasca = t; ninot.fase = 'anar';
-      const desti = t.tipus === 'cobrar' ? ['caixa'] : t.tipus === 'empaquetar' ? ['paquets'] : ['magatzem'];
+      const desti = t.tipus === 'cobrar' ? [caixaNinot] : t.tipus === 'empaquetar' ? ['paquets'] : ['magatzem'];
       viaNodes(ninot, desti[0]);
       marcaSeleccio();
     }
@@ -227,25 +242,42 @@
       const arribat = mou(ninot, dt);
       if (!arribat) return;
       if (t.tipus === 'reposar') {
-        const x = e.prestatges[t.slot];
-        if (ninot.fase === 'anar') { ninot.fase = 'agafa'; ninot.timer = 0.45; return; }
-        if (ninot.fase === 'agafa') { ninot.timer -= dt; if (ninot.timer > 0) return; const n = Math.min(mag[x.prod] || 0, MD.PRESTATGE_MAX); if (!n) { ninot.tasca = null; return; } mag[x.prod] -= n; ninot.porta = { prod: x.prod, n }; ninot.div.querySelector('.carrega').innerHTML = `<svg viewBox="0 0 24 18" width="24" height="18"><rect width="24" height="18" rx="2" fill="#c9a66b"/></svg>`; ninot.fase = 'porta'; viaNodes(ninot, frontSlot(t.slot)); pinta(t.slot); return; }
-        if (ninot.fase === 'porta') { ninot.fase = 'omple'; ninot.timer = 0.45; return; }
-        if (ninot.fase === 'omple') { ninot.timer -= dt; if (ninot.timer > 0) return; const cap = MD.PRESTATGE_MAX - prest[t.slot], n = Math.min(cap, ninot.porta.n); prest[t.slot] += n; mag[x.prod] += ninot.porta.n - n; ninot.porta = null; ninot.div.querySelector('.carrega').innerHTML = ''; pinta(t.slot); monedes(SLOTS[t.slot][0], SLOTS[t.slot][1], '+' + n, 'repos');
-          const seg = ninot.persist && !(ninot.persist === 'cobrar' && dependenta) ? ninot.persist : null; ninot.tasca = null; if (seg) ordena({ tipus: seg }); else marcaSeleccio(); return; }
+        if (!pasReposar(ninot, dt, true)) return;
+        const seg = ninot.persist && !(ninot.persist === 'cobrar' && totesCaixes) ? ninot.persist : null; ninot.tasca = null; if (seg) ordena({ tipus: seg }); else marcaSeleccio(); return;
       }
       // cobrar i empaquetar: quan hi és, s'hi queda
+    }
+    // Reposar una prestatgeria (ninot o reposador): magatzem → caixa → prestatgeria. Retorna true quan acaba.
+    function pasReposar(ag, dt, jaMogut) {
+      const t = ag.tasca, x = e.prestatges[t.slot];
+      if (!jaMogut && !mou(ag, dt)) return false;
+      if (ag.fase === 'anar') { ag.fase = 'agafa'; ag.timer = 0.45; return false; }
+      if (ag.fase === 'agafa') { ag.timer -= dt; if (ag.timer > 0) return false; const n = Math.min(mag[x.prod] || 0, CAP - prest[t.slot]); if (n <= 0) return true; mag[x.prod] -= n; ag.porta = { prod: x.prod, n }; ag.div.querySelector('.carrega').innerHTML = `<svg viewBox="0 0 24 18" width="24" height="18"><rect width="24" height="18" rx="2" fill="#c9a66b"/></svg>`; ag.fase = 'porta'; viaNodes(ag, frontSlot(t.slot)); pinta(t.slot); return false; }
+      if (ag.fase === 'porta') { ag.fase = 'omple'; ag.timer = 0.45; return false; }
+      if (ag.fase === 'omple') { ag.timer -= dt; if (ag.timer > 0) return false; const n = Math.min(CAP - prest[t.slot], ag.porta.n); prest[t.slot] += n; mag[x.prod] += ag.porta.n - n; ag.porta = null; ag.div.querySelector('.carrega').innerHTML = ''; pinta(t.slot); monedes(SLOTS[t.slot][0], SLOTS[t.slot][1], '+' + n, 'repos'); return true; }
+      return true;
+    }
+    const enCurs = () => new Set([ninot].concat(reposadors).filter(a => a.tasca && a.tasca.tipus === 'reposar').map(a => a.tasca.slot));
+    function feinaReposadors(dt) {
+      reposadors.forEach(r => {
+        if (r.tasca) { if (pasReposar(r, dt)) { r.tasca = null; vesA(r, [[W - 130, 565]]); } return; }
+        mou(r, dt);
+        const ocupats = enCurs();
+        const o = btnPrest.map((_, i) => ({ i, x: e.prestatges[i] })).filter(o => o.x && o.x.prod && !ocupats.has(o.i) && prest[o.i] <= CAP * 0.45 && (mag[o.x.prod] || 0) > 0).sort((a, b) => prest[a.i] - prest[b.i])[0];
+        if (o) { r.tasca = { tipus: 'reposar', slot: o.i }; r.fase = 'anar'; viaNodes(r, 'magatzem'); }
+      });
     }
     const aLaCaixa = () => ninot.tasca && ninot.tasca.tipus === 'cobrar' && !ninot.path.length;
     const aPaquets = () => ninot.tasca && ninot.tasca.tipus === 'empaquetar' && !ninot.path.length;
     let autoT = 0;
     function autoDecideix(dt) {
       autoT -= dt; if (autoT > 0) return; autoT = 0.3;
-      const necessitat = btnPrest.map((_, i) => ({ i, x: e.prestatges[i] })).filter(o => o.x && o.x.prod && prest[o.i] <= 4 && (mag[o.x.prod] || 0) > 0).sort((a, b) => prest[a.i] - prest[b.i])[0];
-      if (!dependenta && cua.length >= 3) return ordena({ tipus: 'cobrar' }, true);
+      const ocupats = enCurs(); if (ninot.tasca && ninot.tasca.tipus === 'reposar') ocupats.delete(ninot.tasca.slot);
+      const necessitat = btnPrest.map((_, i) => ({ i, x: e.prestatges[i] })).filter(o => o.x && o.x.prod && !ocupats.has(o.i) && prest[o.i] <= Math.max(4, CAP * 0.3) && (mag[o.x.prod] || 0) > 0).sort((a, b) => prest[a.i] - prest[b.i])[0];
+      if (!totesCaixes && cua.length >= (nCaixes ? 2 : 3)) return ordena({ tipus: 'cobrar' }, true);
       if (necessitat) return ordena({ tipus: 'reposar', slot: necessitat.i }, true);
-      if (online.length && e.serveis.online) return ordena({ tipus: 'empaquetar' }, true);
-      if (!dependenta) return ordena({ tipus: 'cobrar' }, true);
+      if (online.length && e.serveis.online && !e.millores.online) return ordena({ tipus: 'empaquetar' }, true);
+      if (!totesCaixes && (!nCaixes || cua.length >= 1)) return ordena({ tipus: 'cobrar' }, true);
     }
 
     // Clients
@@ -277,7 +309,7 @@
       if (a.estat === 'agafa') {
         a.timer -= dt; if (a.timer > 0) return;
         const n = Math.min(c.qty, prest[a.slot]);
-        if (n <= 0) { a.espera += dt; if (a.espera === dt) bombolla(a, '...', ''); if (a.espera > (ninot.tasca && ninot.tasca.tipus === 'reposar' && ninot.tasca.slot === a.slot ? 7 : 3)) { bombolla(a, frasePerdut(c, 3), 'neg'); registra(c, 0, 3); surt(a); } return; }
+        if (n <= 0) { a.espera += dt; if (a.espera === dt) bombolla(a, '...', ''); if (a.espera > (enCurs().has(a.slot) ? 7 : 3)) { bombolla(a, frasePerdut(c, 3), 'neg'); registra(c, 0, 3); surt(a); } return; }
         prest[a.slot] -= n; a.items = n; pinta(a.slot);
         a.div.querySelector('.carrega').innerHTML = iconaProd(c.prod, 18) + (n > 1 ? `<b>×${n}</b>` : '');
         a.estat = 'cua'; a.paciencia = c.pac; cua.push(a); viaNodes(a, 'pq', CUA[Math.min(cua.length - 1, CUA.length - 1)]);
@@ -287,7 +319,7 @@
         const pos = cua.indexOf(a), lloc = CUA[Math.min(pos, CUA.length - 1)];
         if (!a.path.length && dist([a.x, a.y], lloc) > 3) vesA(a, [lloc]);
         mou(a, dt);
-        if (cobrant !== a) {
+        if (!a.servint) {
           a.paciencia -= dt;
           const f = Math.max(0, a.paciencia / c.pac); a.div.querySelector('.pac i').style.width = (f * 100) + '%'; a.div.classList.toggle('impacient', f < 0.35); a.div.classList.add('mostraPac');
           if (a.paciencia <= 0) { cua.splice(pos, 1); prest[a.slot] += a.items; pinta(a.slot); a.items = 0; a.div.querySelector('.carrega').innerHTML = ''; bombolla(a, frasePerdut(c, 4), 'neg'); registra(c, 0, 4); surt(a); }
@@ -303,19 +335,31 @@
       vesA(a, p);
     }
     function cobra(dt) {
-      const caixer = dependenta ? 'dependenta' : aLaCaixa() ? 'ninot' : null;
-      const cap = cua[0];
-      if (!caixer || !cap || dist([cap.x, cap.y], CUA[0]) > 4) { cobrant = null; return; }
-      if (cobrant !== cap) { cobrant = cap; cobrarT = (0.75 + 0.15 * cap.items) * (caixer === 'dependenta' ? 1.4 : 1); cap.div.classList.add('cobrant'); }
-      cobrarT -= dt;
-      if (cobrarT <= 0) {
-        cua.shift(); cap.div.classList.remove('cobrant', 'mostraPac', 'impacient');
-        const v = cap.items * preuDe(cap.c.prod); registra(cap.c, cap.items, 0); monedes(N.caixa[0] + 40, N.caixa[1] - 30, '+' + preuTxt(v), 'diners');
+      const servidors = caixers.slice(); if (aLaCaixa()) servidors.push(srvNinot); else if (srvNinot.act) { srvNinot.act.servint = false; srvNinot.act.div.classList.remove('cobrant'); srvNinot.act = null; }
+      servidors.forEach(sv => {
+        if (sv.act && !cua.includes(sv.act)) sv.act = null;
+        if (!sv.act) {
+          const k = cua.findIndex((c, i) => i < servidors.length && !c.servint && dist([c.x, c.y], CUA[i]) <= 4);
+          if (k < 0) return;
+          sv.act = cua[k]; sv.act.servint = true; sv.t = (0.75 + 0.15 * sv.act.items) * sv.vel; sv.act.div.classList.add('cobrant');
+        }
+        sv.t -= dt;
+        if (sv.t > 0) return;
+        const cap = sv.act; sv.act = null; cua.splice(cua.indexOf(cap), 1); cap.servint = false; cap.div.classList.remove('cobrant', 'mostraPac', 'impacient');
+        const v = cap.items * preuDe(cap.c.prod); registra(cap.c, cap.items, 0); monedes(sv.ag.x + 30, sv.ag.y - 30, '+' + preuTxt(v), 'diners');
         cap.div.querySelector('.carrega').innerHTML = '<svg viewBox="0 0 20 20" width="20" height="20"><path d="M3 7h14l-2 11H5z" fill="#f8fafc"/><path d="M7 7a3 3 0 0 1 6 0" stroke="#f8fafc" fill="none" stroke-width="2"/></svg>';
-        bombolla(cap, ['Gràcies!', 'Fins demà!', 'Molt bé!', 'Tornaré!'][cap.c.look % 4], 'pos'); cobrant = null; surt(cap);
-      }
+        bombolla(cap, ['Gràcies!', 'Fins demà!', 'Molt bé!', 'Tornaré!'][cap.c.look % 4], 'pos'); surt(cap);
+      });
+    }
+    function serveixComanda(c) {
+      const i = slotDe(c.prod);
+      let n = Math.min(c.qty, mag[c.prod] || 0); mag[c.prod] -= n;
+      if (n < c.qty && i >= 0) { const m = Math.min(c.qty - n, prest[i]); prest[i] -= m; n += m; }
+      if (i >= 0) pinta(i);
+      if (n > 0) { registra(c, n, 0); monedes(W - 105, 250, '+' + preuTxt(n * preuDe(c.prod)), 'diners'); repartidor(); } else registra(c, 0, 3);
     }
     function empaqueta(dt) {
+      if (e.millores.online) { for (let k = online.length - 1; k >= 0; k--) if (temps - online[k].t0 >= 2.5) { const o = online.splice(k, 1)[0]; serveixComanda(o.c); pintaTauleta(); } return; }
       if (!aPaquets() || !online.length) { empaquetant = null; return; }
       if (!empaquetant) { empaquetant = online[0]; empT = 1.4; }
       empT -= dt;
@@ -324,11 +368,11 @@
         let n = Math.min(c.qty, mag[c.prod] || 0); mag[c.prod] -= n;
         if (n < c.qty && i >= 0) { const m = Math.min(c.qty - n, prest[i]); prest[i] -= m; n += m; }
         if (i >= 0) pinta(i);
-        if (n > 0) { registra(c, n, 0); monedes(895, 250, '+' + preuTxt(n * preuDe(c.prod)), 'diners'); repartidor(); } else { registra(c, 0, 3); op.avis && op.avis('Comanda en línia sense estoc de ' + MD.productes[c.prod].nom.toLowerCase() + '.'); }
+        if (n > 0) { registra(c, n, 0); monedes(W - 105, 250, '+' + preuTxt(n * preuDe(c.prod)), 'diners'); repartidor(); } else { registra(c, 0, 3); op.avis && op.avis('Comanda en línia sense estoc de ' + MD.productes[c.prod].nom.toLowerCase() + '.'); }
         empaquetant = null; pintaTauleta();
       }
     }
-    function repartidor() { const a = nouAgent('repartidor', 9, null, W + 30, 300); a.estat = 'rep'; vesA(a, [[975, 300], [W + 40, 300]]); }
+    function repartidor() { const a = nouAgent('repartidor', 9, null, W + 30, 300); a.estat = 'rep'; vesA(a, [[W - 25, 300], [W + 40, 300]]); }
     function pintaTauleta() { badge.hidden = !online.length; badge.textContent = online.length; tauleta.classList.toggle('avisa', online.length > 0); }
     function arribaComanda(c) { online.push({ c, t0: temps }); pintaTauleta(); op.so && op.so('comanda'); }
     function visitaRival(v) {
@@ -344,8 +388,8 @@
       while (seguent < comandes.length && comandes[seguent].t <= fr) arribaComanda(comandes[seguent++]);
       while (segV < visites.length && visites[segV].t <= fr) visitaRival(visites[segV++]);
       // comandes caducades
-      for (let k = online.length - 1; k >= 0; k--) { if (online[k] !== empaquetant && temps - online[k].t0 > online[k].c.pac) { registra(online[k].c, 0, 4); online.splice(k, 1); pintaTauleta(); op.avis && op.avis('Una comanda en línia ha caducat: el client l\'ha anul·lada.'); } }
-      tascaNinot(dt); cobra(dt); empaqueta(dt);
+      for (let k = online.length - 1; k >= 0; k--) { if (!e.millores.online && online[k] !== empaquetant && temps - online[k].t0 > online[k].c.pac) { registra(online[k].c, 0, 4); online.splice(k, 1); pintaTauleta(); op.avis && op.avis('Una comanda en línia ha caducat: el client l\'ha anul·lada.'); } }
+      tascaNinot(dt); feinaReposadors(dt); cobra(dt); empaqueta(dt);
       agents.slice().forEach(a => {
         if (a.bombT > 0) { a.bombT -= dt; if (a.bombT <= 0) a.div.querySelector('.bomb').hidden = true; }
         if (a.c) actualitzaClient(a, dt);

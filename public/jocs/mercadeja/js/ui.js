@@ -127,7 +127,7 @@
         ${logo(true)}
         <p class="lema">Porta la teva botiga de barri: tria què vens i a quin preu, fes-te conèixer i atén els clients abans que marxin a la competència.</p>
         <nav class="menu" aria-label="Menú principal">
-          ${pot ? `<button class="btn prim big" data-a="continua">${I('play')} Continua <small>${esc(desat.empreses[0].nom)} · dia ${desat.ronda} de ${desat.config.rondes}</small></button>` : ''}
+          ${pot ? `<button class="btn prim big" data-a="continua">${I('play')} Continua <small>${esc(desat.empreses[0].nom)} · dia ${desat.ronda}${desat.config.rondes ? ' de ' + desat.config.rondes : ''} · ${esc(MD.FASES[(desat.empreses[0].fase || 1) - 1].nom)}</small></button>` : ''}
           <button class="btn ${pot ? '' : 'prim'} big" data-a="juga">${I('botiga')} Juga <small>la teva botiga</small></button>
           <button class="btn big" data-a="repte">${I('equip')} Repte de classe <small>amb codi del professor</small></button>
           <button class="btn big" data-a="docent">${I('escut')} Mode docent <small>reptes i rànquing</small></button>
@@ -147,16 +147,17 @@
     });
   }
   function configurar() {
-    const cfg = { nom: '', rondes: 8, dificultat: 'mitja' };
+    const cfg = { nom: '', rondes: 16, dificultat: 'mitja' };
     const draw = () => {
       app.innerHTML = `<main class="config" style="max-width:760px">
         <button class="btn ghost small" id="enrere">← Tornar</button>
         <h1>${I('botiga')} La teva botiga</h1>
-        <p class="muted">Obres una botiga d'alimentació en un carrer on ja n'hi ha tres més. Guanya qui té més valor de botiga al final: diners, estoc, inversions i una marca coneguda i ben valorada.</p>
+        <p class="muted">Obres un petit rebost d'alimentació en un carrer on ja hi ha tres botigues més. Si ho fas bé, el pots fer créixer: botiga gran, supermercat, cadena de botigues i, finalment, una gran empresa. Guanya qui té més valor d'empresa al final.</p>
         <label class="f" style="max-width:420px">Nom de la botiga<input class="inp" id="nomB" value="${esc(cfg.nom)}" maxlength="30" placeholder="Ex.: El Rebost del Barri"></label>
         <h2>Durada i dificultat</h2>
-        <div class="row"><div class="seg" role="group" aria-label="Dies">${[4, 8, 12].map(r => `<button data-rondes="${r}" class="${cfg.rondes === r ? 'on' : ''}">${r} dies</button>`).join('')}</div>
+        <div class="row"><div class="seg" role="group" aria-label="Dies">${[12, 16, 20, 0].map(r => `<button data-rondes="${r}" class="${cfg.rondes === r ? 'on' : ''}">${r ? r + ' dies' : 'Lliure'}</button>`).join('')}</div>
           <div class="seg" role="group" aria-label="Dificultat">${[['facil', 'Rivals fàcils'], ['mitja', 'Rivals normals'], ['dificil', 'Rivals difícils']].map(([k, n]) => `<button data-dif="${k}" class="${cfg.dificultat === k ? 'on' : ''}">${n}</button>`).join('')}</div></div>
+        <p class="small muted">Amb 16 o 20 dies hi ha temps per arribar a gran empresa. En mode lliure, jugues tants dies com vulguis i acabes quan decideixes.</p>
         <div class="barra"><button class="btn ghost" id="enrere2">Cancel·lar</button><button class="btn prim big" id="go">${I('play')} Obrir la botiga</button></div></main>`;
       const llegeix = () => { cfg.nom = $('#nomB').value.trim().slice(0, 30); };
       $('#enrere').onclick = $('#enrere2').onclick = portada;
@@ -192,7 +193,8 @@
   function capcalera(extra) {
     const e = ME.jugador(S), p = llProgres(e), pend = llPendents(e).length;
     return `<header class="top">${logo(false)}<div class="info">
-        <span class="chip">${I('rellotge')} Dia ${S.ronda} de ${S.config.rondes}</span>
+        <span class="chip">${I('rellotge')} Dia ${S.ronda}${S.config.rondes ? ' de ' + S.config.rondes : ''}</span>
+        <span class="chip fase-emp" title="Fase de l'empresa">${I(ME.faseDe(e).icona)} <span class="amaga-mobil">${esc(ME.faseDe(e).nom)}</span><span class="nomes-mobil">F${e.fase}</span></span>
         <span class="chip fase">${esc(ME.NOM_FASE[S.fase])}</span>
         <span class="chip"><b>${esc(e.nom)}</b></span>
         <span class="chip diners">${I('moneda')} ${eur(e.diners)}</span>
@@ -225,7 +227,7 @@
   }
 
   /* ---------- Matí: planificació de les quatre P ---------- */
-  const PESTANYES = [['prod', 'paquet', 'Producte i preu', 'pc-producte'], ['estoc', 'magatzem', 'Estoc', 'pc-dist'], ['dist', 'camio', 'Distribució', 'pc-dist'], ['promo', 'megafon', 'Promoció', 'pc-promo'], ['mercat', 'lupa', 'Mercat', 'pc-fin']];
+  const PESTANYES = [['prod', 'paquet', 'Producte i preu', 'pc-producte'], ['estoc', 'magatzem', 'Estoc', 'pc-dist'], ['dist', 'camio', 'Distribució', 'pc-dist'], ['promo', 'megafon', 'Promoció', 'pc-promo'], ['mercat', 'lupa', 'Mercat', 'pc-fin'], ['empresa', 'edifici', 'Empresa', 'pc-fin']];
   function pantallaPlan() {
     const e = ME.jugador(S), ev = ME.esdeveniment(S.esdeveniment);
     app.innerHTML = `<div class="joc2">${capcalera()}
@@ -238,13 +240,14 @@
     MBOT.estatica($('#escena'), S, { onPrestatge: (i) => editaPrestatge(i), onNou: () => compraPrestatge(), onTauleta: () => { ui.tab = 'dist'; pantallaPlan(); }, onTaulell: () => { ui.tab = 'dist'; pantallaPlan(); }, onMagatzem: () => { ui.tab = 'estoc'; pantallaPlan(); }, onAparador: () => { ui.tab = 'promo'; pantallaPlan(); } });
     $$('[data-tab]').forEach(b => b.onclick = () => { ui.tab = b.dataset.tab; pantallaPlan(); });
     const cont = $('#pcont');
-    ({ prod: tabProd, estoc: tabEstoc, dist: tabDist, promo: tabPromo, mercat: tabMercat })[ui.tab](cont, e);
+    ({ prod: tabProd, estoc: tabEstoc, dist: tabDist, promo: tabPromo, mercat: tabMercat, empresa: tabEmpresa })[ui.tab](cont, e);
     const despesa = S.log.filter(l => l.ronda === S.ronda && l.emp === 0 && l.import < 0).reduce((a, l) => a - l.import, 0);
-    $('#resum').innerHTML = `Despeses d'avui fins ara: <b>${eur(despesa)}</b>${e.aparador ? ' + aparador ' + eur(MD.aparadors[e.aparador].cost) : ''}. Cada dia, lloguer i llum: ${eur(MD.FIXOS)}${serveisDia(e) ? ' · serveis: ' + eur(serveisDia(e)) : ''}.`;
+    $('#resum').innerHTML = `Despeses d'avui fins ara: <b>${eur(despesa)}</b>${e.aparador ? ' + aparador ' + eur(MD.aparadors[e.aparador].cost) : ''}. Cada dia, lloguer i llum: ${eur(MD.FIXOS + ME.faseDe(e).fixos)}${serveisDia(e) ? ' · serveis: ' + eur(serveisDia(e)) : ''}${personalDia(e) ? ' · personal: ' + eur(personalDia(e)) : ''}${e.botigues.length ? ' · ' + e.botigues.length + ' botigues més a la cadena' : ''}.`;
     $('#obrir').onclick = obrirBotiga;
     tutorial('plan', () => llPausa('p', 1));
   }
-  const serveisDia = (e) => Object.keys(e.serveis).filter(k => e.serveis[k]).reduce((a, k) => a + MD.serveis[k].cost, 0);
+  const serveisDia = (e) => Object.keys(e.serveis).filter(k => e.serveis[k] && MD.serveis[k]).reduce((a, k) => a + MD.serveis[k].cost, 0);
+  const personalDia = (e) => Object.keys(MD.PERSONAL).reduce((a, k) => a + (e.personal[k] || 0) * MD.PERSONAL[k].cost, 0);
   function accio(a, desa2) { const r = fa(Object.assign({ id: uid() }, a)); if (!r.ok) toast(r.err, 'neg'); if (desa2 !== false) desa(); return r; }
 
   // Qui compraria aquest producte a aquest preu?
@@ -257,13 +260,13 @@
     cont.innerHTML = `<p class="small muted">Producte i preu: què hi ha a cada prestatgeria i quant costa. Les icones indiquen quins clients el comprarien (✓), el troben car (€) o no el volen (–).</p>
       <div class="pcards">${e.prestatges.slice(0, e.nPrest).map((x, i) => {
         if (!x || !x.prod) return `<div class="pcard buida"><b>Prestatgeria ${i + 1}</b><button class="btn small" data-tria="${i}">${I('mes')} Tria un producte</button></div>`;
-        const P = MD.productes[x.prod], m = x.preu - P.cost;
-        return `<div class="pcard"><div class="pc-cap">${MBOT.iconaProd(x.prod, 34)}<div><b>${esc(P.nom)}</b><span class="small muted">Cost ${eur2(P.cost)} · preu de mercat ${eur2(P.ref)}${P.perible ? ' · perible' : ''}</span></div><button class="btn small ghost" data-tria="${i}">Canviar</button></div>
+        const P = MD.productes[x.prod], m = x.preu - ME.costUnit(e, x.prod);
+        return `<div class="pcard"><div class="pc-cap">${MBOT.iconaProd(x.prod, 34)}<div><b>${esc(P.nom)}</b>${P.marca ? ' <span class="tag">marca pròpia</span>' : ''}<span class="small muted">Cost ${eur2(ME.costUnit(e, x.prod))} · preu de mercat ${eur2(P.ref)}${P.perible ? ' · perible' : ''}</span></div><button class="btn small ghost" data-tria="${i}">Canviar</button></div>
           <div class="preu-ctl"><button class="btn small" data-menys="${i}" aria-label="Abaixar el preu">−</button><span class="preu-v">${eur2(x.preu)}</span><button class="btn small" data-mes="${i}" aria-label="Apujar el preu">+</button>
             <span class="marge ${m <= 0 ? 'neg' : ''}">marge ${eur2(m)} (${Math.round(m / x.preu * 100)} %)</span></div>
           <div class="qcs">${quiCompra(x.prod, x.preu * (e.promosDia.includes('descompte') ? 0.9 : 1))}</div></div>`;
       }).join('')}</div>
-      ${e.nPrest < MD.PRESTATGES_MAX ? `<button class="btn small" id="novaP">${I('mes')} Prestatgeria nova (${eur(MD.PRESTATGE_COST)}): més varietat</button>` : ''}`;
+      ${e.nPrest < ME.faseDe(e).slots ? `<button class="btn small" id="novaP">${I('mes')} Prestatgeria nova (${eur(MD.PRESTATGE_COST)}): més varietat</button>` : e.fase < MD.FASES.length ? `<p class="small muted">${I('edifici')} No hi caben més prestatgeries. Per tenir-ne més, fes créixer la botiga a la pestanya «Empresa».</p>` : ''}`;
     $$('[data-tria]', cont).forEach(b => b.onclick = () => triaProducte(+b.dataset.tria));
     const canvia = (i, d) => { const x = e.prestatges[i], ref = MD.productes[x.prod].ref; const v = Math.round((x.preu + d) * 20) / 20; if (v < ref * MD.PREU_MIN || v > ref * MD.PREU_MAX) return toast('El preu ha d\'estar entre ' + eur2(ref * MD.PREU_MIN) + ' i ' + eur2(ref * MD.PREU_MAX) + '.', 'neg'); accio({ tipus: 'preu', slot: i, valor: v }); pantallaPlan(); };
     $$('[data-menys]', cont).forEach(b => b.onclick = () => canvia(+b.dataset.menys, -(MD.productes[e.prestatges[+b.dataset.menys].prod].ref >= 4 ? 0.25 : 0.05)));
@@ -278,11 +281,12 @@
     const e = ME.jugador(S), actual = e.prestatges[i] && e.prestatges[i].prod;
     const bar = (v, c) => `<span class="bar"><i style="width:${v}%;background:${c}"></i></span>`;
     modal(`<h2>${I('paquet')} Prestatgeria ${i + 1}: tria el producte</h2><p class="small muted">Cada producte agrada a uns clients diferents. Bàsic i barat → estalviadors · Qualitat → exigents · Novetat → moderns · Eco → responsables.</p>
-      <div class="cataleg">${MD.PROD.map(p => { const P = MD.productes[p], altre = e.prestatges.some((x, k) => k !== i && x && x.prod === p);
+      <div class="cataleg">${MD.PROD.filter(p => !MD.productes[p].marca || e.millores.marca).map(p => { const P = MD.productes[p], altre = e.prestatges.some((x, k) => k !== i && x && x.prod === p);
         return `<button class="prod ${p === actual ? 'on' : ''}" data-p="${p}" ${altre ? 'disabled' : ''}>${MBOT.iconaProd(p, 38)}<b>${esc(P.nom)}</b><span class="small muted">${esc(P.desc)}</span>
           <span class="attrs"><span>Bàsic</span>${bar(P.bas, '#F5C542')}<span>Qualitat</span>${bar(P.q, '#4EA5F5')}<span>Eco</span>${bar(P.eco, '#36B37E')}<span>Novetat</span>${bar(P.nou, '#E879B9')}</span>
-          <span class="small">Cost ${eur2(P.cost)} · es ven a ${eur2(P.ref)}${P.perible ? ' · <span class="neg">perible</span>' : ''}${(e.estoc[p] || 0) ? ' · ' + e.estoc[p] + ' u. al magatzem' : ''}</span>
+          <span class="small">${P.marca ? '<span class="tag">marca pròpia</span> ' : ''}Cost ${eur2(ME.costUnit(e, p))} · es ven a ${eur2(P.ref)}${P.perible ? ' · <span class="neg">perible</span>' : ''}${(e.estoc[p] || 0) ? ' · ' + e.estoc[p] + ' u. al magatzem' : ''}</span>
           <span class="qcs">${quiCompra(p, P.ref)}</span>${altre ? '<span class="small muted">Ja és en una altra prestatgeria</span>' : ''}</button>`; }).join('')}</div>
+      ${e.fase >= 3 && !e.millores.marca ? `<p class="small muted">${I('etiqueta')} Amb la millora «Marca pròpia» (pestanya Empresa) podràs vendre productes amb el teu nom.</p>` : ''}
       <div class="row" style="margin-top:12px">${actual ? '<button class="btn ghost" id="buida">Deixar-la buida</button>' : ''}<button class="btn" id="tc">Tancar</button></div>`, (m) => {
       $$('[data-p]', m).forEach(b => b.onclick = () => { const r = accio({ tipus: 'producte', slot: i, prod: b.dataset.p }); if (r.ok) { tancaModal(); if (!(ME.jugador(S).estoc[b.dataset.p] > 0)) toast('No en tens estoc: demana\'n a la pestanya «Estoc».', ''); ui.tab = (ME.jugador(S).estoc[b.dataset.p] > 0) ? 'prod' : 'estoc'; pantallaPlan(); } });
       if ($('#buida', m)) $('#buida', m).onclick = () => { accio({ tipus: 'producte', slot: i, prod: null }); tancaModal(); pantallaPlan(); };
@@ -294,28 +298,34 @@
     const ahir = e.darrer ? e.darrer.venuts || {} : {};
     const prods = e.prestatges.slice(0, e.nPrest).filter(x => x && x.prod).map(x => x.prod);
     Object.keys(e.estoc).forEach(p => { if (e.estoc[p] > 0 && !prods.includes(p)) prods.push(p); });
-    cont.innerHTML = `<p class="small muted">Estoc (distribució): compra caixes de ${MD.CAIXA} unitats al proveïdor. Si en falta, les prestatgeries es buiden i els clients marxen. Si en sobra, el producte perible es fa malbé en un ${Math.round(MD.MERMA * 100)} % cada nit.</p>
+    cont.innerHTML = `<p class="small muted">Estoc (distribució): compra caixes de ${MD.CAIXA} unitats al proveïdor. Si en falta, les prestatgeries es buiden i els clients marxen. Si en sobra, el producte perible es fa malbé en un ${Math.round(MD.MERMA * 100 * (e.millores.nevera ? 0.3 : 1))} % cada nit${e.millores.nevera ? ' (gràcies a la nevera)' : ''}.${e.millores.central ? ' El magatzem central compra un ' + Math.round((1 - MD.CENTRAL) * 100) + ' % més barat.' : ''}</p>
       <div class="pcards">${prods.map(p => { const P = MD.productes[p], u = e.estoc[p] || 0, v = ahir[p] || 0, sugg = Math.max(0, Math.ceil(((v || 25) * 1.15 - u) / MD.CAIXA)), aLaBotiga = e.prestatges.slice(0, e.nPrest).some(x => x && x.prod === p);
         return `<div class="pcard"><div class="pc-cap">${MBOT.iconaProd(p, 30)}<div><b>${esc(P.nom)}</b><span class="small muted">${u} unitats al magatzem${e.darrer ? ' · ahir en vas vendre ' + v : ''}${P.perible ? ' · <span class="neg">perible</span>' : ''}${aLaBotiga ? '' : ' · <span class="neg">no és a cap prestatgeria</span>'}</span></div></div>
-          <div class="row">${[1, 3].map(n => `<button class="btn small" data-c="${p}" data-n="${n}">+${n} caixa${n > 1 ? 'es' : ''} · ${eur2(n * MD.CAIXA * P.cost)}</button>`).join('')}${sugg && aLaBotiga ? `<span class="small muted">Suggeriment: ${sugg} caixa${sugg > 1 ? 'es' : ''}</span>` : ''}</div></div>`; }).join('') || '<p class="muted">Primer posa productes a les prestatgeries.</p>'}</div>`;
+          <div class="row">${(e.fase >= 3 ? [1, 3, 6] : [1, 3]).map(n => `<button class="btn small" data-c="${p}" data-n="${n}">+${n} caixa${n > 1 ? 'es' : ''} · ${eur2(n * MD.CAIXA * ME.costUnit(e, p))}</button>`).join('')}${sugg && aLaBotiga ? `<span class="small muted">Suggeriment: ${sugg} caixa${sugg > 1 ? 'es' : ''}</span>` : ''}</div></div>`; }).join('') || '<p class="muted">Primer posa productes a les prestatgeries.</p>'}</div>`;
     $$('[data-c]', cont).forEach(b => b.onclick = () => { const r = accio({ tipus: 'comanda', prod: b.dataset.c, caixes: +b.dataset.n }); if (r.ok) { toast('Comprat! Arriba al magatzem.', 'pos'); pantallaPlan(); } });
   }
   function tabDist(cont, e) {
-    const sv = MD.serveis;
-    cont.innerHTML = `<p class="small muted">Distribució: com arriba el producte al client. La botiga és venda tradicional amb taulell; la botiga en línia és venda sense establiment, amb repartiment.</p>
-      <div class="pcards">${Object.keys(sv).map(k => { const x = sv[k], on = e.serveis[k];
+    const sv = MD.serveis, F = ME.faseDe(e);
+    const personal = Object.keys(MD.PERSONAL).map(k => { const x = MD.PERSONAL[k], max = k === 'caixera' ? F.caixes : F.reposadors, n = e.personal[k] || 0;
+      return `<div class="pcard ${n ? 'actiu' : ''}"><div class="pc-cap"><span class="ic-gran">${I(x.icona)}</span><div><b>${esc(x.nom)}</b><span class="small muted">${esc(x.desc)}</span>
+        <span class="small">${eur(x.cost)} per persona i dia · ${max ? 'fins a ' + max + ' en aquesta fase' : 'cal una botiga més gran'}</span></div></div>
+        ${max ? `<div class="seg" role="group" aria-label="${esc(x.nom)}">${Array.from({ length: max + 1 }, (_, v) => `<button data-pers="${k}" data-n="${v}" class="${n === v ? 'on' : ''}">${v}</button>`).join('')}</div>` : ''}</div>`; }).join('');
+    cont.innerHTML = `<p class="small muted">Distribució: com arriba el producte al client. La botiga és venda tradicional amb taulell; ${e.fase >= 3 ? 'el supermercat és autoservei: el client agafa el producte i paga a la caixa; ' : ''}la botiga en línia és venda sense establiment, amb repartiment.</p>
+      <h3 class="h3">Personal</h3><div class="pcards">${personal}</div>
+      <h3 class="h3">Serveis</h3><div class="pcards">${Object.keys(sv).map(k => { const x = sv[k], on = e.serveis[k];
         return `<div class="pcard ${on ? 'actiu' : ''}"><div class="pc-cap"><span class="ic-gran">${I(x.icona)}</span><div><b>${esc(x.nom)}</b><span class="small muted">${esc(x.desc)}</span>
           <span class="small">${eur(x.cost)} cada dia${k === 'online' ? (e.onlineActivat ? ' · ja creada' : ' · crear-la: ' + eur(x.activar)) + ' · ' + eur2(x.perComanda) + ' per comanda' : ''}</span></div></div>
           <button class="btn small ${on ? 'verd' : ''}" data-sv="${k}">${on ? I('ok') + ' Activat · desactivar' : k === 'online' && !e.onlineActivat ? 'Crear la botiga en línia · ' + eur(x.activar) : 'Activar'}</button></div>`; }).join('')}</div>`;
     $$('[data-sv]', cont).forEach(b => b.onclick = () => { const k = b.dataset.sv; accio({ tipus: 'servei', servei: k, actiu: !e.serveis[k] }); pantallaPlan(); });
+    $$('[data-pers]', cont).forEach(b => b.onclick = () => { accio({ tipus: 'personal', rol: b.dataset.pers, n: +b.dataset.n }); pantallaPlan(); });
   }
   function tabPromo(cont, e) {
     cont.innerHTML = `<p class="small muted">Promoció: fes-te conèixer. La notorietat (${Math.round(e.not)}/100) baixa cada dia si no comuniques. Cada acció arriba més a uns clients que a uns altres.</p>
       <h3 class="h3">Aparador (marxandatge) · ${eur(MD.aparadors.oferta.cost)} el dia</h3><div class="seg aparadors">${[['', 'Sense tema']].concat(Object.entries(MD.aparadors).map(([k, a]) => [k, a.nom])).map(([k, n]) => `<button data-ap="${k}" class="${(e.aparador || '') === k ? 'on' : ''}">${k ? I(MD.segments[MD.aparadors[k].seg].icona) + ' ' : ''}${esc(n)}</button>`).join('')}</div>
-      <h3 class="h3">Accions d'avui</h3><div class="pcards">${MD.PROMO.map(k => { const p = MD.promos[k], on = e.promosDia.includes(k);
+      <h3 class="h3">Accions d'avui</h3><div class="pcards">${MD.PROMO.filter(k => !MD.promos[k].fase || e.fase >= MD.promos[k].fase - 1).map(k => { const p = MD.promos[k], on = e.promosDia.includes(k), tancat = p.fase && e.fase < p.fase;
         return `<div class="pcard ${on ? 'actiu' : ''}"><div class="pc-cap"><span class="ic-gran">${I(p.icona)}</span><div><b>${esc(p.nom)}</b> <span class="tag">${esc(p.tipus)}</span><span class="small muted">${esc(p.desc)}</span>
           <span class="qcs">${p.seg.map(s2 => `<span class="qc si" style="--c:${MD.segments[s2].color}" title="${esc(MD.segments[s2].nom)}">${I(MD.segments[s2].icona)}</span>`).join('')}</span></div></div>
-          <button class="btn small ${on ? 'verd' : ''}" data-pr="${k}" ${on ? 'disabled' : ''}>${on ? I('ok') + ' Contractada' : (p.cost ? 'Contractar · ' + eur(p.cost) : 'Aplicar avui')}</button></div>`; }).join('')}</div>`;
+          <button class="btn small ${on ? 'verd' : ''}" data-pr="${k}" ${on || tancat ? 'disabled' : ''}>${tancat ? 'Quan siguis ' + esc(MD.FASES[p.fase - 1].nom.toLowerCase()) : on ? I('ok') + ' Contractada' : (p.cost ? 'Contractar · ' + eur(p.cost) : 'Aplicar avui')}</button></div>`; }).join('')}</div>`;
     $$('[data-ap]', cont).forEach(b => b.onclick = () => { accio({ tipus: 'aparador', tema: b.dataset.ap || null }); pantallaPlan(); });
     $$('[data-pr]', cont).forEach(b => b.onclick = () => { const r = accio({ tipus: 'promo', promo: b.dataset.pr }); if (r.ok) pantallaPlan(); });
   }
@@ -333,6 +343,46 @@
       <div class="row"><input class="inp" type="number" id="obj" min="0" step="50" value="${e.objectiu || ''}" placeholder="${e.darrer ? Math.round(e.darrer.ingressos / 50) * 50 : 500}" style="max-width:160px" aria-label="Objectiu de vendes en euros"><span>€</span><button class="btn small" id="objOk">Desar</button></div>`;
     if ($('#enq', cont)) $('#enq', cont).onclick = () => { const r = accio({ tipus: 'enquesta' }); if (r.ok) pantallaPlan(); };
     $('#objOk', cont).onclick = () => { accio({ tipus: 'objectiu', valor: +$('#obj', cont).value || 0 }); toast('Objectiu desat.', 'pos'); pantallaPlan(); };
+  }
+  function tabEmpresa(cont, e) {
+    const F = ME.faseDe(e), sf = ME.seguentFase(S, e), v = ME.valorEmpresa(S, e), h = e.darrer;
+    const escala = MD.FASES.map(x => `<li class="${x.n < e.fase ? 'fet' : x.n === e.fase ? 'ara' : ''}"><span class="ic">${I(x.icona)}</span><div><b>${x.n}. ${esc(x.nom)}</b><span class="small muted">${esc(x.desc)}</span>${x.n > 1 ? `<span class="small">Valor d'empresa ${eur(x.valor)} · inversió ${eur(x.cost)}${x.minBotigues ? ' · ' + x.minBotigues + ' botigues a la cadena' : ''}${x.fixos ? ' · lloguer +' + eur(x.fixos) + '/dia' : ''}</span>` : ''}</div></li>`).join('');
+    const millores = Object.keys(MD.MILLORES).filter(k => e.fase >= MD.MILLORES[k].fase - 1).map(k => { const M = MD.MILLORES[k], te = e.millores[k], tancat = e.fase < M.fase;
+      return `<div class="pcard ${te ? 'actiu' : ''}"><div class="pc-cap"><span class="ic-gran">${I(M.icona)}</span><div><b>${esc(M.nom)}</b><span class="small muted">${esc(M.desc)}</span><span class="small">Inversió ${eur(M.cost)}${M.dia ? ' · ' + eur(M.dia) + ' cada dia' : ''}</span></div></div>
+        <button class="btn small ${te ? 'verd' : ''}" data-mill="${k}" ${te || tancat ? 'disabled' : ''}>${te ? I('ok') + ' Feta' : tancat ? 'Fase ' + M.fase + ': ' + esc(MD.FASES[M.fase - 1].nom.toLowerCase()) : 'Invertir · ' + eur(M.cost)}</button></div>`; }).join('');
+    const ultimaCad = h && h.cadena ? Object.fromEntries(h.cadena.map(b => [b.lloc, b])) : {};
+    const llocs = e.fase >= 3 ? MD.LLOCS.map(L => { const te = e.botigues.find(b => b.lloc === L.id), d = ultimaCad[L.id];
+      return `<div class="pcard ${te ? 'actiu' : ''}"><div class="pc-cap"><span class="ic-gran">${I('botiga')}</span><div><b>${esc(L.nom)}</b><span class="small muted">Hi passen uns ${L.transit} clients al dia · lloguer ${eur(L.lloguer)}/dia + gerent ${eur(MD.GERENT.cost)}/dia</span>
+        ${d ? `<span class="small">Ahir: ${d.clients} clients · vendes ${eur(d.ingressos)} · resultat <b class="${d.resultat >= 0 ? 'pos' : 'neg'}">${eur(d.resultat)}</b></span>` : ''}</div></div>
+        <button class="btn small ${te ? 'verd' : ''}" data-lloc="${L.id}" ${te || e.fase < 4 ? 'disabled' : ''}>${te ? I('ok') + ' Oberta des del dia ' + te.des : e.fase < 4 ? 'Quan siguis una cadena' : 'Obrir-hi una botiga · ' + eur(L.obrir)}</button></div>`; }).join('') : '';
+    const prodsB2B = MD.PROD.filter(p => !MD.productes[p].perible && (!MD.productes[p].marca || e.millores.marca));
+    const b2b = e.fase >= 4 ? `<h3 class="h3">${I('camio')} Venda a altres empreses (B2B)</h3>
+      <p class="small muted">Bars, restaurants i botigues petites et compren a l'engròs cada dia: a un ${Math.round(MD.B2B.preu * 100)} % del preu de mercat, però en grans volums.${e.fase < 5 ? ' Disponible quan siguis una gran empresa.' : ''}</p>
+      ${e.fase >= 5 ? `<div class="row"><select class="inp" id="b2bP" style="max-width:220px" aria-label="Producte per a empreses">${prodsB2B.map(p => `<option value="${p}" ${e.b2b.prod === p ? 'selected' : ''}>${esc(MD.productes[p].nom)} (${eur2(MD.productes[p].ref * MD.B2B.preu)} · cost ${eur2(ME.costUnit(e, p))})</option>`).join('')}</select>
+        <div class="seg" role="group" aria-label="Unitats al dia">${MD.B2B.volums.map(n => `<button data-b2b="${n}" class="${(e.b2b.volum || 0) === n ? 'on' : ''}">${n ? n + ' u./dia' : 'No'}</button>`).join('')}</div></div>
+        ${h && h.b2b ? `<p class="small">Ahir: ${h.b2b.volum} u. de ${esc(MD.productes[h.b2b.prod].nom.toLowerCase())} · vendes ${eur(h.b2b.ingressos)} · marge <b class="pos">${eur(h.b2b.resultat)}</b></p>` : ''}` : ''}` : '';
+    const maxP = MD.PRESTEC.max[e.fase - 1], potDemanar = Math.max(0, maxP - (e.deute || 0));
+    cont.innerHTML = `<p class="small muted">Créixer és invertir: un local més gran, personal i noves botigues costen diners, però multipliquen els clients. Cal que la botiga ja funcioni bé (valor d'empresa) i tenir diners per a la inversió.</p>
+      <div class="kpis-mini"><div><span>Valor de l'empresa</span><b>${eur(v.total)}</b></div><div><span>Diners</span><b>${eur(e.diners)}</b></div><div><span>Deute</span><b class="${e.deute ? 'neg' : ''}">${eur(e.deute || 0)}</b></div></div>
+      ${sf ? `<div class="caixa ${sf.pot ? 'verd' : 'groc'}" style="margin:10px 0"><b>Fase següent: ${esc(sf.F.nom)}</b><p class="small" style="margin:4px 0">${esc(sf.F.desc)}</p>
+        ${sf.pot ? `<button class="btn prim" id="creix">${I('edifici')} Fer créixer l'empresa · ${eur(sf.F.cost)}</button>` : `<p class="small" style="margin:0">Encara et falta: ${sf.falta.map(esc).join('; ')}.</p>`}</div>` : `<div class="caixa verd" style="margin:10px 0"><b>${I('trofeu')} Ja sou una gran empresa!</b><p class="small" style="margin:4px 0 0">Ara es tracta de fer créixer el valor: més botigues, venda a empreses, botiga en línia i campanyes.</p></div>`}
+      <ol class="escala">${escala}</ol>
+      ${millores ? `<h3 class="h3">Millores</h3><div class="pcards">${millores}</div>` : ''}
+      ${llocs ? `<h3 class="h3">${I('equip')} Botigues de la cadena</h3><p class="small muted">Cada botiga té un gerent i ven els mateixos productes i preus que la teva. Si la teva botiga atrau poc, les altres també.</p><div class="pcards">${llocs}</div>` : ''}
+      ${b2b}
+      <h3 class="h3">${I('banc')} Préstec bancari</h3><p class="small muted">Finançament aliè: el banc et deixa diners per invertir, però cada dia pagues un ${Math.round(MD.PRESTEC.interes * 100)} % d'interès sobre el que deus. Com més gran és l'empresa, més et deixa (ara fins a ${eur(maxP)}).</p>
+      <div class="row">${[500, 1000, 2500].filter(x => x <= potDemanar).map(x => `<button class="btn small" data-prest="${x}">Demanar ${eur(x)}</button>`).join('') || '<span class="small muted">Has arribat al límit d\'aquesta fase.</span>'}
+        ${e.deute ? `<button class="btn small ghost" data-ret="${Math.min(e.deute, Math.floor(e.diners))}" ${e.diners < 1 ? 'disabled' : ''}>Retornar ${eur(Math.min(e.deute, Math.floor(e.diners)))}</button>` : ''}</div>`;
+    if ($('#creix', cont)) $('#creix', cont).onclick = () => confirma(`Fer créixer l'empresa a <b>${esc(sf.F.nom)}</b>? Inverteixes ${eur(sf.F.cost)} i el lloguer diari puja ${eur(sf.F.fixos - F.fixos)}. A canvi, més clients i més capacitat.`, () => {
+      const r = accio({ tipus: 'creixer' }); if (!r.ok) return;
+      const N = ME.faseDe(ME.jugador(S)); modal(`<div style="text-align:center">${I(N.icona, 'trofeu')}<h2>Ara sou: ${esc(N.nom)}!</h2><p>${esc(N.desc)}</p><p class="small muted">Recorda: més prestatgeries (${N.slots}), ${N.caixes} caixes${N.reposadors ? ', fins a ' + N.reposadors + ' reposadors' : ''}. Revisa el personal a «Distribució».</p><button class="btn prim" id="tc" data-focus>Som-hi!</button></div>`, (m) => { $('#tc', m).onclick = () => { tancaModal(); pantallaPlan(); }; });
+    });
+    $$('[data-mill]', cont).forEach(b => b.onclick = () => { const r = accio({ tipus: 'millora', k: b.dataset.mill }); if (r.ok) { toast(MD.MILLORES[b.dataset.mill].nom + ': fet!', 'pos'); pantallaPlan(); } });
+    $$('[data-lloc]', cont).forEach(b => b.onclick = () => { const L = MD.LLOCS.find(x => x.id === b.dataset.lloc); confirma(`Obrir una botiga a <b>${esc(L.nom)}</b> per ${eur(L.obrir)}? Cada dia costarà ${eur(L.lloguer + MD.GERENT.cost)} (lloguer i gerent).`, () => { const r = accio({ tipus: 'obrirBotiga', lloc: L.id }); if (r.ok) { toast('Botiga oberta a ' + L.nom + '!', 'pos'); pantallaPlan(); } }); });
+    $$('[data-b2b]', cont).forEach(b => b.onclick = () => { const r = accio({ tipus: 'b2b', prod: $('#b2bP', cont).value, volum: +b.dataset.b2b }); if (r.ok) pantallaPlan(); });
+    if ($('#b2bP', cont)) $('#b2bP', cont).onchange = () => { if (e.b2b.volum) { accio({ tipus: 'b2b', prod: $('#b2bP', cont).value, volum: e.b2b.volum }); pantallaPlan(); } };
+    $$('[data-prest]', cont).forEach(b => b.onclick = () => confirma(`Demanar un préstec de <b>${eur(+b.dataset.prest)}</b>? Pagaràs ${eur(+b.dataset.prest * MD.PRESTEC.interes)} d'interessos cada dia fins que el retornis.`, () => { const r = accio({ tipus: 'prestec', import: +b.dataset.prest }); if (r.ok) pantallaPlan(); }));
+    $$('[data-ret]', cont).forEach(b => b.onclick = () => { const r = accio({ tipus: 'retornar', import: +b.dataset.ret }); if (r.ok) { toast('Préstec retornat.', 'pos'); pantallaPlan(); } });
   }
   function obrirBotiga() {
     const e = ME.jugador(S), sense = e.prestatges.slice(0, e.nPrest).filter(x => x && x.prod && !(e.estoc[x.prod] > 0));
@@ -352,7 +402,7 @@
         <div class="dia-barra"><i id="kT"></i></div></div>
       <p class="gira">${I('mobil')} Gira el mòbil per veure la botiga més gran.</p>
       <div id="escena" class="escena-dia"></div>
-      <p class="pista">Toca una <b>prestatgeria</b> perquè el ninot la reposi · toca el <b>taulell</b> perquè cobri${e.serveis.online ? ' · toca la <b>tauleta</b> per preparar les comandes en línia' : ''}.</p></div>`;
+      <p class="pista">Toca una <b>prestatgeria</b> perquè el ninot la reposi${e.personal.caixera >= ME.faseDe(e).caixes ? '' : ' · toca el <b>taulell</b> perquè cobri'}${e.serveis.online && !e.millores.online ? ' · toca la <b>tauleta</b> per preparar les comandes en línia' : ''}${e.personal.reposador ? ' · els reposadors omplen sols les prestatgeries buides' : ''}.</p></div>`;
     lligaCapcalera();
     const primer = !(pref.tut && pref.tut.dia);
     dia = MBOT.dia($('#escena'), S, {
@@ -375,9 +425,9 @@
     const desv = h.objectiu ? h.ingressos - h.objectiu : null;
     app.innerHTML = `<div class="joc2">${capcalera()}<main class="res">
       <div class="res-cap"><div><span class="muted small">${esc(ev.titol)}</span><h1>Dia ${h.ronda}: ${h.resultat >= 0 ? 'has guanyat ' + eur(h.resultat) : 'has perdut ' + eur(-h.resultat)}</h1></div>
-        <button class="btn prim big" id="seg">${S.ronda >= S.config.rondes ? 'Veure el final' : 'Dia següent'} ${I('fletxa')}</button></div>
+        <div class="row">${S.config.rondes ? '' : `<button class="btn ghost" id="acaba">${I('bandera')} Acabar la partida</button>`}<button class="btn prim big" id="seg">${S.config.rondes && S.ronda >= S.config.rondes ? 'Veure el final' : 'Dia següent'} ${I('fletxa')}</button></div></div>
       <div class="kpis5">
-        <div class="kpi"><span>Vendes</span><b>${eur(h.ingressos)}</b><em>${h.unitats} unitats</em></div>
+        <div class="kpi"><span>Vendes${h.vendesTotal > h.ingressos ? ' de l\'empresa' : ''}</span><b>${eur(h.vendesTotal || h.ingressos)}</b><em>${h.vendesTotal > h.ingressos ? eur(h.ingressos) + ' a la botiga principal' : h.unitats + ' unitats'}</em></div>
         <div class="kpi"><span>Resultat</span><b class="${h.resultat >= 0 ? 'pos' : 'neg'}">${eur(h.resultat)}</b><em>${h.xp ? '+' + h.xp + ' XP' : ''}</em></div>
         <div class="kpi"><span>Clients atesos</span><b>${h.servits} / ${h.clients}</b><em>${h.online ? h.online + ' en línia' : ''}</em></div>
         <div class="kpi"><span>Quota del carrer</span><b>${pct(h.quota)}</b><em>${pos}a de ${S.empreses.length} botigues</em></div>
@@ -393,8 +443,12 @@
           <tr><td>Vendes</td><td class="n">${eur2(h.ingressos)}</td></tr><tr><td>− Cost de la mercaderia venuda</td><td class="n">${eur2(-h.cogs)}</td></tr>
           ${h.merma ? `<tr><td>− Producte fet malbé (merma: ${h.mermaU} u.)</td><td class="n">${eur2(-h.merma)}</td></tr>` : ''}
           <tr><td>− Lloguer, llum i assegurances</td><td class="n">${eur2(-h.fixos)}</td></tr>
-          ${h.serveis ? `<tr><td>− Serveis (dependenta, web, horari)</td><td class="n">${eur2(-h.serveis)}</td></tr>` : ''}${h.comissions ? `<tr><td>− Embalatge i repartiment</td><td class="n">${eur2(-h.comissions)}</td></tr>` : ''}
-          ${h.promocio ? `<tr><td>− Promoció</td><td class="n">${eur2(-h.promocio)}</td></tr>` : ''}${h.estudi ? `<tr><td>− Enquesta</td><td class="n">${eur2(-h.estudi)}</td></tr>` : ''}
+          ${h.personal ? `<tr><td>− Personal (sous)</td><td class="n">${eur2(-h.personal)}</td></tr>` : ''}${h.milloresDia ? `<tr><td>− Manteniment de les millores</td><td class="n">${eur2(-h.milloresDia)}</td></tr>` : ''}${h.punts ? `<tr><td>− Punts de la targeta de fidelització</td><td class="n">${eur2(-h.punts)}</td></tr>` : ''}
+          ${h.serveis ? `<tr><td>− Serveis (web, horari)</td><td class="n">${eur2(-h.serveis)}</td></tr>` : ''}${h.comissions ? `<tr><td>− Embalatge i repartiment</td><td class="n">${eur2(-h.comissions)}</td></tr>` : ''}
+          ${h.promocio ? `<tr><td>− Promoció</td><td class="n">${eur2(-h.promocio)}</td></tr>` : ''}${h.estudi ? `<tr><td>− Enquesta</td><td class="n">${eur2(-h.estudi)}</td></tr>` : ''}${h.interessos ? `<tr><td>− Interessos del préstec</td><td class="n">${eur2(-h.interessos)}</td></tr>` : ''}
+          ${(h.cadena && h.cadena.length) || h.b2b ? `<tr class="sub"><td>= Resultat de la botiga principal</td><td class="n">${eur2(h.resultatBotiga)}</td></tr>
+            ${(h.cadena || []).map(b => `<tr><td>${b.resultat >= 0 ? '+' : '−'} Botiga de ${esc(b.nom)} <small class="muted">(${eur(b.ingressos)} de vendes)</small></td><td class="n ${b.resultat >= 0 ? '' : 'neg'}">${eur2(b.resultat)}</td></tr>`).join('')}
+            ${h.b2b ? `<tr><td>+ Venda a empreses <small class="muted">(${h.b2b.volum} u. · ${eur(h.b2b.ingressos)})</small></td><td class="n">${eur2(h.b2b.resultat)}</td></tr>` : ''}` : ''}
           <tr class="total"><td>= Resultat</td><td class="n ${h.resultat >= 0 ? 'pos' : 'neg'}">${eur2(h.resultat)}</td></tr></tbody></table>
           <p class="small muted" style="margin:8px 0 0">Les compres al proveïdor no són despesa fins que el producte es ven: mentrestant és estoc (val diners).</p></section>
         <section class="seccio"><h2>El carrer avui</h2><table class="t"><thead><tr><th>#</th><th>Botiga</th><th class="n">Clients</th><th class="n">Resultat</th><th class="n">Valor</th></tr></thead><tbody>
@@ -402,10 +456,11 @@
       </div>
       ${e.hist.length >= 2 ? `<div class="grafs"><div class="graf"><h3>Resultat de cada dia</h3><p>Guanys i pèrdues de la teva botiga.</p>${linia([{ n: 'Resultat', c: 'var(--verd)', v: e.hist.map(x => x.resultat) }], dies, eur)}</div>
         <div class="graf"><h3>Valor de les botigues</h3><p>Diners, estoc, inversions i marca.</p>${linia(S.empreses.map(x => ({ n: x.nom, c: x.color, v: x.hist.map(y => y.valor) })), dies, eur)}<div class="llegenda">${S.empreses.map(x => `<span><i style="background:${x.color}"></i>${esc(x.nom)}</span>`).join('')}</div></div></div>` : ''}
-      <div class="row" style="justify-content:center;margin:18px 0 30px"><button class="btn prim big" id="seg2">${S.ronda >= S.config.rondes ? 'Veure el final' : 'Dia següent'} ${I('fletxa')}</button></div></main></div>`;
+      <div class="row" style="justify-content:center;margin:18px 0 30px"><button class="btn prim big" id="seg2">${S.config.rondes && S.ronda >= S.config.rondes ? 'Veure el final' : 'Dia següent'} ${I('fletxa')}</button></div></main></div>`;
     lligaCapcalera();
     const seguent = () => llPausa('r', 2, () => { const r = fa({ tipus: 'continuar' }); desa(); if (r.final) return final(); ui.tab = 'prod'; pantallaPlan(); });
     $('#seg').onclick = $('#seg2').onclick = seguent;
+    if ($('#acaba')) $('#acaba').onclick = () => confirma('Voleu acabar la partida ara? Es compararà el valor de l\'empresa que heu aconseguit.', () => { const r = fa({ tipus: 'acabar' }); desa(); if (r.ok) final(); });
     tutorial('res');
   }
 
@@ -414,9 +469,10 @@
     clearTimeout(tm); aturaDia(); document.querySelectorAll('.toasts, .pas-tutorial').forEach(x => x.remove());
     const e = ME.jugador(S), cl = ME.classificacio(S), pos = cl.findIndex(x => x.e.humana) + 1, rec = ME.reconeixements(S), dies = e.hist.map(x => 'D' + x.ronda);
     const sum = (k) => e.hist.reduce((a, x) => a + (x[k] || 0), 0);
-    app.innerHTML = `<main class="final"><div class="podi" id="podi">${I('trofeu', 'trofeu')}<p class="muted" style="margin:0">${esc(e.nom)} · ${S.config.rondes} dies</p>
-        <h1>${pos === 1 ? 'La teva botiga és la millor del carrer!' : 'Quedeu en ' + pos + 'a posició de ' + cl.length}</h1><p>Valor de la botiga: <b>${eur(cl[pos - 1].v.total)}</b>${pos > 1 ? ' · guanya ' + esc(cl[0].e.nom) + ' (' + eur(cl[0].v.total) + ')' : ''}</p></div>
-      <div class="kpis5"><div class="kpi"><span>Vendes totals</span><b>${eur(sum('ingressos'))}</b></div><div class="kpi"><span>Resultat acumulat</span><b class="${sum('resultat') >= 0 ? 'pos' : 'neg'}">${eur(sum('resultat'))}</b></div>
+    app.innerHTML = `<main class="final"><div class="podi" id="podi">${I('trofeu', 'trofeu')}<p class="muted" style="margin:0">${esc(e.nom)} · ${e.hist.length} dies · ${I(ME.faseDe(e).icona)} ${esc(ME.faseDe(e).nom)}</p>
+        <h1>${pos === 1 ? (e.fase >= 5 ? 'Heu creat una gran empresa!' : 'La teva botiga és la millor del carrer!') : 'Quedeu en ' + pos + 'a posició de ' + cl.length}</h1>
+        <ol class="escala mini">${MD.FASES.map(x => `<li class="${x.n < e.fase ? 'fet' : x.n === e.fase ? 'ara' : ''}" title="${esc(x.nom)}"><span class="ic">${I(x.icona)}</span><b>${esc(x.nom)}</b></li>`).join('')}</ol><p>Valor de l'empresa: <b>${eur(cl[pos - 1].v.total)}</b>${pos > 1 ? ' · guanya ' + esc(cl[0].e.nom) + ' (' + eur(cl[0].v.total) + ')' : ''}</p></div>
+      <div class="kpis5"><div class="kpi"><span>Vendes totals</span><b>${eur(e.hist.reduce((a, x) => a + (x.vendesTotal || x.ingressos), 0))}</b></div><div class="kpi"><span>Resultat acumulat</span><b class="${sum('resultat') >= 0 ? 'pos' : 'neg'}">${eur(sum('resultat'))}</b></div>
         <div class="kpi"><span>Clients atesos</span><b>${sum('servits')} / ${sum('clients')}</b></div><div class="kpi"><span>Reputació</span><b>${e.rep}/100</b></div><div class="kpi"><span>XP</span><b>${e.xp}</b></div></div>
       ${rec.length ? `<div class="seccio"><h2>Reconeixements</h2><div class="insignies">${rec.map(k => `<div class="insignia"><span class="ic">${I(MD.insignies[k].icona)}</span><div><b>${esc(MD.insignies[k].nom)}</b></div></div>`).join('')}</div></div>` : ''}
       <div class="seccio"><h2>Classificació del carrer</h2><table class="t"><thead><tr><th>#</th><th>Botiga</th><th class="n">Valor</th><th class="n">Resultat acumulat</th><th class="n">Reputació</th></tr></thead><tbody>
@@ -424,7 +480,7 @@
       <div class="grafs"><div class="graf"><h3>Valor de les botigues</h3><p>Evolució dia a dia.</p>${linia(S.empreses.map(x => ({ n: x.nom, c: x.color, v: x.hist.map(y => y.valor) })), dies, eur)}<div class="llegenda">${S.empreses.map(x => `<span><i style="background:${x.color}"></i>${esc(x.nom)}</span>`).join('')}</div></div>
         <div class="graf"><h3>Clients perduts per motiu</h3><p>Al llarg de tota la partida.</p>${barres([['Massa car', 'preu', '#F29D49'], ['Res per a ells', 'assortiment', '#9B7AE8'], ['Prestatgeria buida', 'esgotat', '#EF6262'], ['Massa cua', 'cua', '#E05252']].map(([n, k, c]) => ({ n, v: e.hist.reduce((a, x) => a + x.perduts[k], 0), c })), (v) => String(Math.round(v)))}</div></div>
       <div class="seccio" style="margin-top:14px"><h2>Les vostres quatre P al final</h2><p class="small"><b>Producte:</b> ${e.prestatges.slice(0, e.nPrest).filter(x => x && x.prod).map(x => esc(MD.productes[x.prod].nom) + ' (' + eur2(x.preu) + ')').join(', ')}<br>
-        <b>Distribució:</b> botiga física${e.serveis.dependent ? ', dependenta' : ''}${e.serveis.online ? ', botiga en línia' : ''}${e.serveis.horari ? ', horari ampliat' : ''} · ${e.nPrest} prestatgeries<br><b>Promoció:</b> ${eur(e.inversio.promocio)} invertits · notorietat ${Math.round(e.not)}/100</p></div>
+        <b>Distribució:</b> ${esc(ME.faseDe(e).nom.toLowerCase())}${e.botigues.length ? ' + ' + e.botigues.length + ' botigues (' + e.botigues.map(b => esc(MD.LLOCS.find(L => L.id === b.lloc).nom)).join(', ') + ')' : ''}${e.serveis.online ? ', botiga en línia' : ''}${e.serveis.horari ? ', horari ampliat' : ''}${e.b2b && e.b2b.volum ? ', venda a empreses' : ''} · ${e.nPrest} prestatgeries<br><b>Promoció:</b> ${eur(e.inversio.promocio)} invertits · notorietat ${Math.round(e.not)}/100</p></div>
       <div class="seccio"><h2>${I('llibre')} Lliçons</h2>${graellaLlicons(e)}</div>
       <div class="seccio"><h2>${I('bombeta')} Reflexió</h2><p><b>Quina de les quatre P us ha funcionat millor i quina canviaríeu? Per què?</b></p>
         <textarea class="inp" data-refl="0" rows="4">${esc((S.reflexions || {})[0] || '')}</textarea></div>
@@ -446,7 +502,7 @@
   const TUT = {
     plan: ['Bon dia! Prepara la botiga', 'Al matí decideixes les quatre P: què vens i a quin preu (Producte i preu), quant estoc demanes i quins serveis tens (Estoc i Distribució) i com et fas conèixer (Promoció). Quan ho tinguis, prem «Obrir la botiga».'],
     dia: ['La botiga és oberta!', 'Els clients agafen el producte i fan cua al taulell. Toca el taulell perquè el ninot cobri. Quan una prestatgeria es buidi, toca-la i el ninot la reposarà des del magatzem. Si un client espera massa o no troba el producte, marxa. Si et costa, activa el «Ninot automàtic».'],
-    res: ['Al vespre, mira què ha passat', 'Fixa\'t en els clients que han marxat i per què. Demà pots canviar preus, productes, estoc, serveis i promoció per corregir-ho.']
+    res: ['Al vespre, mira què ha passat', 'Fixa\'t en els clients que han marxat i per què. Demà pots canviar preus, productes, estoc, serveis i promoció per corregir-ho. Quan la botiga funcioni, a la pestanya «Empresa» la podràs fer créixer.']
   };
   function tutorial(k, fet) {
     pref.tut = pref.tut || {};
@@ -464,7 +520,7 @@
     modal(`<h2>${I('ajuda')} Com es juga</h2>
       <p>Portes una botiga d'alimentació en un carrer amb tres botigues rivals. Cada dia té tres moments:</p>
       <ol class="small" style="padding-left:18px;display:grid;gap:6px">
-        <li><b>Matí (planificació):</b> decideixes les quatre P. <span style="color:var(--p-producte)">Producte</span> i <span style="color:var(--p-preu)">preu</span> de cada prestatgeria, <span style="color:var(--p-dist)">distribució</span> (estoc, dependenta, botiga en línia, horari) i <span style="color:var(--p-promo)">promoció</span> (aparador, cartells, xarxes...).</li>
+        <li><b>Matí (planificació):</b> decideixes les quatre P. <span style="color:var(--p-producte)">Producte</span> i <span style="color:var(--p-preu)">preu</span> de cada prestatgeria, <span style="color:var(--p-dist)">distribució</span> (estoc, dependenta, botiga en línia, horari) i <span style="color:var(--p-promo)">promoció</span> (aparador, cartells, xarxes...). A la pestanya <b>Empresa</b> fas créixer el negoci: botiga gran, supermercat, cadena i gran empresa.</li>
         <li><b>Dia (botiga oberta):</b> la gent del carrer tria a quina botiga entra. A dins, el teu ninot ha de reposar les prestatgeries, cobrar al taulell i preparar les comandes en línia. Si un client no troba el que vol, el troba car o espera massa, marxa.</li>
         <li><b>Vespre (resultats):</b> vendes, costos, resultat i, sobretot, per què han marxat els clients.</li></ol>
       <p class="small">Hi ha quatre tipus de client: ${MD.SEG.map(k => I(MD.segments[k].icona) + ' <b>' + esc(MD.segments[k].nom) + '</b> (' + esc(MD.segments[k].desc.toLowerCase()) + ')').join(' · ')}</p>
@@ -556,8 +612,8 @@
     el.innerHTML = '<p class="muted small">Carregant el rànquing de la classe…</p>';
     try {
       const d = await crida({ action: 'ranking', repte: S.config.repte.codi }), jo = (S.empreses.find(x => x.humana) || {}).nom;
-      el.innerHTML = d.files.length ? `<div class="taula-w"><table class="t"><thead><tr><th>#</th><th>Equip</th><th class="n">Valor de la botiga</th><th class="n">Dia</th><th class="n">Lliçons (encerts)</th></tr></thead><tbody>
-        ${d.files.map((x, k) => `<tr class="${x.equip === jo ? 'primer' : ''}"><td><b>${k + 1}</b></td><td>${esc(x.equip)}${x.equip === jo ? ' <small class="muted">(vosaltres)</small>' : ''}${x.verificat ? '' : ' <small class="neg">⚠</small>'}</td><td class="n"><b>${eur(x.valor)}</b></td><td class="n">${x.acabada ? 'Acabada' : x.ronda + ' / ' + x.rondes}</td><td class="n">${x.llDesc} (${x.llEnc})</td></tr>`).join('')}</tbody></table></div>`
+      el.innerHTML = d.files.length ? `<div class="taula-w"><table class="t"><thead><tr><th>#</th><th>Equip</th><th class="n">Valor de l'empresa</th><th>Fase</th><th class="n">Dia</th><th class="n">Lliçons (encerts)</th></tr></thead><tbody>
+        ${d.files.map((x, k) => `<tr class="${x.equip === jo ? 'primer' : ''}"><td><b>${k + 1}</b></td><td>${esc(x.equip)}${x.equip === jo ? ' <small class="muted">(vosaltres)</small>' : ''}${x.verificat ? '' : ' <small class="neg">⚠</small>'}</td><td class="n"><b>${eur(x.valor)}</b></td><td class="small">${nomFase(x.fase)}</td><td class="n">${x.acabada ? 'Acabada' : x.ronda + (x.rondes ? ' / ' + x.rondes : '')}</td><td class="n">${x.llDesc} (${x.llEnc})</td></tr>`).join('')}</tbody></table></div>`
         : '<p class="muted small">Encara no hi ha cap equip al rànquing. El vostre resultat s\'hi envia sol en acabar cada dia.</p>';
     } catch (e) { el.innerHTML = '<p class="muted small">No s\'ha pogut carregar el rànquing de la classe (sense connexió). Podeu continuar jugant: el resultat s\'enviarà quan torni la connexió, o amb «Envia el resultat».</p>'; }
   }
@@ -593,6 +649,7 @@
     return { s, errors, p };
   }
   const slug = (t) => String(t).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const nomFase = (f) => f && MD.FASES[f - 1] ? I(MD.FASES[f - 1].icona) + ' ' + esc(MD.FASES[f - 1].nom) : '—';
   function baixaFitxer(nom, txt, tipus) { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([txt], { type: tipus })); a.download = nom; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); }
   function copia(t, camp) {
     const alt = () => { if (camp) { camp.select(); try { document.execCommand('copy'); toast('Copiat!', 'pos'); } catch (e) { toast('Seleccioneu el text i copieu-lo.', 'neg'); } } };
@@ -604,7 +661,7 @@
     const env = rep ? await enviaServidor() : null;
     modal(`<h2>${I('descarrega')} ${rep ? 'Envia el resultat al professor' : 'Codi de la partida'}</h2>
       ${rep ? (env ? `<p class="caixa small" style="border-color:#2f7a57">✔ Resultat enviat al rànquing de la classe (ronda ${S.ronda}). No cal fer res més: el codi de sota és una còpia de seguretat.</p>` : '<p class="caixa groc small">No s\'ha pogut connectar amb el servidor. Copieu el codi i feu-lo arribar al professor.</p>') : ''}
-      <p>Aquest codi conté tota la vostra partida (${S.fase === 'final' ? 'acabada' : 'fins a la ronda ' + S.ronda + ' de ' + S.config.rondes}). ${rep ? 'El professor l\'afegirà al rànquing de la classe i el joc tornarà a calcular la partida per comprovar-la.' : ''}</p>
+      <p>Aquest codi conté tota la vostra partida (${S.fase === 'final' ? 'acabada' : 'fins al dia ' + S.ronda + (S.config.rondes ? ' de ' + S.config.rondes : '')}). ${rep ? 'El professor l\'afegirà al rànquing de la classe i el joc tornarà a calcular la partida per comprovar-la.' : ''}</p>
       ${S.fase === 'final' && e && !(S.reflexions || {})[e.id] ? '<p class="caixa groc small">Abans d\'enviar-lo, escriviu la reflexió final: també va dins del codi.</p>' : ''}
       <textarea class="inp codi-res" readonly rows="5" aria-label="Codi de la partida">${esc(codi)}</textarea>
       <div class="row" style="margin-top:10px"><button class="btn prim" id="cp" data-focus>${I('ok')} Copiar el codi</button><button class="btn" id="dl">${I('descarrega')} Descarregar el fitxer</button><button class="btn ghost" id="tc">Tancar</button></div>
@@ -665,14 +722,14 @@
     $$('[data-h]').forEach(b => b.onclick = () => ({ crear: crearRepte, ranking: () => ranking() })[b.dataset.h]());
   }
   function crearRepte() {
-    const c = { nom: '', sector: 'alimentacio', rondes: 8, dificultat: 'mitja' };
+    const c = { nom: '', sector: 'alimentacio', rondes: 16, dificultat: 'mitja' };
     const draw = () => {
       app.innerHTML = `<main class="config" style="max-width:900px"><button class="btn ghost small" id="enrere">← Mode docent</button>
         <h1>Crear un repte de classe</h1>
         <label class="f" style="max-width:420px">Nom del repte (opcional)<input class="inp" id="cn" maxlength="40" value="${esc(c.nom)}" placeholder="Ex.: CM10-2A · Repte 1"></label>
-        <h2>Durada i dificultat</h2><div class="row"><div class="seg" role="group" aria-label="Rondes">${[4, 8, 12].map(r => `<button data-rondes="${r}" class="${c.rondes === r ? 'on' : ''}">${r} dies</button>`).join('')}</div>
+        <h2>Durada i dificultat</h2><div class="row"><div class="seg" role="group" aria-label="Rondes">${[8, 12, 16, 20].map(r => `<button data-rondes="${r}" class="${c.rondes === r ? 'on' : ''}">${r} dies</button>`).join('')}</div>
           <div class="seg" role="group" aria-label="Dificultat">${[['facil', 'Rivals fàcils'], ['mitja', 'Rivals normals'], ['dificil', 'Rivals difícils']].map(([k, n]) => `<button data-dif="${k}" class="${c.dificultat === k ? 'on' : ''}">${n}</button>`).join('')}</div></div>
-        <p class="small muted">Orientació: cada dia de joc dura uns 5 minuts (matí, botiga oberta i vespre). Cada equip té la partida desada al seu dispositiu i la pot continuar un altre dia.</p>
+        <p class="small muted">Orientació: cada dia de joc dura uns 5 minuts (matí, botiga oberta i vespre). Amb 16 o 20 dies, els equips que ho facin bé poden arribar a gran empresa; el rànquing mostra fins a quina fase ha arribat cada equip. Cada equip té la partida desada al seu dispositiu i la pot continuar un altre dia.</p>
         <div class="barra"><button class="btn prim big" id="gen">${I('ok')} Generar el repte</button></div></main>`;
       const llegeix = () => { c.nom = $('#cn').value.trim(); };
       $('#enrere').onclick = docent;
@@ -716,7 +773,7 @@
   function desaClasse(codi, nom) { const c = classes(); c[codi] = c[codi] || { nom: nom || '', equips: {}, creat: Date.now() }; if (nom) c[codi].nom = nom; desaClasses(c); }
   function fitxaEquip(s, e, errors) {
     const h = e.hist, cl = ME.classificacio(s), resp = (s.llicons || {})[e.id] || {};
-    return { equip: e.nom, membres: e.membres || [], ronda: s.ronda, rondes: s.config.rondes, acabada: s.fase === 'final', valor: ME.valorEmpresa(s, e).total,
+    return { equip: e.nom, membres: e.membres || [], ronda: s.ronda, rondes: s.config.rondes, acabada: s.fase === 'final', valor: ME.valorEmpresa(s, e).total, fase: e.fase || 1,
       resultat: h.reduce((a, x) => a + x.resultat, 0), quota: h.length ? h.reduce((a, x) => a + x.quota, 0) / h.length : 0, rep: Math.round(e.rep), xp: e.xp,
       posJoc: cl.findIndex(x => x.e.id === e.id) + 1, nJoc: s.empreses.length,
       llDesc: llDesbloquejades(s, e).length, llResp: Object.keys(resp).length, llEnc: Object.values(resp).filter(x => x.ok).length,
@@ -757,8 +814,8 @@
         <textarea class="inp" id="codis" rows="4" placeholder="MJ1…" spellcheck="false"></textarea>
         <div class="row" style="margin-top:8px"><button class="btn prim" id="afg">${I('mes')} Afegir al rànquing</button><label class="btn">${I('document')} Carregar fitxers<input type="file" id="fit" accept=".txt,text/plain" multiple hidden></label></div></div>
       ${cl ? `<div class="seccio"><h2>${esc(cl.nom || 'Repte')} <span class="muted small">· ${esc(sel)}${rep ? ' · ' + rep.rondes + ' dies' : ''}</span></h2>
-        ${eq.length ? `<div class="taula-w"><table class="t"><thead><tr><th>#</th><th>Equip</th><th class="n">Valor de la botiga</th><th class="n">Dia</th><th class="n">Resultat acumulat</th><th class="n">Quota mitjana</th><th class="n">Posició al carrer</th><th class="n">Lliçons</th><th class="n">Encerts</th><th>Comprovació</th></tr></thead><tbody>
-          ${eq.map((x, k) => `<tr class="${k === 0 ? 'primer' : ''} clicable" data-eq="${esc(x.equip.toLowerCase())}" tabindex="0"><td><b>${k + 1}</b></td><td><b>${esc(x.equip)}</b>${x.membres.length ? '<br><small class="muted">' + esc(x.membres.join(', ')) + '</small>' : ''}</td><td class="n"><b>${eur(x.valor)}</b></td><td class="n">${x.acabada ? 'Acabada' : x.ronda + ' / ' + x.rondes}</td><td class="n ${x.resultat >= 0 ? 'pos' : 'neg'}">${eur(x.resultat)}</td><td class="n">${pct(x.quota)}</td><td class="n">${x.posJoc}a de ${x.nJoc}</td><td class="n">${x.llDesc} / ${LL.length}</td><td class="n">${x.llEnc} / ${x.llResp}</td><td>${x.errors ? '<span class="neg">⚠ ' + x.errors + ' accions no vàlides</span>' : '<span class="pos">✔ Verificat</span>'}</td></tr>`).join('')}</tbody></table></div>
+        ${eq.length ? `<div class="taula-w"><table class="t"><thead><tr><th>#</th><th>Equip</th><th class="n">Valor de l'empresa</th><th>Fase</th><th class="n">Dia</th><th class="n">Resultat acumulat</th><th class="n">Quota mitjana</th><th class="n">Posició al carrer</th><th class="n">Lliçons</th><th class="n">Encerts</th><th>Comprovació</th></tr></thead><tbody>
+          ${eq.map((x, k) => `<tr class="${k === 0 ? 'primer' : ''} clicable" data-eq="${esc(x.equip.toLowerCase())}" tabindex="0"><td><b>${k + 1}</b></td><td><b>${esc(x.equip)}</b>${x.membres.length ? '<br><small class="muted">' + esc(x.membres.join(', ')) + '</small>' : ''}</td><td class="n"><b>${eur(x.valor)}</b></td><td class="small">${nomFase(x.fase)}</td><td class="n">${x.acabada ? 'Acabada' : x.ronda + (x.rondes ? ' / ' + x.rondes : '')}</td><td class="n ${x.resultat >= 0 ? 'pos' : 'neg'}">${eur(x.resultat)}</td><td class="n">${pct(x.quota)}</td><td class="n">${x.posJoc}a de ${x.nJoc}</td><td class="n">${x.llDesc} / ${LL.length}</td><td class="n">${x.llEnc} / ${x.llResp}</td><td>${x.errors ? '<span class="neg">⚠ ' + x.errors + ' accions no vàlides</span>' : '<span class="pos">✔ Verificat</span>'}</td></tr>`).join('')}</tbody></table></div>
           <p class="small muted">Feu clic a un equip per veure'n el detall (dies, quatre P, lliçons i reflexió). Si un equip no ha acabat, surt amb el valor del dia on és.</p>
           <div class="row"><button class="btn" id="csv">${I('descarrega')} Descarregar (CSV)</button><button class="btn" id="comp">${I('equip')} Compartir el rànquing amb la classe</button><button class="btn perill" id="esb">Esborrar aquest rànquing</button></div>` : '<p class="muted">Encara no hi ha resultats d\'aquest repte. Enganxeu-hi els codis dels equips.</p>'}</div>` : '<p class="muted">Encara no hi ha cap repte. Creeu-ne un des del mode docent o enganxeu-hi codis de resultat.</p>'}</main>`;
     $('#enrere').onclick = docent;
@@ -786,7 +843,7 @@
       baixaFitxer('mercadeja-ranquing-' + slug((cl.nom || '') + '-' + sel) + '.csv', '﻿' + rows.map(r => r.map(v => /[;"\n]/.test(String(v)) ? '"' + String(v).replace(/"/g, '""') + '"' : v).join(';')).join('\n'), 'text/csv');
     };
     $('#comp').onclick = async () => {
-      const codi = await comprimeix({ n: cl.nom || '', c: sel, r: eq.map(x => [x.equip, x.valor, x.acabada ? 0 : x.ronda, x.llEnc, x.llDesc]) });
+      const codi = await comprimeix({ n: cl.nom || '', c: sel, r: eq.map(x => [x.equip, x.valor, x.acabada ? 0 : x.ronda, x.llEnc, x.llDesc, x.fase || 0]) });
       const u = new URL(location.href); u.search = ''; u.hash = 'rk=' + codi;
       modal(`<h2>${I('equip')} Compartir el rànquing</h2><p>Qui obri aquest enllaç veurà la classificació (nom de la botiga, valor, dia i lliçons), sense noms dels membres ni detalls.</p>
         <textarea class="inp codi-res" readonly rows="4">${esc(u.href)}</textarea><div class="row" style="margin-top:10px"><button class="btn prim" id="cp" data-focus>Copiar l'enllaç</button><button class="btn ghost" id="tc">Tancar</button></div>`, (m) => {
@@ -798,11 +855,11 @@
     let s; try { s = (await deCodi(x.codi)).s; } catch (e) { return toast('No s\'ha pogut obrir aquest codi.', 'neg'); }
     const e = s.empreses[0], resp = (s.llicons || {})[0] || {}, ids = new Set(llDesbloquejades(s, e).map(l => l.id));
     const nomP = { producte: 'Producte', preu: 'Preu', distribucio: 'Distribució', promocio: 'Promoció' };
-    modal(`<h2>${esc(e.nom)}</h2><p class="muted small">${esc((e.membres || []).join(', ') || 'Sense membres indicats')} · ${s.fase === 'final' ? 'partida acabada' : 'dia ' + s.ronda + ' de ' + s.config.rondes}</p>
+    modal(`<h2>${esc(e.nom)}</h2><p class="muted small">${esc((e.membres || []).join(', ') || 'Sense membres indicats')} · ${s.fase === 'final' ? 'partida acabada' : 'dia ' + s.ronda + (s.config.rondes ? ' de ' + s.config.rondes : '')}</p>
       <div class="taula-w"><table class="t"><thead><tr><th>Dia</th><th class="n">Clients</th><th class="n">Atesos</th><th class="n">Vendes</th><th class="n">Resultat</th><th class="n">Perduts (car · res · buida · cua)</th><th>Quatre P treballades</th></tr></thead><tbody>
         ${e.hist.map(h => `<tr><td>${h.ronda}</td><td class="n">${h.clients}</td><td class="n">${h.servits}</td><td class="n">${eur(h.ingressos)}</td><td class="n ${h.resultat >= 0 ? 'pos' : 'neg'}">${eur(h.resultat)}</td><td class="n">${h.perduts.preu} · ${h.perduts.assortiment} · ${h.perduts.esgotat} · ${h.perduts.cua}</td><td class="small">${(h.us4P || []).map(k => nomP[k]).join(', ') || '—'}</td></tr>`).join('')}</tbody></table></div>
       <h3 style="margin-top:14px">Les quatre P al final</h3>
-      <p class="small"><b>Producte i preu:</b> ${e.prestatges.slice(0, e.nPrest).filter(y => y && y.prod).map(y => esc(MD.productes[y.prod].nom) + ' ' + eur2(y.preu)).join(', ')}<br><b>Distribució:</b> ${e.nPrest} prestatgeries${e.serveis.dependent ? ', dependenta' : ''}${e.serveis.online ? ', botiga en línia' : ''}${e.serveis.horari ? ', horari ampliat' : ''}<br><b>Promoció:</b> ${eur(e.inversio.promocio)} · notorietat ${Math.round(e.not)} · reputació ${Math.round(e.rep)}</p>
+      <p class="small"><b>Producte i preu:</b> ${e.prestatges.slice(0, e.nPrest).filter(y => y && y.prod).map(y => esc(MD.productes[y.prod].nom) + ' ' + eur2(y.preu)).join(', ')}<br><b>Empresa:</b> ${esc(MD.FASES[(e.fase || 1) - 1].nom)}${(e.botigues || []).length ? ' + ' + e.botigues.length + ' botigues' : ''}<br><b>Distribució:</b> ${e.nPrest} prestatgeries${e.serveis.online ? ', botiga en línia' : ''}${e.serveis.horari ? ', horari ampliat' : ''}<br><b>Promoció:</b> ${eur(e.inversio.promocio)} · notorietat ${Math.round(e.not)} · reputació ${Math.round(e.rep)}</p>
       <h3>Lliçons</h3><ul class="ll-llista">${LL.map(l => { const r = resp[l.id]; return `<li class="${r ? (r.ok ? 'ok' : 'ko') : ids.has(l.id) ? '' : 'tancada'}"><span>${r ? (r.ok ? '✔' : '✘') : ids.has(l.id) ? '·' : '🔒'}</span><b>${esc(l.titol)}</b> <small class="muted">${esc(l.ra)}${r ? ' · dia ' + r.ronda : ids.has(l.id) ? ' · sense respondre' : ' · no descoberta'}</small></li>`; }).join('')}</ul>
       <h3>Reflexió final</h3><p class="small">${x.refl ? esc(x.refl) : '<span class="muted">Encara no l\'han escrita.</span>'}</p>
       <div class="row" style="margin-top:12px"><button class="btn ghost" id="tc" data-focus>Tancar</button></div>`, (m) => { $('#tc', m).onclick = tancaModal; }, { tancable: true });
@@ -812,8 +869,8 @@
     let d; try { d = await descomprimeix(codi); } catch (e) { return portada(); }
     app.innerHTML = `<main class="config" style="max-width:900px">${logo(true)}
       <h1>${I('trofeu')} Rànquing${d.n ? ': ' + esc(d.n) : ''}</h1><p class="muted">Repte ${esc(d.c || '')} · classificació per valor empresarial.</p>
-      <div class="taula-w"><table class="t"><thead><tr><th>#</th><th>Equip</th><th class="n">Valor de la botiga</th><th class="n">Dia</th><th class="n">Lliçons (encerts)</th></tr></thead><tbody>
-        ${(d.r || []).map((x, k) => `<tr class="${k === 0 ? 'primer' : ''}"><td><b>${k + 1}</b></td><td><b>${esc(x[0])}</b></td><td class="n"><b>${eur(x[1])}</b></td><td class="n">${x[2] ? x[2] : 'Acabada'}</td><td class="n">${x[4]} (${x[3]})</td></tr>`).join('')}</tbody></table></div>
+      <div class="taula-w"><table class="t"><thead><tr><th>#</th><th>Equip</th><th class="n">Valor de l'empresa</th><th>Fase</th><th class="n">Dia</th><th class="n">Lliçons (encerts)</th></tr></thead><tbody>
+        ${(d.r || []).map((x, k) => `<tr class="${k === 0 ? 'primer' : ''}"><td><b>${k + 1}</b></td><td><b>${esc(x[0])}</b></td><td class="n"><b>${eur(x[1])}</b></td><td class="small">${nomFase(x[5])}</td><td class="n">${x[2] ? x[2] : 'Acabada'}</td><td class="n">${x[4]} (${x[3]})</td></tr>`).join('')}</tbody></table></div>
       <div class="row" style="margin-top:14px"><button class="btn prim" id="menu">${I('play')} Anar a Mercadeja</button></div></main>`;
     $('#menu').onclick = () => { history.replaceState(null, '', location.pathname + location.search); portada(); };
   }
