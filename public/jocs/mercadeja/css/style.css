@@ -394,3 +394,9 @@ body.redueix *, body.redueix *::before, body.redueix *::after { animation: none 
 .fase-cartell { position: absolute; left: 14px; top: 8px; z-index: 3; font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: rgba(15, 23, 42, .78); color: #fff; display: flex; gap: 5px; align-items: center; pointer-events: none; }
 .fase-cartell svg { width: 14px; height: 14px; }
 .nevera { position: absolute; left: 30px; top: 470px; width: 46px; height: 92px; border-radius: 6px; background: linear-gradient(#dbeafe, #93c5fd); border: 2px solid #64748b; display: grid; place-items: center; font-size: 22px; color: #1e3a8a; z-index: 2; }
+
+/* ---------- Compte d'alumne ---------- */
+.compte-box { display: flex; gap: 10px; align-items: center; justify-content: center; flex-wrap: wrap; margin: 0 0 14px; padding: 10px 12px; border: 1px solid var(--sup2); border-radius: 12px; background: rgba(15, 23, 42, .55); text-align: left; }
+.compte-box > span { flex: 1 1 200px; }
+.compte-box svg { width: 18px; height: 18px; }
+.fcompte { display: grid; gap: 10px; }

@@ -22,7 +22,7 @@ function juga(cfg, estrategia, habilitat = 0.9, rondes) {
     if (s.fase === 'planificacio') {
       const e = ME.jugador(s);
       estrategia(s, e, fa);
-      e.prestatges.slice(0, e.nPrest).filter(x => x && x.prod).forEach(x => {
+      if (!estrategia.comandes) e.prestatges.slice(0, e.nPrest).filter(x => x && x.prod).forEach(x => {
         const n = e.prestatges.slice(0, e.nPrest).filter(y => y && y.prod).length, falta = Math.ceil(240 / n) - (e.estoc[x.prod] || 0);
         if (falta > 0) fa({ tipus: 'comanda', prod: x.prod, caixes: Math.min(20, Math.ceil(falta / 10)) });
       });
@@ -117,14 +117,66 @@ t(MD.SEG.every(k => MD.PROD.filter(p => ME.encaix(k, p) >= MD.segments[k].min).l
   t(ME.repetir(p.cfg, ME.descompacta(p.reg)).errors > 0, 'uns resultats inventats es detecten');
 }
 
+const CREIX = ['autoservei', 'marcaPropia', 'fidelitzacio', 'cadenes', 'b2b', 'mitjans', 'escala'];
 /* ---------- Lliçons ---------- */
 {
   const s = juga({ llavor: 31 }, ESTR.equilibrada), e = s.empreses[0], resp = s.llicons[0] || {};
   t(LL.llicons.length >= 15 && new Set(LL.llicons.map(l => l.id)).size === LL.llicons.length, 'lliçons amb identificador únic');
   t(LL.llicons.every(l => /RA\d/.test(l.ra) && l.cos.length && l.pregunta.o.length === 4), 'cada lliçó té RA, contingut i quatre opcions');
   t(LL.llicons.every(l => { try { return typeof l.exemple(s, e, ME, MD) === 'string'; } catch (x) { console.log(l.id, x.message); return false; } }), 'els exemples de les lliçons funcionen amb dades reals');
-  t(Object.keys(resp).length === LL.llicons.length, 'en 8 dies es desbloquegen totes les lliçons (' + Object.keys(resp).length + ')');
+  const basiques = LL.llicons.filter(l => !CREIX.includes(l.id));
+  t(basiques.every(l => resp[l.id]), 'en 8 dies es desbloquegen totes les lliçons de la botiga petita (' + Object.keys(resp).length + ' de ' + basiques.length + ')');
+  t(CREIX.every(id => !resp[id]), 'les lliçons del creixement esperen que l\'empresa creixi');
   t(Object.values(resp).some(x => !x.ok) && Object.values(resp).some(x => x.ok), 'es registren encerts i errors');
+}
+
+/* ---------- Créixer: de rebost de barri a gran empresa ---------- */
+{
+  // Regles de les accions noves
+  const s = ME.crearPartida({ llavor: 9, rondes: 0, empreses: [{ nom: 'Jo', humana: true }] }); ME.iniciarDia(s);
+  const e = ME.jugador(s), A = (a) => ME.accio(s, a);
+  t(s.config.rondes === 0, 'mode lliure (sense límit de dies)');
+  t(!A({ tipus: 'creixer' }).ok, 'no es pot créixer sense valor ni diners');
+  t(!A({ tipus: 'b2b', prod: 'motlle', volum: 200 }).ok && !A({ tipus: 'obrirBotiga', lloc: 'tona' }).ok, 'la venda a empreses i la cadena són per a empreses grans');
+  t(A({ tipus: 'personal', rol: 'caixera', n: 1 }).ok && !A({ tipus: 'personal', rol: 'caixera', n: 2 }).ok && !A({ tipus: 'personal', rol: 'reposador', n: 1 }).ok, 'el personal depèn de la mida de la botiga');
+  t(!A({ tipus: 'producte', slot: 0, prod: 'mpllet' }).ok, 'la marca pròpia cal crear-la abans');
+  t(!A({ tipus: 'prestec', import: MD.PRESTEC.max[0] + 1 }).ok && A({ tipus: 'prestec', import: 1000 }).ok && e.deute === 1000, 'préstec amb límit segons la fase');
+  for (let k = e.nPrest; k < 6; k++) A({ tipus: 'prestatge' });
+  A({ tipus: 'producte', slot: 0, prod: 'motlle' }); A({ tipus: 'comanda', prod: 'motlle', caixes: 5 }); A({ tipus: 'obrir' });
+  const h = A({ tipus: 'tancar', res: s.dia.clients.map(c => [c.id, 0, c.motiu || 3]) }).h;
+  t(h.interessos === 10 && h.personal === MD.PERSONAL.caixera.cost, 'interessos i sous al compte de resultats');
+  t(A({ tipus: 'acabar' }).ok && s.fase === 'final', 'en mode lliure es pot acabar quan es vulgui');
+  const s8 = ME.crearPartida({ llavor: 9, rondes: 8, empreses: [{ nom: 'Jo', humana: true }] }); ME.iniciarDia(s8);
+  t(!ME.accio(s8, { tipus: 'acabar' }).ok, 'amb dies fixos no es pot acabar abans');
+}
+{
+  // Un bon jugador fa créixer l'empresa en 20 dies
+  const desitjat = ['motlle', 'llet', 'fruita', 'formatge', 'pages', 'kombutxa', 'granel', 'lleteco', 'fuet', 'hummus'];
+  const creixer = (s, e, fa) => {
+    const des = desitjat.slice(); if (e.millores.marca) { des.splice(1, 1, 'mpllet'); des.splice(6, 1, 'mpcistella'); }
+    for (let k = 0; k < e.nPrest; k++) if (!e.prestatges[k].prod || e.prestatges[k].prod !== des[k]) fa({ tipus: 'producte', slot: k, prod: des[k] });
+    const sf = ME.seguentFase(s, e); if (sf && sf.pot && e.diners - sf.F.cost > 600) fa({ tipus: 'creixer' });
+    const F = ME.faseDe(e);
+    while (e.nPrest < F.slots && e.diners > MD.PRESTATGE_COST + 800) { fa({ tipus: 'prestatge' }); fa({ tipus: 'producte', slot: e.nPrest - 1, prod: des[e.nPrest - 1] }); }
+    ['nevera', 'marca', 'targeta', 'online'].forEach(k => { if (e.fase >= MD.MILLORES[k].fase && !e.millores[k] && e.diners > MD.MILLORES[k].cost + 1000) fa({ tipus: 'millora', k }); });
+    fa({ tipus: 'personal', rol: 'caixera', n: Math.min(F.caixes, e.fase >= 2 ? 2 : 1) }); fa({ tipus: 'personal', rol: 'reposador', n: F.reposadors });
+    if (e.fase >= 4) { const L = MD.LLOCS.slice().sort((x, y) => x.obrir - y.obrir).find(x => !e.botigues.some(b => b.lloc === x.id)); if (L && e.diners < L.obrir + 300 && MD.PRESTEC.max[e.fase - 1] > e.deute) fa({ tipus: 'prestec', import: Math.min(MD.PRESTEC.max[e.fase - 1] - e.deute, L.obrir + 300 - Math.floor(e.diners)) }); }
+    if (e.fase >= 4) MD.LLOCS.slice().sort((a, b) => a.obrir - b.obrir).forEach(L => { if (!e.botigues.some(b => b.lloc === L.id) && e.diners > L.obrir + 200) fa({ tipus: 'obrirBotiga', lloc: L.id }); });
+    if (e.fase >= 5) fa({ tipus: 'b2b', prod: 'motlle', volum: 200 });
+    fa({ tipus: 'promo', promo: 'xarxes' }); if (e.fase >= 5 && e.diners > 2500) fa({ tipus: 'promo', promo: 'televisio' });
+    e.prestatges.slice(0, e.nPrest).filter(x => x && x.prod).forEach(x => { const v = e.darrer ? (e.darrer.venuts[x.prod] || 15) : 30, falta = Math.ceil(v * 1.2) - (e.estoc[x.prod] || 0); if (falta > 0) fa({ tipus: 'comanda', prod: x.prod, caixes: Math.min(20, Math.ceil(falta / 10)) }); });
+  };
+  creixer.comandes = true;
+  let fases = [], s = null;
+  for (const ll of [3, 17, 41]) { s = juga({ llavor: ll }, creixer, 0.97, 20); fases.push(s.empreses[0].fase); }
+  const e = s.empreses[0], resp = s.llicons[0] || {};
+  console.log('Fase final d\'un bon jugador en 20 dies:', fases.join(', '), '· valor', ME.valorEmpresa(s, e).total, '· botigues', e.botigues.length);
+  t(fases.every(f => f >= 4), 'un bon jugador arriba com a mínim a cadena de botigues');
+  t(e.hist.some(h => h.cadena && h.cadena.length) && e.hist.some(h => h.personal > 0), 'la cadena i el personal entren al resultat');
+  t(CREIX.filter(id => resp[id]).length >= 3, 'surten les lliçons del creixement (' + CREIX.filter(id => resp[id]).join(', ') + ')');
+  t(LL.llicons.every(l => { try { return typeof l.exemple(s, e, ME, MD) === 'string'; } catch (x) { console.log(l.id, x.message); return false; } }), 'els exemples funcionen amb una empresa gran');
+  const r = ME.repetir(s.config, ME.descompacta(ME.compacta(s.reg)));
+  t(!r.errors && r.s.empreses[0].fase === e.fase && ME.valorEmpresa(r.s, r.s.empreses[0]).total === ME.valorEmpresa(s, e).total, 'una partida amb creixement es reprodueix igual (verificació del servidor)');
 }
 
 /* ---------- Equilibri ---------- */

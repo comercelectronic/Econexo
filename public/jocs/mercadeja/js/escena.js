@@ -196,7 +196,7 @@
     const caixaNinot = nCaixes ? 'caixa2' : 'caixa';
     const ninot = nouAgent('ninot', 0, null, N[caixaNinot][0], N[caixaNinot][1]);
     if (!totesCaixes) { ninot.tasca = { tipus: 'cobrar' }; ninot.fase = 'anar'; ninot.persist = 'cobrar'; } else { ninot.x = N.dins[0] + 30; ninot.y = N.dins[1] + 30; posa(ninot); }
-    const caixers = Array.from({ length: nCaixes }, (_, k) => ({ ag: nouAgent('dependenta', 5 + k * 7, null, N[k ? 'caixa2' : 'caixa'][0], N[k ? 'caixa2' : 'caixa'][1]), vel: 1.4, act: null, t: 0 }));
+    const caixers = Array.from({ length: nCaixes }, (_, k) => ({ ag: nouAgent('dependenta', 5 + k * 7, null, N[k ? 'caixa2' : 'caixa'][0], N[k ? 'caixa2' : 'caixa'][1]), vel: F.n >= 3 ? 0.75 : 1.1, act: null, t: 0 }));
     const srvNinot = { ag: ninot, vel: 1, act: null, t: 0, ninot: true };
     const reposadors = Array.from({ length: e.personal.reposador }, (_, k) => { const r = nouAgent('reposador', 11 + k * 5, null, W - 130 - k * 40, 565); r.tasca = null; return r; });
     const cua = [];  // agents a la cua del taulell

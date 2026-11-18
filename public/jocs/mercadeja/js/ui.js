@@ -14,8 +14,27 @@
   let pref = { redueix: false, privat: false };
   try { pref = Object.assign(pref, JSON.parse(localStorage.getItem(PREF) || '{}')); } catch (e) { }
   const desaPref = () => { try { localStorage.setItem(PREF, JSON.stringify(pref)); } catch (e) { } document.body.classList.toggle('redueix', !!pref.redueix); };
-  const desa = () => { try { if (S) localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { } };
-  const carrega = () => { try { return JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { return null; } };
+  const desa = () => { try { if (S) localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { } programaNuvol(); };
+  /* ---------- Compte d'alumne: la partida es desa al núvol i el professor en veu el progrés ---------- */
+  const KCOMPTE = 'mercadeja-compte-v1';
+  let compte = (() => { try { return JSON.parse(localStorage.getItem(KCOMPTE) || 'null'); } catch (e) { return null; } })();
+  const desaCompte = (c) => { compte = c; try { if (c) localStorage.setItem(KCOMPTE, JSON.stringify(c)); else localStorage.removeItem(KCOMPTE); } catch (e) { } };
+  let tmNuvol = null, nuvolEstat = '';
+  function programaNuvol(ara) { if (!compte || !S || !S.regOk) return; clearTimeout(tmNuvol); tmNuvol = setTimeout(desaNuvol, ara ? 50 : 4000); }
+  async function desaNuvol() {
+    if (!compte || !S || !S.regOk) return;
+    const s0 = S;
+    try {
+      const r = await crida({ action: 'desar', token: compte.token, codi: await codiDe(s0) });
+      nuvolEstat = r.desat ? 'ok' : 'vell';
+    } catch (e) {
+      nuvolEstat = 'err';
+      if (/sessió/i.test(e.message)) { desaCompte(null); toast('La sessió ha caducat: torna a entrar amb el teu usuari perquè es desi la partida.', 'neg'); }
+    }
+    const x = document.querySelector('#nuvol'); if (x) x.outerHTML = chipNuvol();
+  }
+  const chipNuvol = () => compte ? `<span class="chip amaga-mobil" id="nuvol" title="${nuvolEstat === 'err' ? 'No s\'ha pogut desar al núvol (sense connexió?)' : 'La partida es desa al teu compte'}">${I(nuvolEstat === 'err' ? 'avis' : 'usuari')} ${esc(compte.usuari)}${nuvolEstat === 'err' ? ' ⚠' : ''}</span>` : '';
+  const carrega = () => { try { return ME.migra(JSON.parse(localStorage.getItem(KEY) || 'null')); } catch (e) { return null; } };
   const vel = (ms) => pref.redueix ? Math.min(ms, 120) : ms;
   const uid = () => 'a' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
   const sec = () => MD.sectors[S.config.sector];
@@ -125,7 +144,9 @@
     app.innerHTML = `<main class="portada">${skylineSVG()}
       <div class="portada-box">
         ${logo(true)}
-        <p class="lema">Porta la teva botiga de barri: tria què vens i a quin preu, fes-te conèixer i atén els clients abans que marxin a la competència.</p>
+        <p class="lema">Comença amb un rebost de barri i fes-lo créixer fins a una gran empresa: tria què vens i a quin preu, fes-te conèixer i atén els clients abans que marxin a la competència.</p>
+        <div class="compte-box">${compte ? `${I('usuari')} <span><b>${esc(compte.nom)}</b> <small class="muted">${esc(compte.usuari)} · grup ${esc(compte.classe)}</small></span><button class="btn small ghost" data-a="surt">Tancar la sessió</button>`
+          : `<span class="small">Entra amb el teu usuari perquè la partida es desi i el professor en vegi el progrés.</span><button class="btn small prim" data-a="compte">${I('usuari')} Entrar o crear compte</button>`}</div>
         <nav class="menu" aria-label="Menú principal">
           ${pot ? `<button class="btn prim big" data-a="continua">${I('play')} Continua <small>${esc(desat.empreses[0].nom)} · dia ${desat.ronda}${desat.config.rondes ? ' de ' + desat.config.rondes : ''} · ${esc(MD.FASES[(desat.empreses[0].fase || 1) - 1].nom)}</small></button>` : ''}
           <button class="btn ${pot ? '' : 'prim'} big" data-a="juga">${I('botiga')} Juga <small>la teva botiga</small></button>
@@ -144,7 +165,47 @@
       else if (a === 'repte') repte();
       else if (a === 'docent') docent();
       else if (a === 'ajuda') ajuda();
+      else if (a === 'compte') modalCompte();
+      else if (a === 'surt') confirma('Vols tancar la sessió? La partida queda desada al teu compte i en aquest navegador.', () => { desaCompte(null); portada(); });
     });
+  }
+  function modalCompte(mode) {
+    mode = mode || 'entrar';
+    const reg = mode === 'registre';
+    modal(`<h2>${I('usuari')} ${reg ? 'Crear un compte' : 'Entrar'}</h2>
+      <div class="seg" role="tablist" style="margin-bottom:12px"><button data-m="entrar" class="${reg ? '' : 'on'}">Ja tinc compte</button><button data-m="registre" class="${reg ? 'on' : ''}">Crear un compte</button></div>
+      <form id="fc" class="fcompte">
+        ${reg ? `<label class="f">Nom i cognom<input class="inp" id="cN" maxlength="60" autocomplete="name" required></label>
+        <label class="f">Codi de grup <small class="muted">(te'l dona el professor, p. ex. CM10-2A)</small><input class="inp" id="cG" maxlength="32" required></label>` : ''}
+        <label class="f">Nom d'usuari<input class="inp" id="cU" maxlength="24" autocomplete="username" autocapitalize="none" spellcheck="false" required ${reg ? 'placeholder="lletres, números, punts o guions"' : ''}></label>
+        <label class="f">Contrasenya<input class="inp" id="cP" type="password" maxlength="100" autocomplete="${reg ? 'new-password' : 'current-password'}" required ${reg ? 'placeholder="mínim 6 caràcters"' : ''}></label>
+        <p class="small neg" id="cE" role="alert"></p>
+        <div class="row"><button class="btn prim" id="cOk" type="submit">${reg ? 'Crear el compte' : 'Entrar'}</button><button class="btn ghost" type="button" id="tc">Cancel·lar</button></div>
+        ${reg ? '' : '<p class="small muted">Si no recordes la contrasenya, demana al professor que te la canviï.</p>'}
+      </form>`, (m) => {
+      $$('[data-m]', m).forEach(b => b.onclick = () => { tancaModal(); modalCompte(b.dataset.m); });
+      $('#tc', m).onclick = tancaModal;
+      $('#fc', m).onsubmit = async (ev) => {
+        ev.preventDefault(); const bt = $('#cOk', m); bt.disabled = true; $('#cE', m).textContent = '';
+        try {
+          const d = await crida(reg ? { action: 'registre', usuari: $('#cU', m).value, contrasenya: $('#cP', m).value, nom: $('#cN', m).value, classe: $('#cG', m).value } : { action: 'entrar', usuari: $('#cU', m).value, contrasenya: $('#cP', m).value });
+          desaCompte(Object.assign({ token: d.token }, d.compte));
+          await recuperaPartida(d.partida);
+          tancaModal(); toast(reg ? 'Compte creat! A partir d\'ara la partida es desa al teu compte.' : 'Hola, ' + d.compte.nom + '!', 'pos'); portada();
+        } catch (e) { $('#cE', m).textContent = e.message; bt.disabled = false; }
+      };
+      $('#cU', m).focus();
+    }, { tancable: true });
+  }
+  // En entrar: es fa servir la partida més avançada (la del núvol o la d'aquest navegador) i es desa a tots dos llocs
+  async function recuperaPartida(p) {
+    const local = carrega();
+    let nuvol = null; if (p && p.codi) { try { nuvol = (await deCodi(p.codi)).s; } catch (e) { } }
+    const mateixa = local && nuvol && local.config.llavor === nuvol.config.llavor;
+    if (nuvol && (!local || !mateixa || nuvol.ronda > local.ronda || (nuvol.ronda === local.ronda && nuvol.reg.length > (local.reg || []).length))) {
+      if (local && !mateixa && local.fase !== 'final' && local.regOk) { S = local; await desaNuvol(); S = null; }  // partida d'aquest navegador sense desar al compte
+      S = nuvol; try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { } S = null;
+    } else if (local && local.regOk) { S = local; await desaNuvol(); S = null; }
   }
   function configurar() {
     const cfg = { nom: '', rondes: 16, dificultat: 'mitja' };
@@ -198,7 +259,7 @@
         <span class="chip fase">${esc(ME.NOM_FASE[S.fase])}</span>
         <span class="chip"><b>${esc(e.nom)}</b></span>
         <span class="chip diners">${I('moneda')} ${eur(e.diners)}</span>
-        ${S.config.repte ? `<span class="chip amaga-mobil">${I('equip')} ${esc(S.config.repte.nom || S.config.repte.codi)}</span>` : ''}${extra || ''}</div>
+        ${S.config.repte ? `<span class="chip amaga-mobil">${I('equip')} ${esc(S.config.repte.nom || S.config.repte.codi)}</span>` : ''}${chipNuvol()}${extra || ''}</div>
       <div class="acc"><button class="btn small ghost" id="bLl" aria-label="Lliçons">${I('llibre')} <span class="amaga-mobil">Lliçons</span> <b class="nll">${p.n}/${LL.length}</b>${pend ? '<i class="punt"></i>' : ''}</button>
         ${S.config.repte ? `<button class="btn small ghost" id="bEnvia" aria-label="Envia el resultat">${I('descarrega')}</button>` : ''}
         <button class="btn small ghost" id="bAjuda" aria-label="Com es juga">${I('ajuda')}</button><button class="btn small ghost" id="bMenu" aria-label="Menú">${I('tauler')}</button></div></header>`;
@@ -408,8 +469,8 @@
     dia = MBOT.dia($('#escena'), S, {
       auto: ui.auto, pausa: primer,
       avis: (t) => toast(t),
-      onEstat: (st) => { $('#hora').innerHTML = I('rellotge') + ' ' + st.hora; $('#kV').textContent = eur(st.vendes); $('#kA').textContent = st.atesos; $('#kP').textContent = st.perduts; $('#kC').textContent = st.cua; $('#kT').style.width = Math.min(100, st.fr / 0.9 * 100) + '%'; },
-      onFi: (res) => { dia = null; const r = fa({ tipus: 'tancar', res }); if (!r.ok) { toast(r.err, 'neg'); return; } desa(); if (S.config.repte) enviaServidor(); pantallaResultats(); }
+      onEstat: (st) => { if (!$('#hora')) return; $('#hora').innerHTML = I('rellotge') + ' ' + st.hora; $('#kV').textContent = eur(st.vendes); $('#kA').textContent = st.atesos; $('#kP').textContent = st.perduts; $('#kC').textContent = st.cua; $('#kT').style.width = Math.min(100, st.fr / 0.9 * 100) + '%'; },
+      onFi: (res) => { dia = null; const r = fa({ tipus: 'tancar', res }); if (!r.ok) { toast(r.err, 'neg'); return; } desa(); programaNuvol(true); if (S.config.repte) enviaServidor(); pantallaResultats(); }
     });
     $$('[data-v]').forEach(b => b.onclick = () => { const v = +b.dataset.v; $$('[data-v]').forEach(x => x.classList.toggle('on', x === b)); if (!dia) return; if (v === 0) dia.pausa(true); else { dia.pausa(false); dia.velocitat(v); } });
     $('#auto').onchange = (ev) => { ui.auto = ev.target.checked; if (dia) dia.auto(ui.auto); };
@@ -488,6 +549,7 @@
       <div class="row" style="justify-content:center"><button class="btn" id="baixa">${I('descarrega')} Resultats (CSV)</button><button class="btn" id="json">${I('descarrega')} Partida (JSON)</button><button class="btn prim big" id="menu">${I('tauler')} Tornar al menú</button></div></main>`;
     $$('[data-refl]').forEach(t => t.oninput = () => { S.reflexions = S.reflexions || {}; S.reflexions[0] = t.value; desa(); if (S.config.repte) enviaAviat(); });
     if (S.config.repte && !(S.enviat && S.enviat.final && S.enviat.ok)) enviaServidor();
+    programaNuvol(true);
     $('#baixa').onclick = () => baixaFitxer('mercadeja-resultats.csv', '﻿' + ME.csvResultats(S), 'text/csv');
     $('#json').onclick = () => baixaFitxer('mercadeja-partida.json', JSON.stringify(S), 'application/json');
     $('#menu').onclick = portada;
@@ -521,6 +583,7 @@
       <p>Portes una botiga d'alimentació en un carrer amb tres botigues rivals. Cada dia té tres moments:</p>
       <ol class="small" style="padding-left:18px;display:grid;gap:6px">
         <li><b>Matí (planificació):</b> decideixes les quatre P. <span style="color:var(--p-producte)">Producte</span> i <span style="color:var(--p-preu)">preu</span> de cada prestatgeria, <span style="color:var(--p-dist)">distribució</span> (estoc, dependenta, botiga en línia, horari) i <span style="color:var(--p-promo)">promoció</span> (aparador, cartells, xarxes...). A la pestanya <b>Empresa</b> fas créixer el negoci: botiga gran, supermercat, cadena i gran empresa.</li>
+        <li><b>Compte:</b> si entres amb el teu usuari i contrasenya (a la portada), la partida es desa al servidor, la pots continuar des de qualsevol ordinador o mòbil i el professor en veu el progrés.</li>
         <li><b>Dia (botiga oberta):</b> la gent del carrer tria a quina botiga entra. A dins, el teu ninot ha de reposar les prestatgeries, cobrar al taulell i preparar les comandes en línia. Si un client no troba el que vol, el troba car o espera massa, marxa.</li>
         <li><b>Vespre (resultats):</b> vendes, costos, resultat i, sobretot, per què han marxat els clients.</li></ol>
       <p class="small">Hi ha quatre tipus de client: ${MD.SEG.map(k => I(MD.segments[k].icona) + ' <b>' + esc(MD.segments[k].nom) + '</b> (' + esc(MD.segments[k].desc.toLowerCase()) + ')').join(' · ')}</p>
@@ -716,10 +779,52 @@
       <p class="muted">El repte és un codi. Els equips envien el resultat sols en acabar cada dia i el servidor torna a jugar cada partida per comprovar-la abans de posar-la al rànquing. Si no hi ha connexió, també funciona amb codis de resultat.</p>
       <div class="cards">
         <button class="opcio" data-h="crear"><b>${I('mes')} Crear un repte de classe</b><span>Genera un codi i un enllaç. Cada equip juga al seu dispositiu la mateixa partida.</span></button>
+        <button class="opcio" data-h="alumnes"><b>${I('usuari')} Alumnes</b><span>Progrés de cada alumne amb compte: fase, dia, valor de l'empresa i lliçons. Canvieu contrasenyes oblidades.</span></button>
         <button class="opcio" data-h="ranking"><b>${I('trofeu')} Rànquing de la classe</b><span>Enganxeu els codis de resultat: classificació, lliçons apreses i decisions de cada equip.</span></button>
       </div></main>`;
     $('#enrere').onclick = portada;
-    $$('[data-h]').forEach(b => b.onclick = () => ({ crear: crearRepte, ranking: () => ranking() })[b.dataset.h]());
+    $$('[data-h]').forEach(b => b.onclick = () => ({ crear: crearRepte, ranking: () => ranking(), alumnes: () => alumnes() })[b.dataset.h]());
+  }
+  async function alumnes(grup) {
+    const pw = pwDocent();
+    app.innerHTML = `<main class="config" style="max-width:1200px"><button class="btn ghost small" id="enrere">← Mode docent</button>
+      <h1>${I('usuari')} Alumnes</h1>
+      <p class="muted">Cada alumne crea el compte des de la portada del joc amb el codi de grup que li doneu (per exemple, CM10-2A). La partida es desa sola al servidor, que la torna a jugar per comprovar-la.</p>
+      <div class="row"><input class="inp" type="password" id="pwA" style="max-width:240px" placeholder="Contrasenya del professorat" value="${esc(pw)}" aria-label="Contrasenya del professorat"><button class="btn prim" id="carA">${I('descarrega')} Carregar</button><span id="grA"></span></div>
+      <p class="small" id="estA"></p><div id="taA"></div></main>`;
+    $('#enrere').onclick = docent;
+    const carrega = async () => {
+      const pw2 = $('#pwA').value; $('#estA').textContent = 'Carregant…';
+      try {
+        const d = await crida({ action: 'alumnes', password: pw2 });
+        try { sessionStorage.setItem('mercadeja-pw', pw2); } catch (e) { }
+        const g = grup && d.grups.includes(grup) ? grup : '';
+        $('#grA').innerHTML = d.grups.length ? `<select class="inp" id="selG" aria-label="Grup"><option value="">Tots els grups (${d.alumnes.length})</option>${d.grups.map(x => `<option ${x === g ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select>` : '';
+        if ($('#selG')) $('#selG').onchange = () => { grup = $('#selG').value; carrega(); };
+        const ll = d.alumnes.filter(a => !g || a.classe === g);
+        $('#estA').textContent = ll.length ? '' : 'Encara no hi ha cap alumne' + (g ? ' en aquest grup.' : ' amb compte.');
+        const data = (t) => t ? new Date(t).toLocaleString('ca', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—';
+        $('#taA').innerHTML = ll.length ? `<div class="taula-w"><table class="t"><thead><tr><th>Alumne</th><th>Grup</th><th>Botiga</th><th>Fase</th><th class="n">Dia</th><th class="n">Valor</th><th class="n">Lliçons</th><th class="n">Encerts</th><th>Darrer desat</th><th></th></tr></thead><tbody>
+          ${ll.map(a => { const p = a.partida; return `<tr><td><b>${esc(a.nom)}</b><br><small class="muted">${esc(a.usuari)}</small></td><td>${esc(a.classe)}</td>
+            <td>${p ? esc(p.botiga) + (p.repte ? ' <small class="muted">(repte)</small>' : '') + (a.partides > 1 ? `<br><small class="muted">${a.partides} partides · millor ${eur(a.millor)}</small>` : '') : '<span class="muted">Sense partida</span>'}</td>
+            <td class="small">${p ? nomFase(p.fase) + (p.botigues ? ' · ' + p.botigues + ' botigues' : '') : ''}</td><td class="n">${p ? (p.acabada ? 'Acabada (' + p.ronda + ')' : p.ronda + (p.rondes ? ' / ' + p.rondes : '')) : ''}</td>
+            <td class="n">${p ? '<b>' + eur(p.valor) + '</b>' : ''}</td><td class="n">${p ? p.llDesc + ' / ' + LL.length : ''}</td><td class="n">${p ? p.llEnc + ' / ' + p.llResp : ''}</td>
+            <td class="small">${data(p ? p.at : a.darrer)}${p && !p.verificat ? ' <span class="neg">⚠</span>' : ''}</td>
+            <td><div class="row" style="flex-wrap:nowrap">${p ? `<button class="btn small" data-veu="${esc(a.usuari)}">Veure</button>` : ''}<button class="btn small ghost" data-pwu="${esc(a.usuari)}" title="Canviar la contrasenya">${I('clau')}</button></div></td></tr>`; }).join('')}</tbody></table></div>
+          <div class="row" style="margin-top:10px"><button class="btn" id="csvA">${I('descarrega')} Descarregar (CSV)</button></div>` : '';
+        $$('[data-veu]').forEach(b => b.onclick = async () => { try { const x = await crida({ action: 'alumne', password: pw2, usuari: b.dataset.veu }); await detallEquip({ codi: x.codi, refl: x.refl }); } catch (e) { toast(e.message, 'neg'); } });
+        $$('[data-pwu]').forEach(b => b.onclick = () => modal(`<h2>Nova contrasenya per a ${esc(b.dataset.pwu)}</h2><p class="small muted">L'alumne haurà de tornar a entrar amb aquesta contrasenya. La partida no es perd.</p>
+          <input class="inp" id="npw" minlength="6" maxlength="100" placeholder="mínim 6 caràcters" aria-label="Contrasenya nova"><p class="small neg" id="npE"></p><div class="row"><button class="btn prim" id="npOk">Canviar</button><button class="btn ghost" id="tc">Cancel·lar</button></div>`, (m) => {
+          $('#tc', m).onclick = tancaModal;
+          $('#npOk', m).onclick = async () => { try { await crida({ action: 'alumne-contrasenya', password: pw2, usuari: b.dataset.pwu, nova: $('#npw', m).value }); tancaModal(); toast('Contrasenya canviada.', 'pos'); } catch (e) { $('#npE', m).textContent = e.message; } };
+        }, { tancable: true }));
+        if ($('#csvA')) $('#csvA').onclick = () => { const q = (v) => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+          baixaFitxer('mercadeja-alumnes.csv', '\ufeff' + [['Alumne', 'Usuari', 'Grup', 'Botiga', 'Fase', 'Dia', 'Acabada', 'Valor', 'Resultat', 'Lliçons descobertes', 'Lliçons respostes', 'Encerts', 'Darrer desat'].map(q).join(';')]
+            .concat(ll.map(a => { const p = a.partida || {}; return [a.nom, a.usuari, a.classe, p.botiga, p.fase ? MD.FASES[p.fase - 1].nom : '', p.ronda, p.acabada ? 'sí' : 'no', p.valor, p.resultat != null ? Math.round(p.resultat) : '', p.llDesc, p.llResp, p.llEnc, p.at ? new Date(p.at).toISOString() : ''].map(q).join(';'); })).join('\n'), 'text/csv'); };
+      } catch (e) { $('#estA').textContent = e.message; }
+    };
+    $('#carA').onclick = carrega;
+    if (pw) carrega();
   }
   function crearRepte() {
     const c = { nom: '', sector: 'alimentacio', rondes: 16, dificultat: 'mitja' };

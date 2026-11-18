@@ -53,6 +53,18 @@
     emp.diners = r2(emp.diners + imp);
     s.log.push({ ronda: s.ronda, fase: s.fase, emp: emp.id, empresa: emp.nom, tipus: tipus || (imp > 0 ? 'ingres' : 'despesa'), concepte, import: r2(imp), saldo: emp.diners });
   }
+  // Partides desades amb la versió anterior (sense fases): hi afegeix els camps nous
+  E.migra = function (s) {
+    if (!s || !Array.isArray(s.empreses)) return s;
+    s.empreses.forEach(e => {
+      if (e.fase == null) e.fase = 1;
+      if (!e.personal) e.personal = { caixera: e.serveis && e.serveis.dependent ? 1 : 0, reposador: 0 };
+      if (e.serveis) delete e.serveis.dependent;
+      e.millores = e.millores || {}; e.botigues = e.botigues || []; e.b2b = e.b2b || { prod: null, volum: 0 }; e.deute = e.deute || 0;
+      e.inversio = Object.assign({ prestatges: 0, online: 0, promocio: 0, compres: 0, fases: 0, millores: 0, botigues: 0 }, e.inversio || {});
+    });
+    return s;
+  };
   const jugador = (s) => s.empreses[0];
   E.jugador = jugador;
   const faseDe = (e) => MD.FASES[(e.fase || 1) - 1];
@@ -427,6 +439,7 @@
       }
       case 'servei': {
         if (noPlan) return noPlan;
+        if (a.servei === 'dependent') { e.personal.caixera = a.actiu ? 1 : 0; e.us4P.distribucio = 1; return { ok: true }; }  // partides de la versió anterior
         const sv = MD.serveis[a.servei]; if (!sv) return err('Servei desconegut.');
         const on = !!a.actiu;
         if (on && a.servei === 'online' && !e.onlineActivat) {
