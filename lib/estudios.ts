@@ -23,6 +23,12 @@ export const SIMULADORES: Simulador[] = [
     desc: 'Un caso de clase en equipos y en dos sesiones: un escape room de una hora (dinamización del punto de venta y hojas de cálculo) y un murdoku para descubrir quién atacó a la profe en el supermercado del instituto.',
     url: '/jocs/supermercat-petit/', idiomas: 'Catalán',
     modulos: 'Aplicaciones informáticas para el comercio · Dinamización del punto de venta'
+  },
+  {
+    id: 'mercadeja', name: 'Mercadeja', interno: true,
+    desc: 'Juego de mesa digital de simulación empresarial: de 2 a 6 empresas catalanas compiten en el mismo mercado decidiendo producto, precio, distribución y promoción. Tablero de Cataluña, cartas de mercado, IA rival y panel docente con informes.',
+    url: '/jocs/mercadeja/', idiomas: 'Catalán',
+    modulos: 'Marketing en la actividad comercial · Políticas de marketing'
   }
 ];
 
