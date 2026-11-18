@@ -11,6 +11,8 @@ export const SITE = {
   locale: 'es',
   // Identificador de editor de Google AdSense (no es secreto: se ve en el código de cualquier web con anuncios)
   adsenseAccount: process.env.NEXT_PUBLIC_ADSENSE_CLIENT || 'ca-pub-6602866907047778',
+  // Bloc d'anuncis de display «Anuncis1» (adaptable), creat a AdSense
+  adSlot: '8367079092',
   defaultAuthor: 'Redacción ECOyNEXO'
 };
 
