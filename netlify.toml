@@ -25,6 +25,14 @@
   status = 200
   force = true
 
+# Mercadeja (ecoynexo.com/jocs/mercadeja/) fa servir el mateix projecte Netlify per al rànquing en directe dels reptes
+# (funció «mercadeja», amb el motor del joc copiat per verificar els resultats: scripts/sincronitza-motor-mercadeja.sh).
+[[redirects]]
+  from = "/jocs/mercadeja/.netlify/functions/*"
+  to = "https://agenciadigitalosona.netlify.app/.netlify/functions/:splat"
+  status = 200
+  force = true
+
 [[headers]]
   for = "/jocs/agencia-digital/sw.js"
   [headers.values]

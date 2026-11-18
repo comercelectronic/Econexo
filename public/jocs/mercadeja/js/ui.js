@@ -335,7 +335,7 @@
     const sel = $('#selEmp', lat); if (sel) sel.onchange = () => { ui.empVista = +sel.value; render(); };
     $$('[data-acc]', lat).forEach(b => b.onclick = () => {
       const a = b.dataset.acc;
-      if (a === 'continuar') llAbansDeContinuar(() => { const r = fa({ tipus: 'continuar' }); if (S.fase === 'mercat' || S.fase === 'resultats') obreVista('mercat'); if (r.final) { desa(); return final(); } if (S.fase === 'esdeveniment') { obreVista('tauler'); mostraCarta(ME.carta(S.esdeveniment), 'Esdeveniment de la ronda ' + S.ronda, true); } desa(); render(); });
+      if (a === 'continuar') llAbansDeContinuar(() => { const acabaRonda = S.fase === 'resultats'; const r = fa({ tipus: 'continuar' }); if (acabaRonda) enviaServidor(); if (S.fase === 'mercat' || S.fase === 'resultats') obreVista('mercat'); if (r.final) { desa(); return final(); } if (S.fase === 'esdeveniment') { obreVista('tauler'); mostraCarta(ME.carta(S.esdeveniment), 'Esdeveniment de la ronda ' + S.ronda, true); } desa(); render(); });
       else if (a === '4p') obreVista('empresa');
       else if (a === 'confirmar') { const e = S.empreses[S.torn]; confirma(`<b>${esc(e.nom)}</b> confirma les decisions d'aquesta ronda? Després ja no les podreu canviar.`, () => { fa({ id: uid(), tipus: 'confirmar', emp: e.id }); ui.vista = 'tauler'; ui.mobil = 'tauler'; desa(); render(); }); }
       else if (a === 'tirar') tirar();
@@ -633,7 +633,8 @@
   /* ---------- Classificació ---------- */
   function vClassificacio(el) {
     const cl = ME.classificacio(S);
-    el.innerHTML = `<div class="seccio"><h2>${I('trofeu')} Classificació</h2><p>Guanya l'empresa amb més valor empresarial al final de la ronda ${S.config.rondes}.</p>
+    setTimeout(() => { const k = $('#rkClasse'); if (k) { rankingRepte(k); $('#rkRefresca').onclick = () => rankingRepte(k); } });
+    el.innerHTML = `${S.config.repte ? `<div class="seccio"><h2>${I('equip')} Rànquing de la classe · repte ${esc(S.config.repte.nom || S.config.repte.codi)}</h2><p>Tots els equips juguen la mateixa partida. Es classifiquen pel valor empresarial i el vostre resultat s'hi actualitza en acabar cada ronda.</p><div id="rkClasse"></div><button class="btn small" id="rkRefresca" style="margin-top:8px">Actualitzar</button></div>` : ''}<div class="seccio"><h2>${I('trofeu')} Classificació</h2><p>Guanya l'empresa amb més valor empresarial al final de la ronda ${S.config.rondes}.</p>
       <div class="taula-w"><table class="t"><thead><tr><th>#</th><th>Empresa</th><th class="n">Valor empresarial</th><th class="n">Resultat acumulat</th><th class="n">Quota (última)</th><th class="n">XP</th><th class="n">Evolució</th></tr></thead><tbody>
         ${cl.map((x, k) => { const e = x.e, d = e.darrer; return `<tr class="${k === 0 ? 'primer' : ''}"><td><b>${k + 1}</b></td><td><span class="fitxa" style="width:24px;height:24px;display:inline-grid;vertical-align:middle;background:${colorE(e)}">${I(e.fitxa)}</span> ${esc(e.nom)}</td>
           <td class="n"><b>${eur(x.v.total)}</b></td><td class="n">${eur(e.hist.reduce((a, h) => a + h.resultat, 0))}</td><td class="n">${d ? pct(d.quota) : '—'}</td><td class="n">${e.xp}</td><td class="n">${d && d.canviPosicio > 0 ? '<span class="pos">▲ ' + d.canviPosicio + '</span>' : d && d.canviPosicio < 0 ? '<span class="neg">▼ ' + (-d.canviPosicio) + '</span>' : '='}</td></tr>`; }).join('')}</tbody></table></div></div>
@@ -692,14 +693,16 @@
       <div class="seccio"><h2>${I('bombeta')} Reflexió</h2><p><b>Quina empresa ha aplicat millor les quatre P? Per què?</b> Escriviu la resposta de cada equip: queda desada a la partida i al fitxer que descarregueu.</p>
         ${S.empreses.filter(e => e.humana).map(e => `<label class="f" style="margin-bottom:10px">${esc(e.nom)}<textarea class="inp" data-refl="${e.id}" rows="3">${esc((S.reflexions || {})[e.id] || '')}</textarea></label>`).join('') || '<p class="muted">No hi ha equips humans en aquesta partida.</p>'}</div>
       ${S.empreses.filter(e => e.humana).map(e => { const p = llProgres(e); return `<div class="seccio"><h2>${I('llibre')} Lliçons de ${esc(e.nom)}</h2><p>${p.des.length} de ${LL.length} lliçons descobertes · ${p.n} respostes · <b>${p.enc} encerts</b>. Encara podeu respondre les que teniu pendents.</p>${graellaLlicons(e)}</div>`; }).join('')}
-      ${S.config.repte ? `<div class="seccio envia"><h2>${I('descarrega')} Envia el resultat al professor</h2><p>Quan hàgiu escrit la reflexió, genereu el codi i feu-lo arribar al professor per entrar al rànquing del repte.</p><button class="btn prim big" id="envia">${I('descarrega')} Generar el codi de resultat</button></div>` : ''}
+      ${S.config.repte ? `<div class="seccio envia"><h2>${I('descarrega')} Envia el resultat al professor</h2><p>El resultat final s'envia sol al rànquing de la classe, i la reflexió també quan l'escriviu. Si no hi ha connexió, genereu el codi i feu-lo arribar al professor.</p><div id="rkFinal"></div><div class="row" style="margin-top:10px"><button class="btn" id="envia">${I('descarrega')} Codi de resultat (si no hi ha connexió)</button></div></div>` : ''}
       <div class="row" style="justify-content:center"><button class="btn" id="baixa">${I('descarrega')} Descarregar els resultats (CSV)</button><button class="btn" id="json">${I('descarrega')} Partida completa (JSON)</button><button class="btn prim big" id="menu">${I('tauler')} Tornar al menú</button></div></main>`;
-    $$('[data-refl]').forEach(t => t.oninput = () => { S.reflexions = S.reflexions || {}; S.reflexions[t.dataset.refl] = t.value; desa(); });
+    $$('[data-refl]').forEach(t => t.oninput = () => { S.reflexions = S.reflexions || {}; S.reflexions[t.dataset.refl] = t.value; desa(); if (S.config.repte) enviaAviat(); });
+    if (S.config.repte && !(S.enviat && S.enviat.final && S.enviat.ok)) enviaServidor();
     const baixa = (nom, txt, tipus) => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['﻿' + txt], { type: tipus })); a.download = nom; a.click(); };
     $('#baixa').onclick = () => baixa('mercadeja-resultats.csv', ME.csvResultats(S), 'text/csv');
     $('#json').onclick = () => baixa('mercadeja-partida.json', JSON.stringify(S), 'application/json');
     $('#menu').onclick = portada;
     if ($('#envia')) $('#envia').onclick = modalCodi;
+    if ($('#rkFinal')) (enviant || Promise.resolve()).then(() => rankingRepte($('#rkFinal')));
     $$('[data-ll]').forEach(b => b.onclick = () => mostraLlico(LL.find(l => l.id === b.dataset.ll), S.empreses[+b.dataset.e], () => final()));
     if (!pref.redueix) { const p = $('#podi'), cols = ['#F5C542', '#36B37E', '#4EA5F5', '#E879B9', '#9B7AE8', '#F29D49']; for (let k = 0; k < 60; k++) { const c = document.createElement('span'); c.className = 'confeti'; c.style.left = Math.random() * 100 + '%'; c.style.background = cols[k % 6]; c.style.animationDelay = Math.random() * 1.2 + 's'; p.appendChild(c); } }
     desa();
@@ -823,7 +826,43 @@
     $$('[data-ll]', el).forEach(b => b.onclick = () => mostraLlico(LL.find(l => l.id === b.dataset.ll), e));
   }
 
-  /* ---------- Codis de partida: sense servidors ----------
+
+  /* ---------- Servidor (Netlify, el mateix d'Agència Digital): rànquing en directe dels reptes ----------
+     Si no hi ha connexió, tot continua funcionant amb els codis de resultat. */
+  const FN = location.pathname.replace(/[^/]*$/, '') + '.netlify/functions/mercadeja';
+  async function crida(body) {
+    const r = await fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    let d = null; try { d = await r.json(); } catch (e) { }
+    if (!r.ok || !d) throw new Error((d && d.error) || 'Sense connexió amb el servidor.');
+    return d;
+  }
+  let enviant = null;
+  async function enviaServidor() {
+    if (!S || !S.config.repte || !S.regOk) return null;
+    const s0 = S;
+    try {
+      const codi = await codiDe(s0);
+      enviant = crida({ action: 'enviar', repte: s0.config.repte.codi, codi });
+      const d = await enviant;
+      s0.enviat = { ronda: s0.ronda, final: s0.fase === 'final', ok: true, t: Date.now() };
+      if (s0 === S) desa();
+      return d;
+    } catch (e) { s0.enviat = Object.assign({}, s0.enviat || {}, { ok: false, err: e.message }); return null; }
+    finally { enviant = null; }
+  }
+  let tmRefl = null;
+  const enviaAviat = () => { clearTimeout(tmRefl); tmRefl = setTimeout(enviaServidor, 2500); };
+  async function rankingRepte(el) {
+    el.innerHTML = '<p class="muted small">Carregant el rànquing de la classe…</p>';
+    try {
+      const d = await crida({ action: 'ranking', repte: S.config.repte.codi }), jo = (S.empreses.find(x => x.humana) || {}).nom;
+      el.innerHTML = d.files.length ? `<div class="taula-w"><table class="t"><thead><tr><th>#</th><th>Equip</th><th class="n">Valor empresarial</th><th class="n">Ronda</th><th class="n">Lliçons (encerts)</th></tr></thead><tbody>
+        ${d.files.map((x, k) => `<tr class="${x.equip === jo ? 'primer' : ''}"><td><b>${k + 1}</b></td><td>${esc(x.equip)}${x.equip === jo ? ' <small class="muted">(vosaltres)</small>' : ''}${x.verificat ? '' : ' <small class="neg">⚠</small>'}</td><td class="n"><b>${eur(x.valor)}</b></td><td class="n">${x.acabada ? 'Acabada' : x.ronda + ' / ' + x.rondes}</td><td class="n">${x.llDesc} (${x.llEnc})</td></tr>`).join('')}</tbody></table></div>`
+        : '<p class="muted small">Encara no hi ha cap equip al rànquing. El vostre resultat s\'hi envia sol en acabar cada ronda.</p>';
+    } catch (e) { el.innerHTML = '<p class="muted small">No s\'ha pogut carregar el rànquing de la classe (sense connexió). Podeu continuar jugant: el resultat s\'enviarà quan torni la connexió, o amb «Envia el resultat».</p>'; }
+  }
+
+  /* ---------- Codis de partida ----------
      El codi conté la configuració i el registre d'accions comprimits. Qui el rep torna a jugar la partida
      amb el mateix motor i obté exactament el mateix resultat: així es comprova que és vàlid. */
   const b64u = (bytes) => { let s = ''; for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000)); return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); };
@@ -846,7 +885,10 @@
   async function deCodi(codi) {
     const p = await descomprimeix(codi);
     if (!p || p.v !== 1 || !p.cfg || !Array.isArray(p.reg)) throw new Error('codi');
-    const { s, errors } = ME.repetir(p.cfg, ME.descompacta(p.reg));
+    // En un repte, la configuració es reconstrueix a partir del codi del repte (no es confia en la del codi de resultat)
+    const rep = p.cfg.repte && ME.llegirRepte(p.cfg.repte.codi), h = (p.cfg.empreses || [])[0] || {};
+    const cfg = rep ? ME.cfgRepte(rep, { nom: String(h.nom || '').slice(0, 30), membres: (Array.isArray(h.membres) ? h.membres : []).slice(0, 4), repteNom: String(p.cfg.repte.nom || '').slice(0, 40) }) : p.cfg;
+    const { s, errors } = ME.repetir(cfg, ME.descompacta(p.reg));
     s.reflexions = p.refl || {}; s.regOk = true;
     return { s, errors, p };
   }
@@ -859,7 +901,9 @@
   async function modalCodi() {
     if (!S.regOk) return toast('Aquesta partida es va començar amb una versió anterior del joc i no té codi.', 'neg');
     const codi = await codiDe(S), e = S.empreses.find(x => x.humana), rep = S.config.repte;
+    const env = rep ? await enviaServidor() : null;
     modal(`<h2>${I('descarrega')} ${rep ? 'Envia el resultat al professor' : 'Codi de la partida'}</h2>
+      ${rep ? (env ? `<p class="caixa small" style="border-color:#2f7a57">✔ Resultat enviat al rànquing de la classe (ronda ${S.ronda}). No cal fer res més: el codi de sota és una còpia de seguretat.</p>` : '<p class="caixa groc small">No s\'ha pogut connectar amb el servidor. Copieu el codi i feu-lo arribar al professor.</p>') : ''}
       <p>Aquest codi conté tota la vostra partida (${S.fase === 'final' ? 'acabada' : 'fins a la ronda ' + S.ronda + ' de ' + S.config.rondes}). ${rep ? 'El professor l\'afegirà al rànquing de la classe i el joc tornarà a calcular la partida per comprovar-la.' : ''}</p>
       ${S.fase === 'final' && e && !(S.reflexions || {})[e.id] ? '<p class="caixa groc small">Abans d\'enviar-lo, escriviu la reflexió final: també va dins del codi.</p>' : ''}
       <textarea class="inp codi-res" readonly rows="5" aria-label="Codi de la partida">${esc(codi)}</textarea>
@@ -912,7 +956,7 @@
     clearTimeout(tm);
     app.innerHTML = `<main class="config"><button class="btn ghost small" id="enrere">← Tornar</button>
       <h1>${I('escut')} Mode docent</h1>
-      <p class="muted">Funciona sense servidors ni comptes: el repte és un codi i els resultats arriben com a codis que el joc torna a calcular per comprovar-los. El rànquing queda desat en aquest navegador.</p>
+      <p class="muted">El repte és un codi. Els equips envien el resultat sols en acabar cada ronda i el servidor torna a jugar cada partida per comprovar-la abans de posar-la al rànquing. Si no hi ha connexió, també funciona amb codis de resultat.</p>
       <div class="cards">
         <button class="opcio" data-h="crear"><b>${I('mes')} Crear un repte de classe</b><span>Genera un codi i un enllaç. Cada equip juga al seu dispositiu la mateixa partida.</span></button>
         <button class="opcio" data-h="ranking"><b>${I('trofeu')} Rànquing de la classe</b><span>Enganxeu els codis de resultat: classificació, lliçons apreses i decisions de cada equip.</span></button>
@@ -959,14 +1003,15 @@
       <div class="seccio"><h2>Com funciona</h2><ol class="small" style="padding-left:18px;display:grid;gap:6px">
         <li>Projecteu aquesta pantalla o compartiu l'enllaç. També poden obrir Mercadeja, entrar a «Repte de classe» i escriure el codi.</li>
         <li>Cada equip escriu el nom de la seva empresa i els membres, i juga contra les mateixes tres empreses de la IA.</li>
-        <li>Al final de cada sessió (o de la partida), premen «Envia el resultat» i us fan arribar el codi.</li>
-        <li>A «Rànquing de la classe» enganxeu tots els codis: el joc torna a jugar cada partida per comprovar-la i en fa la classificació.</li></ol>
+        <li>En acabar cada ronda, el resultat s'envia sol al rànquing de la classe, que els equips veuen en directe a «Classificació».</li>
+        <li>A «Rànquing de la classe» carregueu els resultats amb la contrasenya del professorat: hi veureu el detall de cada equip, les lliçons i la reflexió. Si algun equip no té connexió, us pot enviar el codi a mà.</li></ol>
         <p class="small muted">Deseu el codi del repte: si el torneu a generar, serà una partida diferent.</p></div></main>`;
     $('#enrere').onclick = docent;
     $('#cpl').onclick = () => copia(link, $('#lk'));
     $('#rk').onclick = () => ranking(r.codi);
     carregaQR(() => { try { const q = window.qrcode(0, 'M'); q.addData(link); q.make(); $('#qr').innerHTML = q.createSvgTag({ cellSize: 5, margin: 3, scalable: true }); } catch (e) { } });
   }
+  const pwDocent = () => { try { return sessionStorage.getItem('mercadeja-pw') || ''; } catch (e) { return ''; } };
   const KCL = 'mercadeja-classes-v1';
   const classes = () => { try { return JSON.parse(localStorage.getItem(KCL) || '{}'); } catch (e) { return {}; } };
   const desaClasses = (c) => { try { localStorage.setItem(KCL, JSON.stringify(c)); return true; } catch (e) { toast('No s\'ha pogut desar el rànquing: el navegador no té espai.', 'neg'); return false; } };
@@ -1008,7 +1053,9 @@
     app.innerHTML = `<main class="config" style="max-width:1180px"><button class="btn ghost small" id="enrere">← Mode docent</button>
       <h1>${I('trofeu')} Rànquing de la classe</h1>
       ${keys.length > 1 ? `<label class="f" style="max-width:480px">Repte<select class="inp" id="selC">${keys.map(k => `<option value="${esc(k)}" ${k === sel ? 'selected' : ''}>${esc((c[k].nom ? c[k].nom + ' · ' : '') + k)} (${Object.keys(c[k].equips).length} equips)</option>`).join('')}</select></label>` : ''}
-      <div class="seccio"><h2>Afegir resultats</h2><p class="small">Enganxeu els codis que us han enviat els equips (un o molts alhora) o carregueu els fitxers .txt. Si un equip envia un codi més avançat, substitueix l'anterior.</p>
+      <div class="seccio"><h2>${I('banc')} Resultats del servidor</h2><p class="small">Els equips envien el resultat sols en acabar cada ronda. Entreu la contrasenya del professorat (la mateixa del panell d'Agència Digital) per carregar-los i comprovar-los.</p>
+        <div class="row"><input class="inp" type="password" id="pwS" style="max-width:240px" placeholder="Contrasenya" value="${esc(pwDocent())}" aria-label="Contrasenya del professorat"><button class="btn prim" id="carregaS">${I('descarrega')} Carregar ${sel ? 'aquest repte' : 'tots els reptes'}</button>${sel ? '<button class="btn" id="carregaTots">Tots els reptes</button>' : ''}</div><p class="small" id="estatS"></p></div>
+      <div class="seccio"><h2>Afegir codis a mà</h2><p class="small">Si algun equip no ha tingut connexió, enganxeu aquí els codis que us han enviat els equips (un o molts alhora) o carregueu els fitxers .txt. Si un equip envia un codi més avançat, substitueix l'anterior.</p>
         <textarea class="inp" id="codis" rows="4" placeholder="MJ1…" spellcheck="false"></textarea>
         <div class="row" style="margin-top:8px"><button class="btn prim" id="afg">${I('mes')} Afegir al rànquing</button><label class="btn">${I('document')} Carregar fitxers<input type="file" id="fit" accept=".txt,text/plain" multiple hidden></label></div></div>
       ${cl ? `<div class="seccio"><h2>${esc(cl.nom || 'Repte')} <span class="muted small">· ${esc(sel)}${rep ? ' · ' + esc(MD.sectors[rep.sector].nom) + ' · ' + rep.rondes + ' rondes' : ''}</span></h2>
@@ -1019,6 +1066,19 @@
     $('#enrere').onclick = docent;
     const sc = $('#selC'); if (sc) sc.onchange = () => ranking(sc.value);
     $('#afg').onclick = async () => { const d = await afegeixCodis($('#codis').value); if (d) ranking(d); };
+    const carrega = async (nomes) => {
+      const pw = $('#pwS').value; $('#estatS').textContent = 'Carregant…';
+      try {
+        const reptes = nomes ? [nomes] : (await crida({ action: 'docent', password: pw })).reptes.map(r => r.repte);
+        let codis = [];
+        for (const r of reptes) { const d = await crida({ action: 'docent', password: pw, repte: r }); codis = codis.concat(d.files.map(f => f.codi)); }
+        try { sessionStorage.setItem('mercadeja-pw', pw); } catch (e) { }
+        if (!codis.length) { $('#estatS').textContent = 'Encara no hi ha resultats al servidor' + (nomes ? ' per a aquest repte.' : '.'); return; }
+        const d = await afegeixCodis(codis.join('\n')); ranking(nomes || d);
+      } catch (e) { $('#estatS').textContent = e.message; }
+    };
+    $('#carregaS').onclick = () => carrega(sel || null);
+    if ($('#carregaTots')) $('#carregaTots').onclick = () => carrega(null);
     $('#fit').onchange = async (ev) => { let t = ''; for (const f of ev.target.files) t += '\n' + await f.text(); const d = await afegeixCodis(t); if (d) ranking(d); };
     if (!cl || !eq.length) return;
     $$('[data-eq]').forEach(tr => { tr.onclick = () => detallEquip(cl.equips[tr.dataset.eq]); tr.onkeydown = (ev) => { if (ev.key === 'Enter') tr.onclick(); }; });
