@@ -115,7 +115,7 @@
   // Contingut d'una prestatgeria: productes a la vista, preu, estoc
   function pintaPrest(btn, x, unitats, magatzem, mode) {
     if (!x || !x.prod) { btn.innerHTML = `<span class="buida">${mode === 'plan' ? 'Tria un producte' : 'Buida'}</span>`; btn.classList.add('buit'); return; }
-    const P = MD.productes[x.prod], n = Math.min(MD.PRESTATGE_MAX, unitats);
+    const P = MD.productes[x.prod], n = Math.min(8, Math.ceil(unitats * 8 / MD.PRESTATGE_MAX));
     btn.classList.remove('buit');
     btn.classList.toggle('esgotat', mode !== 'plan' && unitats <= 0);
     btn.classList.toggle('baix', mode !== 'plan' && unitats > 0 && unitats <= 2);
@@ -164,7 +164,7 @@
     function nouAgent(tipus, look, seg, x, y) {
       const div = document.createElement('div'); div.className = 'ag ' + tipus; div.innerHTML = persona(tipus, look, seg) + (seg ? `<span class="xapa" style="background:${MD.segments[seg].color}">${I(MD.segments[seg].icona)}</span><span class="pac"><i></i></span>` : '') + '<span class="carrega"></span><span class="bomb" hidden></span>';
       ags.appendChild(div);
-      const a = { tipus, x, y, path: [], div, v: tipus === 'ninot' ? 250 : tipus === 'repartidor' ? 220 : 150, timer: 0, estat: 'quiet', bombT: 0 };
+      const a = { tipus, x, y, path: [], div, v: tipus === 'ninot' ? 300 : tipus === 'repartidor' ? 220 : 150, timer: 0, estat: 'quiet', bombT: 0 };
       agents.push(a); posa(a); return a;
     }
     function posa(a) { a.div.style.transform = `translate(${a.x - 20}px,${a.y - 64}px)`; a.div.style.zIndex = Math.round(a.y); }
@@ -191,11 +191,14 @@
     const tauleta = inn.querySelector('.tauleta'), badge = tauleta.querySelector('.badge');
 
     // Ordres del jugador
-    function ordena(t) {
+    function ordena(t, silenci) {
       if (acabat) return;
-      if (t.tipus === 'cobrar' && dependenta) { op.avis && op.avis('La dependenta ja cobra al taulell. Tu pots reposar i preparar comandes.'); return; }
-      if (t.tipus === 'reposar') { const x = e.prestatges[t.slot]; if (!x || !x.prod) return; if ((mag[x.prod] || 0) <= 0) { op.avis && op.avis('No queda ' + MD.productes[x.prod].nom.toLowerCase() + ' al magatzem. Demà en pots demanar més.'); return; } if (prest[t.slot] >= MD.PRESTATGE_MAX) { op.avis && op.avis('Aquesta prestatgeria ja és plena.'); return; } }
-      if (t.tipus === 'empaquetar' && !e.serveis.online) { op.avis && op.avis('No tens botiga en línia. La pots activar a la planificació (Distribució).'); return; }
+      const cur = ninot.tasca;
+      if (cur && cur.tipus === t.tipus && (t.tipus !== 'reposar' || cur.slot === t.slot)) return; // ja ho està fent
+      const avis = (x) => { if (!silenci && op.avis) op.avis(x); };
+      if (t.tipus === 'cobrar' && dependenta) { avis('La dependenta ja cobra al taulell. Tu pots reposar i preparar comandes.'); return; }
+      if (t.tipus === 'reposar') { const x = e.prestatges[t.slot]; if (!x || !x.prod) return; if ((mag[x.prod] || 0) <= 0) { avis('No queda ' + MD.productes[x.prod].nom.toLowerCase() + ' al magatzem. Demà en pots demanar més.'); return; } if (prest[t.slot] >= MD.PRESTATGE_MAX) { avis('Aquesta prestatgeria ja és plena.'); return; } }
+      if (t.tipus === 'empaquetar' && !e.serveis.online) { avis('No tens botiga en línia. La pots activar a la planificació (Distribució).'); return; }
       if (ninot.porta) { mag[ninot.porta.prod] += ninot.porta.n; ninot.porta = null; ninot.div.querySelector('.carrega').innerHTML = ''; }
       if (t.tipus !== 'reposar') ninot.persist = t.tipus;
       ninot.tasca = t; ninot.fase = 'anar';
@@ -217,8 +220,10 @@
     marcaSeleccio();
 
     function tascaNinot(dt) {
+      // En mode automàtic, el ninot torna a decidir sempre que no estigui reposant una prestatgeria
+      if (auto && (!ninot.tasca || ninot.tasca.tipus !== 'reposar')) autoDecideix(dt);
       const t = ninot.tasca;
-      if (!t) return autoDecideix();
+      if (!t) return;
       const arribat = mou(ninot, dt);
       if (!arribat) return;
       if (t.tipus === 'reposar') {
@@ -234,14 +239,13 @@
     const aLaCaixa = () => ninot.tasca && ninot.tasca.tipus === 'cobrar' && !ninot.path.length;
     const aPaquets = () => ninot.tasca && ninot.tasca.tipus === 'empaquetar' && !ninot.path.length;
     let autoT = 0;
-    function autoDecideix() {
-      if (!auto) return;
-      autoT -= 0.016; if (autoT > 0) return; autoT = 0.3;
-      const necessitat = btnPrest.map((_, i) => ({ i, x: e.prestatges[i] })).filter(o => o.x && o.x.prod && prest[o.i] <= 2 && (mag[o.x.prod] || 0) > 0).sort((a, b) => prest[a.i] - prest[b.i])[0];
-      if (!dependenta && cua.length >= 3) return ordena({ tipus: 'cobrar' });
-      if (necessitat) return ordena({ tipus: 'reposar', slot: necessitat.i });
-      if (online.length && e.serveis.online) return ordena({ tipus: 'empaquetar' });
-      if (!dependenta) return ordena({ tipus: 'cobrar' });
+    function autoDecideix(dt) {
+      autoT -= dt; if (autoT > 0) return; autoT = 0.3;
+      const necessitat = btnPrest.map((_, i) => ({ i, x: e.prestatges[i] })).filter(o => o.x && o.x.prod && prest[o.i] <= 4 && (mag[o.x.prod] || 0) > 0).sort((a, b) => prest[a.i] - prest[b.i])[0];
+      if (!dependenta && cua.length >= 3) return ordena({ tipus: 'cobrar' }, true);
+      if (necessitat) return ordena({ tipus: 'reposar', slot: necessitat.i }, true);
+      if (online.length && e.serveis.online) return ordena({ tipus: 'empaquetar' }, true);
+      if (!dependenta) return ordena({ tipus: 'cobrar' }, true);
     }
 
     // Clients
@@ -273,7 +277,7 @@
       if (a.estat === 'agafa') {
         a.timer -= dt; if (a.timer > 0) return;
         const n = Math.min(c.qty, prest[a.slot]);
-        if (n <= 0) { a.espera += dt; if (a.espera === dt) bombolla(a, '...', ''); if (a.espera > 3) { bombolla(a, frasePerdut(c, 3), 'neg'); registra(c, 0, 3); surt(a); } return; }
+        if (n <= 0) { a.espera += dt; if (a.espera === dt) bombolla(a, '...', ''); if (a.espera > (ninot.tasca && ninot.tasca.tipus === 'reposar' && ninot.tasca.slot === a.slot ? 7 : 3)) { bombolla(a, frasePerdut(c, 3), 'neg'); registra(c, 0, 3); surt(a); } return; }
         prest[a.slot] -= n; a.items = n; pinta(a.slot);
         a.div.querySelector('.carrega').innerHTML = iconaProd(c.prod, 18) + (n > 1 ? `<b>×${n}</b>` : '');
         a.estat = 'cua'; a.paciencia = c.pac; cua.push(a); viaNodes(a, 'pq', CUA[Math.min(cua.length - 1, CUA.length - 1)]);
@@ -368,7 +372,8 @@
     return {
       pausa: (b) => { pausa = b; darrerT = 0; }, velocitat: (n) => { vel = n; }, auto: (b) => { auto = b; },
       destrueix: () => { acabat = true; cancelAnimationFrame(raf); ro.disconnect(); },
-      acabaAra: () => { acaba(); }, get stats() { return stats; }
+      acabaAra: () => { acaba(); }, get stats() { return stats; },
+      get depura() { const h = {}; agents.forEach(a => { if (a.c) h[a.estat] = (h[a.estat] || 0) + 1; }); return { temps: Math.round(temps), tasca: ninot.tasca && ninot.tasca.tipus, fase: ninot.fase, cua: cua.length, estats: h, prest: prest.slice(), mag: Object.assign({}, mag), res: Object.keys(res).length, total: d.clients.length }; }
     };
   }
   function horaDe(fr) { const m = Math.round(9 * 60 + Math.min(1, fr / 0.9) * 11 * 60); return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'); }

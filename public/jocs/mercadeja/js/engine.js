@@ -29,7 +29,7 @@
     const config = Object.assign({ sector: 'alimentacio', rondes: 8, capital: MD.CAPITAL, dificultat: 'mitja', llavor: 12345, nom: 'Partida' }, cfg);
     const h = (config.empreses || [])[0] || { nom: 'La meva botiga' };
     const s = { v: 2, config, ronda: 0, fase: 'inici', empreses: [], esdeveniment: null, log: [], fets: {}, dia: null, llicons: {} };
-    const inicials = ['motlle', 'llet', 'fruita', 'galetes'];
+    const inicials = ['motlle', 'llet', 'fruita', 'fuet'];
     const estoc = {}; inicials.forEach(p => { estoc[p] = 20; });
     s.empreses.push({
       id: 0, nom: String(h.nom || 'La meva botiga').slice(0, 30), humana: true, membres: (h.membres || []).slice(0, 4), fitxa: 'coet', color: '#F5C542',
@@ -64,7 +64,7 @@
   }
   E.catalegDe = catalegDe;
   // Encaix d'un producte amb el que busca un tipus de client (0-1)
-  const encaix = (seg, p) => { const g = MD.segments[seg].gust, P = prod(p); return (g.q * P.q + g.eco * P.eco + g.nou * P.nou) / 100 / (g.q + g.eco + g.nou); };
+  const encaix = (seg, p) => { const g = MD.segments[seg].gust, P = prod(p); let n = 0, d = 0; Object.keys(g).forEach(k => { n += g[k] * (P[k] || 0); d += g[k]; }); return n / 100 / d; };
   E.encaix = encaix;
   E.atractiu = function (s, e) {
     const cat = catalegDe(s, e), out = {};
@@ -106,16 +106,20 @@
   // Què compra (o per què no compra) un client d'un tipus a la botiga del jugador
   function decideix(s, e, seg, r) {
     const sg = MD.segments[seg], ev = E.esdeveniment(s.esdeveniment) || { e: {} }, sens = sg.sens * (ev.e.preuSens || 1);
-    let millor = null, bu = -Infinity, adequat = false;
+    // Cada client tria entre els productes que li agraden i pot pagar: més probable com més li convé (amb varietat)
+    const cand = []; let adequat = false;
     catalegDe(s, e).forEach(x => {
-      const a = encaix(seg, x.prod) + (r() - 0.5) * 0.18, ratio = x.preu / prod(x.prod).ref;
+      const a = encaix(seg, x.prod) + (r() - 0.5) * 0.16, ratio = x.preu / prod(x.prod).ref;
       if (a < sg.min) return;
       adequat = true;
-      if (ratio > sg.maxPreu / Math.sqrt(ev.e.preuSens || 1)) return;
-      const u = a - sens * (ratio - 1) * 0.35 + (r() - 0.5) * 0.12;
-      if (u > bu) { bu = u; millor = x.prod; }
+      if (ratio > sg.maxPreu / (1 + ((ev.e.preuSens || 1) - 1) * 0.5)) return;
+      cand.push({ prod: x.prod, u: a - sens * (ratio - 1) * 0.35 });
     });
-    if (millor) return { prod: millor, motiu: 0 };
+    if (cand.length) {
+      const mx = Math.max(...cand.map(c => c.u)), w = cand.map(c => Math.exp((c.u - mx) / 0.08)), tot = w.reduce((x, y) => x + y, 0);
+      let t = r() * tot; for (let i = 0; i < cand.length; i++) { t -= w[i]; if (t <= 0) return { prod: cand[i].prod, motiu: 0 }; }
+      return { prod: cand[cand.length - 1].prod, motiu: 0 };
+    }
     return { prod: null, motiu: adequat ? 1 : 2 };   // 1: massa car · 2: no hi ha res per a ell
   }
 
@@ -266,7 +270,7 @@
       servits += n * conv; unitats += n * conv * qty; ingressos += n * conv * qty * pm; cogs += n * conv * qty * cm;
     });
     const promo = (x.promosDia || []).reduce((a, k) => a + MD.promos[k].cost, 0);
-    const resultat = r2(ingressos - cogs - MD.FIXOS - promo - ingressos * 0.06); // inclou merma i petites despeses
+    const resultat = r2(ingressos - cogs - (MD.FIXOS_RIVAL[s.config.dificultat] || 150) - promo - ingressos * 0.06); // inclou merma i petites despeses
     x.diners = r2(x.diners + resultat);
     const sat = r0(clamp(100 * servits / Math.max(1, entren) + 15, 0, 100));
     x.rep = r0(clamp(x.rep + 0.3 * (sat - x.rep), 0, 100));

@@ -277,10 +277,10 @@
   function triaProducte(i) {
     const e = ME.jugador(S), actual = e.prestatges[i] && e.prestatges[i].prod;
     const bar = (v, c) => `<span class="bar"><i style="width:${v}%;background:${c}"></i></span>`;
-    modal(`<h2>${I('paquet')} Prestatgeria ${i + 1}: tria el producte</h2><p class="small muted">Cada producte agrada a uns clients diferents. Qualitat → exigents · Eco → responsables · Novetat → moderns · Preu baix → estalviadors.</p>
+    modal(`<h2>${I('paquet')} Prestatgeria ${i + 1}: tria el producte</h2><p class="small muted">Cada producte agrada a uns clients diferents. Bàsic i barat → estalviadors · Qualitat → exigents · Novetat → moderns · Eco → responsables.</p>
       <div class="cataleg">${MD.PROD.map(p => { const P = MD.productes[p], altre = e.prestatges.some((x, k) => k !== i && x && x.prod === p);
         return `<button class="prod ${p === actual ? 'on' : ''}" data-p="${p}" ${altre ? 'disabled' : ''}>${MBOT.iconaProd(p, 38)}<b>${esc(P.nom)}</b><span class="small muted">${esc(P.desc)}</span>
-          <span class="attrs"><span>Qualitat</span>${bar(P.q, '#4EA5F5')}<span>Eco</span>${bar(P.eco, '#36B37E')}<span>Novetat</span>${bar(P.nou, '#E879B9')}</span>
+          <span class="attrs"><span>Bàsic</span>${bar(P.bas, '#F5C542')}<span>Qualitat</span>${bar(P.q, '#4EA5F5')}<span>Eco</span>${bar(P.eco, '#36B37E')}<span>Novetat</span>${bar(P.nou, '#E879B9')}</span>
           <span class="small">Cost ${eur2(P.cost)} · es ven a ${eur2(P.ref)}${P.perible ? ' · <span class="neg">perible</span>' : ''}${(e.estoc[p] || 0) ? ' · ' + e.estoc[p] + ' u. al magatzem' : ''}</span>
           <span class="qcs">${quiCompra(p, P.ref)}</span>${altre ? '<span class="small muted">Ja és en una altra prestatgeria</span>' : ''}</button>`; }).join('')}</div>
       <div class="row" style="margin-top:12px">${actual ? '<button class="btn ghost" id="buida">Deixar-la buida</button>' : ''}<button class="btn" id="tc">Tancar</button></div>`, (m) => {
@@ -311,7 +311,7 @@
   }
   function tabPromo(cont, e) {
     cont.innerHTML = `<p class="small muted">Promoció: fes-te conèixer. La notorietat (${Math.round(e.not)}/100) baixa cada dia si no comuniques. Cada acció arriba més a uns clients que a uns altres.</p>
-      <h3 class="h3">Aparador (marxandatge) · ${eur(25)} el dia</h3><div class="seg aparadors">${[['', 'Sense tema']].concat(Object.entries(MD.aparadors).map(([k, a]) => [k, a.nom])).map(([k, n]) => `<button data-ap="${k}" class="${(e.aparador || '') === k ? 'on' : ''}">${k ? I(MD.segments[MD.aparadors[k].seg].icona) + ' ' : ''}${esc(n)}</button>`).join('')}</div>
+      <h3 class="h3">Aparador (marxandatge) · ${eur(MD.aparadors.oferta.cost)} el dia</h3><div class="seg aparadors">${[['', 'Sense tema']].concat(Object.entries(MD.aparadors).map(([k, a]) => [k, a.nom])).map(([k, n]) => `<button data-ap="${k}" class="${(e.aparador || '') === k ? 'on' : ''}">${k ? I(MD.segments[MD.aparadors[k].seg].icona) + ' ' : ''}${esc(n)}</button>`).join('')}</div>
       <h3 class="h3">Accions d'avui</h3><div class="pcards">${MD.PROMO.map(k => { const p = MD.promos[k], on = e.promosDia.includes(k);
         return `<div class="pcard ${on ? 'actiu' : ''}"><div class="pc-cap"><span class="ic-gran">${I(p.icona)}</span><div><b>${esc(p.nom)}</b> <span class="tag">${esc(p.tipus)}</span><span class="small muted">${esc(p.desc)}</span>
           <span class="qcs">${p.seg.map(s2 => `<span class="qc si" style="--c:${MD.segments[s2].color}" title="${esc(MD.segments[s2].nom)}">${I(MD.segments[s2].icona)}</span>`).join('')}</span></div></div>
@@ -350,6 +350,7 @@
         <label class="auto"><input type="checkbox" id="auto" ${ui.auto ? 'checked' : ''}> Ninot automàtic</label>
         <span class="kpi-d" title="Vendes d'avui">${I('moneda')} <b id="kV">0 €</b></span><span class="kpi-d pos" title="Clients atesos">😊 <b id="kA">0</b></span><span class="kpi-d neg" title="Clients perduts">😞 <b id="kP">0</b></span><span class="kpi-d" title="Cua al taulell">${I('equip')} <b id="kC">0</b></span>
         <div class="dia-barra"><i id="kT"></i></div></div>
+      <p class="gira">${I('mobil')} Gira el mòbil per veure la botiga més gran.</p>
       <div id="escena" class="escena-dia"></div>
       <p class="pista">Toca una <b>prestatgeria</b> perquè el ninot la reposi · toca el <b>taulell</b> perquè cobri${e.serveis.online ? ' · toca la <b>tauleta</b> per preparar les comandes en línia' : ''}.</p></div>`;
     lligaCapcalera();

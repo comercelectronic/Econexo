@@ -3,6 +3,6 @@ D = {
 "Catalán": "Català",
 "Aplicaciones informáticas para el comercio · Dinamización del punto de venta": "Aplicacions informàtiques per al comerç · Dinamització del punt de venda",
 # Mercadeja
-"Juego de simulación empresarial sobre las cuatro P: cada equipo dirige una empresa catalana desde su dispositivo en un reto de clase común, con lecciones del currículo de marketing que aparecen mientras juega y un ranking de la clase en directo.": "Joc de simulació empresarial sobre les quatre P: cada equip dirigeix una empresa catalana des del seu dispositiu en un repte de classe comú, amb lliçons del currículum de màrqueting que apareixen mentre juga i un rànquing de la classe en directe.",
+"Juego de tienda: cada equipo lleva una tienda de barrio desde su dispositivo, decide producto, precio, distribución y promoción y atiende a los clientes con su muñeco. Retos de clase con ranking en directo y lecciones del currículo de marketing.": "Joc de botiga: cada equip porta una botiga de barri des del seu dispositiu, decideix producte, preu, distribució i promoció i atén els clients amb el seu ninot. Reptes de classe amb rànquing en directe i lliçons del currículum de màrqueting.",
 "Marketing en la actividad comercial · Políticas de marketing": "Màrqueting en l'activitat comercial · Polítiques de màrqueting",
 }
