@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { LangProvider } from '@/components/LangProvider';
+import { AdSense } from '@/components/AdSense';
 import { LANGS, isLang, tr, type Lang } from '@/lib/i18n';
 import { SITE } from '@/lib/site';
 import '../globals.css';
@@ -43,6 +44,7 @@ export default async function RootLayout({ children, params }: Props) {
           <Header lang={lang as Lang} />
           <main id="contenido" className="mx-auto max-w-6xl px-4">{children}</main>
           <Footer lang={lang as Lang} />
+          <AdSense />
         </LangProvider>
       </body>
     </html>
