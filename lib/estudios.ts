@@ -26,7 +26,7 @@ export const SIMULADORES: Simulador[] = [
   },
   {
     id: 'mercadeja', name: 'Mercadeja', interno: true,
-    desc: 'Juego de simulación empresarial sobre las cuatro P: cada equipo dirige una empresa catalana desde su dispositivo en un reto de clase común, con lecciones del currículo de marketing que aparecen mientras juega y un ranking que el profesor monta con los códigos de resultado, sin servidores.',
+    desc: 'Juego de simulación empresarial sobre las cuatro P: cada equipo dirige una empresa catalana desde su dispositivo en un reto de clase común, con lecciones del currículo de marketing que aparecen mientras juega y un ranking de la clase en directo.',
     url: '/jocs/mercadeja/', idiomas: 'Catalán',
     modulos: 'Marketing en la actividad comercial · Políticas de marketing'
   }
