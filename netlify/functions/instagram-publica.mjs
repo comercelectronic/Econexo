@@ -1,4 +1,5 @@
-// Publica sola a Instagram els posts de instagram/calendario.json (cada dia a les 18:00 de Madrid a l'hivern).
+// Publica sola a Instagram els posts de instagram/calendario.json, el dia i l'hora (de Madrid) de cada post.
+// S'executa cada hora en punt: publica el post quan n'ha arribat l'hora (per defecte, les 18:00).
 //
 // Accepta els dos tipus de testimoni que dona Meta:
 //   - d'inici de sessió d'Instagram (comença per «IG», graph.instagram.com, dura 60 dies: la funció el renova sola);
@@ -19,12 +20,14 @@ const RENOVA_DIES = 20;  // el testimoni dura 60 dies: es renova cada 20
 
 // Data d'avui a Madrid (AAAA-MM-DD)
 export const avuiMadrid = (d = new Date()) => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Madrid', year: 'numeric', month: '2-digit', day: '2-digit' }).format(d);
+// Hora de Madrid (HH:MM)
+export const horaMadrid = (d = new Date()) => new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Madrid', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(d);
 const ahirDe = (dia) => { const d = new Date(dia + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() - 1); return d.toISOString().slice(0, 10); };
 
-// Quin post toca: el d'avui, o el d'ahir si la publicació va fallar. Els més antics es marquen com a saltats.
-export function triaPost(cal, fets, avui) {
+// Quin post toca: el d'avui si ja n'és l'hora, o el d'ahir si la publicació va fallar. Els més antics es marquen com a saltats.
+export function triaPost(cal, fets, avui, hora = '23:59') {
   const ahir = ahirDe(avui);
-  const pendents = cal.posts.filter(p => p.fecha <= avui && !fets[p.id]).sort((a, b) => a.fecha.localeCompare(b.fecha));
+  const pendents = cal.posts.filter(p => (p.fecha < avui || (p.fecha === avui && (p.hora || '18:00') <= hora)) && !fets[p.id]).sort((a, b) => (a.fecha + (a.hora || '18:00')).localeCompare(b.fecha + (b.hora || '18:00')));
   const saltats = pendents.filter(p => p.fecha < ahir);
   return { post: pendents.find(p => p.fecha >= ahir) || null, saltats };
 }
@@ -83,19 +86,19 @@ async function testimoni({ store, env, fetch, ara }) {
   return t.token;
 }
 
-export async function executa({ cal = CAL, store, env, fetch, avui, ara = Date.now(), espera = (ms) => new Promise(r => setTimeout(r, ms)) }) {
+export async function executa({ cal = CAL, store, env, fetch, avui, hora, ara = Date.now(), espera = (ms) => new Promise(r => setTimeout(r, ms)) }) {
   const fets = (await store.get('publicats', { type: 'json' }).catch(() => null)) || {};
-  const { post, saltats } = triaPost(cal, fets, avui);
+  const { post, saltats } = triaPost(cal, fets, avui, hora);
   if (saltats.length) { saltats.forEach(p => { fets[p.id] = { saltat: true, at: new Date(ara).toISOString() }; console.warn('Post saltat (la data ja ha passat):', p.id); }); await store.setJSON('publicats', fets); }
   const prova = env.IG_PROVA === '1';
-  if (!post && !prova) return { fet: false, motiu: 'Avui no toca cap post.' };
+  if (!post && !prova) return { fet: false, motiu: 'Ara no toca cap post.' };
   const token = await testimoni({ store, env, fetch, ara });
   const api = crearClient({ fetch, token });
   if (!env.IG_USER_ID && !esIG(token)) throw new Error('Amb un testimoni de Facebook cal la variable IG_USER_ID (l\'identificador del compte d\'Instagram).');
   const usuari = env.IG_USER_ID || (await api.crida('GET', '/me', { fields: 'user_id,username' })).user_id;
   if (prova) { // Mode de prova: comprova la connexió (només llegeix) i diu què publicaria
     const compte = await api.crida('GET', '/' + usuari, { fields: 'username' });
-    const seg = post || cal.posts.filter(p => p.fecha > avui && !fets[p.id]).sort((x, y) => x.fecha.localeCompare(y.fecha))[0];
+    const seg = post || cal.posts.filter(p => (p.fecha > avui || (p.fecha === avui && hora && (p.hora || '18:00') > hora)) && !fets[p.id]).sort((x, y) => x.fecha.localeCompare(y.fecha))[0];
     console.log('[prova] Connexió correcta amb @' + compte.username + '. ' + (post ? 'Avui publicaria ' + post.id : 'Avui no toca cap post' + (seg ? '; el següent és ' + seg.id : '')) + '.');
     return { fet: false, prova: true, compte: compte.username, post: post ? post.id : null, seguent: seg ? seg.id : null };
   }
@@ -109,11 +112,12 @@ export async function executa({ cal = CAL, store, env, fetch, avui, ara = Date.n
 
 export default async () => {
   try {
-    const r = await executa({ store: getStore('instagram'), env: process.env, fetch, avui: avuiMadrid() });
+    const ara = new Date();
+    const r = await executa({ store: getStore('instagram'), env: process.env, fetch, avui: avuiMadrid(ara), hora: horaMadrid(ara) });
     console.log(JSON.stringify(r));
   } catch (e) { console.error('Error publicant a Instagram:', e.message); }
   return new Response('ok');
 };
 
-// Cada dia a les 17:00 UTC (18:00 a Madrid a l'hivern, 19:00 a l'estiu)
-export const config = { schedule: '0 17 * * *' };
+// Cada hora en punt (l'hora de cada post és la de Madrid)
+export const config = { schedule: '0 * * * *' };

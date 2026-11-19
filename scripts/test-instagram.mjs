@@ -1,7 +1,7 @@
 // Proves de la publicació automàtica a Instagram (API simulada). node scripts/test-instagram.mjs
 import assert from 'assert';
 import fs from 'fs';
-import { executa, triaPost, avuiMadrid } from '../netlify/functions/instagram-publica.mjs';
+import { executa, triaPost, avuiMadrid, horaMadrid } from '../netlify/functions/instagram-publica.mjs';
 
 const CAL = JSON.parse(fs.readFileSync(new URL('../instagram/calendario.json', import.meta.url)));
 let ok = 0; const t = (c, nom) => { assert.ok(c, nom); ok++; };
@@ -18,6 +18,11 @@ t(new Set(CAL.posts.map(p => p.fecha)).size === CAL.posts.length, 'com a molt un
 
 // Data de Madrid
 t(avuiMadrid(new Date('2026-11-23T23:30:00Z')) === '2026-11-24', 'la data es calcula a l\'hora de Madrid');
+t(horaMadrid(new Date('2026-11-19T11:00:00Z')) === '12:00' && horaMadrid(new Date('2026-07-01T10:00:00Z')) === '12:00', 'l\'hora de Madrid té en compte l\'horari d\'estiu');
+t(CAL.posts.every(p => /^(0\d|1\d|2[0-3]):[0-5]\d$/.test(p.hora || '18:00')), 'hores vàlides al calendari');
+{ const c = { posts: [{ id: '2026-11-19-x', fecha: '2026-11-19', hora: '12:00', slides: [{}], texto: 'X' }] };
+  t(triaPost(c, {}, '2026-11-19', '11:00').post === null && triaPost(c, {}, '2026-11-19', '12:00').post.id === '2026-11-19-x', 'es publica quan arriba l\'hora del post, no abans');
+  t(triaPost(c, {}, '2026-11-20', '00:00').post.id === '2026-11-19-x', 'si a l\'hora del post va fallar, es torna a provar fins l\'endemà'); }
 
 // Quin post toca
 const cal = { posts: [{ id: '2026-11-23-a', fecha: '2026-11-23', slides: [{}], texto: 'A' }, { id: '2026-11-25-b', fecha: '2026-11-25', slides: [{}, {}, {}], texto: 'B' }, { id: '2026-11-27-c', fecha: '2026-11-27', slides: [{}], texto: 'C' }] };

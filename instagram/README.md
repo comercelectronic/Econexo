@@ -1,11 +1,11 @@
 # Instagram d'ECOyNEXO
 
-Publicació automàtica: cada dia a les 17:00 UTC (18:00 a Madrid a l'hivern), la funció programada
-`netlify/functions/instagram-publica.mjs` mira si a `calendario.json` hi ha un post per a avui i el publica.
+Publicació automàtica: cada hora en punt, la funció programada
+`netlify/functions/instagram-publica.mjs` mira si a `calendario.json` hi ha un post al qual ja li ha arribat l'hora i el publica.
 
 ## Afegir posts
 
-1. Afegeix el post a `calendario.json`: `id` (comença per la data), `fecha`, `tema` (`presentacion`, `concepto`, `caso`, `profes`, `test`),
+1. Afegeix el post a `calendario.json`: `id` (comença per la data), `fecha`, `hora` (de Madrid, per defecte 18:00), `tema` (`presentacion`, `concepto`, `caso`, `profes`, `test`),
    `slides` (1 a 10 diapositives) i `texto` (el peu del post: màxim 2.200 caràcters i 30 etiquetes).
    Tipus de diapositiva: `portada`, `texto`, `formula`, `dialogo`, `quiz`, `respuesta` i `cta`. Mira'n exemples al calendari.
    El text admet `**negreta**` (surt amb el color del tema).
