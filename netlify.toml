@@ -141,3 +141,7 @@
   to = "https://ecoynexo.com/:splat"
   status = 301
   force = true
+
+# Publicació automàtica a Instagram (netlify/functions/instagram-publica.mjs): el calendari va dins de la funció
+[functions]
+  included_files = ["instagram/calendario.json"]

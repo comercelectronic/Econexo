@@ -1,0 +1,133 @@
+{
+  "_info": "Calendario de Instagram de ECOyNEXO. Cada post se publica solo el día indicado a las 18:00 (hora de Madrid). Las imágenes se generan con: node scripts/instagram/genera.mjs. Ver instagram/README.md.",
+  "posts": [
+    {
+      "id": "2026-11-23-hola",
+      "fecha": "2026-11-23",
+      "tema": "presentacion",
+      "slides": [
+        { "tipo": "portada", "etiqueta": "Bienvenida", "titulo": "Aprende con NEXO,\nno hagas el ECO", "sub": "Comercio y marketing para FP, explicado fácil", "imagen": "eco-y-nexo" },
+        { "tipo": "dialogo", "lineas": [
+          { "quien": "eco", "gesto": "contento", "texto": "¡Soy ECO! Quiero montar mi propio negocio… y a veces la lío un poco." },
+          { "quien": "nexo", "gesto": "explicando", "texto": "Y yo soy NEXO. Le explico qué ha fallado para que tú no cometas el mismo error." }
+        ] },
+        { "tipo": "texto", "titulo": "Qué vas a encontrar aquí", "puntos": ["**Conceptos en 1 minuto**: margen, ROAS, las 4P, SEO…", "**Casos reales** de empresas que acertaron (y que fallaron)", "**Tests rápidos** para repasar antes del examen", "**Calculadoras, simuladores y juegos** para clase"], "personaje": "nexo-satisfecha" },
+        { "tipo": "texto", "titulo": "Para alumnos y profes de FP", "parrafos": ["Pensado para los ciclos de **Comercio y Marketing**: Actividades Comerciales, Marketing y Publicidad, Gestión de Ventas, Comercio Internacional…", "Y para los **profes**: recursos gratuitos para usar en clase."], "personaje": "eco-senalando" },
+        { "tipo": "cta", "titulo": "Síguenos y guarda los posts", "texto": "Tres posts a la semana: lunes, miércoles y viernes.", "boton": "ecoynexo.com" }
+      ],
+      "texto": "¡Hola! Somos ECO y NEXO 👋\n\nECO quiere montar su propio negocio y, de vez en cuando, la lía. NEXO le explica qué ha fallado… para que tú no cometas el mismo error.\n\nEn esta cuenta encontrarás:\n📌 Conceptos de comercio y marketing explicados en 1 minuto\n📌 Casos reales de empresas\n📌 Tests rápidos para repasar\n📌 Calculadoras, simuladores y juegos para clase\n\nPensado para alumnos de FP de Comercio y Marketing… y para sus profes.\n\nAprende con NEXO, no hagas el ECO. Todo gratis en ecoynexo.com (enlace en la bio).\n\n#FPComercio #FPMarketing #FormaciónProfesional #MarketingDigital #Comercio #EstudiarFP #ProfesFP #ecoynexo"
+    },
+    {
+      "id": "2026-11-25-margen",
+      "fecha": "2026-11-25",
+      "tema": "concepto",
+      "slides": [
+        { "tipo": "portada", "etiqueta": "Concepto en 1 minuto", "titulo": "¿Margen sobre coste o sobre precio?", "sub": "El error que más dinero cuesta al poner precios", "imagen": "eco-confuso" },
+        { "tipo": "texto", "titulo": "Un producto, dos porcentajes", "parrafos": ["Compras un producto a **6 €** y lo vendes a **10 €**. Ganas **4 €** por unidad.", "Pero ¿qué margen tienes: el 40 % o el 67 %? **Los dos son correctos**: depende de sobre qué lo calcules."], "personaje": "nexo-explicando" },
+        { "tipo": "formula", "titulo": "Las dos fórmulas", "formulas": [["Margen sobre precio", "(10 − 6) ÷ 10 = **40 %**"], ["Margen sobre coste", "(10 − 6) ÷ 6 = **66,7 %**"]], "nota": "En comercio, cuando se habla de «margen» suele ser sobre el precio de venta." },
+        { "tipo": "dialogo", "lineas": [
+          { "quien": "eco", "gesto": "contento", "texto": "Quiero ganar un 40 %. Fácil: coste × 1,4 = 8,40 €." },
+          { "quien": "nexo", "gesto": "esceptica", "texto": "Eso es un 40 % sobre el coste. Sobre el precio solo ganas un 28,6 %." }
+        ] },
+        { "tipo": "formula", "titulo": "Si quieres un margen sobre el precio", "formulas": [["Precio de venta", "coste ÷ (1 − margen)"], ["Ejemplo con un 40 %", "6 ÷ (1 − 0,40) = **10 €**"]], "nota": "Guárdate esta fórmula: es la que necesitas para poner precios." },
+        { "tipo": "cta", "titulo": "Calcúlalo en un clic", "texto": "Calculadora de margen y precio de venta, gratis.", "boton": "ecoynexo.com/es/herramientas" }
+      ],
+      "texto": "¿Margen sobre coste o sobre precio? 🤔\n\nCompras a 6 € y vendes a 10 €. ¿Ganas un 40 % o un 66,7 %? Las dos respuestas son correctas… según sobre qué lo calcules:\n\n➡️ Margen sobre precio = (precio − coste) ÷ precio = 40 %\n➡️ Margen sobre coste = (precio − coste) ÷ coste = 66,7 %\n\nEl error típico: querer un 40 % de margen y multiplicar el coste × 1,4. Así solo ganas un 28,6 % sobre el precio.\n\n✅ Para un margen sobre el precio: precio = coste ÷ (1 − margen)\n\nGuarda el post para el examen 📌 y prueba la calculadora de margen en ecoynexo.com (enlace en la bio).\n\n#FPComercio #FPMarketing #Margen #PrecioDeVenta #MarketingMix #FormaciónProfesional #EstudiarFP #ecoynexo"
+    },
+    {
+      "id": "2026-11-27-kodak",
+      "fecha": "2026-11-27",
+      "tema": "caso",
+      "slides": [
+        { "tipo": "portada", "etiqueta": "Caso real", "titulo": "Kodak inventó la cámara digital… y acabó en quiebra", "sub": "Una lección sobre la miopía de marketing", "imagen": "eco-sorprendido" },
+        { "tipo": "texto", "titulo": "Qué pasó", "puntos": ["**1975**: un ingeniero de Kodak, Steven Sasson, construye el primer prototipo de cámara digital.", "Kodak dominaba los carretes y el revelado, un negocio con márgenes muy altos.", "Siguió priorizando el negocio químico. Los móviles acabaron de transformar el mercado.", "**2012**: Kodak se acoge a la protección por quiebra en EE. UU."] },
+        { "tipo": "texto", "titulo": "Miopía de marketing", "parrafos": ["Kodak se definía por el producto que vendía (**carretes**) y no por la necesidad que cubría: **guardar y compartir recuerdos**.", "El profesor Theodore Levitt lo llamó **miopía de marketing**."], "personaje": "nexo-explicando" },
+        { "tipo": "texto", "titulo": "Qué aprendemos", "puntos": ["Los clientes no compran productos: compran **soluciones a una necesidad**.", "Un negocio muy rentable puede **frenar la innovación** que lo sustituirá.", "Inventar no basta: hay que llevar la innovación al mercado **antes que otros**."], "personaje": "eco-senalando" },
+        { "tipo": "cta", "titulo": "¿Quién será la próxima Kodak?", "texto": "Déjanos tu respuesta en comentarios. El caso completo, en la web.", "boton": "ecoynexo.com/es/casos" }
+      ],
+      "texto": "Kodak inventó la cámara digital en 1975… y en 2012 se acogió a la protección por quiebra 📸\n\n¿Cómo es posible? Kodak ganaba muchísimo con los carretes y el revelado, y siguió priorizando ese negocio. Se definía por el producto que vendía, no por la necesidad que cubría: guardar y compartir recuerdos.\n\nEs lo que Theodore Levitt llamó «miopía de marketing».\n\n💡 Los clientes no compran productos: compran soluciones.\n💡 Un negocio muy rentable puede frenar la innovación que lo sustituirá.\n\n👉 ¿Qué empresa crees que puede ser la próxima Kodak? Te leemos en comentarios.\n\nCaso completo en ecoynexo.com (enlace en la bio).\n\n#CasosDeMarketing #Kodak #MiopíaDeMarketing #Innovación #FPMarketing #FPComercio #FormaciónProfesional #ecoynexo"
+    },
+    {
+      "id": "2026-11-30-agencia",
+      "fecha": "2026-11-30",
+      "tema": "profes",
+      "slides": [
+        { "tipo": "portada", "etiqueta": "Para profes", "titulo": "Agencia Digital: tu clase dirige una agencia de marketing", "sub": "Un simulador gratuito para Comercio y Marketing", "imagen": "nexo-satisfecha" },
+        { "tipo": "texto", "titulo": "Cómo funciona", "puntos": ["Cada alumno dirige su **propia agencia** de marketing digital.", "Clientes con encargos: **planes de marketing, campañas y webs**.", "Entregan las piezas en **Canva**; las corrige la IA y **tú das la nota final**.", "Mundo explorable, misiones y mercado entre las agencias de la clase."] },
+        { "tipo": "texto", "titulo": "Lo que te ahorra", "puntos": ["Los proyectos ya están **ligados al currículo**.", "Ves el **progreso de cada alumno** y sus entregas en un panel.", "Gratis, en el navegador, en **castellano, catalán e inglés**."], "personaje": "nexo-explicando" },
+        { "tipo": "cta", "titulo": "Pruébalo antes de llevarlo a clase", "texto": "Simuladores y juegos para FP, gratis.", "boton": "ecoynexo.com/es/simuladores" }
+      ],
+      "texto": "Profe de FP de Comercio o Marketing: ¿y si tu clase dirigiera una agencia de marketing? 🧑‍💼\n\nAgencia Digital es un simulador gratuito en el que cada alumno lleva su propia agencia:\n✅ Clientes con encargos reales: planes de marketing, campañas y webs\n✅ Entregas en Canva, con corrección de la IA y nota final del profe\n✅ Misiones, mundo explorable y competencia entre las agencias de la clase\n✅ Panel del profe con el progreso de cada alumno\n\nFunciona en el navegador, en castellano, catalán e inglés.\n\nPruébalo en ecoynexo.com → Simuladores (enlace en la bio). ¿Lo usarías en clase? Cuéntanos 👇\n\n#ProfesFP #FPComercio #FPMarketing #Gamificación #RecursosEducativos #FormaciónProfesional #InnovaciónEducativa #ecoynexo"
+    },
+    {
+      "id": "2026-12-02-test-roas",
+      "fecha": "2026-12-02",
+      "tema": "test",
+      "slides": [
+        { "tipo": "quiz", "etiqueta": "Test rápido", "pregunta": "Gastas 200 € en anuncios y esos anuncios generan 800 € en ventas. ¿Cuál es tu ROAS?", "opciones": ["600 €", "4 (o 400 %)", "0,25", "25 %"], "correcta": 1, "imagen": "eco-confuso" },
+        { "tipo": "respuesta", "titulo": "Respuesta: B) 4 (o 400 %)", "parrafos": ["**ROAS = ventas generadas ÷ inversión en anuncios**", "800 ÷ 200 = **4**. Por cada euro en anuncios vuelven 4 € en ventas."], "personaje": "nexo-satisfecha" },
+        { "tipo": "texto", "titulo": "Ojo: ROAS no es beneficio", "parrafos": ["Esos 800 € son **ventas**, no ganancias. Aún tienes que pagar el producto, el envío…", "Si tu margen es bajo, un ROAS de 4 puede ser **poco rentable**."], "personaje": "nexo-esceptica" },
+        { "tipo": "cta", "titulo": "¿La has acertado?", "texto": "Cuéntanos en comentarios. Y calcula tu ROAS en la web.", "boton": "ecoynexo.com/es/herramientas" }
+      ],
+      "texto": "🧠 TEST RÁPIDO\n\nGastas 200 € en anuncios y generan 800 € en ventas. ¿Cuál es tu ROAS?\n\nA) 600 €\nB) 4 (o 400 %)\nC) 0,25\nD) 25 %\n\nPiénsalo antes de deslizar 👉 La respuesta está en la segunda imagen.\n\nROAS = ventas generadas ÷ inversión en anuncios. Y ojo: no es beneficio, porque aún tienes que pagar el producto.\n\nCalculadora de ROAS gratis en ecoynexo.com (enlace en la bio).\n\n#ROAS #MarketingDigital #GoogleAds #MetaAds #FPMarketing #FPComercio #EstudiarFP #ecoynexo"
+    },
+    {
+      "id": "2026-12-04-4p",
+      "fecha": "2026-12-04",
+      "tema": "concepto",
+      "slides": [
+        { "tipo": "portada", "etiqueta": "Concepto en 1 minuto", "titulo": "Las 4P del marketing (y el error de ECO)", "sub": "Producto, precio, distribución y promoción", "imagen": "eco-hablando" },
+        { "tipo": "texto", "titulo": "Las 4P o marketing mix", "puntos": ["**Producto**: qué vendes y cómo es.", "**Precio**: cuánto paga el cliente.", "**Distribución** (place): cómo y dónde llega al cliente.", "**Promoción**: cómo lo das a conocer."], "personaje": "nexo-explicando" },
+        { "tipo": "dialogo", "lineas": [
+          { "quien": "eco", "gesto": "contento", "texto": "Vendo queso artesano buenísimo… a precio de queso barato. ¡Y no lo anuncio para no gastar!" },
+          { "quien": "nexo", "gesto": "tapandose", "texto": "Y encima la estantería está vacía la mitad del día…" }
+        ] },
+        { "tipo": "texto", "titulo": "La clave: la coherencia", "parrafos": ["Las 4P tienen que **encajar entre sí**.", "Un producto de calidad necesita un precio, una comunicación y una disponibilidad que lo **hagan valer**. Si no, desaprovechas tus puntos fuertes."], "personaje": "eco-senalando" },
+        { "tipo": "cta", "titulo": "Practícalo jugando", "texto": "Lecciones, tests y simuladores sobre las 4P.", "boton": "ecoynexo.com" }
+      ],
+      "texto": "Las 4P del marketing, en 1 minuto 🧩\n\n🔹 Producto: qué vendes\n🔹 Precio: cuánto paga el cliente\n🔹 Distribución: cómo y dónde llega\n🔹 Promoción: cómo lo das a conocer\n\nEl error de ECO: vender un queso artesano buenísimo a precio de queso barato, sin anunciarlo y con la estantería vacía. Cada P por separado «funciona», pero juntas no encajan.\n\nLa clave del marketing mix es la coherencia: un producto de calidad necesita un precio, una comunicación y una distribución a su altura.\n\nGuárdalo para repasar 📌 Más en ecoynexo.com (enlace en la bio).\n\n#MarketingMix #4P #FPMarketing #FPComercio #Marketing #FormaciónProfesional #EstudiarFP #ecoynexo"
+    },
+    {
+      "id": "2026-12-07-patagonia",
+      "fecha": "2026-12-07",
+      "tema": "caso",
+      "slides": [
+        { "tipo": "portada", "etiqueta": "Caso real", "titulo": "«No compres esta chaqueta»", "sub": "El anuncio de Patagonia en pleno Black Friday", "imagen": "eco-sorprendido" },
+        { "tipo": "texto", "titulo": "Qué pasó", "parrafos": ["Black Friday de **2011**. Patagonia publica en The New York Times un anuncio a página completa: «**Don't Buy This Jacket**».", "Explicaba el impacto ambiental de fabricar la chaqueta y pedía **comprar solo lo necesario**, reparar la ropa y darle una segunda vida."] },
+        { "tipo": "texto", "titulo": "Por qué funcionó", "parrafos": ["Era **coherente** con lo que la empresa ya hacía: reparaciones y compromisos ambientales.", "No era una provocación aislada, sino una **expresión de sus valores**. Atrajo a clientes que los compartían."], "personaje": "nexo-explicando" },
+        { "tipo": "texto", "titulo": "Qué aprendemos", "puntos": ["Una marca clara **atrae a los clientes adecuados** y aleja a los demás.", "Los valores solo son creíbles si se ven **en las decisiones del día a día**.", "Ir contra corriente **multiplica la atención**."], "personaje": "eco-senalando" },
+        { "tipo": "cta", "titulo": "¿Funcionaría en una tienda de tu barrio?", "texto": "Te leemos en comentarios. El caso completo, en la web.", "boton": "ecoynexo.com/es/casos" }
+      ],
+      "texto": "«No compres esta chaqueta» 🧥\n\nEn el Black Friday de 2011, Patagonia publicó un anuncio a página completa en The New York Times pidiendo… que no compraras su chaqueta si no la necesitabas.\n\n¿Por qué funcionó? Porque era coherente con lo que la marca ya hacía (reparaciones, compromisos ambientales). No era una provocación: era una expresión de sus valores.\n\n💡 Una marca clara atrae a los clientes adecuados y aleja a los demás.\n💡 Los valores solo son creíbles si se ven en las decisiones del día a día.\n\n👉 ¿Podría hacer algo así una tienda de tu barrio sin parecer una contradicción?\n\nCaso completo en ecoynexo.com (enlace en la bio).\n\n#CasosDeMarketing #Patagonia #Branding #BlackFriday #MarketingConValores #FPMarketing #FPComercio #ecoynexo"
+    },
+    {
+      "id": "2026-12-09-mercadeja",
+      "fecha": "2026-12-09",
+      "tema": "profes",
+      "slides": [
+        { "tipo": "portada", "etiqueta": "Para profes", "titulo": "Mercadeja: de tienda de barrio a gran empresa", "sub": "Un juego para enseñar las 4P (de momento, en catalán)", "imagen": "eco-contento" },
+        { "tipo": "texto", "titulo": "Cómo se juega", "puntos": ["Cada alumno lleva una **tienda de barrio** que compite con otras tres.", "Por la mañana decide las **4P**: productos, precios, stock, personal y promoción.", "Durante el día **atiende a los clientes** con su personaje.", "Por la noche, la **cuenta de resultados** le explica qué ha pasado."] },
+        { "tipo": "texto", "titulo": "Crece en 5 fases", "puntos": ["Tienda de barrio → **tienda grande** → **supermercado**", "→ **cadena de tiendas** → **gran empresa**", "Marca blanca, fidelización, B2B, publicidad en TV…"], "personaje": "nexo-satisfecha" },
+        { "tipo": "texto", "titulo": "Para usar en clase", "puntos": ["**26 lecciones** ligadas a los resultados de aprendizaje.", "**Retos de clase** con ranking en directo.", "Cuentas de alumno y **panel del profe** con el progreso de cada uno."], "personaje": "nexo-explicando" },
+        { "tipo": "cta", "titulo": "Gratis, en el navegador", "texto": "Simuladores y juegos para FP de Comercio y Marketing.", "boton": "ecoynexo.com/es/simuladores" }
+      ],
+      "texto": "¿Tus alumnos serían capaces de convertir una tienda de barrio en una gran empresa? 🏪➡️🏢\n\nMercadeja es un juego gratuito para enseñar las 4P:\n🛒 Por la mañana deciden productos, precios, stock, personal y promoción\n🧍 Durante el día atienden a los clientes con su personaje\n📊 Por la noche, la cuenta de resultados les explica qué ha pasado\n\nY pueden crecer en 5 fases: tienda grande, supermercado, cadena… hasta gran empresa.\n\nPara clase: 26 lecciones ligadas a los resultados de aprendizaje, retos con ranking en directo y panel del profe con el progreso de cada alumno.\n\n(De momento está en catalán.)\n\nPruébalo en ecoynexo.com → Simuladores (enlace en la bio).\n\n#ProfesFP #FPComercio #Gamificación #MarketingMix #RecursosEducativos #FormaciónProfesional #InnovaciónEducativa #ecoynexo"
+    },
+    {
+      "id": "2026-12-11-equilibrio",
+      "fecha": "2026-12-11",
+      "tema": "concepto",
+      "slides": [
+        { "tipo": "portada", "etiqueta": "Concepto en 1 minuto", "titulo": "¿Cuánto tienes que vender para no perder dinero?", "sub": "El punto de equilibrio", "imagen": "eco-hablando" },
+        { "tipo": "dialogo", "lineas": [
+          { "quien": "eco", "gesto": "contento", "texto": "¡Abro tienda online! Solo cuesta 800 € al mes entre web, herramientas y cuota." },
+          { "quien": "nexo", "gesto": "explicando", "texto": "¿Y cuántos productos tienes que vender solo para llegar a cero? Ese es el punto de equilibrio." }
+        ] },
+        { "tipo": "formula", "titulo": "La fórmula", "formulas": [["Margen de contribución", "precio − coste variable"], ["Unidades de equilibrio", "costes fijos ÷ margen de contribución"]], "nota": "Costes fijos: no cambian con las ventas (alquiler, cuotas). Variables: sí (producto, envío)." },
+        { "tipo": "texto", "titulo": "El ejemplo de ECO", "puntos": ["Costes fijos: **800 € al mes**", "Precio: **40 €** · Coste variable: **25 €** → margen de **15 €**", "800 ÷ 15 ≈ **54 unidades al mes** (2.133 € de ventas) solo para no perder"], "personaje": "eco-sorprendido" },
+        { "tipo": "cta", "titulo": "Calcula el tuyo", "texto": "Calculadora del punto de equilibrio, gratis.", "boton": "ecoynexo.com/es/herramientas" }
+      ],
+      "texto": "¿Cuánto tienes que vender para no perder dinero? 📉📈\n\nEso es el punto de equilibrio:\n\n➡️ Margen de contribución = precio − coste variable\n➡️ Unidades de equilibrio = costes fijos ÷ margen de contribución\n\nEl ejemplo de ECO: su tienda online cuesta 800 € al mes. Vende a 40 € un producto que le cuesta 25 €, así que gana 15 € por unidad.\n800 ÷ 15 ≈ 54 unidades al mes… solo para quedarse a cero.\n\nSi el equilibrio es imposible de alcanzar: sube el precio, baja el coste variable o reduce los costes fijos.\n\nGuárdalo 📌 y prueba la calculadora en ecoynexo.com (enlace en la bio).\n\n#PuntoDeEquilibrio #Emprendimiento #FinanzasEmpresariales #FPComercio #FPMarketing #FormaciónProfesional #EstudiarFP #ecoynexo"
+    }
+  ]
+}
