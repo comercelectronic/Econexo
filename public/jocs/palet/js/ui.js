@@ -87,15 +87,16 @@
       <nav class="menu">
         ${pot ? `<button class="btn prim big" data-a="continua">▶ Continua <small>${esc(desat.config.nom)} · ${(D.MAGATZEMS[desat.config.magatzem] || D.MAGATZEMS.aliment).icona} ${esc(D.NIVELLS[desat.nivell - 1].nom)} · torn ${desat.torn}</small></button>` : ''}
         <button class="btn ${pot ? '' : 'prim'} big" data-a="juga">📦 Juga <small>comença de mosso</small></button>
+        <button class="btn big" data-a="taller">🎯 Taller d'habilitat <small>mans, transpalet i toro</small></button>
         <button class="btn big" data-a="ajuda">❓ Com es juga</button>
         <button class="btn big" data-a="docent">🧑‍🏫 Mode docent <small>progrés dels alumnes</small></button>
         <a class="btn big" href="https://ecoynexo.com/ca/aprender/actividades-comerciales/tecnicas-de-almacen/" target="_blank" rel="noopener">📚 Lliçons del mòdul <small>Tècniques de magatzem</small></a>
       </nav>
       <p class="peu">Simulador del mòdul Tècniques de magatzem (CFGM Activitats Comercials) · ECOyNEXO</p></div></main>`;
-    $$('[data-a]').forEach(b => b.onclick = () => ({ continua: () => { S = desat; joc(); }, juga: configurar, ajuda, docent, compte: () => modalCompte('entrar'), surt: () => { desaCompte(null); portada(); } })[b.dataset.a]());
+    $$('[data-a]').forEach(b => b.onclick = () => ({ continua: () => { S = desat; joc(); }, juga: configurar, ajuda, docent, taller: () => window.PH.taller(app, portada), compte: () => modalCompte('entrar'), surt: () => { desaCompte(null); portada(); } })[b.dataset.a]());
   }
   function configurar() {
-    let nivell = 1, mag = D.MAGATZEM_PER_DEFECTE;
+    let nivell = 1, mag = D.MAGATZEM_PER_DEFECTE, hab = 'delicades';
     const draw = () => {
       app.innerHTML = `<main class="config"><button class="btn ghost small" id="enr">← Tornar</button><h1>Primer dia a la feina</h1>
         <label class="f">El teu nom<input class="inp" id="nom" maxlength="30" placeholder="Ex.: Laia"></label>
@@ -103,12 +104,15 @@
         <div class="mags">${Object.entries(D.MAGATZEMS).map(([k, M]) => `<button class="niv ${k === mag ? 'on' : ''}" data-mag="${k}"><b>${M.icona} ${esc(M.nom)}</b><span class="small muted">${esc(M.desc)}</span><span class="small">${[...new Set(Object.values(M.passadissos).flatMap(p => [p.tipus].concat(Object.values(p.mods || {}))))].filter(x => x !== 'cap').map(x => D.ESTANTERIES[x].nom).join(' · ') || 'Sense estanteries'}</span></button>`).join('')}</div>
         <h2>On comences?</h2><p class="muted small">Normalment es comença de mosso i la cap t'ascendeix. Per practicar una part concreta, pots començar en un altre nivell.</p>
         <div class="nivells">${D.NIVELLS.map(N => `<button class="niv ${N.n === nivell ? 'on' : ''}" data-n="${N.n}"><b>${N.n}. ${esc(N.nom)}</b><span class="small muted">${esc(N.desc)}</span></button>`).join('')}</div>
+        <h2>Habilitat física</h2><p class="muted small">Manipular les caixes amb les mans i conduir el transpalet i el toro de veritat: els cops, les caigudes i els aixafaments fan malbé la mercaderia.</p>
+        <div class="seg hab-seg">${HAB_MODES.map(([k, n]) => `<button data-hab="${k}" class="${k === hab ? 'on' : ''}">${esc(n)}</button>`).join('')}</div><p class="small muted">${esc(HAB_MODES.find(x => x[0] === hab)[2])}</p>
         <div class="row" style="margin-top:18px"><button class="btn prim big" id="go">Entrar al magatzem →</button></div></main>`;
       $('#enr').onclick = portada;
       $$('[data-n]').forEach(b => b.onclick = () => { nivell = +b.dataset.n; const v = $('#nom').value; draw(); $('#nom').value = v; });
       $$('[data-mag]').forEach(b => b.onclick = () => { mag = b.dataset.mag; const v = $('#nom').value; draw(); $('#nom').value = v; });
+      $$('[data-hab]').forEach(b => b.onclick = () => { hab = b.dataset.hab; const v = $('#nom').value; draw(); $('#nom').value = v; });
       if (compte) $('#nom').value = compte.nom.split(' ')[0];
-      $('#go').onclick = () => { const nom = $('#nom').value.trim().slice(0, 30) || 'Treballador'; S = E.crearPartida({ nom, nivell, magatzem: mag, llavor: (Date.now() % 2e9) | 1 }); desa(); joc(); };
+      $('#go').onclick = () => { const nom = $('#nom').value.trim().slice(0, 30) || 'Treballador'; S = E.crearPartida({ nom, nivell, magatzem: mag, habilitat: hab, llavor: (Date.now() % 2e9) | 1 }); desa(); joc(); };
     };
     draw();
   }
@@ -118,6 +122,7 @@
       <li><b>Recepció</b>: toca una càrrega del moll 1 per revisar-la. Compara l'etiqueta amb l'albarà i accepta-la o rebutja-la amb el motiu.</li>
       <li><b>Ubicació</b>: toca una càrrega acceptada per agafar-la i després la prestatgeria on va. Tria el nivell i la posició. Al principi el sistema et diu la ubicació; quan siguis carretoner, la tries tu.</li>
       <li><b>Comandes</b> (des de preparador): comença una comanda, toca les prestatgeries, tria el lot (FEFO!) i la quantitat, i deixa el palet al moll del seu camió abans que surti. El que agafes primer queda a baix del palet.</li>
+      <li><b>Habilitat física</b> (si l'actives en començar): les tasques delicades es fan de veritat. A mà, amb dues mans independents (agafar, aixecar, girar, deixar), i amb el transpalet o el toro conduint, introduint les forquilles i pujant la càrrega. Els cops, les caigudes, els aixafaments i les frenades brusques fan malbé la mercaderia. Practica-ho al <b>Taller d'habilitat</b>.</li>
       <li><b>Seguretat</b>: el botó «Pressa» et fa anar més ràpid, però amb càrrega pots tenir un accident. No deixis res al passadís ni davant de la sortida.</li>
       <li><b>Al vespre</b>, l'informe i la nota de la cap. Bons torns seguits: <b>ascens</b>. Tres avisos: <b>acomiadament</b>.</li></ul>
       <div class="row"><button class="btn prim" id="tc" data-focus>Entesos</button></div>`, (m) => { $('#tc', m).onclick = tancaModal; }, { tancable: true });
@@ -181,7 +186,7 @@
     ctrl = PS.torn($('#escena'), S, {
       avis: (txt) => toast(txt),
       bronca: (txt) => toast(`${montse('petita')} <span><b>Montse:</b> ${esc(txt)}</span>`, 'bronca', 6000),
-      inspecciona, mostraModul, caixes: triaCaixes,
+      inspecciona, mostraModul, caixes: triaCaixes, habilitat: S.config.habilitat && S.config.habilitat !== 'off' && window.PH ? fesHabilitat : null,
       canvi: (tic) => { if (!tic || panellTab !== 'sgm') pintaPanell(); pintaPorta(); },
       rellotge: (m) => { const h = $('#hora'); if (h) h.textContent = '🕗 ' + E.hora(m); const b = $('#barra'); if (b) b.style.width = ((m - D.TORN_INICI) / (D.TORN_FI - D.TORN_INICI) * 100) + '%'; },
       onFi: (res) => { const h = E.puntua(S, res); ctrl && ctrl.destrueix(); ctrl = null; desa(); desaNuvol(); resultat(h); }
@@ -302,6 +307,84 @@
     });
   }
   const nomMag = (id) => { const m = D.MAGATZEMS[id] || D.MAGATZEMS.aliment; return m.icona + ' ' + esc(m.nom); };
+  /* ---------- Habilitat física dins del torn ---------- */
+  const HAB_MODES = [
+    ['delicades', 'Tasques delicades', 'Fas la maniobra física quan el producte és fràgil, pesant o delicat, o quan s\'ha de pujar en alçada amb el toro.'],
+    ['totes', 'Totes les tasques', 'Cada ubicació i cada línia de picking es fa a mà o amb el vehicle. Més realista i més llarg.'],
+    ['off', 'Clàssic', 'Sense maniobres físiques: les tasques es fan amb un clic.']
+  ];
+  function fesHabilitat(info, continua) {
+    const PH = window.PH, pr = PH.prop(info.prod);
+    const fragilPila = (info.pila || []).some(id => { const q = PH.prop(id); return q.fragil || q.pressio < 10; });
+    const delicat = pr.fragil || pr.pes >= 12 || pr.pressio < 10 || (info.tipus === 'ubicar' && info.niv >= 3) || (info.tipus === 'picking' && fragilPila);
+    if (S.config.habilitat === 'delicades' && !delicat) return continua();
+    const ambVehicle = info.tipus === 'ubicar' && (info.equip === 'toro' || info.niv === 1);
+    if (pr.mans === 0 && !ambVehicle) return continua();   // més de 25 kg: no es fa a mà
+    ctrl && ctrl.pausa(true);
+    const fi = (r) => {
+      const reg = r ? { tipus: info.tipus, prod: info.prod, minut: info.minut, nota: r.nota, malmesos: (r.malmesos || []).map(m => ({ nom: m.nom, estat: m.estat })), caiguts: (r.caiguts || 0) + (r.perduts || 0), copsForts: r.copsForts || 0, greu: r.bolcat ? 'bolcada' : (r.incidents || []).some(t => /bigues/.test(t)) ? 'palet' : null }
+        : { tipus: info.tipus, prod: info.prod, minut: info.minut, nota: 0, abandonat: true };
+      ctrl && ctrl.habilitat(reg);
+      if (r && (reg.malmesos.length || reg.greu)) toast(`${montse('petita')} <span><b>Montse:</b> ${reg.greu === 'bolcada' ? 'Has bolcat el toro! Això és gravíssim.' : reg.greu ? 'Un palet a terra des de les bigues… Revisa com el deixes.' : 'Compte amb la mercaderia: el que es trenca és una merma.'}</span>`, 'bronca', 5000);
+      ctrl && ctrl.pausa(false); continua();
+    };
+    const u = E.parse(info.codi);
+    if (ambVehicle) return PH.vehicle(cfgUbicaVehicle(info, u), fi);
+    if (info.tipus === 'ubicar') return PH.manual(cfgUbicaMa(info, u, pr), fi);
+    return PH.manual(cfgPicking(info, pr), fi);
+  }
+  // Maniobra amb transpalet o toro davant del passadís real (amb els palets que hi ha a l'estoc)
+  function cfgUbicaVehicle(info, u) {
+    const ids = [];
+    const nMod = (D.PASSADISSOS.find(x => x.id === u.pas) || { moduls: 2 }).moduls;
+    for (let m = 1; m <= nMod; m++) D.POSICIONS.forEach(pos => ids.push(`${u.pas}-${String(m).padStart(2, '0')}-${pos}`));
+    const palets = [];
+    Object.keys(info.stock).forEach(k => {
+      const v = E.parse(k); if (!v || v.pas !== u.pas || v.niv > 4 || k === info.codi) return;
+      const viu = info.stock[k].filter(x => x.q > 0); if (!viu.length) return;
+      palets.push({ bay: `${v.pas}-${String(v.mod).padStart(2, '0')}-${v.pos}`, nivell: v.niv, prods: Array(4).fill(viu[0].prod) });
+    });
+    const toro = info.equip === 'toro';
+    palets.push({ forq: true, objectiu: true, prods: Array(8).fill(info.prod) });
+    const bay = `${u.pas}-${String(u.mod).padStart(2, '0')}-${u.pos}`;
+    return {
+      vehicle: toro ? 'toro' : 'transpalet', titol: `Ubica ${P(info.prod).nom.toLowerCase()} a ${info.codi}`,
+      consigna: `Deixa el palet a <b>${bay}</b>${u.niv > 1 ? `, <b>nivell ${u.niv}</b>` : ', a terra'}. ${toro ? 'Puja les forquilles davant de la prestatgeria, entra, baixa i surt.' : 'Entra empenyent, ben alineat, i baixa amb Q.'}`,
+      mapa: { zones: [], linies: [[60, 130, 960, 130]], files: [{ pas: u.pas, x0: 150, y: 60, n: ids.length, cara: 1, ids, nivells: window.PH.NIVELLS_CM.slice(0, Math.max(...ids.map((x, i) => E.nivellsDe(u.pas, Math.floor(i / D.POSICIONS.length) + 1)))) }], parets: [{ x: 0, y: 500, w: 1000, h: 60, nom: 'la paret' }],
+        inici: toro ? { x: 120, y: 300, a: 0 } : { x: 70, y: 300, a: Math.PI }, palets },
+      desti: { bay, nivell: u.niv }, botoSeguent: 'Torna al torn',
+      consell: toro ? 'Circula amb la càrrega baixa i el pal enrere; puja-la només davant de la ubicació i aturat.' : 'Estira per desplaçar-te; empeny a poc a poc i alineat per entrar a la ubicació.'
+    };
+  }
+  // Ubicar a mà (transpalet, nivell 2): pujar les caixes al prestatge
+  function cfgUbicaMa(info, u, pr) {
+    const w = pr.mida[0] * 2, h = pr.mida[1] * 2, objs = [];
+    for (let i = 0; i < 3; i++) objs.push({ id: info.prod, x: 80 + w / 2 + i * (w + 4), y: 380 - h / 2 - 1, desti: 'prest' });
+    return {
+      titol: `Col·loca ${pr.nom.toLowerCase()} a ${info.codi}`, consigna: `Puja les caixes al <b>nivell ${u.niv}</b> de la prestatgeria. ${pr.mans === 2 ? 'Pesen: agafa-les amb les <b>dues mans</b>.' : ''}`,
+      estatics: [{ x: 60, y: 380, w: 380, h: 18, tipus: 'taula' }, { x: 560, y: 250, w: 380, h: 12, tipus: 'prestatge' }, { x: 930, y: 120, w: 10, h: 130, tipus: 'prestatge' }],
+      zones: { prest: { x: 560, y: 110, w: 370, h: 140, nom: 'al prestatge', etiqueta: info.codi } }, objectes: objs, botoSeguent: 'Torna al torn',
+      consell: 'Aixeca amb les cames, apropa la càrrega al cos i no giris el tronc carregat. Més de 25 kg, mai a mà.'
+    };
+  }
+  // Picking a mà: treure les caixes de la ubicació i posar-les al palet de la comanda (amb el que ja hi ha)
+  function cfgPicking(info, pr) {
+    const objs = [], W = (id) => window.PH.prop(id).mida[0] * 2, H = (id) => window.PH.prop(id).mida[1] * 2;
+    // Origen: dues caixes que es queden i les q que cal agafar, apilades
+    const orig = [null, null].concat(Array(info.q).fill('comanda'));
+    let x = 70, fila = 0;
+    orig.forEach(d => { const w = W(info.prod), h = H(info.prod); if (x + w > 415) { x = 70; fila++; } objs.push({ id: info.prod, x: x + w / 2, y: 380 - h / 2 - fila * (h + 1) - 1, desti: d }); x += w + 3; });
+    // Destí: el que ja hi ha al palet de la comanda (els darrers 6, en l'ordre en què s'hi van posar)
+    const pila = (info.pila || []).slice(-6); let base = 400, maxH = 0; x = 570;
+    pila.forEach(id => { const w = W(id), h = H(id); if (x + w > 930) { x = 570; base -= maxH + 1; maxH = 0; } objs.push({ id, x: x + w / 2, y: base - h / 2 - 1 }); x += w + 3; maxH = Math.max(maxH, h); });
+    return {
+      titol: `Picking: ${info.q} × ${pr.nom.toLowerCase()}`,
+      consigna: `Passa <b>${info.q} caix${info.q > 1 ? 'es' : 'a'}</b> al <b>palet de la comanda</b>. Pesat a baix i fràgil a dalt: ${pr.fragil ? 'això és fràgil!' : pr.pes >= 8 ? 'això pesa, no ho posis sobre res delicat.' : 'compte amb el que ja hi ha.'}`,
+      estatics: [{ x: 60, y: 380, w: 360, h: 18, tipus: 'taula' }, { x: 560, y: 400, w: 380, h: 18, tipus: 'taula' }],
+      zones: { comanda: { x: 560, y: 90, w: 380, h: 310, nom: 'al palet de la comanda', etiqueta: 'Palet de la comanda' } }, objectes: objs, botoSeguent: 'Torna al torn',
+      consell: 'El palet de la comanda es munta amb el pesat a baix i el fràgil a dalt. Si després d\'una cosa fràgil n\'has de posar una de pesant, posa-la al costat, no a sobre.'
+    };
+  }
   function confirma(text, ok) {
     ctrl && ctrl.pausa(true);
     modal(`<p>${esc(text)}</p><div class="row"><button class="btn prim" id="si" data-focus>Sí</button><button class="btn ghost" id="no">No</button></div>`, (m) => {
@@ -339,7 +422,7 @@
       <section class="sec kpis"><div><span>Càrregues revisades bé</span><b>${Math.round(k.recOk)} / ${k.carregues}</b></div>${k.cross ? '' : `<div><span>Ubicades bé</span><b>${k.ubiOk} / ${k.ubicades}</b></div>`}
         ${k.comandes ? `<div><span>Comandes a temps</span><b>${k.aTemps} / ${k.comandes}</b></div><div><span>Errors de picking</span><b>${k.errorsPicking} %</b></div>` : ''}
         ${k.cross ? `<div><span>Classificades bé</span><b>${k.crossOk} / ${k.cross}</b></div>` : ''}${k.caixesOk ? `<div><span>Caixes ben triades</span><b>${k.caixesOk} / ${k.comandes}</b></div>` : ''}${k.fred ? `<div><span>Trencaments de la cadena de fred</span><b>${k.fred}</b></div>` : ''}
-        <div><span>Trencaments i mermes</span><b>${k.trencaments + k.caducats}</b></div><div><span>Incidents de seguretat</span><b>${k.incidents}</b></div><div><span>Fi del torn</span><b>${E.hora(k.fi)}</b></div></section>
+        <div><span>Trencaments i mermes</span><b>${k.trencaments + k.caducats}</b></div><div><span>Incidents de seguretat</span><b>${k.incidents}</b></div>${k.habilitat != null ? `<div><span>Habilitat (manipulació i conducció)</span><b>${k.habilitat} / 100</b></div>` : ''}<div><span>Fi del torn</span><b>${E.hora(k.fi)}</b></div></section>
       ${h.greus.length + h.errors.length ? `<section class="sec"><h2>Què ha fallat</h2><ul class="errs">${h.greus.map(e => `<li class="greu"><span>${CAT[e[0]] || e[0]}</span>${esc(e[1])}</li>`).join('')}${h.errors.map(e => `<li><span>${CAT[e[0]] || e[0]}</span>${esc(e[1])}</li>`).join('')}</ul></section>` : `<section class="sec"><h2>Torn perfecte!</h2><p>Cap error. Així es treballa.</p></section>`}
       ${h.bons.length ? `<section class="sec"><ul class="bons">${h.bons.map(b => `<li>✓ ${esc(b)}</li>`).join('')}</ul></section>` : ''}
       ${lls.length ? `<section class="sec"><h2>Per repassar</h2><div class="ll-cards">${lls.map(l => `<button class="ll-card" data-ll="${l.id}"><b>📘 ${esc(l.titol)}</b><span class="small muted">Lliçó i pregunta</span></button>`).join('')}</div></section>` : ''}
@@ -373,7 +456,7 @@
   }
 
   /* ---------- Mode docent ---------- */
-  const NOM_TEMA = { recepcio: 'Recepció', ubicacio: 'Ubicació', picking: 'Picking', fefo: 'FEFO', trencament: 'Paletització', expedicio: 'Expedició', carrega: 'Ordre de càrrega', seguretat: 'Seguretat', inventari: 'Inventari', merma: 'Mermes', cross: 'Cross-docking', fred: 'Cadena de fred', caixa: 'Embalatge' };
+  const NOM_TEMA = { recepcio: 'Recepció', ubicacio: 'Ubicació', picking: 'Picking', fefo: 'FEFO', trencament: 'Paletització', expedicio: 'Expedició', carrega: 'Ordre de càrrega', seguretat: 'Seguretat', inventari: 'Inventari', merma: 'Mermes', cross: 'Cross-docking', fred: 'Cadena de fred', caixa: 'Embalatge', manipulacio: 'Manipulació' };
   const pwDocent = () => { try { return sessionStorage.getItem('palet-pw') || ''; } catch (e) { return ''; } };
   function docent(grup) {
     app.innerHTML = `<main class="config" style="max-width:1200px"><button class="btn ghost small" id="enr">← Tornar</button><h1>🧑‍🏫 Alumnes</h1>

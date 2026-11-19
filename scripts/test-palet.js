@@ -49,6 +49,7 @@ function jugaTorn(s, mode) {
   return E.puntua(s, res);
 }
 
+function jugaTornAmb(s, hab) { const orig = E.puntua; let h; E.puntua = (ss, res) => { res.habilitat = hab; return orig(ss, res); }; try { h = jugaTorn(s, 'bo'); } finally { E.puntua = orig; } return h; }
 { // Un bon treballador puja de mosso a cap de magatzem
   const s = E.crearPartida({ nom: 'Prova', llavor: 7 });
   t(s.nivell === 1 && s.dia.recepcions.length === 2 && !s.dia.comandes.length, 'el mosso comença amb dos camions de proveïdor i sense comandes');
@@ -103,6 +104,18 @@ function jugaTorn(s, mode) {
   t(E.problemesUbicacio('cargols', 'C-01-1-A').length > 0 && !E.problemesUbicacio('ciment', 'C-01-2-A').length, 'l\'estanteria compacta és per a sacs, no per a peces petites');
   t(E.problemesUbicacio('cargols', 'A-03-3-B').length === 0 && E.problemesUbicacio('cable', 'A-01-1-A').some(x => /picking/.test(x)), 'les peces petites a picking; el que pesa, no');
   D.usa('aliment');
+}
+{ // Habilitat física: els danys i accidents de les maniobres entren a l'informe de la cap
+  const s = E.crearPartida({ llavor: 31, nivell: 3, habilitat: 'totes' });
+  const sense = jugaTornAmb(s, []);
+  const s2 = E.crearPartida({ llavor: 31, nivell: 3, habilitat: 'totes' });
+  const amb = jugaTornAmb(s2, [{ tipus: 'picking', prod: 'vi', nota: 40, malmesos: [{ nom: 'Vi negre 6 ampolles', estat: 'trencat' }], caiguts: 0, copsForts: 0 }, { tipus: 'ubicar', prod: 'aigua', nota: 0, malmesos: [], caiguts: 2, copsForts: 1, greu: 'bolcada' }]);
+  t(amb.errors.some(e => e[0] === 'manipulacio' && /trencat/.test(e[1])), 'un producte trencat en una maniobra és una merma');
+  t(amb.greus.some(e => e[0] === 'seguretat' && /bolcat/.test(e[1])) && amb.veredicte === 'bronca', 'bolcar el toro és un incident greu');
+  t(amb.kpi.habilitat === 20 && amb.seguretat < sense.seguretat, 'la nota d\'habilitat i la seguretat reflecteixen les maniobres');
+  const s3 = E.crearPartida({ llavor: 31, nivell: 3, habilitat: 'totes' });
+  const be = jugaTornAmb(s3, [{ tipus: 'ubicar', prod: 'aigua', nota: 95, malmesos: [], caiguts: 0, copsForts: 0 }]);
+  t(be.bons.some(b => /habilitat 95/.test(b)) && !be.errors.some(e => e[0] === 'manipulacio'), 'les maniobres netes es reconeixen');
 }
 console.log(ko ? '✘ ' + ko + ' errors · ' + ok + ' correctes' : '✔ ' + ok + ' comprovacions del motor de Palet');
 process.exit(ko ? 1 : 0);

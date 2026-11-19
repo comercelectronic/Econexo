@@ -36,3 +36,17 @@ vista des de dalt, un treballador que es mou pel magatzem i torns de feina amb e
 - `js/escena.js` magatzem en temps real (agents DOM, camins pels passadissos).
 - `js/ui.js` pantalles. `js/llicons.js` lliçons dins del joc lligades al temari.
 - Lliçons de la web: `content*/modulos/tecnicas-de-almacen` (camp `capitulo` = nivell).
+
+## Capa d'habilitat física (taller i mode habilitat)
+Amplia les tasques existents sense substituir-les (`js/habilitat.js`, `js/vehicles.js`, `js/taller.js`; físiques 2D amb Matter.js a `js/vendor`).
+- **Propietats físiques** de cada producte (`PH.prop`): pes, fragilitat, impacte que aguanta (m/s), pes màxim a sobre, estabilitat,
+  mides, inclinació màxima, «sempre dret», conservació i si cal una mà, dues o un mitjà mecànic (> 25 kg).
+- **Manipulació manual** (vista lateral): dues mans independents amb força limitada (el que pesa necessita les dues), canell per girar i
+  inclinar, detecció de cops, aixafaments (pes a sobre) i bolcades; col·locació en una zona i orientació.
+- **Transpalet i toro** (vista des de dalt + vista lateral): acceleració i frenada segons el pes, direcció (el toro gira amb la roda del
+  darrere), forquilles que s'han d'alinear i introduir a l'alçada de l'obertura, bomba / elevació, inclinació del pal, bigues a cada nivell,
+  estabilitat de la càrrega (rellisca amb girs i frenades bruscos i cau), bolcada del toro, cops contra prestatgeries i palets, precisió.
+- **Taller d'habilitat**: la prova de validació (caixa, ampolla, ous, extracció, palet mixt amb transpalet, toro en alçada) amb nota.
+- **Mode habilitat** del torn (`config.habilitat`: `delicades` · `totes` · `off`): en ubicar i en fer el picking s'obre la maniobra física,
+  generada a partir de l'estat real (estoc del passadís, palet de la comanda). El rellotge del torn s'atura durant la maniobra i el
+  resultat (`res.habilitat`) entra a l'informe de la cap: mermes, cops forts, bolcades i palets caiguts (greus).
