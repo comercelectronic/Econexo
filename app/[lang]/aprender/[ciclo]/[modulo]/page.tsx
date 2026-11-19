@@ -4,10 +4,10 @@ import { PageHero } from '@/components/Mascotas';
 import { notFound } from 'next/navigation';
 import { ArticleCard } from '@/components/ArticleCard';
 import { Done, ModuleBar } from '@/components/Progress';
-import { ciclosLive, lecciones, simuladorById, simUrl, temario } from '@/lib/estudios';
+import { PRACTICA_CAPITULOS, ciclosLive, lecciones, simuladorById, simUrl, temario } from '@/lib/estudios';
 import { LANGS, isLang, l as lp, tr } from '@/lib/i18n';
 import { published } from '@/lib/content';
-import { TOOLS } from '@/lib/tools';
+import { TOOLS, codigosTool } from '@/lib/tools';
 
 export const dynamicParams = false;
 export const generateStaticParams = () => LANGS.flatMap((lang) => ciclosLive().flatMap((c) => c.modulos.map((m) => ({ lang, ciclo: c.slug, modulo: m.slug }))));
@@ -28,9 +28,9 @@ export default async function ModuloPage({ params }: Props) {
   const { lang, ciclo, modulo } = await params; const f = find(ciclo, modulo);
   if (!f || !isLang(lang)) notFound();
   const t = tr(lang), { c, m } = f;
-  const lessons = lecciones(lang, ciclo, modulo), tm = temario(lang, modulo), sim = simuladorById(m.simulador);
+  const lessons = lecciones(lang, ciclo, modulo), tm = temario(lang, modulo), sim = simuladorById(m.simulador), pr = m.practica || PRACTICA_CAPITULOS;
   const codes = new Set(lessons.flatMap((x) => x.codigos));
-  const tools = TOOLS.filter((x) => x.codigos?.some((k) => codes.has(k)));
+  const tools = TOOLS.filter((x) => codigosTool(x, modulo).some((k) => codes.has(k)));
   const art = published(lang).filter((a) => a.modulos.includes(modulo));
   const news = art.filter((a) => a.tipo === 'noticia'), resources = art.filter((a) => a.tipo !== 'noticia');
   return (
@@ -52,13 +52,13 @@ export default async function ModuloPage({ params }: Props) {
 
       <section className="mt-12">
         <h2 className="border-b-2 border-navy pb-2 text-2xl font-extrabold text-navy">{t('Lecciones')}</h2>
-        <p className="mt-2 text-sm text-muted">{t('En el mismo orden que el simulador: cada lección indica en qué capítulo la pondrás en práctica.')}</p>
+        <p className="mt-2 text-sm text-muted">{t(pr.orden)}</p>
         <ol className="mt-4 grid gap-2 md:grid-cols-2">
           {lessons.map((x) => (
             <li key={x.id}><Link href={lp(lang, x.url)} className={`flex items-center gap-3 rounded-xl border px-4 py-3 hover:border-teal ${x.codigos.length ? 'border-line' : 'border-dashed border-line'}`}>
               <span className="w-7 shrink-0 font-display font-extrabold text-teal">{x.orden}</span>
               <span className="flex-1"><span className="block font-bold text-navy">{x.titulo}</span>
-                <span className="text-xs text-muted">{x.codigos.length ? `${t('Temario')} ${x.codigos.join(', ')}` : t('Complementaria: gestionar la agencia')} · {t('Capítulo')} {x.capitulo}</span></span>
+                <span className="text-xs text-muted">{x.codigos.length ? `${t('Temario')} ${x.codigos.join(', ')}` : t(pr.complementaria)}{x.capitulo ? <> · {t(pr.etiqueta)} {x.capitulo}</> : null}</span></span>
               <Done id={x.id} /></Link></li>
           ))}
         </ol>

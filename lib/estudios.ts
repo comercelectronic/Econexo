@@ -28,13 +28,16 @@ export const SIMULADORES: Simulador[] = [
   },
   {
     id: 'mercadeja', name: 'Mercadeja', interno: true,
-    desc: 'Juego de tienda: cada equipo lleva una tienda de barrio desde su dispositivo, decide producto, precio, distribución y promoción y atiende a los clientes con su muñeco. Retos de clase con ranking en directo y lecciones del currículo de marketing.',
+    desc: 'Juego de tienda: cada alumno empieza con una tienda de barrio y la hace crecer hasta una gran empresa. Decide producto, precio, distribución y promoción y atiende a los clientes con su muñeco. Cuentas de alumno con panel del profesor, retos de clase con ranking en directo y lecciones del currículo de marketing.',
     url: '/jocs/mercadeja/', idiomas: 'Catalán',
     para: [{ ciclo: 'actividades-comerciales', modulo: 'marketing-en-la-actividad-comercial' }]
   }
 ];
 
-export type Modulo = { slug: string; name: string; live: boolean; horas?: string; resumen?: string; simulador?: string };
+// practica: com s'anomenen les parts del simulador on es practica cada lliçó (per defecte, «capítols» d'Agència Digital)
+export type Practica = { etiqueta: string; orden: string; texto: string; complementaria: string };
+export type Modulo = { slug: string; name: string; live: boolean; horas?: string; resumen?: string; simulador?: string; practica?: Practica };
+export const PRACTICA_CAPITULOS: Practica = { etiqueta: 'Capítulo', orden: 'En el mismo orden que el simulador: cada lección indica en qué capítulo la pondrás en práctica.', texto: 'En este capítulo aplicarás esta lección con un cliente. Tus decisiones tendrán consecuencias en tu agencia.', complementaria: 'Complementaria: gestionar la agencia' };
 export type Ciclo = { slug: string; name: string; grado: 'medio' | 'superior'; resumen: string; modulos: Modulo[] };
 
 const m = (name: string, slug?: string): Modulo => ({ slug: slug || name.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''), name, live: false });
@@ -46,7 +49,10 @@ export const CICLOS: Ciclo[] = [
     modulos: [
       { slug: 'comercio-electronico', name: 'Comercio electrónico', live: true, simulador: 'agencia-digital',
         resumen: 'Plan de marketing digital, tienda online, pagos y logística, mantenimiento de la web, redes sociales y entornos web 2.0. Con el simulador Agència Digital como parte práctica.' },
-      m('Marketing en la actividad comercial'), m('Gestión de un pequeño comercio'), m('Técnicas de almacén'), m('Gestión de compras'),
+      { slug: 'marketing-en-la-actividad-comercial', name: 'Marketing en la actividad comercial', live: true, simulador: 'mercadeja',
+        resumen: 'Conceptos de marketing, mercado y consumidor, investigación comercial y las cuatro P: producto, precio, distribución y comunicación, hasta el plan de marketing. Con el simulador Mercadeja como parte práctica.',
+        practica: { etiqueta: 'Fase', orden: 'Cada lección indica en qué fase de tu empresa de Mercadeja la pondrás en práctica: de tienda de barrio a gran empresa.', texto: 'En esta fase de Mercadeja aplicarás esta lección en tu tienda: tus decisiones cambian qué compran los clientes y el resultado de cada día.', complementaria: 'Complementaria' } },
+      m('Gestión de un pequeño comercio'), m('Técnicas de almacén'), m('Gestión de compras'),
       m('Venta técnica'), m('Dinamización del punto de venta'), m('Procesos de venta'), m('Aplicaciones informáticas para el comercio'),
       m('Servicios de atención comercial')
     ]

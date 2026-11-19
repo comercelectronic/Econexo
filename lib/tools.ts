@@ -1,7 +1,9 @@
 // Catàleg d'eines pròpies. Cada eina té la seva pàgina a /herramientas/<slug>/ amb calculadora, fórmula, exemple i limitacions.
 import type { Line } from './universo';
 
-export type Tool = { slug: string; name: string; area: string; short: string; intro: string; formula: string; example: string; limits: string[]; faq: { p: string; r: string }[]; guide?: string; dialogo?: Line[]; codigos?: string[] };
+export type Tool = { slug: string; name: string; area: string; short: string; intro: string; formula: string; example: string; limits: string[]; faq: { p: string; r: string }[]; guide?: string; dialogo?: Line[]; codigos?: string[]; temas?: Record<string, string[]> };
+// Codis de temari de l'eina per mòdul: `codigos` són els de Comerç electrònic; `temas` els d'altres mòduls
+export const codigosTool = (x: Tool, modulo: string): string[] => (modulo === 'comercio-electronico' ? x.codigos : x.temas?.[modulo]) || [];
 
 export const TOOLS: Tool[] = [
   {
@@ -15,7 +17,7 @@ export const TOOLS: Tool[] = [
     guide: '/marketing-digital/como-calcular-el-roas/'
   },
   {
-    slug: 'calculadora-roi', codigos: ['1.1', '3.9'],
+    slug: 'calculadora-roi', temas: { 'marketing-en-la-actividad-comercial': ['8.5'] }, codigos: ['1.1', '3.9'],
     dialogo: [{ quien: 'eco', gesto: 'senalando', texto: 'La feria me costó 600 € y vendí 3.000 €. ¡ROI del 400 %!' }, { quien: 'nexo', gesto: 'esceptico', texto: 'El ROI se calcula con el beneficio, no con las ventas. ¿Cuánto margen te dejaron esos 3.000 €?' }], name: 'Calculadora de ROI', area: 'Rentabilidad', short: 'Retorno de una inversión en marketing o en un proyecto.',
     intro: 'Calcula el retorno de la inversión (ROI) de una campaña, una herramienta o un proyecto a partir de lo que has invertido y del beneficio que ha generado.',
     formula: 'ROI (%) = (beneficio generado − inversión) ÷ inversión × 100. El beneficio generado es el margen, no la facturación.',
@@ -33,7 +35,7 @@ export const TOOLS: Tool[] = [
     faq: [{ p: '¿Qué significa UTM?', r: 'Urchin Tracking Module: viene de Urchin, la empresa que Google compró en 2005 y que dio origen a Google Analytics.' }]
   },
   {
-    slug: 'calculadora-engagement', codigos: ['4.6', '4.8', '4.10'], name: 'Calculadora de engagement', area: 'Redes sociales', short: 'Mide si tus seguidores interactúan de verdad con tu contenido.',
+    slug: 'calculadora-engagement', temas: { 'marketing-en-la-actividad-comercial': ['7.7'] }, codigos: ['4.6', '4.8', '4.10'], name: 'Calculadora de engagement', area: 'Redes sociales', short: 'Mide si tus seguidores interactúan de verdad con tu contenido.',
     dialogo: [{ quien: 'eco', gesto: 'alegria', texto: '¡Tengo 10.000 seguidores! Soy un influencer, ¿no?' }, { quien: 'nexo', gesto: 'esceptico', texto: 'Con 3 «me gusta» por publicación… Vamos a calcular tu tasa de interacción, ECO.' }],
     intro: 'Calcula la tasa de interacción (engagement) de una cuenta o de una publicación a partir de los seguidores y de los «me gusta», comentarios, compartidos y guardados.',
     formula: 'Tasa de interacción por seguidores = (me gusta + comentarios + compartidos + guardados) ÷ número de publicaciones ÷ seguidores × 100. Si conoces el alcance, también se puede calcular sobre el alcance.',
@@ -52,7 +54,7 @@ export const TOOLS: Tool[] = [
     guide: '/finanzas/como-funciona-el-interes-compuesto/'
   },
   {
-    slug: 'calculadora-margen-precio', codigos: ['2.1', '2.2'], name: 'Calculadora de margen y precio de venta', area: 'Ventas',
+    slug: 'calculadora-margen-precio', temas: { 'marketing-en-la-actividad-comercial': ['5.3', '5.4'] }, codigos: ['2.1', '2.2'], name: 'Calculadora de margen y precio de venta', area: 'Ventas',
     short: 'Del coste de compra al precio de venta con IVA, con margen y markup.',
     dialogo: [{ quien: 'eco', gesto: 'alegria', texto: 'Lo compro a 10 € y lo vendo a 15 €. ¡Un 50 % de beneficio!' }, { quien: 'nexo', gesto: 'esceptico', texto: 'Eso es el markup. Tu margen sobre la venta es del 33 %. Y aún no has contado el IVA ni tus gastos.' }],
     intro: 'Calcula a qué precio vender un producto para conseguir el margen que quieres, y comprueba cuánto es en margen, en markup y con IVA incluido.',
@@ -62,7 +64,7 @@ export const TOOLS: Tool[] = [
     faq: [{ p: '¿Cuál es la diferencia entre margen y markup?', r: 'El margen se calcula sobre el precio de venta y el markup sobre el coste. Con el mismo producto, el markup siempre es mayor que el margen.' }, { p: '¿El margen incluye el IVA?', r: 'No. El IVA no es ingreso del comercio: se cobra al cliente y se ingresa a Hacienda. Los márgenes se calculan siempre sin IVA.' }]
   },
   {
-    slug: 'calculadora-iva', name: 'Calculadora de IVA', area: 'Ventas',
+    slug: 'calculadora-iva', temas: { 'marketing-en-la-actividad-comercial': ['5.1'] }, name: 'Calculadora de IVA', area: 'Ventas',
     short: 'Añade o quita el IVA de un precio en un segundo.',
     dialogo: [{ quien: 'eco', gesto: 'confusion', texto: 'El cliente paga 121 €. ¿Le quito el 21 % y ya tengo la base?' }, { quien: 'nexo', gesto: 'paciencia', texto: 'No: 121 ÷ 1,21 = 100. Si restas el 21 % de 121, te sale una base equivocada. Prueba con la calculadora.' }],
     intro: 'Calcula el precio con IVA a partir de la base imponible, o la base y el IVA a partir de un precio final.',
@@ -72,7 +74,7 @@ export const TOOLS: Tool[] = [
     faq: [{ p: '¿Qué tipos de IVA hay en España?', r: 'El general del 21 %, el reducido del 10 % y el superreducido del 4 %, según el producto o servicio. Consulta siempre la normativa vigente.' }, { p: '¿Por qué no se resta el porcentaje al total?', r: 'Porque el IVA se calcula sobre la base, no sobre el total. Para quitar un 21 % hay que dividir entre 1,21.' }]
   },
   {
-    slug: 'punto-de-equilibrio', codigos: ['3.9'], name: 'Calculadora del punto de equilibrio', area: 'Rentabilidad',
+    slug: 'punto-de-equilibrio', temas: { 'marketing-en-la-actividad-comercial': ['5.4'] }, codigos: ['3.9'], name: 'Calculadora del punto de equilibrio', area: 'Rentabilidad',
     short: 'Cuántas unidades tienes que vender para no perder dinero.',
     dialogo: [{ quien: 'eco', gesto: 'alegria', texto: '¡Abro la tienda online! Solo cuesta 800 € al mes entre web, herramientas y cuota.' }, { quien: 'nexo', gesto: 'pensativo', texto: '¿Y cuántos productos tienes que vender solo para llegar a cero? Ese es el punto de equilibrio.' }],
     intro: 'Calcula cuántas unidades y cuánta facturación necesitas para cubrir tus costes fijos, y cuánto ganas (o pierdes) con las ventas que esperas.',
@@ -82,7 +84,7 @@ export const TOOLS: Tool[] = [
     faq: [{ p: '¿Qué son costes fijos y variables?', r: 'Los fijos no cambian con las ventas (alquiler, cuotas, sueldos). Los variables sí (coste del producto, envío, comisión de pago).' }, { p: '¿Qué hago si el equilibrio es inalcanzable?', r: 'Sube el precio, baja el coste variable o reduce los costes fijos. Si ninguna es posible, el modelo no es viable tal como está.' }]
   },
   {
-    slug: 'calculadora-descuentos', codigos: ['2.1'], name: 'Calculadora de descuentos y rebajas', area: 'Ventas',
+    slug: 'calculadora-descuentos', temas: { 'marketing-en-la-actividad-comercial': ['5.6', '7.3'] }, codigos: ['2.1'], name: 'Calculadora de descuentos y rebajas', area: 'Ventas',
     short: 'Precio final, ahorro y descuento real de una o dos rebajas seguidas.',
     dialogo: [{ quien: 'eco', gesto: 'hablando', texto: '¡Rebajas del 30 % más un 20 % extra! ¡Es un 50 % de descuento!' }, { quien: 'nexo', gesto: 'guino', texto: 'Son un 44 %: el segundo descuento se aplica al precio ya rebajado. Compruébalo.' }],
     intro: 'Calcula el precio final tras un descuento, o tras dos descuentos encadenados, y descubre el porcentaje real de rebaja.',
@@ -92,7 +94,7 @@ export const TOOLS: Tool[] = [
     faq: [{ p: '¿Por qué no se suman los descuentos?', r: 'Porque el segundo se aplica sobre un precio que ya es más bajo. Un 30 % más un 20 % equivale a un 44 %.' }, { p: '¿Cómo calculo el precio antes del descuento?', r: 'Divide el precio final entre (1 − descuento): si pagas 70 € con un 30 % de rebaja, el original era 70 ÷ 0,70 = 100 €.' }]
   },
   {
-    slug: 'metricas-publicidad', codigos: ['1.6'], name: 'Calculadora de CTR, CPC, CPM y CPA', area: 'Marketing',
+    slug: 'metricas-publicidad', temas: { 'marketing-en-la-actividad-comercial': ['7.2', '7.8'] }, codigos: ['1.6'], name: 'Calculadora de CTR, CPC, CPM y CPA', area: 'Marketing',
     short: 'Las métricas clave de una campaña de anuncios, calculadas de una vez.',
     dialogo: [{ quien: 'eco', gesto: 'sorpresa', texto: '¡Mi anuncio ha tenido 50.000 impresiones! ¡Soy viral!' }, { quien: 'nexo', gesto: 'esceptico', texto: 'Impresiones no es dinero. Mira el CTR, el CPC y cuánto te cuesta cada venta.' }],
     intro: 'Introduce los datos de tu campaña (impresiones, clics, coste y conversiones) y obtén el CTR, CPC, CPM, tasa de conversión y CPA.',
@@ -102,7 +104,7 @@ export const TOOLS: Tool[] = [
     faq: [{ p: '¿Qué es un buen CTR?', r: 'Depende del canal y del sector. Compáralo con tus campañas anteriores y con las medias de tu sector.' }, { p: '¿Qué diferencia hay entre CPC y CPA?', r: 'El CPC es lo que pagas por cada clic; el CPA es lo que pagas por cada conversión (venta, contacto…).' }]
   },
   {
-    slug: 'tasa-conversion-ticket-medio', codigos: ['3.9', '3.10', '3.11'], name: 'Tasa de conversión y ticket medio', area: 'Comercio electrónico',
+    slug: 'tasa-conversion-ticket-medio', temas: { 'marketing-en-la-actividad-comercial': ['8.6'] }, codigos: ['3.9', '3.10', '3.11'], name: 'Tasa de conversión y ticket medio', area: 'Comercio electrónico',
     short: 'Mide tu tienda online y calcula cuánto ganarías si mejoras la conversión.',
     dialogo: [{ quien: 'eco', gesto: 'confusion', texto: 'Tengo 5.000 visitas al mes y solo 40 pedidos. ¡La gente no sabe comprar!' }, { quien: 'nexo', gesto: 'pensativo', texto: 'Tu tasa de conversión es del 0,8 %. Veamos cuánto subirían las ventas si la mejoras un poco.' }],
     intro: 'Calcula la tasa de conversión, el ticket medio y los ingresos por visita de una tienda online, y simula el efecto de mejorar la conversión.',
@@ -112,7 +114,7 @@ export const TOOLS: Tool[] = [
     faq: [{ p: '¿Qué conversión es normal en una tienda online?', r: 'Suele moverse entre el 1 % y el 3 %, pero varía mucho según el sector y el precio del producto.' }, { p: '¿Cómo mejoro la conversión?', r: 'Cuida la ficha de producto, simplifica el carrito y el pago, muestra opiniones y costes de envío claros y acelera la web.' }]
   },
   {
-    slug: 'calculadora-ltv-cac', codigos: ['1.10'], name: 'Calculadora de LTV y CAC', area: 'Marketing',
+    slug: 'calculadora-ltv-cac', temas: { 'marketing-en-la-actividad-comercial': ['7.6'] }, codigos: ['1.10'], name: 'Calculadora de LTV y CAC', area: 'Marketing',
     short: 'Cuánto vale un cliente a lo largo de su vida y cuánto cuesta conseguirlo.',
     dialogo: [{ quien: 'eco', gesto: 'verguenza', texto: 'Conseguir un cliente me cuesta 60 € y en su primera compra me deja 20 €…' }, { quien: 'nexo', gesto: 'pensativo', texto: 'Depende de cuántas veces vuelva a comprar. Calculemos su valor de vida: el LTV.' }],
     intro: 'Calcula el valor de vida de un cliente (LTV), lo que te cuesta conseguirlo (CAC) y en cuántos meses recuperas esa inversión.',

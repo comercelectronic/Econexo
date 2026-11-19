@@ -1,0 +1,232 @@
+{
+ "bloques": {
+  "1": "Conceptes bàsics del màrqueting",
+  "2": "El mercat, l'entorn i el consumidor",
+  "3": "El sistema d'informació de màrqueting i la investigació comercial",
+  "4": "Les polítiques de producte",
+  "5": "Les polítiques de preu",
+  "6": "Les polítiques de distribució",
+  "7": "Les polítiques de comunicació",
+  "8": "El pla de màrqueting"
+ },
+ "temario": [
+  [
+   "1.1",
+   "Concepte de màrqueting i la seva evolució"
+  ],
+  [
+   "1.2",
+   "Funcions del màrqueting a l'empresa"
+  ],
+  [
+   "1.3",
+   "Necessitats, desitjos i demanda"
+  ],
+  [
+   "1.4",
+   "El màrqueting mix: les quatre P"
+  ],
+  [
+   "1.5",
+   "Màrqueting estratègic i màrqueting operatiu"
+  ],
+  [
+   "1.6",
+   "Tipus de màrqueting"
+  ],
+  [
+   "2.1",
+   "El mercat: concepte i tipus"
+  ],
+  [
+   "2.2",
+   "El microentorn i el macroentorn"
+  ],
+  [
+   "2.3",
+   "El procés de decisió de compra"
+  ],
+  [
+   "2.4",
+   "Factors que influeixen en el comportament del consumidor"
+  ],
+  [
+   "2.5",
+   "Segmentació del mercat: criteris i requisits"
+  ],
+  [
+   "2.6",
+   "Estratègies de segmentació"
+  ],
+  [
+   "3.1",
+   "El sistema d'informació de màrqueting (SIM)"
+  ],
+  [
+   "3.2",
+   "Fonts d'informació: internes, externes, primàries i secundàries"
+  ],
+  [
+   "3.3",
+   "La investigació comercial i les seves fases"
+  ],
+  [
+   "3.4",
+   "Tècniques d'investigació: enquesta, entrevista, observació i panel"
+  ],
+  [
+   "3.5",
+   "El qüestionari i la mostra"
+  ],
+  [
+   "4.1",
+   "El producte: concepte, atributs i nivells"
+  ],
+  [
+   "4.2",
+   "Classificació dels productes"
+  ],
+  [
+   "4.3",
+   "Gamma, línia i assortiment"
+  ],
+  [
+   "4.4",
+   "El cicle de vida del producte"
+  ],
+  [
+   "4.5",
+   "La marca: tipus i estratègies"
+  ],
+  [
+   "4.6",
+   "Envàs, embalatge i etiquetatge"
+  ],
+  [
+   "4.7",
+   "Posicionament i diferenciació"
+  ],
+  [
+   "4.8",
+   "Productes nous"
+  ],
+  [
+   "5.1",
+   "El preu: concepte i importància"
+  ],
+  [
+   "5.2",
+   "Factors que influeixen en el preu"
+  ],
+  [
+   "5.3",
+   "Mètodes de fixació de preus: costos, competència i demanda"
+  ],
+  [
+   "5.4",
+   "Marge comercial i llindar de rendibilitat"
+  ],
+  [
+   "5.5",
+   "L'elasticitat de la demanda"
+  ],
+  [
+   "5.6",
+   "Estratègies de preus"
+  ],
+  [
+   "6.1",
+   "La distribució comercial: concepte i funcions"
+  ],
+  [
+   "6.2",
+   "Canals de distribució: tipus i longitud"
+  ],
+  [
+   "6.3",
+   "Els intermediaris: majoristes i detallistes"
+  ],
+  [
+   "6.4",
+   "Formes de venda: tradicional, autoservei i sense establiment"
+  ],
+  [
+   "6.5",
+   "Estratègies de distribució: intensiva, selectiva i exclusiva"
+  ],
+  [
+   "6.6",
+   "Costos de distribució"
+  ],
+  [
+   "6.7",
+   "Comerç associat i integrat: cadenes, franquícies i cooperatives"
+  ],
+  [
+   "6.8",
+   "Logística i marxandatge"
+  ],
+  [
+   "7.1",
+   "La comunicació comercial i el mix de comunicació"
+  ],
+  [
+   "7.2",
+   "La publicitat: mitjans i suports"
+  ],
+  [
+   "7.3",
+   "La promoció de vendes"
+  ],
+  [
+   "7.4",
+   "Les relacions públiques"
+  ],
+  [
+   "7.5",
+   "La venda personal"
+  ],
+  [
+   "7.6",
+   "Màrqueting directe, relacional i fidelització"
+  ],
+  [
+   "7.7",
+   "Comunicació digital i xarxes socials"
+  ],
+  [
+   "7.8",
+   "Objectius i pressupost de comunicació"
+  ],
+  [
+   "8.1",
+   "El pla de màrqueting: concepte i utilitat"
+  ],
+  [
+   "8.2",
+   "Anàlisi de la situació i DAFO"
+  ],
+  [
+   "8.3",
+   "Objectius i estratègies de màrqueting"
+  ],
+  [
+   "8.4",
+   "El pla d'acció"
+  ],
+  [
+   "8.5",
+   "El pressupost"
+  ],
+  [
+   "8.6",
+   "Control i seguiment del pla"
+  ]
+ ],
+ "ahora": {
+  "2.3": "Avui també: la cerca al mòbil, les ressenyes i els comparadors formen part de gairebé totes les compres.",
+  "3.4": "Avui també: enquestes en línia, analítica web i escolta a les xarxes socials.",
+  "6.4": "Avui també: comerç electrònic, recollida a la botiga (click & collect) i venda per xarxes socials.",
+  "7.7": "Avui: xarxes socials, creadors de contingut, vídeo curt i missatgeria (WhatsApp Business)."
+ }
+}

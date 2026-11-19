@@ -3,10 +3,10 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Tira } from '@/components/Tira';
 import { LessonTest } from '@/components/LessonTest';
-import { ciclosLive, lecciones, simuladorById, simUrl, temario } from '@/lib/estudios';
+import { PRACTICA_CAPITULOS, ciclosLive, lecciones, simuladorById, simUrl, temario } from '@/lib/estudios';
 import { LANGS, isLang, l as lp, tr } from '@/lib/i18n';
 import { published } from '@/lib/content';
-import { TOOLS } from '@/lib/tools';
+import { TOOLS, codigosTool } from '@/lib/tools';
 import { ArticleCard } from '@/components/ArticleCard';
 
 export const dynamicParams = false;
@@ -29,9 +29,9 @@ export default async function LeccionPage({ params }: Props) {
   const { lang: raw, ciclo, modulo, leccion } = await params; const f = find(raw, ciclo, modulo, leccion);
   if (!f || !isLang(raw)) notFound();
   const lang = raw, t = tr(lang), { c, m, ls, i, l } = f;
-  const tm = temario(lang, modulo), sim = simuladorById(m.simulador);
+  const tm = temario(lang, modulo), sim = simuladorById(m.simulador), pr = m.practica || PRACTICA_CAPITULOS;
   const prev = ls[i - 1], next = ls[i + 1];
-  const tools = TOOLS.filter((x) => x.codigos?.some((k) => l.codigos.includes(k)));
+  const tools = TOOLS.filter((x) => codigosTool(x, modulo).some((k) => l.codigos.includes(k)));
   const reading = published(lang).filter((a) => a.modulos.includes(modulo) && a.codigos.some((x) => l.codigos.includes(x))).slice(0, 3);
   return (
     <article className="mx-auto max-w-4xl py-10">
@@ -54,8 +54,8 @@ export default async function LeccionPage({ params }: Props) {
       {sim && l.capitulo && (
         <section className="mt-10 rounded-2xl bg-navy p-6 text-white">
           <p className="text-xs font-bold uppercase tracking-widest text-teal">{t('Practica en el simulador')}</p>
-          <p className="mt-1 text-xl font-extrabold">{sim.name} · {t('capítulo')} {l.capitulo}{l.capitulo_titulo ? `: «${l.capitulo_titulo}»` : ''}</p>
-          <p className="mt-1 text-sm text-white/75">{t('En este capítulo aplicarás esta lección con un cliente. Tus decisiones tendrán consecuencias en tu agencia.')}</p>
+          <p className="mt-1 text-xl font-extrabold">{sim.name} · {t(pr.etiqueta).toLowerCase()} {l.capitulo}{l.capitulo_titulo ? `: «${l.capitulo_titulo}»` : ''}</p>
+          <p className="mt-1 text-sm text-white/75">{t(pr.texto)}</p>
           <a href={simUrl(sim, lang)} target="_blank" rel="noopener" className="mt-4 inline-block rounded-lg bg-teal px-4 py-2.5 font-semibold hover:bg-teal-dark">{t('Abrir el simulador →')}</a>
         </section>
       )}
