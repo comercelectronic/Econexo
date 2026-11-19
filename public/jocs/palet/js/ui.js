@@ -8,6 +8,48 @@
   const P = (id) => D.productes[id];
   let S = null, ctrl = null;
   const desa = () => { try { if (S) localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { } };
+  /* ---------- Compte d'alumne i servidor ---------- */
+  const FN = location.pathname.replace(/[^/]*$/, '') + '.netlify/functions/palet';
+  async function crida(body) {
+    const r = await fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    let d = null; try { d = await r.json(); } catch (e) { }
+    if (!r.ok || !d) throw new Error((d && d.error) || 'Sense connexió amb el servidor.');
+    return d;
+  }
+  const KC = 'palet-compte-v1';
+  let compte = (() => { try { return JSON.parse(localStorage.getItem(KC) || 'null'); } catch (e) { return null; } })();
+  const desaCompte = (c) => { compte = c; try { if (c) localStorage.setItem(KC, JSON.stringify(c)); else localStorage.removeItem(KC); } catch (e) { } };
+  async function desaNuvol() {
+    if (!compte || !S) return;
+    try { await crida({ action: 'desar', token: compte.token, partida: S }); }
+    catch (e) { if (/sessió/i.test(e.message)) { desaCompte(null); toast('La sessió ha caducat: torna a entrar amb el teu usuari perquè es desi la partida.', 'neg'); } }
+  }
+  function modalCompte(mode) {
+    const reg = mode === 'registre';
+    modal(`<h2>👤 ${reg ? 'Crear un compte' : 'Entrar'}</h2>
+      <div class="seg" style="margin-bottom:12px"><button data-m="entrar" class="${reg ? '' : 'on'}">Ja tinc compte</button><button data-m="registre" class="${reg ? 'on' : ''}">Crear un compte</button></div>
+      <form id="fc" class="fcompte">${reg ? `<label class="f">Nom i cognom<input class="inp" id="cN" maxlength="60" required></label><label class="f">Codi de grup <small class="muted">(te'l dona el professor)</small><input class="inp" id="cG" maxlength="32" required></label>` : ''}
+        <label class="f">Nom d'usuari<input class="inp" id="cU" maxlength="24" autocomplete="username" autocapitalize="none" required></label>
+        <label class="f">Contrasenya<input class="inp" id="cP" type="password" maxlength="100" autocomplete="${reg ? 'new-password' : 'current-password'}" required></label>
+        <p class="small neg" id="cE"></p><div class="row"><button class="btn prim" id="cOk" type="submit">${reg ? 'Crear el compte' : 'Entrar'}</button><button class="btn ghost" type="button" id="tc">Cancel·lar</button></div>
+        ${reg ? '' : '<p class="small muted">Si no recordes la contrasenya, demana al professor que te la canviï.</p>'}</form>`, (m) => {
+      $$('[data-m]', m).forEach(b => b.onclick = () => modalCompte(b.dataset.m));
+      $('#tc', m).onclick = tancaModal;
+      $('#fc', m).onsubmit = async (ev) => {
+        ev.preventDefault(); $('#cOk', m).disabled = true; $('#cE', m).textContent = '';
+        try {
+          const d = await crida(reg ? { action: 'registre', usuari: $('#cU', m).value, contrasenya: $('#cP', m).value, nom: $('#cN', m).value, classe: $('#cG', m).value } : { action: 'entrar', usuari: $('#cU', m).value, contrasenya: $('#cP', m).value });
+          desaCompte(Object.assign({ token: d.token }, d.compte));
+          const local = carrega(), nuvol = d.partida;
+          // Es queda la partida més avançada (la del núvol o la d'aquest navegador)
+          if (nuvol && (!local || nuvol.config.llavor !== local.config.llavor || (nuvol.historial || []).length >= (local.historial || []).length)) { try { localStorage.setItem(KEY, JSON.stringify(nuvol)); } catch (e) { } }
+          else if (local) { S = local; await desaNuvol(); S = null; }
+          tancaModal(); toast(reg ? 'Compte creat! La partida es desarà al teu compte.' : 'Hola, ' + esc(d.compte.nom) + '!', 'pos'); portada();
+        } catch (e) { $('#cE', m).textContent = e.message; $('#cOk', m).disabled = false; }
+      };
+      $('#cU', m).focus();
+    }, { tancable: true });
+  }
   const carrega = () => { try { return JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { return null; } };
   const nomClient = (id) => D.CLIENTS.find(c => c.id === id).nom;
 
@@ -40,14 +82,16 @@
     const desat = carrega(), pot = desat && desat.v === 1;
     app.innerHTML = `<main class="portada"><div class="portada-box">${logo()}
       <p class="lema">Fes de mosso de magatzem: rep la mercaderia, ubica-la on toca, prepara les comandes i que el camió no surti sense el palet. La cap t'ho valorarà cada dia.</p>
+      <div class="compte-box">${compte ? `👤 <span><b>${esc(compte.nom)}</b> <small class="muted">${esc(compte.usuari)} · grup ${esc(compte.classe)}</small></span><button class="btn small ghost" data-a="surt">Tancar la sessió</button>` : `<span class="small">Entra amb el teu usuari perquè la partida es desi i el professor en vegi el progrés.</span><button class="btn small prim" data-a="compte">👤 Entrar o crear compte</button>`}</div>
       <nav class="menu">
         ${pot ? `<button class="btn prim big" data-a="continua">▶ Continua <small>${esc(desat.config.nom)} · ${esc(D.NIVELLS[desat.nivell - 1].nom)} · torn ${desat.torn}</small></button>` : ''}
         <button class="btn ${pot ? '' : 'prim'} big" data-a="juga">📦 Juga <small>comença de mosso</small></button>
         <button class="btn big" data-a="ajuda">❓ Com es juga</button>
+        <button class="btn big" data-a="docent">🧑‍🏫 Mode docent <small>progrés dels alumnes</small></button>
         <a class="btn big" href="https://ecoynexo.com/ca/aprender/actividades-comerciales/tecnicas-de-almacen/" target="_blank" rel="noopener">📚 Lliçons del mòdul <small>Tècniques de magatzem</small></a>
       </nav>
       <p class="peu">Simulador del mòdul Tècniques de magatzem (CFGM Activitats Comercials) · ECOyNEXO</p></div></main>`;
-    $$('[data-a]').forEach(b => b.onclick = () => ({ continua: () => { S = desat; joc(); }, juga: configurar, ajuda })[b.dataset.a]());
+    $$('[data-a]').forEach(b => b.onclick = () => ({ continua: () => { S = desat; joc(); }, juga: configurar, ajuda, docent, compte: () => modalCompte('entrar'), surt: () => { desaCompte(null); portada(); } })[b.dataset.a]());
   }
   function configurar() {
     let nivell = 1;
@@ -59,6 +103,7 @@
         <div class="row" style="margin-top:18px"><button class="btn prim big" id="go">Entrar al magatzem →</button></div></main>`;
       $('#enr').onclick = portada;
       $$('[data-n]').forEach(b => b.onclick = () => { nivell = +b.dataset.n; const v = $('#nom').value; draw(); $('#nom').value = v; });
+      if (compte) $('#nom').value = compte.nom.split(' ')[0];
       $('#go').onclick = () => { const nom = $('#nom').value.trim().slice(0, 30) || 'Treballador'; S = E.crearPartida({ nom, nivell, llavor: (Date.now() % 2e9) | 1 }); desa(); joc(); };
     };
     draw();
@@ -132,7 +177,7 @@
       inspecciona, mostraModul,
       canvi: (tic) => { if (!tic || panellTab !== 'sgm') pintaPanell(); pintaPorta(); },
       rellotge: (m) => { const h = $('#hora'); if (h) h.textContent = '🕗 ' + E.hora(m); const b = $('#barra'); if (b) b.style.width = ((m - D.TORN_INICI) / (D.TORN_FI - D.TORN_INICI) * 100) + '%'; },
-      onFi: (res) => { const h = E.puntua(S, res); ctrl && ctrl.destrueix(); ctrl = null; desa(); resultat(h); }
+      onFi: (res) => { const h = E.puntua(S, res); ctrl && ctrl.destrueix(); ctrl = null; desa(); desaNuvol(); resultat(h); }
     });
     $$('[data-v]').forEach(b => b.onclick = () => { $$('[data-v]').forEach(x => x.classList.toggle('on', x === b)); const v = +b.dataset.v; ctrl.pausa(v === 0); if (v) ctrl.velocitat(v); });
     $('#pressa').onchange = (e) => ctrl.pressa(e.target.checked);
@@ -277,7 +322,7 @@
       <section class="sec small muted">Avisos: ${S.avisos} de ${D.AVISOS_ACOMIADAMENT} · torns bons seguits: ${S.tornsBons} (cal ${D.TORNS_ASCENS} per ascendir)</section>
       <div class="row" style="justify-content:center;margin:20px 0 40px"><button class="btn prim big" id="seg">${h.canvi === 'acomiadament' ? 'Continuar' : 'Següent torn →'}</button></div></main></div>`;
     lligaCap();
-    $$('[data-ll]').forEach(b => b.onclick = () => llico(LL.per(b.dataset.ll), () => resultat(h)));
+    $$('[data-ll]').forEach(b => b.onclick = () => llico(LL.per(b.dataset.ll), () => { desaNuvol(); resultat(h); }));
     $('#seg').onclick = () => {
       if (h.canvi === 'ascens') return ascens(() => { E.continuar(S); desa(); joc(); });
       E.continuar(S); desa(); joc();
@@ -301,6 +346,54 @@
     lligaCap();
     $('#re').onclick = () => { E.reintentar(S); desa(); joc(); };
     $('#nou').onclick = configurar;
+  }
+
+  /* ---------- Mode docent ---------- */
+  const NOM_TEMA = { recepcio: 'Recepció', ubicacio: 'Ubicació', picking: 'Picking', fefo: 'FEFO', trencament: 'Paletització', expedicio: 'Expedició', carrega: 'Ordre de càrrega', seguretat: 'Seguretat', inventari: 'Inventari', merma: 'Mermes' };
+  const pwDocent = () => { try { return sessionStorage.getItem('palet-pw') || ''; } catch (e) { return ''; } };
+  function docent(grup) {
+    app.innerHTML = `<main class="config" style="max-width:1200px"><button class="btn ghost small" id="enr">← Tornar</button><h1>🧑‍🏫 Alumnes</h1>
+      <p class="muted">Cada alumne crea el compte des de la portada del joc amb el codi de grup que li doneu (per exemple, CM10-2A). La partida es desa al servidor en acabar cada torn.</p>
+      <div class="row"><input class="inp" type="password" id="pw" style="max-width:240px" placeholder="Contrasenya del professorat" value="${esc(pwDocent())}"><button class="btn prim" id="car">Carregar</button><span id="gr"></span></div>
+      <p class="small" id="est"></p><div id="ta"></div></main>`;
+    $('#enr').onclick = portada;
+    const carrega2 = async () => {
+      const pw = $('#pw').value; $('#est').textContent = 'Carregant…';
+      try {
+        const d = await crida({ action: 'alumnes', password: pw }); try { sessionStorage.setItem('palet-pw', pw); } catch (e) { }
+        const g = grup && d.grups.includes(grup) ? grup : '';
+        $('#gr').innerHTML = d.grups.length ? `<select class="inp" id="selG"><option value="">Tots els grups (${d.alumnes.length})</option>${d.grups.map(x => `<option ${x === g ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select>` : '';
+        if ($('#selG')) $('#selG').onchange = () => { grup = $('#selG').value; carrega2(); };
+        const ll = d.alumnes.filter(a => !g || a.classe === g);
+        $('#est').textContent = ll.length ? '' : 'Encara no hi ha cap alumne amb compte.';
+        const data = (t) => t ? new Date(t).toLocaleString('ca', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—';
+        $('#ta').innerHTML = ll.length ? `<div class="taula-w"><table class="t"><thead><tr><th>Alumne</th><th>Grup</th><th>Nivell</th><th class="n">Torns</th><th class="n">Nota mitjana</th><th class="n">Avisos</th><th>Errors més freqüents</th><th class="n">Lliçons</th><th>Darrer desat</th><th></th></tr></thead><tbody>
+          ${ll.map(a => { const p = a.partida; return `<tr><td><b>${esc(a.nom)}</b><br><small class="muted">${esc(a.usuari)}</small></td><td>${esc(a.classe)}</td>
+            <td>${p ? esc(p.nivellNom) + (p.acomiadat ? ' <span class="tag vermell">acomiadat</span>' : '') : '<span class="muted">Sense partida</span>'}</td><td class="n">${p ? p.torns : ''}</td><td class="n">${p && p.notaMitja != null ? '<b>' + p.notaMitja + '</b>' : ''}</td><td class="n">${p ? p.avisos + ' / 3' : ''}</td>
+            <td class="small">${p ? p.errorsFreq.map(([t, n]) => esc(NOM_TEMA[t] || t) + ' (' + n + ')').join(', ') || '—' : ''}</td><td class="n">${p ? p.llEnc + ' / ' + p.llResp : ''}</td><td class="small">${data(p ? p.at : a.darrer)}</td>
+            <td><div class="row" style="flex-wrap:nowrap">${p ? `<button class="btn small" data-veu="${esc(a.usuari)}">Veure</button>` : ''}<button class="btn small ghost" data-pwu="${esc(a.usuari)}" title="Canviar la contrasenya">🔑</button></div></td></tr>`; }).join('')}</tbody></table></div>
+          <div class="row" style="margin-top:10px"><button class="btn" id="csv">⬇ Descarregar (CSV)</button></div>` : '';
+        $$('[data-veu]').forEach(b => b.onclick = async () => {
+          try { const x = await crida({ action: 'alumne', password: pw, usuari: b.dataset.veu }); const r = x.resum;
+            modal(`<h2>${esc(x.compte.nom)} <small class="muted">${esc(x.compte.usuari)} · ${esc(x.compte.classe)}</small></h2>
+              <p>${esc(r.nivellNom)} · ${r.torns} torns · nota mitjana <b>${r.notaMitja == null ? '—' : r.notaMitja}</b> · ${r.ascensos} ascensos · ${r.broncas} broncas${r.acomiadaments ? ' · ' + r.acomiadaments + ' acomiadaments' : ''}</p>
+              <div class="taula-w"><table class="t"><thead><tr><th>Torn</th><th>Nivell</th><th class="n">Nota</th><th class="n">Prod.</th><th class="n">Qualitat</th><th class="n">Seguretat</th><th class="n">Errors</th><th>Cap</th></tr></thead><tbody>
+              ${r.historial.map(h => `<tr><td>${h.torn}</td><td>${h.nivell}</td><td class="n"><b>${h.nota}</b></td><td class="n">${h.productivitat}</td><td class="n">${h.qualitat}</td><td class="n">${h.seguretat}</td><td class="n">${h.errors}</td><td>${h.canvi === 'ascens' ? '🎉 ascens' : h.canvi === 'acomiadament' ? '📄 acomiadament' : h.veredicte === 'bronca' ? '⚠ bronca' : h.veredicte === 'bo' ? '✓' : ''}</td></tr>`).join('')}</tbody></table></div>
+              ${x.partides.length ? `<p class="small muted">Partides anteriors: ${x.partides.map(p => esc(p.nivellNom) + ' (' + p.torns + ' torns, nota ' + (p.notaMitja == null ? '—' : p.notaMitja) + ')').join(' · ')}</p>` : ''}
+              <div class="row"><button class="btn" id="tc" data-focus>Tancar</button></div>`, (m) => { $('#tc', m).onclick = tancaModal; }, { ample: true, tancable: true });
+          } catch (e) { toast(esc(e.message), 'neg'); }
+        });
+        $$('[data-pwu]').forEach(b => b.onclick = () => modal(`<h2>Nova contrasenya per a ${esc(b.dataset.pwu)}</h2><input class="inp" id="npw" placeholder="mínim 6 caràcters"><p class="small neg" id="npE"></p><div class="row"><button class="btn prim" id="ok">Canviar</button><button class="btn ghost" id="tc">Cancel·lar</button></div>`, (m) => {
+          $('#tc', m).onclick = tancaModal;
+          $('#ok', m).onclick = async () => { try { await crida({ action: 'alumne-contrasenya', password: pw, usuari: b.dataset.pwu, nova: $('#npw', m).value }); tancaModal(); toast('Contrasenya canviada.', 'pos'); } catch (e) { $('#npE', m).textContent = e.message; } };
+        }, { tancable: true }));
+        if ($('#csv')) $('#csv').onclick = () => { const q = (v) => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+          const txt = '\ufeff' + [['Alumne', 'Usuari', 'Grup', 'Nivell', 'Torns', 'Nota mitjana', 'Avisos', 'Broncas', 'Ascensos', 'Errors freqüents', 'Lliçons encertades', 'Lliçons respostes'].map(q).join(';')]
+            .concat(ll.map(a => { const p = a.partida || {}; return [a.nom, a.usuari, a.classe, p.nivellNom, p.torns, p.notaMitja, p.avisos, p.broncas, p.ascensos, (p.errorsFreq || []).map(([t, n]) => (NOM_TEMA[t] || t) + ' ' + n).join(', '), p.llEnc, p.llResp].map(q).join(';'); })).join('\n');
+          const el = document.createElement('a'); el.href = URL.createObjectURL(new Blob([txt], { type: 'text/csv' })); el.download = 'palet-alumnes.csv'; document.body.appendChild(el); el.click(); el.remove(); };
+      } catch (e) { $('#est').textContent = e.message; }
+    };
+    $('#car').onclick = carrega2; if (pwDocent()) carrega2();
   }
 
   window.PALET = { get S() { return S; }, get ctrl() { return ctrl; } };

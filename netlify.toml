@@ -27,6 +27,13 @@
 
 # Mercadeja (ecoynexo.com/jocs/mercadeja/) fa servir el mateix projecte Netlify per al rànquing en directe dels reptes
 # (funció «mercadeja», amb el motor del joc copiat per verificar els resultats: scripts/sincronitza-motor-mercadeja.sh).
+# Palet (ecoynexo.com/jocs/palet/): comptes d'alumne i panell del professorat, al mateix projecte Netlify
+[[redirects]]
+  from = "/jocs/palet/.netlify/functions/*"
+  to = "https://agenciadigitalosona.netlify.app/.netlify/functions/:splat"
+  status = 200
+  force = true
+
 [[redirects]]
   from = "/jocs/mercadeja/.netlify/functions/*"
   to = "https://agenciadigitalosona.netlify.app/.netlify/functions/:splat"

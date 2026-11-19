@@ -139,10 +139,14 @@
     res = Object.assign({ recepcio: {}, ubicacions: {}, picking: [], palets: [], carrega: {}, incidents: [], inventari: { recomptes: {}, comandes: {} }, fi: D.TORN_FI }, res || {});
     const k = { carregues: 0, recOk: 0, ubiOk: 0, ubicades: 0, linies: 0, liniesOk: 0, comandes: t.comandes.length, aTemps: 0, trencaments: 0, fefo: 0, incidents: res.incidents.length };
     // Recepció
+    t.recepcions.forEach(rc => {
+      const sense = rc.carregues.filter(c => !res.recepcio[c.id]).length;
+      if (sense) err.push(['recepcio', rc.arribada > (res.fi || D.TORN_FI) ? `Has plegat abans que arribés el camió de ${rc.proveidor} (${E.hora(rc.arribada)}): ningú no ha rebut les ${sense} càrregues.` : `No has revisat ${sense === rc.carregues.length ? 'cap de les ' + sense : sense + ' de les ' + rc.carregues.length} càrregues del camió de ${rc.proveidor}: s'han quedat al moll.`]);
+    });
     t.recepcions.forEach(rc => rc.carregues.forEach(c => {
       k.carregues++;
       const dec = res.recepcio[c.id], p = P(c.prod);
-      if (!dec) { err.push(['recepcio', `No has revisat la càrrega ${p.nom} (${rc.proveidor}): s'ha quedat al moll.`]); return; }
+      if (!dec) return;
       if (c.problema && dec === 'accepta') {
         const greu = c.problema === 'temperatura' || c.problema === 'dany';
         (greu ? greus : err).push(['recepcio', `Has acceptat ${p.nom} amb un problema: ${D.MOTIUS[c.problema].toLowerCase()}. ${c.problema === 'temperatura' ? 'S\'ha trencat la cadena de fred: s\'ha de llençar.' : c.problema === 'referencia' ? 'L\'albarà deia ' + P(c.albara).nom + '.' : ''}`]);
@@ -227,7 +231,7 @@
     const tasques = k.carregues * 2 + k.linies + k.comandes + (t.inventari ? t.inventari.recomptes.length : 0);
     const fetes = k.recOk + k.ubiOk + k.liniesOk + k.aTemps + (t.inventari ? t.inventari.recomptes.filter(rc => res.inventari.recomptes[rc.slot] != null).length : 0);
     const marge = Math.max(0, (D.TORN_FI - (res.fi || D.TORN_FI)) / 60);
-    const productivitat = Math.round(Math.min(100, fetes / Math.max(1, tasques) * 100 + marge * 4));
+    const productivitat = Math.round(Math.min(100, fetes / Math.max(1, tasques) * (100 + marge * 4)));
     const errQualitat = err.filter(e => e[0] !== 'seguretat').length + greus.filter(e => e[0] !== 'seguretat').length * 2;
     const qualitat = Math.max(0, 100 - errQualitat * 9);
     const seguretat = Math.max(0, 100 - res.incidents.reduce((a, i) => a + (['xoc', 'diagrama', 'bloqueig'].includes(i.tipus) ? 40 : 20), 0));
@@ -235,7 +239,7 @@
     // La cap
     const bo = nota >= D.NOTA_BONA && !greus.length;
     let veredicte = 'regular';
-    if (greus.length || nota < 55) { veredicte = 'bronca'; s.avisos++; s.tornsBons = 0; }
+    if (greus.length || nota < 55 || productivitat < 35) { veredicte = 'bronca'; s.avisos++; s.tornsBons = 0; }
     else if (bo) { veredicte = 'bo'; s.tornsBons++; s.avisos = Math.max(0, s.avisos - 1); }
     else s.tornsBons = 0;
     let canvi = null;
