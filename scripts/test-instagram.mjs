@@ -31,21 +31,24 @@ t(triaPost(cal, {}, '2026-11-26').post.id === '2026-11-25-b' && triaPost(cal, {}
 t(triaPost(cal, { '2026-11-25-b': {} }, '2026-11-25').post === null, 'no es repeteix un post ja publicat');
 
 // API d'Instagram simulada
-function simula({ falla } = {}) {
-  const crides = []; let n = 0;
+function simula({ falla, publicats = [] } = {}) {
+  const crides = []; let n = 0; const captions = {};
   const fetch = async (url, o = {}) => {
     const u = new URL(url), p = o.body ? Object.fromEntries(o.body) : Object.fromEntries(u.searchParams);
     crides.push({ host: u.host, ruta: u.pathname, metode: o.method || 'GET', p });
     const resp = (d, st = 200) => ({ ok: st < 400, status: st, json: async () => d });
     if (u.pathname === '/refresh_access_token') return resp({ access_token: 'IGTOKEN-NOU', expires_in: 5184000 });
     if (u.pathname.endsWith('/me')) return resp({ user_id: '1789', username: 'ecoynexo' });
+    if (u.pathname.endsWith('/media') && (o.method || 'GET') === 'GET') return resp({ data: publicats.map((c, k) => ({ id: 'P' + k, caption: c, timestamp: '2026-11-19T11:00:00+0000' })) });
+    if (u.pathname.endsWith('/media_publish')) publicats.push(captions[p.creation_id]);
+    if (u.pathname.endsWith('/media') && p.caption) captions['C' + (n + 1)] = p.caption;
     if (u.pathname.endsWith('/media') && falla) return resp({ error: { message: 'Invalid image' } }, 400);
     if (u.pathname.endsWith('/media')) return resp({ id: 'C' + (++n) });
     if (u.pathname.endsWith('/media_publish')) return resp({ id: 'M-' + p.creation_id });
     if (p.fields === 'username') return resp({ username: 'ecoynexo', id: u.pathname.split('/').pop() });
     return resp({ status_code: 'FINISHED' });
   };
-  return { fetch, crides };
+  return { fetch, crides, publicats };
 }
 const magatzem = () => { const d = {}; return { d, get: async (k) => d[k] ? JSON.parse(d[k]) : null, setJSON: async (k, v) => { d[k] = JSON.stringify(v); } }; };
 const env = { IG_TOKEN: 'IGTOKEN-INICIAL-1234567890', URL: 'https://ecoynexo.com' }, espera = async () => { };
@@ -79,6 +82,24 @@ const env = { IG_TOKEN: 'IGTOKEN-INICIAL-1234567890', URL: 'https://ecoynexo.com
   t(r.fet && api.crides.every(c => c.host === 'graph.facebook.com') && api.crides.some(c => c.ruta === '/v22.0/17841474376146863/media_publish'), 'amb testimoni de Facebook publica a graph.facebook.com');
   t(!api.crides.some(c => c.ruta === '/refresh_access_token'), 'el testimoni de Facebook no es renova');
   await assert.rejects(executa({ cal, store: magatzem(), env: { IG_TOKEN: 'EAAsistema123' }, fetch: simula().fetch, avui: '2026-11-25', espera }), /IG_USER_ID/); ok++;
+}
+{ // No es repeteix mai un post (encara que l'estat desat falli)
+  const api = simula({ publicats: ['B'] }), s = magatzem();
+  const r = await executa({ cal, store: s, env, fetch: api.fetch, avui: '2026-11-25', espera });
+  t(r.jaHiEra && !api.crides.some(c => c.ruta.endsWith('/media_publish')), 'si el post ja és a Instagram no es torna a publicar');
+  t(JSON.parse(s.d.publicats)['2026-11-25-b'].trobat, 'i queda anotat com a publicat');
+  const trencat = { get: async () => { throw new Error('Blobs no disponible'); }, setJSON: async () => { throw new Error('Blobs no disponible'); } };
+  const api2 = simula();
+  await assert.rejects(executa({ cal, store: trencat, env, fetch: api2.fetch, avui: '2026-11-25', espera }), /Blobs/); ok++;
+  t(!api2.crides.some(c => c.metode === 'POST'), 'si no es pot llegir l\'estat, no es publica');
+  const mig = { d: {}, get: async () => null, setJSON: async () => { throw new Error('No es pot desar'); } };
+  const api3 = simula();
+  await assert.rejects(executa({ cal, store: mig, env: Object.assign({ IG_USER_ID: '9' }, env), fetch: api3.fetch, avui: '2026-11-25', espera }), /desar/); ok++;
+  t(!api3.crides.some(c => c.metode === 'POST'), 'si no es pot desar l\'estat, no es publica');
+  // Una segona execució després de publicar troba el post a Instagram encara que l'estat s'hagi perdut
+  const api4 = simula(); await executa({ cal, store: magatzem(), env, fetch: api4.fetch, avui: '2026-11-25', espera });
+  const r5 = await executa({ cal, store: magatzem(), env, fetch: api4.fetch, avui: '2026-11-25', espera });
+  t(r5.jaHiEra && api4.publicats.length === 1, 'amb l\'estat perdut, el post tampoc es duplica');
 }
 { // Errors i mode de prova
   const s = magatzem(), api = simula({ falla: true });

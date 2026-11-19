@@ -86,8 +86,13 @@ async function testimoni({ store, env, fetch, ara }) {
   return t.token;
 }
 
+// Compara el text d'un post amb el que hi ha a Instagram (sense espais ni salts de línia)
+const norm = (t) => String(t || '').replace(/\s+/g, ' ').trim().slice(0, 120);
+const mateixText = (a, b) => !!a && norm(a) === norm(b);
+
 export async function executa({ cal = CAL, store, env, fetch, avui, hora, ara = Date.now(), espera = (ms) => new Promise(r => setTimeout(r, ms)) }) {
-  const fets = (await store.get('publicats', { type: 'json' }).catch(() => null)) || {};
+  // Si no es pot llegir l'estat, no es publica res (així no es pot repetir cap post)
+  const fets = (await store.get('publicats', { type: 'json' })) || {};
   const { post, saltats } = triaPost(cal, fets, avui, hora);
   if (saltats.length) { saltats.forEach(p => { fets[p.id] = { saltat: true, at: new Date(ara).toISOString() }; console.warn('Post saltat (la data ja ha passat):', p.id); }); await store.setJSON('publicats', fets); }
   const prova = env.IG_PROVA === '1';
@@ -102,8 +107,17 @@ export async function executa({ cal = CAL, store, env, fetch, avui, hora, ara = 
     console.log('[prova] Connexió correcta amb @' + compte.username + '. ' + (post ? 'Avui publicaria ' + post.id : 'Avui no toca cap post' + (seg ? '; el següent és ' + seg.id : '')) + '.');
     return { fet: false, prova: true, compte: compte.username, post: post ? post.id : null, seguent: seg ? seg.id : null };
   }
+  // Segona protecció: si el post ja és a Instagram (mateix text), no es torna a publicar
+  const recents = (await api.crida('GET', `/${usuari}/media`, { fields: 'id,caption,timestamp', limit: '15' })).data || [];
+  const ja = recents.find(m => mateixText(m.caption, post.texto));
+  if (ja) { fets[post.id] = { media: ja.id, at: ja.timestamp || new Date(ara).toISOString(), trobat: true }; await store.setJSON('publicats', fets); console.log('Ja era a Instagram, no es torna a publicar:', post.id); return { fet: false, jaHiEra: true, post: post.id }; }
+  // Es marca abans de publicar: si l'estat no es pot desar, no es publica
+  fets[post.id] = { publicant: true, at: new Date(ara).toISOString() };
+  await store.setJSON('publicats', fets);
   const base = (env.URL || 'https://ecoynexo.com').replace(/\/$/, '');
-  const media = await publicaPost({ api, usuari, post, base, espera });
+  let media;
+  try { media = await publicaPost({ api, usuari, post, base, espera }); }
+  catch (e) { delete fets[post.id]; await store.setJSON('publicats', fets).catch(() => { }); throw e; }
   fets[post.id] = { media, at: new Date(ara).toISOString() };
   await store.setJSON('publicats', fets);
   console.log('Publicat a Instagram:', post.id, media);
