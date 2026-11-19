@@ -11,24 +11,26 @@ export const GRADOS = [
   { id: 'superior', name: 'Grado superior' }
 ] as const;
 
-export type Simulador = { id: string; name: string; desc: string; url: string; idiomas: string; interno?: boolean; modulos?: string };
+// para: mòduls (ciclo/modulo de CICLOS) per als quals serveix el simulador
+export type Simulador = { id: string; name: string; desc: string; url: string; idiomas: string; interno?: boolean; para: { ciclo: string; modulo: string }[] };
 export const SIMULADORES: Simulador[] = [
   {
     id: 'agencia-digital', name: 'Agència Digital',
     desc: 'Dirige tu propia agencia de marketing digital en Vic: clientes reales, decisiones con consecuencias, proyectos que corrige la IA y tu profesor, mundo explorable y mercado entre las agencias de tu clase.',
-    url: '/jocs/agencia-digital/', idiomas: 'Catalán, castellano e inglés'
+    url: '/jocs/agencia-digital/', idiomas: 'Catalán, castellano e inglés',
+    para: [{ ciclo: 'actividades-comerciales', modulo: 'comercio-electronico' }]
   },
   {
     id: 'supermercat-petit', name: 'Cas Supermercat Petit', interno: true,
     desc: 'Un caso de clase en equipos y en dos sesiones: un escape room de una hora (dinamización del punto de venta y hojas de cálculo) y un murdoku para descubrir quién atacó a la profe en el supermercado del instituto.',
     url: '/jocs/supermercat-petit/', idiomas: 'Catalán',
-    modulos: 'Aplicaciones informáticas para el comercio · Dinamización del punto de venta'
+    para: [{ ciclo: 'actividades-comerciales', modulo: 'aplicaciones-informaticas-para-el-comercio' }, { ciclo: 'actividades-comerciales', modulo: 'dinamizacion-del-punto-de-venta' }]
   },
   {
     id: 'mercadeja', name: 'Mercadeja', interno: true,
     desc: 'Juego de tienda: cada equipo lleva una tienda de barrio desde su dispositivo, decide producto, precio, distribución y promoción y atiende a los clientes con su muñeco. Retos de clase con ranking en directo y lecciones del currículo de marketing.',
     url: '/jocs/mercadeja/', idiomas: 'Catalán',
-    modulos: 'Marketing en la actividad comercial · Políticas de marketing'
+    para: [{ ciclo: 'actividades-comerciales', modulo: 'marketing-en-la-actividad-comercial' }]
   }
 ];
 
@@ -63,6 +65,8 @@ export const ciclosLive = (): Ciclo[] => CICLOS.filter((c) => c.modulos.some((m)
 export const cicloBySlug = (s: string) => CICLOS.find((c) => c.slug === s);
 export const liveModules = () => CICLOS.flatMap((c) => c.modulos.filter((x) => x.live).map((x) => ({ ciclo: c, modulo: x })));
 export const simuladorById = (id?: string) => SIMULADORES.find((s) => s.id === id);
+// Mòduls d'un simulador, amb el seu cicle (live: si el mòdul ja té pàgina)
+export const modulosDeSimulador = (s: Simulador) => s.para.flatMap(({ ciclo, modulo }) => { const c = cicloBySlug(ciclo), m = c?.modulos.find((x) => x.slug === modulo); return c && m ? [{ ciclo: c, modulo: m }] : []; });
 
 export type Bocadillo = { quien: string; gesto?: string; texto: string };
 export type Pregunta = { p: string; o: string[]; c: number; por: string };

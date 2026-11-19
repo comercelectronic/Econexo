@@ -9,6 +9,7 @@ import { Bocadillo } from '@/components/Mascotas';
 import { Avatar } from '@/components/Characters';
 import { published } from '@/lib/content';
 import { SIMULADORES, lecciones, liveModules, simUrl } from '@/lib/estudios';
+import { SimModulos } from '@/components/SimModulos';
 import { SITE } from '@/lib/site';
 import { TOOLS } from '@/lib/tools';
 import { isLang, l, tr, type Lang } from '@/lib/i18n';
@@ -86,7 +87,7 @@ export default async function Home({ params }: Props) {
 
       <Block kicker={t('Practica')} title={t('Simuladores')} href={l(lang, '/simuladores/')} more={t('Ver todo')}>
         <div className="grid gap-5 md:grid-cols-2">{SIMULADORES.map((s) => (
-          <div key={s.id} className="rounded-2xl bg-navy p-6 text-white"><h3 className="text-xl font-extrabold">{s.name}</h3><p className="mt-2 text-sm text-white/75">{t(s.desc)}</p><a href={simUrl(s, lang)} target="_blank" rel="noopener" className="mt-4 inline-block rounded-lg bg-teal px-4 py-2.5 font-semibold">{t('Jugar →')}</a></div>
+          <div key={s.id} className="rounded-2xl bg-navy p-6 text-white"><h3 className="text-xl font-extrabold">{s.name}</h3><p className="mt-2 text-sm text-white/75">{t(s.desc)}</p><SimModulos s={s} lang={lang as Lang} className="mt-3" /><a href={simUrl(s, lang)} target="_blank" rel="noopener" className="mt-4 inline-block rounded-lg bg-teal px-4 py-2.5 font-semibold">{t('Jugar →')}</a></div>
         ))}</div>
       </Block>
 
