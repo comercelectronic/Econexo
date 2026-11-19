@@ -87,12 +87,18 @@ export async function executa({ cal = CAL, store, env, fetch, avui, ara = Date.n
   const fets = (await store.get('publicats', { type: 'json' }).catch(() => null)) || {};
   const { post, saltats } = triaPost(cal, fets, avui);
   if (saltats.length) { saltats.forEach(p => { fets[p.id] = { saltat: true, at: new Date(ara).toISOString() }; console.warn('Post saltat (la data ja ha passat):', p.id); }); await store.setJSON('publicats', fets); }
-  if (!post) return { fet: false, motiu: 'Avui no toca cap post.' };
-  if (env.IG_PROVA === '1') { console.log('[prova] Publicaria', post.id, post.slides.length + ' imatges'); return { fet: false, prova: true, post: post.id }; }
+  const prova = env.IG_PROVA === '1';
+  if (!post && !prova) return { fet: false, motiu: 'Avui no toca cap post.' };
   const token = await testimoni({ store, env, fetch, ara });
   const api = crearClient({ fetch, token });
   if (!env.IG_USER_ID && !esIG(token)) throw new Error('Amb un testimoni de Facebook cal la variable IG_USER_ID (l\'identificador del compte d\'Instagram).');
   const usuari = env.IG_USER_ID || (await api.crida('GET', '/me', { fields: 'user_id,username' })).user_id;
+  if (prova) { // Mode de prova: comprova la connexió (només llegeix) i diu què publicaria
+    const compte = await api.crida('GET', '/' + usuari, { fields: 'username' });
+    const seg = post || cal.posts.filter(p => p.fecha > avui && !fets[p.id]).sort((x, y) => x.fecha.localeCompare(y.fecha))[0];
+    console.log('[prova] Connexió correcta amb @' + compte.username + '. ' + (post ? 'Avui publicaria ' + post.id : 'Avui no toca cap post' + (seg ? '; el següent és ' + seg.id : '')) + '.');
+    return { fet: false, prova: true, compte: compte.username, post: post ? post.id : null, seguent: seg ? seg.id : null };
+  }
   const base = (env.URL || 'https://ecoynexo.com').replace(/\/$/, '');
   const media = await publicaPost({ api, usuari, post, base, espera });
   fets[post.id] = { media, at: new Date(ara).toISOString() };

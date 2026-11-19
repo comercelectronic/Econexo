@@ -37,6 +37,7 @@ function simula({ falla } = {}) {
     if (u.pathname.endsWith('/media') && falla) return resp({ error: { message: 'Invalid image' } }, 400);
     if (u.pathname.endsWith('/media')) return resp({ id: 'C' + (++n) });
     if (u.pathname.endsWith('/media_publish')) return resp({ id: 'M-' + p.creation_id });
+    if (p.fields === 'username') return resp({ username: 'ecoynexo', id: u.pathname.split('/').pop() });
     return resp({ status_code: 'FINISHED' });
   };
   return { fetch, crides };
@@ -80,7 +81,9 @@ const env = { IG_TOKEN: 'IGTOKEN-INICIAL-1234567890', URL: 'https://ecoynexo.com
   t(!(s.d.publicats && JSON.parse(s.d.publicats)['2026-11-25-b']), 'si falla, no es marca com a publicat (es torna a provar l\'endemà)');
   const s2 = magatzem(), api2 = simula();
   const r = await executa({ cal, store: s2, env: Object.assign({ IG_PROVA: '1' }, env), fetch: api2.fetch, avui: '2026-11-25', espera });
-  t(r.prova && api2.crides.length === 0, 'el mode de prova no publica res');
+  t(r.prova && r.compte === 'ecoynexo' && r.post === '2026-11-25-b' && !api2.crides.some(c => c.metode === 'POST'), 'el mode de prova comprova la connexió i no publica res');
+  const r3 = await executa({ cal, store: magatzem(), env: Object.assign({ IG_PROVA: '1' }, env), fetch: simula().fetch, avui: '2026-11-19', espera });
+  t(r3.prova && r3.post === null && r3.seguent === '2026-11-23-a', 'en mode de prova, un dia sense post diu quin és el següent');
   await assert.rejects(executa({ cal, store: magatzem(), env: {}, fetch: simula().fetch, avui: '2026-11-25', espera }), /IG_TOKEN/); ok++;
 }
 console.log('✔ ' + ok + ' comprovacions de la publicació a Instagram');
