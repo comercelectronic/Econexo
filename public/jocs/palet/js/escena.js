@@ -90,7 +90,7 @@
     ajusta(); let ultW = el.clientWidth; const ro = new ResizeObserver(() => { if (el.clientWidth !== ultW) { ultW = el.clientWidth; ajusta(); } }); ro.observe(el);
 
     // Estat de la simulació
-    const res = { recepcio: {}, ubicacions: {}, picking: [], palets: [], carrega: {}, incidents: [], inventari: { recomptes: {}, comandes: {} }, cross: {}, fred: {}, fi: D.TORN_FI };
+    const res = { recepcio: {}, ubicacions: {}, picking: [], palets: [], carrega: {}, incidents: [], inventari: { recomptes: {}, comandes: {} }, cross: {}, fred: {}, habilitat: [], fi: D.TORN_FI };
     const stock = JSON.parse(JSON.stringify(s.stock));        // còpia de treball (el motor aplica els canvis definitius)
     // Recompte d'inventari: a les prestatgeries hi ha el que hi ha de debò (pot ser menys del que diu el sistema)
     if (t.inventari) t.inventari.recomptes.forEach(rc => { let falta = rc.teoric - rc.real; (stock[rc.slot] || []).slice().reverse().forEach(x => { const m = Math.min(falta, x.q); x.q -= m; falta -= m; }); });
@@ -209,7 +209,8 @@
               const u = E.parse(codi), p = D.productes[w.porta.c.prod];
               if (u.niv > NIV.nivellsRack) return op.avis(`Amb el ${EQ.nom.toLowerCase()} no arribes al nivell ${u.niv}.`);
               const temps = u.niv <= 2 ? 1.5 : 2.5;
-              treballa(temps, () => {
+              const c0 = w.porta.c;
+              const fes = () => treballa(temps, () => {
                 if (NIV.equip === 'transpalet' && u.niv >= 2 && p.pes >= 15) { res.incidents.push({ tipus: 'sobreesforc', minut: Math.round(minut), prod: w.porta.c.prod }); bombolla('Ai, l\'esquena!', 'neg'); op.bronca && op.bronca(`Has pujat a mà ${p.nom.toLowerCase()} (${p.pes} kg) al nivell ${u.niv}. El que pesa, a terra. Sobreesforç.`); }
                 res.ubicacions[w.porta.c.id] = codi;
                 if (p.fred) res.fred[w.porta.c.id] = Math.round(minut - w.porta.arribada);
@@ -217,6 +218,8 @@
                 w.porta.estat = 'ubicada'; w.porta.slot = codi;
                 fxText(w.x, w.y - 50, '📦 ' + codi, 'pos'); w.porta = null; pintaCarrega(); pintaRacks(); op.canvi && op.canvi();
               });
+              // Mode habilitat: la maniobra física de col·locar-la (transpalet, toro o a mà)
+              if (op.habilitat) op.habilitat({ tipus: 'ubicar', prod: c0.prod, cid: c0.id, codi, niv: u.niv, equip: NIV.equip, stock, minut: Math.round(minut) }, fes); else fes();
             });
           } else if (w.comanda) {
             op.mostraModul({ pas, mod, stock, mode: 'picking', comanda: w.comanda, nivellsRack: NIV.nivellsRack }, (sel) => {
@@ -228,7 +231,7 @@
               if (tp === 'compacte' && vius[vius.length - 1] !== x) return op.avis('En una estanteria compacta només pots agafar l\'últim palet que ha entrat (LIFO).');
               const u = E.parse(codi);
               if (u.niv > NIV.nivellsRack) return op.avis(`Amb el ${EQ.nom.toLowerCase()} no arribes al nivell ${u.niv}.`);
-              treballa(0.8 + q * 0.5, () => {
+              const fes = () => treballa(0.8 + q * 0.5, () => {
                 // En una onada, cada unitat va a la primera comanda que la necessita
                 let oid = w.comanda.id;
                 if (ECOM) { const o = w.ona.find(o => { const l = o.linies.find(l => l.prod === x.prod); return l && w.piles[o.id].filter(p => p === x.prod).length < l.q; }) || w.ona.find(o => o.linies.some(l => l.prod === x.prod)) || w.ona[0]; oid = o.id; }
@@ -236,6 +239,8 @@
                 for (let i = 0; i < q; i++) { w.pila.push(x.prod); if (ECOM) w.piles[oid].push(x.prod); }
                 fxText(w.x, w.y - 50, '+' + q + ' ' + D.productes[x.prod].nom, 'pos'); pintaCarrega(); pintaRacks(); op.canvi && op.canvi();
               });
+              // Mode habilitat: agafar les caixes i posar-les al palet de la comanda, a mà
+              if (op.habilitat) op.habilitat({ tipus: 'picking', prod: x.prod, q, codi, niv: u.niv, pila: ECOM ? [] : w.pila.slice(), equip: NIV.equip, minut: Math.round(minut) }, fes); else fes();
             });
           }
         }));
@@ -288,6 +293,7 @@
         w.porta.estat = 'acceptada'; carregues.splice(carregues.indexOf(w.porta), 1); carregues.push(w.porta); w.porta = null; pintaCarrega(); pintaMoll();
       },
       pressa(v) { pressa = !!v; },
+      habilitat(r) { (res.habilitat = res.habilitat || []).push(r); op.canvi && op.canvi(); },
       pausa(v) { pausa = !!v; },
       velocitat(v) { vel = v; },
       acaba() { if (!acabat) fi(); },

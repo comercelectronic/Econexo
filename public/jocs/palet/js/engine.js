@@ -276,9 +276,22 @@
       const ordre = res.carrega[cam.id] || [], esperat = cam.ruta.slice().reverse().map(cl => (t.comandes.find(o => o.client === cl && o.camio === cam.id) || {}).id).filter(Boolean);
       if (ordre.length && ordre.join() !== esperat.filter(id => ordre.includes(id)).join()) err.push(['carrega', `Camió del moll ${cam.moll}: l'ordre de càrrega no és l'invers del repartiment (${cam.ruta.map(c => D.CLIENTS.find(x => x.id === c).nom.replace('Botiga de ', '')).join(' → ')}). El primer que es descarrega ha d'anar a prop de la porta.`]);
     });
+    // Habilitat (manipulació física i conducció): danys, cops i accidents de les maniobres
+    const HB = res.habilitat || [];
+    HB.forEach(hb => {
+      const on = hb.tipus === 'picking' ? 'en preparar la comanda' : 'en ubicar-la', nom = P(hb.prod) ? P(hb.prod).nom.toLowerCase() : 'la càrrega';
+      (hb.malmesos || []).forEach(m => { k.trencaments++; err.push(['manipulacio', `${m.nom}: ${m.estat === 'trencat' ? 's\'ha trencat' : 's\'ha colpejat'} ${on}. És una merma.`]); });
+      if (hb.caiguts) err.push(['manipulacio', `${hb.caiguts === 1 ? 'Un bloc' : hb.caiguts + ' blocs'} de ${nom} ${hb.caiguts === 1 ? 'ha' : 'han'} caigut del palet ${on}: cal recollir-los i revisar-los.`]);
+      if (hb.abandonat) err.push(['manipulacio', `Has deixat a mitges la maniobra de ${nom}.`]);
+      if (hb.copsForts) res.incidents.push({ tipus: 'cop', minut: hb.minut });
+      if (hb.greu) res.incidents.push({ tipus: hb.greu, minut: hb.minut });
+    });
+    k.incidents = res.incidents.length;
+    const fets = HB.filter(x => x.nota != null);
+    if (fets.length) { k.habilitat = Math.round(fets.reduce((a, x) => a + x.nota, 0) / fets.length); if (k.habilitat >= 85) bons.push(`Manipulació i conducció molt acurades (habilitat ${k.habilitat}/100).`); }
     // Incidents de seguretat
-    const TXT = { xoc: 'Has xocat amb el transpalet o el toro anant de pressa.', caiguda: 'Se t\'ha caigut una càrrega anant de pressa: trencament.', sobreesforc: 'Has col·locat a mà una càrrega molt pesant en un nivell alt: risc de lesió.', bloqueig: 'Has deixat mercaderia davant de la sortida d\'emergència o al mig del passadís.', diagrama: 'Has intentat elevar més pes del que permet el diagrama de càrrega del toro: risc de bolcada.' };
-    res.incidents.forEach(i => { (i.tipus === 'xoc' || i.tipus === 'diagrama' || i.tipus === 'bloqueig' ? greus : err).push(['seguretat', TXT[i.tipus] || i.tipus]); if (i.tipus === 'caiguda') k.trencaments++; });
+    const TXT = { cop: 'Cop fort contra una prestatgeria o un palet amb el transpalet o el toro: s\'ha de comunicar perquè la revisin.', bolcada: 'Has bolcat el toro: velocitat o girs bruscos amb la càrrega. Pot ser mortal.', palet: 'Has deixat un palet mal recolzat a les bigues i ha caigut.', xoc: 'Has xocat amb el transpalet o el toro anant de pressa.', caiguda: 'Se t\'ha caigut una càrrega anant de pressa: trencament.', sobreesforc: 'Has col·locat a mà una càrrega molt pesant en un nivell alt: risc de lesió.', bloqueig: 'Has deixat mercaderia davant de la sortida d\'emergència o al mig del passadís.', diagrama: 'Has intentat elevar més pes del que permet el diagrama de càrrega del toro: risc de bolcada.' };
+    res.incidents.forEach(i => { (['xoc', 'diagrama', 'bloqueig', 'bolcada', 'palet'].includes(i.tipus) ? greus : err).push(['seguretat', TXT[i.tipus] || i.tipus]); if (i.tipus === 'caiguda') k.trencaments++; });
     // Inventari i punt de comanda
     if (t.inventari) {
       t.inventari.recomptes.forEach(rc => {
@@ -314,7 +327,7 @@
     const productivitat = Math.round(Math.min(100, fetes / Math.max(1, tasques) * (100 + marge * 4)));
     const errQualitat = err.filter(e => e[0] !== 'seguretat').length + greus.filter(e => e[0] !== 'seguretat').length * 2;
     const qualitat = Math.max(0, 100 - errQualitat * 9);
-    const seguretat = Math.max(0, 100 - res.incidents.reduce((a, i) => a + (['xoc', 'diagrama', 'bloqueig'].includes(i.tipus) ? 40 : 20), 0));
+    const seguretat = Math.max(0, 100 - res.incidents.reduce((a, i) => a + (['xoc', 'diagrama', 'bloqueig', 'bolcada', 'palet'].includes(i.tipus) ? 40 : 20), 0));
     const nota = Math.round(productivitat * D.PESOS_NOTA.productivitat + qualitat * D.PESOS_NOTA.qualitat + seguretat * D.PESOS_NOTA.seguretat);
     // La cap
     const bo = nota >= D.NOTA_BONA && !greus.length;
