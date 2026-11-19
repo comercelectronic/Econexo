@@ -46,7 +46,7 @@ function jugaTorn(s, mode) {
 
 { // Un bon treballador puja de mosso a cap de magatzem
   const s = E.crearPartida({ nom: 'Prova', llavor: 7 });
-  t(s.nivell === 1 && s.dia.recepcions.length === 1 && !s.dia.comandes.length, 'el mosso comença amb una recepció i sense comandes');
+  t(s.nivell === 1 && s.dia.recepcions.length === 2 && !s.dia.comandes.length, 'el mosso comença amb dos camions de proveïdor i sense comandes');
   t(E.totesUbicacions().includes('A-01-1-A') && E.parse('B-03-2-A').niv === 2, 'codis d\'ubicació');
   t(E.problemesUbicacio('iogurt', 'A-02-1-A').some(x => /fred/.test(x)), 'els refrigerats van a la cambra de fred');
   t(E.problemesUbicacio('lleixiu', 'B-01-1-A').some(x => /perillos/.test(x)), 'els perillosos van a la seva zona');
@@ -68,7 +68,8 @@ function jugaTorn(s, mode) {
   t(h.veredicte === 'bronca', 'els errors greus porten bronca');
   t(s.final && s.final.tipus === 'acomiadament' && n === D.AVISOS_ACOMIADAMENT, 'tres broncas seguides: acomiadament');
   const tipus = new Set(h.errors.concat(h.greus).map(e => e[0]));
-  t(['recepcio', 'ubicacio', 'fefo', 'expedicio', 'seguretat'].every(x => tipus.has(x)), 'l\'informe explica els errors de cada tasca (' + [...tipus].join(', ') + ')');
+  t(['recepcio', 'ubicacio', 'expedicio', 'seguretat'].every(x => tipus.has(x)), 'l\'informe explica els errors de cada tasca (' + [...tipus].join(', ') + ')');
+  t(s.historial.some(x => x.errors.some(e => e[0] === 'fefo')), 'agafar el lot que caduca més tard és un error de FEFO');
   E.continuar(s); t(s.fase === 'final', 'després de l\'acomiadament, final');
   E.reintentar(s); t(!s.final && s.fase === 'briefing' && s.avisos === 0, 'es pot tornar a provar el nivell');
 }

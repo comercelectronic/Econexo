@@ -86,10 +86,10 @@
     { id: 'vic', nom: 'Botiga de Vic' }, { id: 'manlleu', nom: 'Botiga de Manlleu' }, { id: 'torello', nom: 'Botiga de Torelló' },
     { id: 'tona', nom: 'Botiga de Tona' }, { id: 'centelles', nom: 'Botiga de Centelles' }
   ];
-  D.PROVEIDORS = ['Distribucions Osona', 'Làctics del Lluçanès', 'Química Neta', 'Conserves del Ter', 'Fred Pirineu'];
+  D.PROVEIDORS = ['Distribucions Osona', 'Majorista del Ter', 'Proveïments Lluçanès', 'Logística Plana de Vic', 'Central de Compres Ripollès'];
 
   // Torn: durada en minuts del rellotge (de 8:00 a 14:00) i segons reals a velocitat ×1
-  D.TORN_INICI = 8 * 60; D.TORN_FI = 14 * 60; D.TORN_SEGONS = 300;
+  D.TORN_INICI = 8 * 60; D.TORN_FI = 14 * 60; D.TORN_SEGONS = 420;
 
   // Motius de rebuig a la recepció
   D.MOTIUS = {

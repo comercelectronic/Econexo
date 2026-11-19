@@ -75,10 +75,10 @@
     const N = E.nivell(s), r = E.rngDe(s.config.llavor, 'torn' + s.torn), dia = s.torn;
     const t = { torn: dia, dia, nivell: s.nivell, recepcions: [], comandes: [], camions: [], inventari: null };
     // Recepcions: camions de proveïdor amb càrregues; algunes tenen problemes
-    const nRec = s.nivell >= 3 ? 2 : 1, pProb = Math.min(0.35, 0.18 + s.torn * 0.02);
+    const nRec = 2, pProb = Math.min(0.35, 0.18 + s.torn * 0.02);
     let idc = 0;
     for (let k = 0; k < nRec; k++) {
-      const prods = barreja(r, D.PROD.filter(id => s.nivell >= 3 || (!P(id).perill && !P(id).quimic || id === 'detergent'))).slice(0, 4 + Math.min(3, s.nivell));
+      const prods = barreja(r, D.PROD.filter(id => s.nivell >= 3 || (!P(id).perill && !P(id).quimic || id === 'detergent'))).slice(0, 5 + Math.min(2, s.nivell));
       const carregues = [];
       prods.forEach(prod => {
         const p = P(prod), vida = p.cad;
@@ -99,7 +99,7 @@
         }
         carregues.push(c);
       });
-      t.recepcions.push({ id: 'r' + (k + 1), proveidor: tria(r, D.PROVEIDORS), arribada: D.TORN_INICI + (k ? 120 + Math.floor(r() * 60) : 0), moll: 1, carregues });
+      t.recepcions.push({ id: 'r' + (k + 1), proveidor: tria(r, D.PROVEIDORS), arribada: D.TORN_INICI + k * 150 + (k ? Math.floor(r() * 40) : 0), moll: 1, carregues });
     }
     // Comandes de botigues (des de preparador)
     if (N.tasques.includes('picking')) {
@@ -107,12 +107,12 @@
       const clients = barreja(r, D.CLIENTS);
       let ci = 0;
       for (let k = 0; k < nCam; k++) {
-        const nCli = N.tasques.includes('carrega') ? 3 : 1 + (s.nivell >= 3 ? 1 : 0);
+        const nCli = N.tasques.includes('carrega') ? 2 : 1 + (s.nivell >= 3 ? 1 : 0);
         const ruta = clients.slice(ci, ci + nCli); ci += nCli;
-        const cam = { id: 'k' + (k + 1), moll: 2 + k, sortida: D.TORN_INICI + 210 + k * 90 + (s.nivell <= 2 ? 60 : 0), ruta: ruta.map(c => c.id) };
+        const cam = { id: 'k' + (k + 1), moll: 2 + k, sortida: D.TORN_INICI + 240 + k * 90 + (s.nivell <= 2 ? 60 : 0), ruta: ruta.map(c => c.id) };
         t.camions.push(cam);
         ruta.forEach(cl => {
-          const prods = barreja(r, D.PROD.filter(id => E.estocDe(s, id) >= 2 && (s.nivell >= 3 || !P(id).perill))).slice(0, 3 + Math.min(2, s.nivell - 1));
+          const prods = barreja(r, D.PROD.filter(id => E.estocDe(s, id) >= 2 && (s.nivell >= 3 || !P(id).perill))).slice(0, 2 + Math.min(2, s.nivell - 1));
           t.comandes.push({ id: 'o' + (t.comandes.length + 1), client: cl.id, camio: cam.id, linies: prods.map(prod => ({ prod, q: 1 + (r() < 0.35 ? 1 : 0) })) });
         });
       }
@@ -121,7 +121,7 @@
     if (N.tasques.includes('inventari')) {
       const slots = barreja(r, Object.keys(s.stock).filter(k => s.stock[k].length)).slice(0, 3);
       t.inventari = { recomptes: slots.map((slot, i) => { const teoric = s.stock[slot].reduce((a, x) => a + x.q, 0); const real = i === 0 ? Math.max(0, teoric - 1 - Math.floor(r() * 2)) : teoric; return { slot, teoric, real }; }),
-        puntComanda: D.PROD.filter(id => P(id).rot === 'A').map(id => ({ prod: id, consumDia: 3 + Math.floor(r() * 3), termini: 2 + Math.floor(r() * 3), seguretat: 2 })) };
+        puntComanda: D.PROD.filter(id => P(id).rot === 'A').map(id => ({ prod: id, consumDia: 1 + Math.floor(r() * 2), termini: 1 + Math.floor(r() * 3), seguretat: 1 + Math.floor(r() * 2) })) };
     }
     s.dia = t; s.fase = 'briefing';
     return t;
@@ -161,6 +161,13 @@
         if (!c.problema || c.problema === 'sobrant') { s.stock[u] = s.stock[u] || []; s.stock[u].push({ prod: c.prod, lot: c.lot, cad: c.cad || 9999, q: 1 }); }
       }
     }));
+    // FEFO: en l'ordre en què s'ha fet el picking, el lot triat ha de ser el que caduca abans dels que hi havia a la ubicació
+    res.picking.forEach(pk => {
+      const lots = (s.stock[pk.slot] || []).filter(x => x.prod === pk.prod && x.q > 0).sort((a, b) => a.cad - b.cad);
+      const triat = lots.find(x => x.lot === pk.lot);
+      if (triat && lots[0] && triat.cad > lots[0].cad && P(pk.prod).cad) { k.fefo++; err.push(['fefo', `${P(pk.prod).nom}: has agafat el lot que caduca el ${E.data(triat.cad)} i a la mateixa ubicació hi havia el del ${E.data(lots[0].cad)}. Amb FEFO surt primer el que caduca abans.`]); }
+      if (triat) triat.q = Math.max(0, triat.q - pk.q);
+    });
     // Picking i palets
     const perComanda = {};
     res.picking.forEach(pk => { (perComanda[pk.comanda] = perComanda[pk.comanda] || []).push(pk); });
@@ -173,13 +180,6 @@
         else err.push(['picking', `${cl}: demanava ${l.q} de ${P(l.prod).nom} i n'has preparat ${q}.`]);
       });
       picks.filter(x => !o.linies.some(l => l.prod === x.prod)).forEach(x => err.push(['picking', `${cl}: has posat ${P(x.prod).nom}, que no era a la comanda.`]));
-      // FEFO: el lot triat ha de ser el que caduca abans dels que hi havia
-      picks.forEach(pk => {
-        const lots = (s.stock[pk.slot] || []).filter(x => x.prod === pk.prod && x.q > 0).sort((a, b) => a.cad - b.cad);
-        const triat = lots.find(x => x.lot === pk.lot);
-        if (triat && lots[0] && triat.cad > lots[0].cad && P(pk.prod).cad) { k.fefo++; err.push(['fefo', `${P(pk.prod).nom}: has agafat el lot que caduca el ${E.data(triat.cad)} i hi havia el del ${E.data(lots[0].cad)}. Amb FEFO surt primer el que caduca abans.`]); }
-        if (triat) triat.q = Math.max(0, triat.q - pk.q);
-      });
       // Palet: muntatge i lliurament
       const pal = res.palets.find(x => x.comanda === o.id);
       if (!pal) { if (picks.length) err.push(['expedicio', `${cl}: has preparat la comanda però no l'has portada al moll.`]); else err.push(['expedicio', `${cl}: la comanda no s'ha preparat.`]); return; }
