@@ -1,0 +1,179 @@
+{
+ "bloques": {
+  "1": "Organización del almacén",
+  "2": "Recepción de mercancías",
+  "3": "Almacenaje y conservación",
+  "4": "Gestión de stocks e inventarios",
+  "5": "Preparación de pedidos y expedición",
+  "6": "Equipos de manipulación",
+  "7": "Prevención de riesgos laborales en el almacén",
+  "8": "Gestión informatizada, trazabilidad e indicadores"
+ },
+ "temario": [
+  [
+   "1.1",
+   "El almacén: funciones y tipos"
+  ],
+  [
+   "1.2",
+   "Zonas del almacén y distribución en planta"
+  ],
+  [
+   "1.3",
+   "Sistemas de almacenaje: convencional, compacto, dinámico y móvil"
+  ],
+  [
+   "1.4",
+   "Ubicación fija y ubicación caótica"
+  ],
+  [
+   "1.5",
+   "Codificación de ubicaciones"
+  ],
+  [
+   "1.6",
+   "Criterios de colocación: rotación ABC, peso, volumen y compatibilidad"
+  ],
+  [
+   "2.1",
+   "Documentación de la recepción: pedido, albarán y factura"
+  ],
+  [
+   "2.2",
+   "Control cuantitativo y cualitativo de la mercancía"
+  ],
+  [
+   "2.3",
+   "Incidencias en la recepción: faltas, sobrantes y daños"
+  ],
+  [
+   "2.4",
+   "Codificación y etiquetado: EAN, GS1-128 y RFID"
+  ],
+  [
+   "2.5",
+   "Registro de entradas"
+  ],
+  [
+   "3.1",
+   "Condiciones de conservación: temperatura, humedad y luz"
+  ],
+  [
+   "3.2",
+   "Productos perecederos y cadena de frío"
+  ],
+  [
+   "3.3",
+   "Productos frágiles"
+  ],
+  [
+   "3.4",
+   "Mercancías peligrosas: clasificación, etiquetado y compatibilidades"
+  ],
+  [
+   "3.5",
+   "Unidades de carga: palés, cajas y contenedores"
+  ],
+  [
+   "4.1",
+   "Tipos de stock: mínimo, de seguridad, máximo y punto de pedido"
+  ],
+  [
+   "4.2",
+   "Rotación de stocks y sistemas FIFO, FEFO y LIFO"
+  ],
+  [
+   "4.3",
+   "Valoración de existencias"
+  ],
+  [
+   "4.4",
+   "Inventarios: tipos y realización"
+  ],
+  [
+   "4.5",
+   "Mermas, roturas y diferencias de inventario"
+  ],
+  [
+   "4.6",
+   "Análisis ABC de las existencias"
+  ],
+  [
+   "5.1",
+   "La orden de pedido y la lista de picking"
+  ],
+  [
+   "5.2",
+   "Sistemas de picking: por pedido, por zonas y por oleadas"
+  ],
+  [
+   "5.3",
+   "Rutas de preparación"
+  ],
+  [
+   "5.4",
+   "Embalaje, paletización y etiquetado de expedición"
+  ],
+  [
+   "5.5",
+   "Documentación de la expedición: albarán y carta de porte (CMR)"
+  ],
+  [
+   "5.6",
+   "Carga del vehículo y orden de carga"
+  ],
+  [
+   "6.1",
+   "Transpalé manual y eléctrico"
+  ],
+  [
+   "6.2",
+   "Apiladores y carretillas elevadoras"
+  ],
+  [
+   "6.3",
+   "Capacidad de carga y diagrama de carga"
+  ],
+  [
+   "6.4",
+   "Formación y normas de uso de los equipos"
+  ],
+  [
+   "7.1",
+   "Riesgos en el almacén: caídas, golpes, atropellos y atrapamientos"
+  ],
+  [
+   "7.2",
+   "Manipulación manual de cargas"
+  ],
+  [
+   "7.3",
+   "Equipos de protección individual (EPI) y señalización"
+  ],
+  [
+   "7.4",
+   "Plan de emergencia e incendios"
+  ],
+  [
+   "8.1",
+   "Sistemas de gestión de almacén (SGA)"
+  ],
+  [
+   "8.2",
+   "Lectores de códigos y trazabilidad"
+  ],
+  [
+   "8.3",
+   "Logística inversa: devoluciones"
+  ],
+  [
+   "8.4",
+   "Indicadores de gestión del almacén"
+  ]
+ ],
+ "ahora": {
+  "1.3": "Hoy también: almacenes automatizados con robots y estanterías móviles (por ejemplo, los grandes centros de comercio electrónico).",
+  "8.1": "Hoy: SGA en la nube, terminales de radiofrecuencia y picking por voz o por luz (pick-to-light).",
+  "5.2": "Hoy también: preparación de pedidos de comercio electrónico con muchas líneas pequeñas y entregas en 24 horas."
+ }
+}

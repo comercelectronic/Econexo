@@ -52,7 +52,9 @@ export const CICLOS: Ciclo[] = [
       { slug: 'marketing-en-la-actividad-comercial', name: 'Marketing en la actividad comercial', live: true, simulador: 'mercadeja',
         resumen: 'Conceptos de marketing, mercado y consumidor, investigación comercial y las cuatro P: producto, precio, distribución y comunicación, hasta el plan de marketing. Con el simulador Mercadeja como parte práctica.',
         practica: { etiqueta: 'Fase', orden: 'Cada lección indica en qué fase de tu empresa de Mercadeja la pondrás en práctica: de tienda de barrio a gran empresa.', texto: 'En esta fase de Mercadeja aplicarás esta lección en tu tienda: tus decisiones cambian qué compran los clientes y el resultado de cada día.', complementaria: 'Complementaria' } },
-      m('Gestión de un pequeño comercio'), m('Técnicas de almacén'), m('Gestión de compras'),
+      m('Gestión de un pequeño comercio'), { slug: 'tecnicas-de-almacen', name: 'Técnicas de almacén', live: true,
+        resumen: 'Organización del almacén, recepción, ubicación, conservación, stocks e inventarios, preparación de pedidos y expedición, equipos de manipulación y prevención de riesgos. Con el simulador Palet como parte práctica.',
+        practica: { etiqueta: 'Nivel', orden: 'Cada lección indica en qué nivel de tu carrera en el simulador Palet la pondrás en práctica: de mozo de almacén a jefe de almacén.', texto: 'En este nivel de Palet aplicarás esta lección en el almacén, con el reloj en marcha y la jefa vigilando.', complementaria: 'Complementaria' } }, m('Gestión de compras'),
       m('Venta técnica'), m('Dinamización del punto de venta'), m('Procesos de venta'), m('Aplicaciones informáticas para el comercio'),
       m('Servicios de atención comercial')
     ]

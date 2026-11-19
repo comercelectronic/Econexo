@@ -124,7 +124,7 @@ export const TOOLS: Tool[] = [
     faq: [{ p: '¿Qué ratio LTV/CAC es bueno?', r: 'Como orientación se suele buscar 3 o más. Por debajo de 1 pierdes dinero con cada cliente.' }, { p: '¿Qué es el CAC?', r: 'El coste de adquisición de cliente: lo que gastas en marketing y ventas dividido entre los clientes nuevos que consigues.' }]
   },
   {
-    slug: 'stock-y-punto-de-pedido', codigos: ['2.6'], name: 'Calculadora de stock y punto de pedido', area: 'Almacén y logística',
+    slug: 'stock-y-punto-de-pedido', temas: { 'tecnicas-de-almacen': ['4.1'] }, codigos: ['2.6'], name: 'Calculadora de stock y punto de pedido', area: 'Almacén y logística',
     short: 'Cuándo reponer el stock y cuántas veces rota al año.',
     dialogo: [{ quien: 'eco', gesto: 'sorpresa', texto: '¡Se ha agotado el producto estrella y el proveedor tarda dos semanas!' }, { quien: 'nexo', gesto: 'paciencia', texto: 'Por eso existe el punto de pedido: se pide antes de quedarse sin stock. Vamos a calcularlo.' }],
     intro: 'Calcula el punto de pedido (cuándo reponer) con tu demanda diaria, el plazo de entrega y un stock de seguridad, y la rotación de tu stock.',

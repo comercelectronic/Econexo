@@ -1,0 +1,179 @@
+{
+ "bloques": {
+  "1": "Organització del magatzem",
+  "2": "Recepció de mercaderies",
+  "3": "Emmagatzematge i conservació",
+  "4": "Gestió d'estocs i inventaris",
+  "5": "Preparació de comandes i expedició",
+  "6": "Equips de manipulació",
+  "7": "Prevenció de riscos laborals al magatzem",
+  "8": "Gestió informatitzada, traçabilitat i indicadors"
+ },
+ "temario": [
+  [
+   "1.1",
+   "El magatzem: funcions i tipus"
+  ],
+  [
+   "1.2",
+   "Zones del magatzem i distribució en planta"
+  ],
+  [
+   "1.3",
+   "Sistemes d'emmagatzematge: convencional, compacte, dinàmic i mòbil"
+  ],
+  [
+   "1.4",
+   "Ubicació fixa i ubicació caòtica"
+  ],
+  [
+   "1.5",
+   "Codificació d'ubicacions"
+  ],
+  [
+   "1.6",
+   "Criteris de col·locació: rotació ABC, pes, volum i compatibilitat"
+  ],
+  [
+   "2.1",
+   "Documentació de la recepció: comanda, albarà i factura"
+  ],
+  [
+   "2.2",
+   "Control quantitatiu i qualitatiu de la mercaderia"
+  ],
+  [
+   "2.3",
+   "Incidències en la recepció: faltes, sobrants i danys"
+  ],
+  [
+   "2.4",
+   "Codificació i etiquetatge: EAN, GS1-128 i RFID"
+  ],
+  [
+   "2.5",
+   "Registre d'entrades"
+  ],
+  [
+   "3.1",
+   "Condicions de conservació: temperatura, humitat i llum"
+  ],
+  [
+   "3.2",
+   "Productes peribles i cadena de fred"
+  ],
+  [
+   "3.3",
+   "Productes fràgils"
+  ],
+  [
+   "3.4",
+   "Mercaderies perilloses: classificació, etiquetatge i compatibilitats"
+  ],
+  [
+   "3.5",
+   "Unitats de càrrega: palets, caixes i contenidors"
+  ],
+  [
+   "4.1",
+   "Tipus d'estoc: mínim, de seguretat, màxim i punt de comanda"
+  ],
+  [
+   "4.2",
+   "Rotació d'estocs i sistemes FIFO, FEFO i LIFO"
+  ],
+  [
+   "4.3",
+   "Valoració d'existències"
+  ],
+  [
+   "4.4",
+   "Inventaris: tipus i realització"
+  ],
+  [
+   "4.5",
+   "Mermes, trencaments i diferències d'inventari"
+  ],
+  [
+   "4.6",
+   "Anàlisi ABC de les existències"
+  ],
+  [
+   "5.1",
+   "L'ordre de comanda i la llista de picking"
+  ],
+  [
+   "5.2",
+   "Sistemes de picking: per comanda, per zones i per onades"
+  ],
+  [
+   "5.3",
+   "Rutes de preparació"
+  ],
+  [
+   "5.4",
+   "Embalatge, paletització i etiquetatge d'expedició"
+  ],
+  [
+   "5.5",
+   "Documentació de l'expedició: albarà i carta de port (CMR)"
+  ],
+  [
+   "5.6",
+   "Càrrega del vehicle i ordre de càrrega"
+  ],
+  [
+   "6.1",
+   "Transpalet manual i elèctric"
+  ],
+  [
+   "6.2",
+   "Apiladors i carretons elevadors"
+  ],
+  [
+   "6.3",
+   "Capacitat de càrrega i diagrama de càrrega"
+  ],
+  [
+   "6.4",
+   "Formació i normes d'ús dels equips"
+  ],
+  [
+   "7.1",
+   "Riscos al magatzem: caigudes, cops, atropellaments i atrapaments"
+  ],
+  [
+   "7.2",
+   "Manipulació manual de càrregues"
+  ],
+  [
+   "7.3",
+   "Equips de protecció individual (EPI) i senyalització"
+  ],
+  [
+   "7.4",
+   "Pla d'emergència i incendis"
+  ],
+  [
+   "8.1",
+   "Sistemes de gestió de magatzem (SGM)"
+  ],
+  [
+   "8.2",
+   "Lectors de codis i traçabilitat"
+  ],
+  [
+   "8.3",
+   "Logística inversa: devolucions"
+  ],
+  [
+   "8.4",
+   "Indicadors de gestió del magatzem"
+  ]
+ ],
+ "ahora": {
+  "1.3": "Avui també: magatzems automatitzats amb robots i prestatgeries mòbils (per exemple, els grans centres de comerç electrònic).",
+  "8.1": "Avui: SGM al núvol, terminals de radiofreqüència i picking per veu o per llum (pick-to-light).",
+  "5.2": "Avui també: preparació de comandes de comerç electrònic amb moltes línies petites i lliuraments en 24 hores."
+ }
+}
