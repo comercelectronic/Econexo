@@ -1,16 +1,20 @@
 // Publica sola a Instagram els posts de instagram/calendario.json (cada dia a les 18:00 de Madrid a l'hivern).
 //
-// Fa servir l'API d'Instagram amb inici de sessió d'Instagram (compte professional, sense pàgina de Facebook).
+// Accepta els dos tipus de testimoni que dona Meta:
+//   - d'inici de sessió d'Instagram (comença per «IG», graph.instagram.com, dura 60 dies: la funció el renova sola);
+//   - d'inici de sessió unificat o de Facebook (usuari del sistema, graph.facebook.com, no caduca).
 // Variables d'entorn a Netlify:
-//   IG_TOKEN    testimoni d'accés de llarga durada (60 dies). La funció el renova sola i el desa a Netlify Blobs.
-//   IG_USER_ID  (opcional) identificador del compte; si no hi és, es demana a l'API.
+//   IG_TOKEN    testimoni d'accés.
+//   IG_USER_ID  identificador del compte d'Instagram (obligatori amb el testimoni de Facebook; opcional amb el d'Instagram).
 //   IG_PROVA=1  (opcional) mode de prova: ho escriu al registre però no publica res.
 // Les imatges es serveixen des de la mateixa web: <URL>/ig/<id>/<n>.jpg (es generen amb scripts/instagram/genera.mjs).
 // Netlify Blobs, magatzem 'instagram': 'publicats' (posts ja fets) i 'token' (testimoni renovat).
 import { getStore } from '@netlify/blobs';
 import CAL from '../../instagram/calendario.json' with { type: 'json' };
 
-const API = 'https://graph.instagram.com/v22.0';
+const VERSIO = 'v22.0';
+const esIG = (t) => /^IG/.test(t || '');
+export const hostDe = (t) => esIG(t) ? 'https://graph.instagram.com/' + VERSIO : 'https://graph.facebook.com/' + VERSIO;
 const RENOVA_DIES = 20;  // el testimoni dura 60 dies: es renova cada 20
 
 // Data d'avui a Madrid (AAAA-MM-DD)
@@ -26,6 +30,7 @@ export function triaPost(cal, fets, avui) {
 }
 
 export function crearClient({ fetch, token }) {
+  const API = hostDe(token);
   async function crida(metode, ruta, params) {
     const q = new URLSearchParams(Object.assign({}, params, { access_token: token }));
     const r = metode === 'GET' ? await fetch(`${API}${ruta}?${q}`) : await fetch(`${API}${ruta}`, { method: 'POST', body: q });
@@ -67,7 +72,7 @@ async function testimoni({ store, env, fetch, ara }) {
   const origen = (env.IG_TOKEN || '').slice(-12);
   let t = desat && desat.origen === origen ? desat : { token: env.IG_TOKEN, origen, renovat: 0 };
   if (!t.token) throw new Error('Falta la variable IG_TOKEN a Netlify.');
-  if (ara - (t.renovat || 0) > RENOVA_DIES * 86400000) {
+  if (esIG(t.token) && ara - (t.renovat || 0) > RENOVA_DIES * 86400000) {
     try {
       const r = await fetch(`https://graph.instagram.com/refresh_access_token?grant_type=ig_refresh_token&access_token=${encodeURIComponent(t.token)}`);
       const d = await r.json();
@@ -86,6 +91,7 @@ export async function executa({ cal = CAL, store, env, fetch, avui, ara = Date.n
   if (env.IG_PROVA === '1') { console.log('[prova] Publicaria', post.id, post.slides.length + ' imatges'); return { fet: false, prova: true, post: post.id }; }
   const token = await testimoni({ store, env, fetch, ara });
   const api = crearClient({ fetch, token });
+  if (!env.IG_USER_ID && !esIG(token)) throw new Error('Amb un testimoni de Facebook cal la variable IG_USER_ID (l\'identificador del compte d\'Instagram).');
   const usuari = env.IG_USER_ID || (await api.crida('GET', '/me', { fields: 'user_id,username' })).user_id;
   const base = (env.URL || 'https://ecoynexo.com').replace(/\/$/, '');
   const media = await publicaPost({ api, usuari, post, base, espera });

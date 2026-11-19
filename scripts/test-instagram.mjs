@@ -30,9 +30,9 @@ function simula({ falla } = {}) {
   const crides = []; let n = 0;
   const fetch = async (url, o = {}) => {
     const u = new URL(url), p = o.body ? Object.fromEntries(o.body) : Object.fromEntries(u.searchParams);
-    crides.push({ ruta: u.pathname, metode: o.method || 'GET', p });
+    crides.push({ host: u.host, ruta: u.pathname, metode: o.method || 'GET', p });
     const resp = (d, st = 200) => ({ ok: st < 400, status: st, json: async () => d });
-    if (u.pathname === '/refresh_access_token') return resp({ access_token: 'TOKEN-NOU', expires_in: 5184000 });
+    if (u.pathname === '/refresh_access_token') return resp({ access_token: 'IGTOKEN-NOU', expires_in: 5184000 });
     if (u.pathname.endsWith('/me')) return resp({ user_id: '1789', username: 'ecoynexo' });
     if (u.pathname.endsWith('/media') && falla) return resp({ error: { message: 'Invalid image' } }, 400);
     if (u.pathname.endsWith('/media')) return resp({ id: 'C' + (++n) });
@@ -42,7 +42,7 @@ function simula({ falla } = {}) {
   return { fetch, crides };
 }
 const magatzem = () => { const d = {}; return { d, get: async (k) => d[k] ? JSON.parse(d[k]) : null, setJSON: async (k, v) => { d[k] = JSON.stringify(v); } }; };
-const env = { IG_TOKEN: 'TOKEN-INICIAL-1234567890', URL: 'https://ecoynexo.com' }, espera = async () => { };
+const env = { IG_TOKEN: 'IGTOKEN-INICIAL-1234567890', URL: 'https://ecoynexo.com' }, espera = async () => { };
 
 { // Carrusel
   const s = magatzem(), api = simula();
@@ -53,8 +53,8 @@ const env = { IG_TOKEN: 'TOKEN-INICIAL-1234567890', URL: 'https://ecoynexo.com' 
   const car = api.crides.find(c => c.p.media_type === 'CAROUSEL');
   t(car && car.p.children === 'C1,C2,C3' && car.p.caption === 'B', 'carrusel amb el text del post');
   t(api.crides.some(c => c.ruta === '/v22.0/1789/media_publish' && c.p.creation_id === 'C4'), 'publica el contenidor');
-  t(api.crides.every(c => c.ruta === '/refresh_access_token' || c.p.access_token === 'TOKEN-NOU'), 'renova el testimoni i fa servir el nou');
-  t(s.d.token && JSON.parse(s.d.token).token === 'TOKEN-NOU', 'desa el testimoni renovat');
+  t(api.crides.every(c => c.ruta === '/refresh_access_token' || c.host === 'graph.instagram.com' && c.p.access_token === 'IGTOKEN-NOU'), 'renova el testimoni i fa servir el nou');
+  t(s.d.token && JSON.parse(s.d.token).token === 'IGTOKEN-NOU', 'desa el testimoni renovat');
   t(JSON.parse(s.d.publicats)['2026-11-23-a'].saltat && JSON.parse(s.d.publicats)['2026-11-25-b'].media === 'M-C4', 'registra què s\'ha publicat i què s\'ha saltat');
   const api2 = simula(); const r2 = await executa({ cal, store: s, env, fetch: api2.fetch, avui: '2026-11-25', espera, ara: Date.parse('2026-11-25T18:00:00Z') });
   t(!r2.fet && api2.crides.length === 0, 'no publica dues vegades el mateix dia');
@@ -66,6 +66,13 @@ const env = { IG_TOKEN: 'TOKEN-INICIAL-1234567890', URL: 'https://ecoynexo.com' 
   const s = magatzem(); await s.setJSON('token', { token: 'VELL', origen: 'altra-cosa', renovat: Date.parse('2026-11-24T00:00:00Z') });
   const api = simula(); await executa({ cal, store: s, env: Object.assign({ IG_USER_ID: '55' }, env), fetch: api.fetch, avui: '2026-11-23', espera, ara: Date.parse('2026-11-23T17:00:00Z') });
   t(!api.crides.some(c => c.p.access_token === 'VELL') && api.crides.some(c => c.ruta === '/v22.0/55/media'), 'un IG_TOKEN nou substitueix el desat; IG_USER_ID evita consultar /me');
+}
+{ // Testimoni d'inici de sessió unificat o de Facebook (usuari del sistema): graph.facebook.com, sense renovar
+  const api = simula(), fb = { IG_TOKEN: 'EAAsistema123', IG_USER_ID: '17841474376146863', URL: 'https://ecoynexo.com' };
+  const r = await executa({ cal, store: magatzem(), env: fb, fetch: api.fetch, avui: '2026-11-25', espera, ara: Date.parse('2026-11-25T17:00:00Z') });
+  t(r.fet && api.crides.every(c => c.host === 'graph.facebook.com') && api.crides.some(c => c.ruta === '/v22.0/17841474376146863/media_publish'), 'amb testimoni de Facebook publica a graph.facebook.com');
+  t(!api.crides.some(c => c.ruta === '/refresh_access_token'), 'el testimoni de Facebook no es renova');
+  await assert.rejects(executa({ cal, store: magatzem(), env: { IG_TOKEN: 'EAAsistema123' }, fetch: simula().fetch, avui: '2026-11-25', espera }), /IG_USER_ID/); ok++;
 }
 { // Errors i mode de prova
   const s = magatzem(), api = simula({ falla: true });
