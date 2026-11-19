@@ -89,13 +89,10 @@ const env = { IG_TOKEN: 'IGTOKEN-INICIAL-1234567890', URL: 'https://ecoynexo.com
   t(r.jaHiEra && !api.crides.some(c => c.ruta.endsWith('/media_publish')), 'si el post ja és a Instagram no es torna a publicar');
   t(JSON.parse(s.d.publicats)['2026-11-25-b'].trobat, 'i queda anotat com a publicat');
   const trencat = { get: async () => { throw new Error('Blobs no disponible'); }, setJSON: async () => { throw new Error('Blobs no disponible'); } };
+  // Netlify Blobs no funciona: es publica igualment, però només una vegada
   const api2 = simula();
-  await assert.rejects(executa({ cal, store: trencat, env, fetch: api2.fetch, avui: '2026-11-25', espera }), /Blobs/); ok++;
-  t(!api2.crides.some(c => c.metode === 'POST'), 'si no es pot llegir l\'estat, no es publica');
-  const mig = { d: {}, get: async () => null, setJSON: async () => { throw new Error('No es pot desar'); } };
-  const api3 = simula();
-  await assert.rejects(executa({ cal, store: mig, env: Object.assign({ IG_USER_ID: '9' }, env), fetch: api3.fetch, avui: '2026-11-25', espera }), /desar/); ok++;
-  t(!api3.crides.some(c => c.metode === 'POST'), 'si no es pot desar l\'estat, no es publica');
+  for (let h = 0; h < 4; h++) await executa({ cal, store: trencat, env: Object.assign({ IG_USER_ID: '9' }, env), fetch: api2.fetch, avui: '2026-11-25', espera });
+  t(api2.publicats.length === 1, 'sense Netlify Blobs, quatre execucions seguides publiquen el post una sola vegada');
   // Una segona execució després de publicar troba el post a Instagram encara que l'estat s'hagi perdut
   const api4 = simula(); await executa({ cal, store: magatzem(), env, fetch: api4.fetch, avui: '2026-11-25', espera });
   const r5 = await executa({ cal, store: magatzem(), env, fetch: api4.fetch, avui: '2026-11-25', espera });

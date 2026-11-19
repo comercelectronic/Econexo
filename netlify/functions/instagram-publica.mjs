@@ -91,10 +91,12 @@ const norm = (t) => String(t || '').replace(/\s+/g, ' ').trim().slice(0, 120);
 const mateixText = (a, b) => !!a && norm(a) === norm(b);
 
 export async function executa({ cal = CAL, store, env, fetch, avui, hora, ara = Date.now(), espera = (ms) => new Promise(r => setTimeout(r, ms)) }) {
-  // Si no es pot llegir l'estat, no es publica res (així no es pot repetir cap post)
-  const fets = (await store.get('publicats', { type: 'json' })) || {};
+  // L'estat es desa a Netlify Blobs; si falla, la comprovació a Instagram (més avall) evita igualment els duplicats
+  const desa = async () => { try { await store.setJSON('publicats', fets); } catch (e) { console.warn('No s\'ha pogut desar l\'estat a Netlify Blobs:', e.message); } };
+  let fets = {};
+  try { fets = (await store.get('publicats', { type: 'json' })) || {}; } catch (e) { console.warn('No s\'ha pogut llegir l\'estat de Netlify Blobs:', e.message); }
   const { post, saltats } = triaPost(cal, fets, avui, hora);
-  if (saltats.length) { saltats.forEach(p => { fets[p.id] = { saltat: true, at: new Date(ara).toISOString() }; console.warn('Post saltat (la data ja ha passat):', p.id); }); await store.setJSON('publicats', fets); }
+  if (saltats.length) { saltats.forEach(p => { fets[p.id] = { saltat: true, at: new Date(ara).toISOString() }; console.warn('Post saltat (la data ja ha passat):', p.id); }); await desa(); }
   const prova = env.IG_PROVA === '1';
   if (!post && !prova) return { fet: false, motiu: 'Ara no toca cap post.' };
   const token = await testimoni({ store, env, fetch, ara });
@@ -110,16 +112,15 @@ export async function executa({ cal = CAL, store, env, fetch, avui, hora, ara = 
   // Segona protecció: si el post ja és a Instagram (mateix text), no es torna a publicar
   const recents = (await api.crida('GET', `/${usuari}/media`, { fields: 'id,caption,timestamp', limit: '15' })).data || [];
   const ja = recents.find(m => mateixText(m.caption, post.texto));
-  if (ja) { fets[post.id] = { media: ja.id, at: ja.timestamp || new Date(ara).toISOString(), trobat: true }; await store.setJSON('publicats', fets); console.log('Ja era a Instagram, no es torna a publicar:', post.id); return { fet: false, jaHiEra: true, post: post.id }; }
-  // Es marca abans de publicar: si l'estat no es pot desar, no es publica
+  if (ja) { fets[post.id] = { media: ja.id, at: ja.timestamp || new Date(ara).toISOString(), trobat: true }; await desa(); console.log('Ja era a Instagram, no es torna a publicar:', post.id); return { fet: false, jaHiEra: true, post: post.id }; }
   fets[post.id] = { publicant: true, at: new Date(ara).toISOString() };
-  await store.setJSON('publicats', fets);
+  await desa();
   const base = (env.URL || 'https://ecoynexo.com').replace(/\/$/, '');
   let media;
   try { media = await publicaPost({ api, usuari, post, base, espera }); }
-  catch (e) { delete fets[post.id]; await store.setJSON('publicats', fets).catch(() => { }); throw e; }
+  catch (e) { delete fets[post.id]; await desa(); throw e; }
   fets[post.id] = { media, at: new Date(ara).toISOString() };
-  await store.setJSON('publicats', fets);
+  await desa();
   console.log('Publicat a Instagram:', post.id, media);
   return { fet: true, post: post.id, media };
 }
