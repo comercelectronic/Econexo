@@ -48,14 +48,16 @@
 
   function plano(nivell) {
     const Z = D.ZONES;
+    const TEMP = { refri: 'Cambra de refrigerats · 0-4 °C', conge: 'Cambra de congelats · −18 °C' };
     const racks = D.PASSADISSOS.map(p => {
-      let h = '';
+      let h = p.temp ? `<div class="banda ${p.temp}" style="left:300px;top:${p.y - 45}px;width:590px;height:145px"><span>${TEMP[p.temp]}</span></div>` : '';
       for (let m = 1; m <= p.moduls; m++) {
+        const tp = D.tipusDe(p.id, m); if (tp === 'cap') continue;
         const x = p.x0 + D.MODUL_W * (m - 1);
-        h += `<button class="rack" data-pas="${p.id}" data-mod="${m}" style="left:${x + 3}px;top:${p.y - 26}px;width:${D.MODUL_W - 6}px" aria-label="Prestatgeria ${p.id}-${String(m).padStart(2, '0')}"><span class="cod">${p.id}-${String(m).padStart(2, '0')}</span><span class="omple" data-omple="${p.id}${m}"></span></button>`;
+        h += `<button class="rack t-${tp}" data-pas="${p.id}" data-mod="${m}" style="left:${x + 3}px;top:${p.y - 26}px;width:${D.MODUL_W - 6}px" aria-label="Prestatgeria ${p.id}-${String(m).padStart(2, '0')} (${esc(D.ESTANTERIES[tp].nom)})"><span class="cod">${p.id}-${String(m).padStart(2, '0')}</span><span class="tp">${D.ESTANTERIES[tp].curt}</span><span class="omple" data-omple="${p.id}${m}"></span></button>`;
       }
-      return h + `<span class="pas-lbl" style="left:${p.x0 - 26}px;top:${p.y - 12}px">${p.id}</span>`;
-    }).join('');
+      return h + (D.MAG.mode === 'cross' ? '' : `<span class="pas-lbl" style="left:${p.x0 - 26}px;top:${p.y - 12}px">${p.id}</span>`);
+    }).join('') + (D.MAG.mode === 'cross' ? `<div class="zona z-cross" style="left:320px;top:120px;width:560px;height:420px"><span class="zona-lbl">Plataforma de classificació</span><p>Sense estoc: la mercaderia passa del moll 1 als molls 2 i 3 el mateix dia, classificada per destinació.</p><div class="carrils"><span>→ Moll 2</span><span>→ Moll 3</span></div></div>` : '');
     const zona = (z, cls, ext) => `<div class="zona ${cls}" style="left:${z.x}px;top:${z.y}px;width:${z.w}px;height:${z.h}px"><span class="zona-lbl">${esc(z.nom)}</span>${ext || ''}</div>`;
     const fred = `<button class="rack petit" data-pas="F" data-mod="1" style="left:15px;top:30px"><span class="cod">F-01</span><span class="omple" data-omple="F1"></span></button><button class="rack petit" data-pas="F" data-mod="2" style="left:80px;top:30px"><span class="cod">F-02</span><span class="omple" data-omple="F2"></span></button><span class="termo">❄ <b id="tempF">3 °C</b></span>`;
     const perill = `<button class="rack petit" data-pas="P" data-mod="1" style="left:15px;top:105px"><span class="cod">P-01</span><span class="omple" data-omple="P1"></span></button><button class="rack petit" data-pas="P" data-mod="2" style="left:80px;top:105px"><span class="cod">P-02</span><span class="omple" data-omple="P2"></span></button><span class="pictos">◆ ◆</span>`;
@@ -64,8 +66,8 @@
       <div class="linia h" style="top:225px;left:290px;width:615px"></div><div class="linia h" style="top:375px;left:290px;width:615px"></div><div class="linia h" style="top:525px;left:290px;width:615px"></div>
       <div class="linia v" style="left:290px;top:160px;height:490px"></div><div class="linia v" style="left:905px;top:225px;height:425px"></div><div class="linia h" style="top:650px;left:290px;width:615px"></div>
       ${zona(Z.recepcio, 'z-rec', '<div class="moll" style="left:-6px;top:50px">MOLL 1</div><div class="mollz" id="mollRec"></div>')}
-      ${zona(Z.expedicio, 'z-exp', '<div class="moll" style="left:-6px;top:30px">MOLL 2</div><div class="moll" style="left:-6px;top:130px">MOLL 3</div><button class="moll-btn" data-moll="2" style="top:28px">Deixar al moll 2</button><button class="moll-btn" data-moll="3" style="top:128px">Deixar al moll 3</button><div class="palets-moll" id="pm2" style="top:62px"></div><div class="palets-moll" id="pm3" style="top:162px"></div>')}
-      ${zona(Z.fred, 'z-fred', fred)}${zona(Z.perill, 'z-perill', perill)}
+      ${zona(Object.assign({}, Z.expedicio, D.MAG.mode === 'ecom' ? { nom: 'Embalatge i expedició' } : {}), 'z-exp', '<div class="moll" style="left:-6px;top:30px">MOLL 2</div><div class="moll" style="left:-6px;top:130px">MOLL 3</div><button class="moll-btn" data-moll="2" style="top:28px">Deixar al moll 2</button><button class="moll-btn" data-moll="3" style="top:128px">Deixar al moll 3</button><div class="palets-moll" id="pm2" style="top:62px"></div><div class="palets-moll" id="pm3" style="top:162px"></div>')}
+      ${D.MAG.zones.includes('fred') ? zona(Z.fred, 'z-fred', fred) : ''}${D.MAG.zones.includes('perill') ? zona(Z.perill, 'z-perill', perill) : ''}
       <div class="park" style="left:140px;top:300px">P</div>
       <div class="sortida" style="left:${Z.sortida.x - 14}px;top:${Z.sortida.y - 40}px" title="Sortida d'emergència">🚪<span>SORTIDA</span></div>
       <div class="extintor" style="left:1060px;top:420px" title="Extintor">🧯</div>
@@ -88,7 +90,7 @@
     ajusta(); let ultW = el.clientWidth; const ro = new ResizeObserver(() => { if (el.clientWidth !== ultW) { ultW = el.clientWidth; ajusta(); } }); ro.observe(el);
 
     // Estat de la simulació
-    const res = { recepcio: {}, ubicacions: {}, picking: [], palets: [], carrega: {}, incidents: [], inventari: { recomptes: {}, comandes: {} }, fi: D.TORN_FI };
+    const res = { recepcio: {}, ubicacions: {}, picking: [], palets: [], carrega: {}, incidents: [], inventari: { recomptes: {}, comandes: {} }, cross: {}, fred: {}, fi: D.TORN_FI };
     const stock = JSON.parse(JSON.stringify(s.stock));        // còpia de treball (el motor aplica els canvis definitius)
     // Recompte d'inventari: a les prestatgeries hi ha el que hi ha de debò (pot ser menys del que diu el sistema)
     if (t.inventari) t.inventari.recomptes.forEach(rc => { let falta = rc.teoric - rc.real; (stock[rc.slot] || []).slice().reverse().forEach(x => { const m = Math.min(falta, x.q); x.q -= m; falta -= m; }); });
@@ -97,13 +99,15 @@
     const arribades = new Set();
     function arribaCamio(rc) {
       if (arribades.has(rc.id)) return; arribades.add(rc.id);
-      rc.carregues.forEach(c => carregues.push({ c, rc, estat: 'moll' }));
+      rc.carregues.forEach(c => carregues.push({ c, rc, estat: 'moll', arribada: minut }));
       op.avis && op.avis(`🚚 Ha arribat el camió de ${rc.proveidor} al moll 1 (${rc.carregues.length} càrregues).`);
       pintaMoll(); pintaCamions(); op.canvi && op.canvi();
     }
     // Treballador
     const ag = document.createElement('div'); ag.className = 'treb'; ag.innerHTML = vehicle(NIV.equip) + `<span class="persona">${persona('#2563eb', '#1e3a8a')}</span><span class="carrega"></span><span class="bomb" hidden></span>`; ags.appendChild(ag);
-    const w = { x: N.park[0], y: N.park[1], node: 'park', path: [], porta: null, ocupat: null, pila: [], comanda: null, dir: 1 };
+    const w = { x: N.park[0], y: N.park[1], node: 'park', path: [], porta: null, ocupat: null, pila: [], comanda: null, ona: [], piles: {}, dir: 1 };
+    const ECOM = D.MAG.mode === 'ecom', CROSS = D.MAG.mode === 'cross';
+    let obert = null;   // passadís mòbil obert
     // Cap (la Montse) que passa de tant en tant
     const cap = document.createElement('div'); cap.className = 'cap-ag'; cap.innerHTML = persona('#9B7AE8', '#5b21b6') + '<span class="nom">Montse</span>'; cap.style.transform = `translate(${N.L2[0] - 17}px,${N.L2[1] - 60}px)`; ags.appendChild(cap);
     function posa() { ag.style.transform = `translate(${w.x - 30}px,${w.y - 34}px) scaleX(${w.dir})`; }
@@ -127,9 +131,9 @@
     function pintaCamions() {
       const c = mg.querySelector('#camions'); let h = '';
       t.recepcions.forEach(rc => { if (arribades.has(rc.id) && carregues.some(x => x.rc === rc && x.estat === 'moll')) h += `<div class="camio rec" style="top:105px">🚚<span>${esc(rc.proveidor)}</span></div>`; });
-      t.camions.forEach(cam => { const fora = minut > cam.sortida; if (!fora) h += `<div class="camio exp" style="top:${cam.moll === 2 ? 470 : 570}px">🚛<span>${E.hora(cam.sortida)} · ${cam.ruta.map(x => D.CLIENTS.find(c => c.id === x).nom.replace('Botiga de ', '')).join(' → ')}</span></div>`; });
+      t.camions.forEach(cam => { const fora = minut > cam.sortida; if (!fora) h += `<div class="camio exp" style="top:${cam.moll === 2 ? 470 : 570}px">🚛<span>${E.hora(cam.sortida)} · ${cam.transportista ? esc(cam.transportista) : cam.ruta.map(x => D.CLIENTS.find(c => c.id === x).nom.replace('Botiga de ', '')).join(' → ')}</span></div>`; });
       c.innerHTML = h;
-      [2, 3].forEach(m => { const el2 = mg.querySelector('#pm' + m); el2.innerHTML = res.palets.filter(p => p.moll === m).map(p => `<span class="palet-d" title="${esc(D.CLIENTS.find(c => c.id === t.comandes.find(o => o.id === p.comanda).client).nom)}">${p.pila.slice(-3).map(x => caixa(x, 10)).join('')}</span>`).join(''); });
+      [2, 3].forEach(m => { const el2 = mg.querySelector('#pm' + m); el2.innerHTML = res.palets.filter(p => p.moll === m).map(p => `<span class="palet-d" title="${esc(((o) => o.num ? 'Comanda web #' + o.num : (D.CLIENTS.find(c => c.id === o.client) || {}).nom || '')(t.comandes.find(o => o.id === p.comanda)))}">${p.pila.slice(-3).map(x => caixa(x, 10)).join('')}</span>`).join(''); });
     }
     pintaRacks(); pintaCamions(); pintaCarrega();
 
@@ -180,12 +184,12 @@
         if (x.estat === 'acceptada') {
           if (w.porta) return op.avis('Ja portes una càrrega. Deixa-la primer a la seva ubicació.');
           if (w.comanda) return op.avis('Estàs preparant una comanda. Deixa-la al moll o acaba-la abans.');
-          return vesA('rec', () => treballa(1.5, () => { x.estat = 'portant'; w.porta = x; pintaCarrega(); pintaMoll(); bombolla(D.productes[x.c.prod].nom + (NIV.lliure ? '' : ' → ' + D.UBICACIO[x.c.prod])); }));
+          return vesA('rec', () => treballa(1.5, () => { x.estat = 'portant'; w.porta = x; pintaCarrega(); pintaMoll(); bombolla(D.productes[x.c.prod].nom + (CROSS ? ' → ' + (D.CLIENTS.find(c => c.id === x.c.desti) || {}).nom : E.lliure(s) ? '' : ' → ' + D.UBICACIO[x.c.prod])); }));
         }
         vesA('rec', () => op.inspecciona(x.c, x.rc, (dec) => {
           treballa(2, () => {
             res.recepcio[x.c.id] = dec;
-            x.estat = dec === 'accepta' ? 'acceptada' : 'rebutjada';
+            x.estat = dec === 'accepta' ? 'acceptada' : 'rebutjada'; x.arribada = minut; // el rellotge del fred compta des que l'acceptes
             fxText(N.rec[0], N.rec[1] - 50, dec === 'accepta' ? '✓ Acceptada' : '✗ Rebutjada', dec === 'accepta' ? 'pos' : 'neg');
             pintaMoll(); pintaCamions(); op.canvi && op.canvi();
           });
@@ -195,9 +199,12 @@
       modul(pas, mod) {
         if (acabat || w.ocupat) return op.avis && op.avis('Espera que el treballador acabi el que fa.');
         if (!w.porta && !w.comanda) return op.mostraModul({ pas, mod, stock, mode: 'veure', nivellsRack: NIV.nivellsRack });
-        vesA(nodeModul(pas, mod), () => {
+        if (CROSS) return;
+        const tp = D.tipusDe(pas, mod);
+        const arriba = (fet) => () => { if (tp === 'mobil' && obert !== pas) { bombolla('Obrint el passadís mòbil…'); treballa(1.5, () => { obert = pas; fet(); }); } else fet(); };
+        vesA(nodeModul(pas, mod), arriba(() => {
           if (w.porta) {
-            op.mostraModul({ pas, mod, stock, mode: 'ubicar', prod: w.porta.c.prod, nivellsRack: NIV.nivellsRack, fixa: !NIV.lliure }, (codi) => {
+            op.mostraModul({ pas, mod, stock, mode: 'ubicar', prod: w.porta.c.prod, nivellsRack: NIV.nivellsRack, fixa: !E.lliure(s) }, (codi) => {
               if (!codi) return;
               const u = E.parse(codi), p = D.productes[w.porta.c.prod];
               if (u.niv > NIV.nivellsRack) return op.avis(`Amb el ${EQ.nom.toLowerCase()} no arribes al nivell ${u.niv}.`);
@@ -205,6 +212,7 @@
               treballa(temps, () => {
                 if (NIV.equip === 'transpalet' && u.niv >= 2 && p.pes >= 15) { res.incidents.push({ tipus: 'sobreesforc', minut: Math.round(minut), prod: w.porta.c.prod }); bombolla('Ai, l\'esquena!', 'neg'); op.bronca && op.bronca(`Has pujat a mà ${p.nom.toLowerCase()} (${p.pes} kg) al nivell ${u.niv}. El que pesa, a terra. Sobreesforç.`); }
                 res.ubicacions[w.porta.c.id] = codi;
+                if (p.fred) res.fred[w.porta.c.id] = Math.round(minut - w.porta.arribada);
                 (stock[codi] = stock[codi] || []).push({ prod: w.porta.c.prod, lot: w.porta.c.lot, cad: w.porta.c.cad || 9999, q: 1 });
                 w.porta.estat = 'ubicada'; w.porta.slot = codi;
                 fxText(w.x, w.y - 50, '📦 ' + codi, 'pos'); w.porta = null; pintaCarrega(); pintaRacks(); op.canvi && op.canvi();
@@ -215,16 +223,22 @@
               if (!sel) return;
               const { codi, lot, q } = sel, x = stock[codi].find(y => y.lot === lot);
               if (!x || x.q < q) return;
+              const vius = stock[codi].filter(y => y.prod === x.prod && y.q > 0);
+              if (tp === 'dinamic' && vius[0] !== x) return op.avis('En una estanteria dinàmica només pots agafar el palet del davant: el primer que va entrar.');
+              if (tp === 'compacte' && vius[vius.length - 1] !== x) return op.avis('En una estanteria compacta només pots agafar l\'últim palet que ha entrat (LIFO).');
               const u = E.parse(codi);
               if (u.niv > NIV.nivellsRack) return op.avis(`Amb el ${EQ.nom.toLowerCase()} no arribes al nivell ${u.niv}.`);
               treballa(0.8 + q * 0.5, () => {
-                x.q -= q; res.picking.push({ comanda: w.comanda.id, prod: x.prod, slot: codi, lot, q });
-                for (let i = 0; i < q; i++) w.pila.push(x.prod);
+                // En una onada, cada unitat va a la primera comanda que la necessita
+                let oid = w.comanda.id;
+                if (ECOM) { const o = w.ona.find(o => { const l = o.linies.find(l => l.prod === x.prod); return l && w.piles[o.id].filter(p => p === x.prod).length < l.q; }) || w.ona.find(o => o.linies.some(l => l.prod === x.prod)) || w.ona[0]; oid = o.id; }
+                x.q -= q; res.picking.push({ comanda: oid, prod: x.prod, slot: codi, lot, q });
+                for (let i = 0; i < q; i++) { w.pila.push(x.prod); if (ECOM) w.piles[oid].push(x.prod); }
                 fxText(w.x, w.y - 50, '+' + q + ' ' + D.productes[x.prod].nom, 'pos'); pintaCarrega(); pintaRacks(); op.canvi && op.canvi();
               });
             });
           }
-        });
+        }));
       },
       // Començar a preparar una comanda (agafa un palet buit)
       comanda(oid) {
@@ -233,13 +247,29 @@
         if (w.comanda && w.comanda.id !== oid) return op.avis('Ja estàs preparant una altra comanda: deixa-la al moll primer.');
         if (res.palets.some(p => p.comanda === oid)) return op.avis('Aquesta comanda ja és al moll.');
         if (w.comanda) return;
-        vesA('exp', () => treballa(1, () => { w.comanda = t.comandes.find(o => o.id === oid); w.pila = []; pintaCarrega(); op.canvi && op.canvi(); bombolla('Palet buit a punt'); }));
+        vesA('exp', () => treballa(1, () => {
+          w.comanda = t.comandes.find(o => o.id === oid); w.pila = [];
+          if (ECOM) { // Onada: fins a 3 comandes del mateix transportista que encara no han sortit
+            w.ona = [w.comanda].concat(t.comandes.filter(o => o.id !== oid && o.camio === w.comanda.camio && !res.palets.some(p => p.comanda === o.id))).slice(0, 3);
+            w.piles = {}; w.ona.forEach(o => { w.piles[o.id] = []; });
+          }
+          pintaCarrega(); op.canvi && op.canvi(); bombolla(ECOM ? 'Carro amb ' + w.ona.length + ' comandes' : 'Palet buit a punt');
+        }));
       },
       // Deixar el palet de la comanda en un moll d'expedició
       moll(n) {
         if (acabat || w.ocupat) return op.avis('Espera que el treballador acabi el que fa.');
-        if (!w.comanda) return op.avis('No portes cap comanda.');
+        if (CROSS && w.porta) return vesA('moll' + n, () => treballa(1.5, () => {
+          res.cross[w.porta.c.id] = { moll: n, minut: Math.round(minut) }; w.porta.estat = 'expedida'; w.porta.moll = n;
+          fxText(N['moll' + n][0] + 40, N['moll' + n][1] - 30, '✓ Al moll ' + n, 'pos'); w.porta = null; pintaCarrega(); pintaCamions(); op.canvi && op.canvi();
+        }));
+        if (!w.comanda) return op.avis(CROSS ? 'Primer agafa una càrrega revisada del moll 1.' : 'No portes cap comanda.');
         if (!w.pila.length) return op.avis('El palet és buit: primer fes el picking de la comanda.');
+        if (ECOM) return vesA('moll' + n, () => op.caixes(w.ona.filter(o => w.piles[o.id].length).map(o => ({ o, pila: w.piles[o.id] })), (caixes) => treballa(1 + w.ona.length, () => {
+          w.ona.forEach(o => { if (w.piles[o.id].length) res.palets.push({ comanda: o.id, pila: w.piles[o.id].slice(), moll: n, minut: Math.round(minut), caixa: caixes[o.id] }); });
+          fxText(N['moll' + n][0] + 40, N['moll' + n][1] - 30, '📦 ' + Object.keys(caixes).length + ' caixes al moll ' + n, 'pos');
+          w.comanda = null; w.ona = []; w.piles = {}; w.pila = []; pintaCarrega(); pintaCamions(); op.canvi && op.canvi();
+        })));
         vesA('moll' + n, () => treballa(2, () => {
           res.palets.push({ comanda: w.comanda.id, pila: w.pila.slice(), moll: n, minut: Math.round(minut) });
           const cam = t.camions.find(c => c.moll === n); if (cam) (res.carrega[cam.id] = res.carrega[cam.id] || []).push(w.comanda.id);
@@ -263,7 +293,7 @@
       acaba() { if (!acabat) fi(); },
       estat() {
         return { minut, pressa, porta: w.porta && w.porta.c, comanda: w.comanda, pila: w.pila.slice(), ocupat: !!w.ocupat,
-          carregues: carregues.map(x => ({ id: x.c.id, prod: x.c.prod, estat: x.estat, slot: x.slot, proveidor: x.rc.proveidor })),
+          carregues: carregues.map(x => ({ id: x.c.id, prod: x.c.prod, estat: x.estat, slot: x.slot, proveidor: x.rc.proveidor, desti: x.c.desti, moll: x.moll, fora: D.productes[x.c.prod].fred && ['acceptada', 'portant'].includes(x.estat) ? Math.round(minut - x.arribada) : null })), ona: w.ona.map(o => o.id),
           pendentsArribar: t.recepcions.filter(rc => !arribades.has(rc.id)).map(rc => ({ proveidor: rc.proveidor, arribada: rc.arribada })),
           palets: res.palets.slice(), res, stock };
       }

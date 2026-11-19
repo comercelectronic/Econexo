@@ -142,23 +142,29 @@
       // Comerç electrònic: moltes comandes petites (1-3 unitats) que recull el transportista
       const nCam = s.nivell >= 4 ? 2 : 1, nOrd = 4 + Math.min(4, (s.nivell - 2) * 2);
       for (let k = 0; k < nCam; k++) t.camions.push({ id: 'k' + (k + 1), moll: 2 + k, sortida: D.TORN_INICI + 270 + k * 75, ruta: [], transportista: k ? 'Transportista exprés' : 'Transportista estàndard' });
+      const reserva = {}, queda = (id) => E.estocDe(s, id) - (reserva[id] || 0);
       for (let i = 0; i < nOrd; i++) {
         const nl = 1 + Math.floor(r() * (s.nivell >= 3 ? 3 : 2));
-        const prods = barreja(r, D.PROD.filter(id => E.estocDe(s, id) >= 2 && (s.nivell >= 3 || !P(id).perill))).slice(0, nl);
+        const prods = barreja(r, D.PROD.filter(id => queda(id) >= 2 && (s.nivell >= 3 || !P(id).perill))).slice(0, nl);
+        prods.forEach(id => { reserva[id] = (reserva[id] || 0) + 1; });
         t.comandes.push({ id: 'o' + (i + 1), client: 'web', num: 4100 + Math.floor(r() * 5800), camio: t.camions[i % nCam].id, linies: prods.map(prod => ({ prod, q: 1 })) });
       }
     } else if (TQ.includes('picking')) {
       const nCam = TQ.includes('carrega') ? 2 : 1;
       const clients = barreja(r, D.CLIENTS);
       let ci = 0;
+      const reserva = {}, queda = (id) => E.estocDe(s, id) - (reserva[id] || 0);
       for (let k = 0; k < nCam; k++) {
         const nCli = TQ.includes('carrega') ? 2 : 1 + (s.nivell >= 3 ? 1 : 0);
         const ruta = clients.slice(ci, ci + nCli); ci += nCli;
         const cam = { id: 'k' + (k + 1), moll: 2 + k, sortida: D.TORN_INICI + 240 + k * 90 + (s.nivell <= 2 ? 60 : 0), ruta: ruta.map(c => c.id) };
         t.camions.push(cam);
         ruta.forEach(cl => {
-          const prods = barreja(r, D.PROD.filter(id => E.estocDe(s, id) >= 2 && (s.nivell >= 3 || !P(id).perill))).slice(0, 2 + Math.min(2, s.nivell - 1));
-          t.comandes.push({ id: 'o' + (t.comandes.length + 1), client: cl.id, camio: cam.id, linies: prods.map(prod => ({ prod, q: 1 + (r() < 0.35 ? 1 : 0) })) });
+          // Les botigues demanen sobretot el que caduca abans (el magatzem ho empeny cap a la venda)
+          const cand = D.PROD.filter(id => queda(id) >= 2 && (s.nivell >= 3 || !P(id).perill));
+          const urgent = cand.filter(id => P(id).cad && Math.min(...Object.values(s.stock).flat().filter(x => x.prod === id && x.q > 0).map(x => x.cad)) <= dia + 3);
+          const prods = [...new Set(barreja(r, urgent).concat(barreja(r, cand)))].slice(0, 2 + Math.min(2, s.nivell - 1));
+          t.comandes.push({ id: 'o' + (t.comandes.length + 1), client: cl.id, camio: cam.id, linies: prods.map(prod => { const q = 1 + (r() < 0.35 ? 1 : 0); reserva[prod] = (reserva[prod] || 0) + q; return { prod, q }; }) });
         });
       }
     }
@@ -219,7 +225,7 @@
         if (lliure && altre) pr.push('en aquesta ubicació ja hi ha ' + min(P(altre.prod).nom) + ': no barregis referències');
         else if (mc) pr.push('en aquest carril de l\'estanteria compacta ja hi ha ' + min(P(mc).nom) + ': cada carril és d\'una sola referència');
         if (pr.length) err.push(['ubicacio', `${p.nom} a ${u}: ${pr.join('; ')}.`]); else k.ubiOk++;
-        // Cadena de fred: temps fora del fred des que arriba al moll fins que és a la cambra
+        // Cadena de fred: temps fora del fred des que s'accepta al moll fins que és a la cambra
         const fora = res.fred[c.id];
         if (p.fred && fora != null && fora > D.FRED_MAX[p.fred]) { k.fred++; err.push(['fred', `${p.nom}: ha estat ${Math.round(fora)} minuts fora del fred (màxim ${D.FRED_MAX[p.fred]}). S'ha trencat la cadena de fred i s'ha de llençar. Els refrigerats i congelats, primer a la cambra.`]); return; }
         if (!c.problema || c.problema === 'sobrant') { s.stock[u] = s.stock[u] || []; s.stock[u].push({ prod: c.prod, lot: c.lot, cad: c.cad || 9999, q: 1 }); }
@@ -289,10 +295,16 @@
         else if (dem) bons.push(`Comanda al proveïdor de ${P(pc.prod).nom} a temps.`);
       });
     }
+    // La resta de l'equip (els altres torns) també prepara comandes: cada producte perd una càrrega, sempre el lot que caduca abans
+    if (M.mode !== 'cross') D.PROD.forEach(id => {
+      if (E.estocDe(s, id) < 3) return;
+      const lots = Object.values(s.stock).flat().filter(x => x.prod === id && x.q > 0).sort((a, b) => a.cad - b.cad);
+      if (lots[0]) lots[0].q--;
+    });
     // Caducats a l'estoc (mermes)
     let caducats = 0;
     Object.keys(s.stock).forEach(slot => s.stock[slot].forEach(x => { if (x.q > 0 && P(x.prod).cad && x.cad <= t.dia) { caducats += x.q; x.q = 0; } }));
-    if (caducats) err.push(['merma', `S'han fet malbé ${caducats} càrregues que han caducat a les prestatgeries. Amb FEFO no hauria passat.`]);
+    if (caducats) err.push(['merma', `S'han fet malbé ${caducats} càrregues que han caducat a les prestatgeries.${TQ.includes('picking') ? ' Amb FEFO no hauria passat.' : ' Avisa quan vegis lots a punt de caducar.'}`]);
     Object.keys(s.stock).forEach(slot => { s.stock[slot] = s.stock[slot].filter(x => x.q > 0); });
 
     // Notes

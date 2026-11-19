@@ -106,13 +106,13 @@
     ecom: { nom: 'Comerç electrònic', icona: '📦', mode: 'ecom', desc: 'Centre de comandes en línia: moltes comandes petites, picking per onades amb estanteries de picking, caixa a mida i hora de recollida del transportista.',
       prods: ['llibre', 'samarreta', 'auriculars', 'mobil', 'sabates', 'joguina', 'motxilla', 'cafetera', 'llum', 'esprai'],
       passadissos: { A: { tipus: 'picking' }, B: { tipus: 'picking' }, C: { tipus: 'convencional' } }, zones: ['perill'],
-      ubicacio: { llibre: 'A-01-1-A', samarreta: 'A-01-2-A', auriculars: 'A-02-2-A', mobil: 'A-02-3-A', joguina: 'A-03-1-A', motxilla: 'A-03-2-A', sabates: 'B-01-1-A', cafetera: 'C-01-1-A', llum: 'C-02-1-A', esprai: 'P-01-1-A' } },
+      ubicacio: { llibre: 'A-01-1-A', samarreta: 'A-01-2-A', auriculars: 'A-02-2-A', mobil: 'A-02-2-B', joguina: 'A-03-1-A', motxilla: 'A-03-2-A', sabates: 'B-01-1-A', cafetera: 'C-01-1-A', llum: 'C-02-1-A', esprai: 'P-01-1-A' } },
     recanvis: { nom: 'Recanvis i materials', icona: '🔩', mode: 'estoc', lliure: true, desc: 'Magatzem d\'un distribuïdor de ferreteria i construcció: peces petites en estanteries de picking, tubs i barres en cantilever, sacs en estanteria compacta i ubicació caòtica.',
       prods: ['cargols', 'filtres', 'rodaments', 'guants', 'tubs', 'barres', 'perfils', 'ciment', 'morter', 'cable', 'pintura', 'dissolvent'],
       passadissos: { A: { tipus: 'picking' }, B: { tipus: 'cantilever' }, C: { tipus: 'compacte', mods: { 4: 'convencional', 5: 'convencional', 6: 'convencional' } } }, zones: ['perill'], ubicacio: {} }
   };
   D.MAGATZEM_PER_DEFECTE = 'aliment';
-  // Temps màxim fora del fred (minuts de joc) des que arriba al moll fins que és a la cambra
+  // Temps màxim fora del fred (minuts de joc) des que s'accepta al moll fins que és a la cambra
   D.FRED_MAX = { refri: 40, conge: 25 };
   // Caixes del comerç electrònic: volum màxim que hi cap
   D.CAIXES = { S: { nom: 'Petita', vol: 2 }, M: { nom: 'Mitjana', vol: 4 }, L: { nom: 'Gran', vol: 8 } };
