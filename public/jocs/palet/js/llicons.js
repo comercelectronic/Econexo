@@ -39,6 +39,21 @@
     { id: 'perillosos', tema: ['ubicacio'], nivell: 3, web: 'fragiles-mercancias-peligrosas', titol: 'Mercaderies perilloses',
       text: 'Els productes amb pictograma de perill (corrosius, inflamables…) van a la zona de perillosos, ventilada i senyalitzada, separats dels aliments. La fitxa de dades de seguretat explica com emmagatzemar-los.',
       p: 'On trobes com s\'ha d\'emmagatzemar un producte químic?', o: ['A la fitxa de dades de seguretat', 'A la factura', 'A l\'albarà', 'Al codi de barres'], per: 'També hi ha els primers auxilis.' },
+    { id: 'estanteries', tema: ['ubicacio'], nivell: 1, mag: ['fred', 'recanvis', 'ecom'], web: 'sistemas-almacenaje', titol: 'Tipus d\'estanteria',
+      text: 'Convencional: accés directe a cada palet. Dinàmica: els palets llisquen i surt primer el que va entrar primer (FIFO). Mòbil: hi cap molt més, però cal obrir el passadís. Compacta (drive-in): molts palets d\'una sola referència; només surt l\'últim que ha entrat. Cantilever: càrregues llargues. Picking: peces petites que es preparen a mà.',
+      p: 'On guardaries feixos de tubs de 3 metres?', o: ['En una estanteria cantilever', 'En una estanteria compacta', 'En una estanteria de picking', 'En una estanteria dinàmica'], per: 'El cantilever té braços en voladís per a càrregues llargues.' },
+    { id: 'compacta', tema: ['ubicacio'], nivell: 1, mag: ['recanvis'], web: 'sistemas-almacenaje', titol: 'L\'estanteria compacta',
+      text: 'En una estanteria compacta (drive-in) el carretó entra dins del carril i només pot treure l\'últim palet que ha entrat (LIFO). Per això cada carril ha de ser d\'una sola referència i mai no s\'hi posen productes que caduquen.',
+      p: 'Què NO hauries de posar en una estanteria compacta?', o: ['Iogurts que caduquen', 'Molts palets de sacs de ciment', 'Palets d\'una sola referència', 'Mercaderia que no caduca'], per: 'Els primers palets quedarien atrapats i caducarien.' },
+    { id: 'cross', tema: ['cross'], nivell: 1, mag: ['cross'], web: 'almacen-funciones-tipos-zonas', titol: 'Cross-docking',
+      text: 'En una plataforma de cross-docking la mercaderia no s\'emmagatzema: entra pel moll de recepció, es revisa, es classifica per destinació i surt el mateix dia pel moll del camió que va a cada botiga. Redueix l\'estoc, però exigeix rapidesa i coordinació amb els horaris dels camions.',
+      p: 'Què caracteritza el cross-docking?', o: ['La mercaderia entra i surt el mateix dia sense ubicar-se', 'La mercaderia es guarda mesos', 'Només es fa picking per unitats', 'Tot és refrigerat'], per: 'És un magatzem de trànsit.' },
+    { id: 'ecom', tema: ['caixa', 'picking'], nivell: 2, mag: ['ecom'], web: 'embalaje-paletizacion-unidades-carga', titol: 'Comerç electrònic: onades i embalatge',
+      text: 'Al comerç electrònic hi ha moltes comandes petites. Per no caminar tant, se n\'agafen diverses alhora (picking per onades). Després cada comanda s\'embala en la caixa més petita on hi cap tot: una caixa massa gran gasta cartró i farciment i encareix el transport.',
+      p: 'Per què es fa el picking per onades?', o: ['Per recórrer menys camí preparant diverses comandes alhora', 'Perquè els clients ho demanen', 'Per fer servir caixes més grans', 'Perquè és obligatori per llei'], per: 'Agrupar comandes redueix els recorreguts.' },
+    { id: 'fredtemps', tema: ['fred'], nivell: 1, web: 'conservacion-perecederos-cadena-frio', titol: 'Temps fora del fred',
+      text: 'Un refrigerat o un congelat que espera massa al moll s\'escalfa: s\'ha trencat la cadena de fred i s\'ha de llençar. Quan arriba un camió, revisa primer els productes de fred i, un cop acceptats, porta\'ls directament a la cambra abans de revisar la resta.',
+      p: 'Arriba un camió amb secs i congelats. Què fas primer?', o: ['Revisar i ubicar els congelats', 'Ubicar els secs, que són més', 'Esperar que arribi un altre camió', 'Deixar-ho tot al moll'], per: 'Els productes de fred no poden esperar.' },
     { id: 'inventari', tema: ['inventari'], nivell: 5, web: 'inventarios-mermas-diferencias', titol: 'Inventari i punt de comanda',
       text: 'Al recompte, compta el que hi ha de veritat, no el que diu el sistema: la diferència s\'ajusta i se\'n busca la causa. Demana al proveïdor quan l\'estoc arriba al punt de comanda = consum diari × termini + estoc de seguretat.',
       p: 'Consum de 4 al dia, termini de 3 dies i seguretat de 2. Punt de comanda?', o: ['14', '12', '9', '7'], per: '4 × 3 + 2 = 14.' }
@@ -46,7 +61,8 @@
   L.forEach(l => { l.url = WEB + l.web + '/'; l.c = 0; });
   const API = { llicons: L, per: (id) => L.find(l => l.id === id),
     // Lliçons que toquen després d'un torn: les dels temes amb errors (i que encara no s'han respost bé)
-    perErrors: (h, fetes) => { const temes = new Set(h.errors.concat(h.greus).map(e => e[0])); return L.filter(l => l.tema.some(t => temes.has(t)) && l.nivell <= h.nivell && !(fetes[l.id] && fetes[l.id].ok)).slice(0, 2); },
-    deNivell: (n) => L.filter(l => l.nivell === n) };
+    perErrors: (h, fetes, mag) => { const temes = new Set(h.errors.concat(h.greus).map(e => e[0])); return L.filter(l => (!l.mag || l.mag.includes(mag)) && l.tema.some(t => temes.has(t)) && l.nivell <= h.nivell && !(fetes[l.id] && fetes[l.id].ok)).sort((a, b) => (b.mag ? 1 : 0) - (a.mag ? 1 : 0)).slice(0, 2); },
+    // Lliçons per començar un nivell (les del magatzem, primer)
+    deNivell: (n, mag) => L.filter(l => (!l.mag || l.mag.includes(mag)) && (l.nivell === n || (n === 1 && l.mag && l.mag.includes(mag)))).filter(l => mag !== 'cross' || ['cross', 'recepcio', 'seguretat', 'transpalet'].includes(l.id)) };
   if (typeof module !== 'undefined' && module.exports) module.exports = API; else root.PLL = API;
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -51,7 +51,8 @@
     }, { tancable: true });
   }
   const carrega = () => { try { return JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { return null; } };
-  const nomClient = (id) => D.CLIENTS.find(c => c.id === id).nom;
+  const nomClient = (id) => (D.CLIENTS.find(c => c.id === id) || {}).nom || id;
+  const nomComanda = (o) => o.client === 'web' ? 'Comanda web #' + o.num : nomClient(o.client);
 
   /* ---------- Peces comunes ---------- */
   function montse(cls) { return `<span class="montse ${cls || ''}" aria-hidden="true"><svg viewBox="0 0 60 60" width="56" height="56"><circle cx="30" cy="30" r="29" fill="#2d2350"/><circle cx="30" cy="25" r="12" fill="#f0c7a0"/><path d="M17 23c0-10 8-15 13-15s14 4 13 16c-3-5-8-8-13-8s-10 3-13 7z" fill="#5a3825"/><path d="M12 56c2-12 9-17 18-17s16 5 18 17" fill="#9B7AE8"/><circle cx="25" cy="25" r="1.6" fill="#222"/><circle cx="35" cy="25" r="1.6" fill="#222"/><path d="M26 31q4 3 8 0" stroke="#7a3b2e" stroke-width="1.6" fill="none"/></svg></span>`; }
@@ -84,7 +85,7 @@
       <p class="lema">Fes de mosso de magatzem: rep la mercaderia, ubica-la on toca, prepara les comandes i que el camió no surti sense el palet. La cap t'ho valorarà cada dia.</p>
       <div class="compte-box">${compte ? `👤 <span><b>${esc(compte.nom)}</b> <small class="muted">${esc(compte.usuari)} · grup ${esc(compte.classe)}</small></span><button class="btn small ghost" data-a="surt">Tancar la sessió</button>` : `<span class="small">Entra amb el teu usuari perquè la partida es desi i el professor en vegi el progrés.</span><button class="btn small prim" data-a="compte">👤 Entrar o crear compte</button>`}</div>
       <nav class="menu">
-        ${pot ? `<button class="btn prim big" data-a="continua">▶ Continua <small>${esc(desat.config.nom)} · ${esc(D.NIVELLS[desat.nivell - 1].nom)} · torn ${desat.torn}</small></button>` : ''}
+        ${pot ? `<button class="btn prim big" data-a="continua">▶ Continua <small>${esc(desat.config.nom)} · ${(D.MAGATZEMS[desat.config.magatzem] || D.MAGATZEMS.aliment).icona} ${esc(D.NIVELLS[desat.nivell - 1].nom)} · torn ${desat.torn}</small></button>` : ''}
         <button class="btn ${pot ? '' : 'prim'} big" data-a="juga">📦 Juga <small>comença de mosso</small></button>
         <button class="btn big" data-a="ajuda">❓ Com es juga</button>
         <button class="btn big" data-a="docent">🧑‍🏫 Mode docent <small>progrés dels alumnes</small></button>
@@ -94,17 +95,20 @@
     $$('[data-a]').forEach(b => b.onclick = () => ({ continua: () => { S = desat; joc(); }, juga: configurar, ajuda, docent, compte: () => modalCompte('entrar'), surt: () => { desaCompte(null); portada(); } })[b.dataset.a]());
   }
   function configurar() {
-    let nivell = 1;
+    let nivell = 1, mag = D.MAGATZEM_PER_DEFECTE;
     const draw = () => {
       app.innerHTML = `<main class="config"><button class="btn ghost small" id="enr">← Tornar</button><h1>Primer dia a la feina</h1>
         <label class="f">El teu nom<input class="inp" id="nom" maxlength="30" placeholder="Ex.: Laia"></label>
+        <h2>A quin magatzem treballes?</h2>
+        <div class="mags">${Object.entries(D.MAGATZEMS).map(([k, M]) => `<button class="niv ${k === mag ? 'on' : ''}" data-mag="${k}"><b>${M.icona} ${esc(M.nom)}</b><span class="small muted">${esc(M.desc)}</span><span class="small">${[...new Set(Object.values(M.passadissos).flatMap(p => [p.tipus].concat(Object.values(p.mods || {}))))].filter(x => x !== 'cap').map(x => D.ESTANTERIES[x].nom).join(' · ') || 'Sense estanteries'}</span></button>`).join('')}</div>
         <h2>On comences?</h2><p class="muted small">Normalment es comença de mosso i la cap t'ascendeix. Per practicar una part concreta, pots començar en un altre nivell.</p>
         <div class="nivells">${D.NIVELLS.map(N => `<button class="niv ${N.n === nivell ? 'on' : ''}" data-n="${N.n}"><b>${N.n}. ${esc(N.nom)}</b><span class="small muted">${esc(N.desc)}</span></button>`).join('')}</div>
         <div class="row" style="margin-top:18px"><button class="btn prim big" id="go">Entrar al magatzem →</button></div></main>`;
       $('#enr').onclick = portada;
       $$('[data-n]').forEach(b => b.onclick = () => { nivell = +b.dataset.n; const v = $('#nom').value; draw(); $('#nom').value = v; });
+      $$('[data-mag]').forEach(b => b.onclick = () => { mag = b.dataset.mag; const v = $('#nom').value; draw(); $('#nom').value = v; });
       if (compte) $('#nom').value = compte.nom.split(' ')[0];
-      $('#go').onclick = () => { const nom = $('#nom').value.trim().slice(0, 30) || 'Treballador'; S = E.crearPartida({ nom, nivell, llavor: (Date.now() % 2e9) | 1 }); desa(); joc(); };
+      $('#go').onclick = () => { const nom = $('#nom').value.trim().slice(0, 30) || 'Treballador'; S = E.crearPartida({ nom, nivell, magatzem: mag, llavor: (Date.now() % 2e9) | 1 }); desa(); joc(); };
     };
     draw();
   }
@@ -123,7 +127,7 @@
   function joc() {
     aturaTorn();
     if (!S) return portada();
-    desa();
+    E.mag(S); desa();
     if (S.fase === 'final') return final();
     if (S.fase === 'resultat') return resultat();
     if (S.fase === 'torn') S.fase = 'briefing';   // un torn a mitges es torna a començar
@@ -131,7 +135,7 @@
   }
   function capcalera(extra) {
     const N = E.nivell(S);
-    return `<header class="top">${logo()}<div class="info"><span class="chip">📅 ${E.data(S.dia.dia)} · torn ${S.torn}</span><span class="chip niv-chip">${esc(N.nom)}</span><span class="chip">${esc(S.config.nom)}</span>${avisos()}${extra || ''}</div>
+    return `<header class="top">${logo()}<div class="info"><span class="chip">📅 ${E.data(S.dia.dia)} · torn ${S.torn}</span><span class="chip" title="${esc(D.MAG.nom)}">${D.MAG.icona} <span class="amaga-mobil">${esc(D.MAG.nom)}</span></span><span class="chip niv-chip">${esc(N.nom)}</span><span class="chip">${esc(S.config.nom)}</span>${avisos()}${extra || ''}</div>
       <div class="acc"><button class="btn small ghost" id="bAj" aria-label="Com es juga">❓</button><button class="btn small ghost" id="bMenu" aria-label="Menú">☰</button></div></header>`;
   }
   function lligaCap() { $('#bAj').onclick = ajuda; $('#bMenu').onclick = () => { desa(); portada(); }; }
@@ -141,13 +145,16 @@
     const t = S.dia, N = E.nivell(S);
     const primer = S.historial.filter(h => h.nivell === S.nivell).length === 0;
     const rec = t.recepcions.map(rc => `<li>🚚 <b>${E.hora(rc.arribada)}</b> · camió de <b>${esc(rc.proveidor)}</b> al moll 1 (${rc.carregues.length} càrregues)</li>`).join('');
-    const cam = t.camions.map(c => `<li>🚛 Surt a les <b>${E.hora(c.sortida)}</b> del <b>moll ${c.moll}</b>: ${c.ruta.map(nomClient).join(' → ')}</li>`).join('');
+    const cam = t.camions.map(c => `<li>🚛 Surt a les <b>${E.hora(c.sortida)}</b> del <b>moll ${c.moll}</b>: ${c.transportista ? esc(c.transportista) : c.ruta.map(nomClient).join(' → ')}</li>`).join('');
+    const tipus = [...new Set(D.PASSADISSOS.flatMap(p => [p.tipus].concat(Object.values(p.mods))))].filter(x => x !== 'cap');
     const frase = primer && S.torn === 1 ? D.FRASES.benvinguda[0] : primer ? `Avui comences de ${N.nom.toLowerCase()}. ${N.desc}` : S.darrer && S.darrer.veredicte === 'bronca' ? 'Espero que avui vagi millor que ahir. Vigila el que et vaig dir.' : 'Bon dia! Aquí tens la feina d\'avui.';
     app.innerHTML = `<div class="pant">${capcalera()}<main class="brief">
       ${diu(esc(frase))}
-      <section class="sec"><h2>Feina d'avui</h2><ul class="llista">${rec}${cam}${t.comandes.length ? `<li>📋 ${t.comandes.length} comandes de botigues per preparar</li>` : ''}${t.inventari ? `<li>🔢 Recompte de ${t.inventari.recomptes.length} ubicacions i revisió del punt de comanda</li>` : ''}</ul>
-        <p class="small muted">El torn és de 8:00 a 14:00. Equip: ${esc(D.EQUIPS[N.equip].nom)}. ${N.lliure ? 'Ubicació lliure: tries tu on va cada càrrega.' : 'Ubicació fixa: el sistema et diu on va cada càrrega.'}</p></section>
-      ${primer ? `<section class="sec"><h2>Abans de començar</h2><div class="ll-cards">${LL.deNivell(S.nivell).map(l => `<button class="ll-card" data-ll="${l.id}"><b>${esc(l.titol)}</b><span class="small muted">${esc(l.text.slice(0, 90))}…</span></button>`).join('')}</div></section>` : ''}
+      <section class="sec mag-card"><h2>${D.MAG.icona} ${esc(D.MAG.nom)}</h2><p class="small">${esc(D.MAG.desc)}</p>
+        ${tipus.length ? `<div class="estants">${tipus.map(x => `<div class="estant t-${x}"><b>${esc(D.ESTANTERIES[x].nom)}</b><span class="small muted">${esc(D.ESTANTERIES[x].desc)}</span><span class="small">Passadís ${D.PASSADISSOS.filter(p => p.tipus === x || Object.values(p.mods).includes(x)).map(p => p.id).join(', ')}</span></div>`).join('')}</div>` : ''}</section>
+      <section class="sec"><h2>Feina d'avui</h2><ul class="llista">${rec}${cam}${D.MAG.mode === 'cross' ? '<li>🔀 Classifica cada càrrega pel seu destí i porta-la al moll del camió que hi va abans que surti</li>' : ''}${t.comandes.length ? `<li>📋 ${t.comandes.length} comandes ${D.MAG.mode === 'ecom' ? 'web per preparar per onades i embalar' : 'de botigues per preparar'}</li>` : ''}${t.inventari ? `<li>🔢 Recompte de ${t.inventari.recomptes.length} ubicacions i revisió del punt de comanda</li>` : ''}</ul>
+        <p class="small muted">El torn és de 8:00 a 14:00. Equip: ${esc(D.EQUIPS[N.equip].nom)}. ${D.MAG.mode === 'cross' ? 'Aquí no s\'ubica res: tot surt el mateix dia.' : E.lliure(S) ? 'Ubicació lliure (caòtica): tries tu on va cada càrrega i el sistema la registra.' : 'Ubicació fixa: el sistema et diu on va cada càrrega.'}${D.MAG.prods.some(id => P(id).fred) ? ` Des que acceptes un producte de fred fins que és a la cambra, els refrigerats poden estar com a molt ${D.FRED_MAX.refri} minuts fora del fred, i els congelats ${D.FRED_MAX.conge}.` : ''}</p></section>
+      ${primer ? `<section class="sec"><h2>Abans de començar</h2><div class="ll-cards">${LL.deNivell(S.nivell, D.MAG_ID).map(l => `<button class="ll-card" data-ll="${l.id}"><b>${esc(l.titol)}</b><span class="small muted">${esc(l.text.slice(0, 90))}…</span></button>`).join('')}</div></section>` : ''}
       <div class="row" style="justify-content:center;margin:20px 0"><button class="btn prim big" id="go">Començar el torn ▶</button></div></main></div>`;
     lligaCap();
     $$('[data-ll]').forEach(b => b.onclick = () => llico(LL.per(b.dataset.ll)));
@@ -160,7 +167,7 @@
   function torn() {
     aturaTorn(); S.fase = 'torn';
     const N = E.nivell(S), t = S.dia;
-    const tabs = [['rec', '📥 Recepció'], ['com', '📋 Comandes'], ['inv', '🔢 Inventari'], ['sgm', '🔎 SGM']].filter(([k]) => k !== 'com' || t.comandes.length).filter(([k]) => k !== 'inv' || t.inventari);
+    const tabs = [['rec', '📥 Recepció'], ['com', D.MAG.mode === 'cross' ? '🚛 Camions' : '📋 Comandes'], ['inv', '🔢 Inventari'], ['sgm', '🔎 SGM']].filter(([k]) => k !== 'com' || t.comandes.length || D.MAG.mode === 'cross').filter(([k]) => k !== 'inv' || t.inventari).filter(([k]) => k !== 'sgm' || D.MAG.mode !== 'cross');
     if (!tabs.some(x => x[0] === panellTab)) panellTab = 'rec';
     app.innerHTML = `<div class="pant torn">${capcalera(`<span class="chip rellotge" id="hora">🕗 08:00</span>`)}
       <div class="hud"><div class="seg" role="group" aria-label="Velocitat"><button data-v="0" aria-label="Pausa">⏸</button><button data-v="1" class="on">▶</button><button data-v="2">▶▶</button><button data-v="3">▶▶▶</button></div>
@@ -174,7 +181,7 @@
     ctrl = PS.torn($('#escena'), S, {
       avis: (txt) => toast(txt),
       bronca: (txt) => toast(`${montse('petita')} <span><b>Montse:</b> ${esc(txt)}</span>`, 'bronca', 6000),
-      inspecciona, mostraModul,
+      inspecciona, mostraModul, caixes: triaCaixes,
       canvi: (tic) => { if (!tic || panellTab !== 'sgm') pintaPanell(); pintaPorta(); },
       rellotge: (m) => { const h = $('#hora'); if (h) h.textContent = '🕗 ' + E.hora(m); const b = $('#barra'); if (b) b.style.width = ((m - D.TORN_INICI) / (D.TORN_FI - D.TORN_INICI) * 100) + '%'; },
       onFi: (res) => { const h = E.puntua(S, res); ctrl && ctrl.destrueix(); ctrl = null; desa(); desaNuvol(); resultat(h); }
@@ -192,30 +199,34 @@
   function pintaPorta() {
     if (!ctrl) return; const st = ctrl.estat(), el = $('#porta'); if (!el) return;
     $('#terra').hidden = !st.porta;
-    el.innerHTML = st.porta ? `<b>Portes:</b> ${PS.caixa(st.porta.prod, 16)} ${esc(P(st.porta.prod).nom)}${E.nivell(S).lliure ? '' : ` → <b class="cod">${D.UBICACIO[st.porta.prod]}</b>`}<br><span class="small muted">Toca la prestatgeria on va.</span>`
-      : st.comanda ? `<b>Comanda:</b> ${esc(nomClient(st.comanda.client))} · palet amb ${st.pila.length} càrregues<br><span class="small muted">Toca les prestatgeries i, al final, «Deixar al moll ${S.dia.camions.find(c => c.id === st.comanda.camio).moll}».</span>`
+    const portant = st.carregues.find(x => x.estat === 'portant') || {}, crossD = portant.desti, fora = st.porta && P(st.porta.prod).fred ? portant.fora : null;
+    el.innerHTML = st.porta ? `<b>Portes:</b> ${PS.caixa(st.porta.prod, 16)} ${esc(P(st.porta.prod).nom)}${D.MAG.mode === 'cross' ? ` → <b>${esc(nomClient(crossD))}</b><br><span class="small muted">Porta-la al moll del camió que va a aquesta botiga (pestanya Camions).</span>` : (E.lliure(S) ? '' : ` → <b class="cod">${D.UBICACIO[st.porta.prod]}</b>`) + '<br><span class="small muted">Toca la prestatgeria on va.</span>'}${fora != null ? `<br><span class="${fora > D.FRED_MAX[P(st.porta.prod).fred] * 0.7 ? 'neg' : 'small'}">❄ ${fora} min fora del fred (màx. ${D.FRED_MAX[P(st.porta.prod).fred]})</span>` : ''}`
+      : st.comanda ? (st.ona.length ? `<b>Onada:</b> ${st.ona.length} comandes al carro · ${st.pila.length} unitats<br><span class="small muted">Recull totes les línies i, al final, «Deixar al moll ${S.dia.camions.find(c => c.id === st.comanda.camio).moll}» per embalar-les.</span>` : `<b>Comanda:</b> ${esc(nomComanda(st.comanda))} · palet amb ${st.pila.length} càrregues<br><span class="small muted">Toca les prestatgeries i, al final, «Deixar al moll ${S.dia.camions.find(c => c.id === st.comanda.camio).moll}».</span>`)
       : `<span class="small muted">Mans lliures. Toca una càrrega del moll o comença una comanda.</span>`;
   }
   function pintaPanell() {
     if (!ctrl) return; const st = ctrl.estat(), c = $('#pcont'), t = S.dia, N = E.nivell(S); if (!c) return;
     if (panellTab === 'rec') {
-      const txt = { moll: '<span class="tag">Per revisar</span>', acceptada: '<span class="tag groc">Per ubicar</span>', portant: '<span class="tag blau">La portes</span>', ubicada: '<span class="tag verd">Ubicada</span>', rebutjada: '<span class="tag vermell">Rebutjada</span>' };
+      const txt = { moll: '<span class="tag">Per revisar</span>', acceptada: `<span class="tag groc">${D.MAG.mode === 'cross' ? 'Per classificar' : 'Per ubicar'}</span>`, portant: '<span class="tag blau">La portes</span>', ubicada: '<span class="tag verd">Ubicada</span>', rebutjada: '<span class="tag vermell">Rebutjada</span>', expedida: '<span class="tag verd">Al moll</span>' };
       c.innerHTML = `<p class="small muted">Toca una càrrega per revisar-la; si ja està acceptada, per agafar-la.</p>
-        <ul class="tasques">${st.carregues.map(x => `<li><button class="tasca" data-c="${x.id}" ${['ubicada', 'rebutjada', 'portant'].includes(x.estat) ? 'disabled' : ''}>${PS.caixa(x.prod, 18)}<span>${esc(P(x.prod).nom)}${x.slot ? ` <b class="cod">${x.slot}</b>` : ''}</span>${txt[x.estat]}</button></li>`).join('') || '<li class="muted small">Encara no ha arribat cap camió.</li>'}</ul>
+        <ul class="tasques">${st.carregues.map(x => `<li><button class="tasca" data-c="${x.id}" ${['ubicada', 'rebutjada', 'portant', 'expedida'].includes(x.estat) ? 'disabled' : ''}>${PS.caixa(x.prod, 18)}<span>${esc(P(x.prod).nom)}${x.slot ? ` <b class="cod">${x.slot}</b>` : ''}${x.desti && x.estat !== 'moll' ? `<br><small class="muted">→ ${esc(nomClient(x.desti))}${x.moll ? ' · moll ' + x.moll : ''}</small>` : ''}${x.fora != null && x.estat !== 'moll' ? `<br><small class="${x.fora > D.FRED_MAX[P(x.prod).fred] * 0.7 ? 'neg' : 'muted'}">❄ ${x.fora} min fora del fred</small>` : P(x.prod).fred && x.estat === 'moll' ? '<br><small class="muted">❄ Fred: un cop acceptat, a la cambra</small>' : ''}</span>${txt[x.estat]}</button></li>`).join('') || '<li class="muted small">Encara no ha arribat cap camió.</li>'}</ul>
         ${st.pendentsArribar.map(p => `<p class="small muted">🚚 ${esc(p.proveidor)} arribarà a les ${E.hora(p.arribada)}.</p>`).join('')}`;
       $$('[data-c]', c).forEach(b => b.onclick = () => ctrl.carrega(b.dataset.c));
+    } else if (panellTab === 'com' && D.MAG.mode === 'cross') {
+      c.innerHTML = `<p class="small muted">Cada camió va a unes botigues. Porta cada càrrega al moll del camió que va a la seva botiga, abans que surti.</p>` + t.camions.map(cam => `<div class="cam-card"><b>🚛 Moll ${cam.moll} · surt a les ${E.hora(cam.sortida)}</b><span>${cam.ruta.map(nomClient).join(' · ')}</span>
+        <span class="small muted">${Object.values(st.res.cross).filter(x => x.moll === cam.moll).length} càrregues al moll</span></div>`).join('');
     } else if (panellTab === 'com') {
-      c.innerHTML = t.camions.map(cam => `<div class="cam-card"><b>🚛 Moll ${cam.moll} · surt a les ${E.hora(cam.sortida)}</b><span class="small muted">Repartiment: ${cam.ruta.map(nomClient).map(x => x.replace('Botiga de ', '')).join(' → ')}</span>
-        ${t.comandes.filter(o => o.camio === cam.id).map(o => { const fet = st.palets.find(p => p.comanda === o.id), actiu = st.comanda && st.comanda.id === o.id, picks = st.res.picking.filter(p => p.comanda === o.id);
-          return `<div class="com ${fet ? 'feta' : ''} ${actiu ? 'activa' : ''}"><div class="row" style="justify-content:space-between"><b>${esc(nomClient(o.client))}</b>${fet ? `<span class="tag verd">Al moll ${fet.moll} · ${E.hora(fet.minut)}</span>` : actiu ? '<span class="tag blau">Preparant</span>' : `<button class="btn small" data-o="${o.id}">Començar</button>`}</div>
-            <ul class="linies">${o.linies.map(l => { const q = picks.filter(p => p.prod === l.prod).reduce((a, p) => a + p.q, 0); return `<li class="${q >= l.q ? 'ok' : ''}">${PS.caixa(l.prod, 14)} ${l.q} × ${esc(P(l.prod).nom)} ${N.lliure ? '' : `<b class="cod">${D.UBICACIO[l.prod]}</b>`} ${q ? `<span class="small">(${q})</span>` : ''}</li>`; }).join('')}</ul></div>`; }).join('')}</div>`).join('');
+      c.innerHTML = (D.MAG.mode === 'ecom' ? '<p class="small muted">Comença una onada: el carro agafa fins a 3 comandes del mateix transportista. Al moll, tria la caixa de cada comanda: la més petita on hi càpiga tot.</p>' : '') + t.camions.map(cam => `<div class="cam-card"><b>🚛 Moll ${cam.moll} · ${cam.transportista ? esc(cam.transportista) + ' · recull' : 'surt'} a les ${E.hora(cam.sortida)}</b>${cam.transportista ? '' : `<span class="small muted">Repartiment: ${cam.ruta.map(nomClient).map(x => x.replace('Botiga de ', '')).join(' → ')}</span>`}
+        ${t.comandes.filter(o => o.camio === cam.id).map(o => { const fet = st.palets.find(p => p.comanda === o.id), actiu = (st.comanda && st.comanda.id === o.id) || st.ona.includes(o.id), picks = st.res.picking.filter(p => p.comanda === o.id);
+          return `<div class="com ${fet ? 'feta' : ''} ${actiu ? 'activa' : ''}"><div class="row" style="justify-content:space-between"><b>${esc(nomComanda(o))}</b>${fet ? `<span class="tag verd">Al moll ${fet.moll} · ${E.hora(fet.minut)}</span>` : actiu ? '<span class="tag blau">Preparant</span>' : `<button class="btn small" data-o="${o.id}">${D.MAG.mode === 'ecom' ? 'Començar onada' : 'Començar'}</button>`}</div>
+            <ul class="linies">${o.linies.map(l => { const q = picks.filter(p => p.prod === l.prod).reduce((a, p) => a + p.q, 0); return `<li class="${q >= l.q ? 'ok' : ''}">${PS.caixa(l.prod, 14)} ${l.q} × ${esc(P(l.prod).nom)} ${E.lliure(S) ? '' : `<b class="cod">${D.UBICACIO[l.prod]}</b>`} ${q ? `<span class="small">(${q})</span>` : ''}</li>`; }).join('')}</ul></div>`; }).join('')}</div>`).join('');
       $$('[data-o]', c).forEach(b => b.onclick = () => ctrl.comanda(b.dataset.o));
     } else if (panellTab === 'inv') {
       const inv = t.inventari, res = st.res.inventari;
       c.innerHTML = `<h3 class="h3">Recompte</h3><p class="small muted">Toca la prestatgeria per veure què hi ha i escriu quantes càrregues hi has comptat.</p>
         ${inv.recomptes.map(rc => `<label class="f-inline">${rc.slot} <span class="small muted">(sistema: ${rc.teoric})</span><input class="inp" type="number" min="0" data-rc="${rc.slot}" value="${res.recomptes[rc.slot] != null ? res.recomptes[rc.slot] : ''}"></label>`).join('')}
         <h3 class="h3">Comandes al proveïdor</h3><p class="small muted">Punt de comanda = consum diari × termini + seguretat. Demana només el que toqui.</p>
-        ${inv.puntComanda.map(pc => `<label class="f-inline">${esc(P(pc.prod).nom)} <span class="small muted">estoc ${E.estocDe(S, pc.prod)} · consum ${pc.consumDia}/dia · termini ${pc.termini} dies · seguretat ${pc.seguretat}</span><input class="inp" type="number" min="0" data-pc="${pc.prod}" value="${res.comandes[pc.prod] || ''}" placeholder="0"></label>`).join('')}`;
+        ${inv.puntComanda.map(pc => `<label class="f-inline">${esc(P(pc.prod).nom)} <span class="small muted">estoc ${E.estocDe({ stock: ctrl ? ctrl.estat().stock : S.stock }, pc.prod)} · consum ${pc.consumDia}/dia · termini ${pc.termini} dies · seguretat ${pc.seguretat}</span><input class="inp" type="number" min="0" data-pc="${pc.prod}" value="${res.comandes[pc.prod] || ''}" placeholder="0"></label>`).join('')}`;
       $$('[data-rc]', c).forEach(i => i.onchange = () => ctrl.recompte(i.dataset.rc, i.value === '' ? null : +i.value));
       $$('[data-pc]', c).forEach(i => i.onchange = () => ctrl.demana(i.dataset.pc, +i.value || 0));
     } else if (panellTab === 'sgm') {
@@ -248,7 +259,7 @@
   /* ---------- Finestra: prestatgeria (vista frontal) ---------- */
   function mostraModul(o, cb) {
     ctrl && ctrl.pausa(true);
-    const niv = o.pas === 'F' || o.pas === 'P' ? 2 : D.NIVELLS_RACK;
+    const niv = E.nivellsDe(o.pas, o.mod), tp = (o.pas === 'F' || o.pas === 'P') ? 'convencional' : D.tipusDe(o.pas, o.mod), ES = D.ESTANTERIES[tp];
     const cel = (n, pos) => {
       const codi = E.codi(o.pas, o.mod, n, pos), cont = (o.stock[codi] || []).filter(x => x.q > 0), q = cont.reduce((a, x) => a + x.q, 0), noArriba = n > o.nivellsRack;
       const prods = [...new Set(cont.map(x => x.prod))];
@@ -259,7 +270,7 @@
     };
     let files = ''; for (let n = niv; n >= 1; n--) files += `<div class="fila"><span class="nlbl">Nivell ${n}</span>${D.POSICIONS.map(pos => cel(n, pos)).join('')}</div>`;
     const tit = o.mode === 'ubicar' ? `On deixes ${esc(P(o.prod).nom)}?` : o.mode === 'picking' ? 'Agafa el que demana la comanda' : 'Prestatgeria';
-    modal(`<h2>🗄️ ${o.pas}-${String(o.mod).padStart(2, '0')} · ${tit}</h2>
+    modal(`<h2>🗄️ ${o.pas}-${String(o.mod).padStart(2, '0')} · ${tit}</h2><p class="small"><span class="tag t-${tp}">${esc(ES.nom)}</span> <span class="muted">${esc(ES.desc)}</span></p>
       ${o.mode === 'ubicar' && o.fixa ? `<p class="small">El sistema indica: <b class="cod">${D.UBICACIO[o.prod]}</b></p>` : o.mode === 'ubicar' ? `<p class="small muted">Ubicació lliure. Recorda: pes ${P(o.prod).pes} kg${P(o.prod).fragil ? ', fràgil' : ''}${P(o.prod).fred ? ', ' + (P(o.prod).fred === 'conge' ? 'congelat' : 'refrigerat') : ''}${P(o.prod).perill ? ', perillós' : ''}${P(o.prod).quimic ? ', químic de neteja' : ''}.</p>` : ''}
       <div class="rack-front">${files}<div class="terra-r"></div></div><div id="lots"></div>
       <div class="row" style="margin-top:12px"><button class="btn ghost" id="tc">Tancar</button></div>`, (m) => {
@@ -274,11 +285,23 @@
         const lots = (o.stock[codi] || []).filter(x => x.q > 0);
         if (!lots.length) return toast('Aquesta ubicació és buida.', 'neg');
         $('#lots', m).innerHTML = `<h3 class="h3">Lots a ${codi}</h3><table class="t"><thead><tr><th>Producte</th><th>Lot</th><th>Caducitat</th><th class="n">Hi ha</th><th></th></tr></thead><tbody>
-          ${lots.map((x, i) => `<tr><td>${PS.caixa(x.prod, 14)} ${esc(P(x.prod).nom)}</td><td>${x.lot}</td><td>${x.cad < 9000 && P(x.prod).cad ? E.data(x.cad) : '—'}</td><td class="n">${x.q}</td><td><div class="row" style="flex-wrap:nowrap"><input class="inp q" type="number" min="1" max="${x.q}" value="1" data-qi="${i}" aria-label="Quantitat"><button class="btn small prim" data-li="${i}">Agafar</button></div></td></tr>`).join('')}</tbody></table>`;
+          ${lots.map((x, i) => { const vius = lots.filter(y => y.prod === x.prod), bloq = (tp === 'dinamic' && vius[0] !== x) || (tp === 'compacte' && vius[vius.length - 1] !== x); return `<tr class="${bloq ? 'bloq' : ''}"><td>${PS.caixa(x.prod, 14)} ${esc(P(x.prod).nom)}</td><td>${x.lot}</td><td>${x.cad < 9000 && P(x.prod).cad ? E.data(x.cad) : '—'}</td><td class="n">${x.q}</td><td><div class="row" style="flex-wrap:nowrap"><input class="inp q" type="number" min="1" max="${x.q}" value="1" data-qi="${i}" aria-label="Quantitat">${bloq ? `<span class="small muted">${tp === 'dinamic' ? 'Darrere: surt quan surti el del davant' : 'Tapat per l\'últim palet'}</span>` : `<button class="btn small prim" data-li="${i}">Agafar</button>`}</div></td></tr>`; }).join('')}</tbody></table>`;
         $$('[data-li]', m).forEach(bb => bb.onclick = () => { const x = lots[+bb.dataset.li], q = Math.max(1, Math.min(x.q, +$(`[data-qi="${bb.dataset.li}"]`, m).value || 1)); tanca({ codi, lot: x.lot, q }); });
       });
     }, { ample: true, tancable: true, onTanca: () => { ctrl && ctrl.pausa(false); cb && cb(null); } });
   }
+  function triaCaixes(llista, cb) {
+    ctrl && ctrl.pausa(true);
+    const tria = {};
+    modal(`<h2>📦 Embalatge</h2><p class="small muted">Tria per a cada comanda la caixa més petita on hi càpiga tot. ${Object.entries(D.CAIXES).map(([k, c]) => `<b>${c.nom}</b>: volum fins a ${c.vol}`).join(' · ')}.</p>
+      ${llista.map(({ o, pila }) => `<div class="emb"><b>${esc(nomComanda(o))}</b><span class="small">${pila.map(p => `${PS.caixa(p, 14)} ${esc(P(p).nom)} <small class="muted">(volum ${P(p).vol || 1}${P(p).fragil ? ', fràgil' : ''})</small>`).join('<br>')}</span>
+        <div class="seg">${Object.entries(D.CAIXES).map(([k, c]) => `<button data-oc="${o.id}" data-k="${k}">${c.nom}</button>`).join('')}</div></div>`).join('')}
+      <div class="row"><button class="btn prim" id="ok" data-focus>Embalar i deixar al moll</button></div>`, (m) => {
+      $$('[data-oc]', m).forEach(b => b.onclick = () => { tria[b.dataset.oc] = b.dataset.k; $$(`[data-oc="${b.dataset.oc}"]`, m).forEach(x => x.classList.toggle('on', x === b)); });
+      $('#ok', m).onclick = () => { if (llista.some(({ o }) => !tria[o.id])) return toast('Tria la caixa de totes les comandes.', 'neg'); tancaModal(); ctrl && ctrl.pausa(false); cb(tria); };
+    });
+  }
+  const nomMag = (id) => { const m = D.MAGATZEMS[id] || D.MAGATZEMS.aliment; return m.icona + ' ' + esc(m.nom); };
   function confirma(text, ok) {
     ctrl && ctrl.pausa(true);
     modal(`<p>${esc(text)}</p><div class="row"><button class="btn prim" id="si" data-focus>Sí</button><button class="btn ghost" id="no">No</button></div>`, (m) => {
@@ -304,17 +327,18 @@
   }
 
   /* ---------- Informe del vespre ---------- */
-  const CAT = { recepcio: '📥 Recepció', ubicacio: '🗄️ Ubicació', picking: '📋 Picking', fefo: '📅 FEFO', trencament: '💥 Trencament', expedicio: '🚛 Expedició', carrega: '🚛 Càrrega', seguretat: '⛑️ Seguretat', inventari: '🔢 Inventari', merma: '🗑️ Merma' };
+  const CAT = { recepcio: '📥 Recepció', ubicacio: '🗄️ Ubicació', picking: '📋 Picking', fefo: '📅 FEFO', trencament: '💥 Trencament', expedicio: '🚛 Expedició', carrega: '🚛 Càrrega', seguretat: '⛑️ Seguretat', inventari: '🔢 Inventari', merma: '🗑️ Merma', cross: '🔀 Classificació', caixa: '📦 Embalatge', fred: '❄️ Cadena de fred' };
   function resultat(h) {
     h = h || S.darrer; const k = h.kpi;
-    const lls = LL.perErrors(h, S.llicons);
+    const lls = LL.perErrors(h, S.llicons, D.MAG_ID);
     const cls = h.veredicte === 'bo' ? 'bo' : h.veredicte === 'bronca' ? 'bronca' : '';
     app.innerHTML = `<div class="pant">${capcalera()}<main class="res">
       ${diu(esc(h.frase), cls)}
       <section class="sec notes"><div class="nota ${h.nota >= D.NOTA_BONA ? 'pos' : h.nota < 55 ? 'neg' : ''}"><span>Nota del torn</span><b>${h.nota}</b></div>
         <div class="bars"><div><span>Productivitat</span>${barra(h.productivitat, 'var(--blau)')}<b>${h.productivitat}</b></div><div><span>Qualitat</span>${barra(h.qualitat, 'var(--verd)')}<b>${h.qualitat}</b></div><div><span>Seguretat</span>${barra(h.seguretat, 'var(--groc)')}<b>${h.seguretat}</b></div></div></section>
-      <section class="sec kpis"><div><span>Càrregues revisades bé</span><b>${Math.round(k.recOk)} / ${k.carregues}</b></div><div><span>Ubicades bé</span><b>${k.ubiOk} / ${k.ubicades}</b></div>
+      <section class="sec kpis"><div><span>Càrregues revisades bé</span><b>${Math.round(k.recOk)} / ${k.carregues}</b></div>${k.cross ? '' : `<div><span>Ubicades bé</span><b>${k.ubiOk} / ${k.ubicades}</b></div>`}
         ${k.comandes ? `<div><span>Comandes a temps</span><b>${k.aTemps} / ${k.comandes}</b></div><div><span>Errors de picking</span><b>${k.errorsPicking} %</b></div>` : ''}
+        ${k.cross ? `<div><span>Classificades bé</span><b>${k.crossOk} / ${k.cross}</b></div>` : ''}${k.caixesOk ? `<div><span>Caixes ben triades</span><b>${k.caixesOk} / ${k.comandes}</b></div>` : ''}${k.fred ? `<div><span>Trencaments de la cadena de fred</span><b>${k.fred}</b></div>` : ''}
         <div><span>Trencaments i mermes</span><b>${k.trencaments + k.caducats}</b></div><div><span>Incidents de seguretat</span><b>${k.incidents}</b></div><div><span>Fi del torn</span><b>${E.hora(k.fi)}</b></div></section>
       ${h.greus.length + h.errors.length ? `<section class="sec"><h2>Què ha fallat</h2><ul class="errs">${h.greus.map(e => `<li class="greu"><span>${CAT[e[0]] || e[0]}</span>${esc(e[1])}</li>`).join('')}${h.errors.map(e => `<li><span>${CAT[e[0]] || e[0]}</span>${esc(e[1])}</li>`).join('')}</ul></section>` : `<section class="sec"><h2>Torn perfecte!</h2><p>Cap error. Així es treballa.</p></section>`}
       ${h.bons.length ? `<section class="sec"><ul class="bons">${h.bons.map(b => `<li>✓ ${esc(b)}</li>`).join('')}</ul></section>` : ''}
@@ -349,7 +373,7 @@
   }
 
   /* ---------- Mode docent ---------- */
-  const NOM_TEMA = { recepcio: 'Recepció', ubicacio: 'Ubicació', picking: 'Picking', fefo: 'FEFO', trencament: 'Paletització', expedicio: 'Expedició', carrega: 'Ordre de càrrega', seguretat: 'Seguretat', inventari: 'Inventari', merma: 'Mermes' };
+  const NOM_TEMA = { recepcio: 'Recepció', ubicacio: 'Ubicació', picking: 'Picking', fefo: 'FEFO', trencament: 'Paletització', expedicio: 'Expedició', carrega: 'Ordre de càrrega', seguretat: 'Seguretat', inventari: 'Inventari', merma: 'Mermes', cross: 'Cross-docking', fred: 'Cadena de fred', caixa: 'Embalatge' };
   const pwDocent = () => { try { return sessionStorage.getItem('palet-pw') || ''; } catch (e) { return ''; } };
   function docent(grup) {
     app.innerHTML = `<main class="config" style="max-width:1200px"><button class="btn ghost small" id="enr">← Tornar</button><h1>🧑‍🏫 Alumnes</h1>
@@ -367,19 +391,19 @@
         const ll = d.alumnes.filter(a => !g || a.classe === g);
         $('#est').textContent = ll.length ? '' : 'Encara no hi ha cap alumne amb compte.';
         const data = (t) => t ? new Date(t).toLocaleString('ca', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—';
-        $('#ta').innerHTML = ll.length ? `<div class="taula-w"><table class="t"><thead><tr><th>Alumne</th><th>Grup</th><th>Nivell</th><th class="n">Torns</th><th class="n">Nota mitjana</th><th class="n">Avisos</th><th>Errors més freqüents</th><th class="n">Lliçons</th><th>Darrer desat</th><th></th></tr></thead><tbody>
+        $('#ta').innerHTML = ll.length ? `<div class="taula-w"><table class="t"><thead><tr><th>Alumne</th><th>Grup</th><th>Magatzem</th><th>Nivell</th><th class="n">Torns</th><th class="n">Nota mitjana</th><th class="n">Avisos</th><th>Errors més freqüents</th><th class="n">Lliçons</th><th>Darrer desat</th><th></th></tr></thead><tbody>
           ${ll.map(a => { const p = a.partida; return `<tr><td><b>${esc(a.nom)}</b><br><small class="muted">${esc(a.usuari)}</small></td><td>${esc(a.classe)}</td>
-            <td>${p ? esc(p.nivellNom) + (p.acomiadat ? ' <span class="tag vermell">acomiadat</span>' : '') : '<span class="muted">Sense partida</span>'}</td><td class="n">${p ? p.torns : ''}</td><td class="n">${p && p.notaMitja != null ? '<b>' + p.notaMitja + '</b>' : ''}</td><td class="n">${p ? p.avisos + ' / 3' : ''}</td>
+            <td>${p ? nomMag(p.magatzem) : ''}</td><td>${p ? esc(p.nivellNom) + (p.acomiadat ? ' <span class="tag vermell">acomiadat</span>' : '') : '<span class="muted">Sense partida</span>'}</td><td class="n">${p ? p.torns : ''}</td><td class="n">${p && p.notaMitja != null ? '<b>' + p.notaMitja + '</b>' : ''}</td><td class="n">${p ? p.avisos + ' / 3' : ''}</td>
             <td class="small">${p ? p.errorsFreq.map(([t, n]) => esc(NOM_TEMA[t] || t) + ' (' + n + ')').join(', ') || '—' : ''}</td><td class="n">${p ? p.llEnc + ' / ' + p.llResp : ''}</td><td class="small">${data(p ? p.at : a.darrer)}</td>
             <td><div class="row" style="flex-wrap:nowrap">${p ? `<button class="btn small" data-veu="${esc(a.usuari)}">Veure</button>` : ''}<button class="btn small ghost" data-pwu="${esc(a.usuari)}" title="Canviar la contrasenya">🔑</button></div></td></tr>`; }).join('')}</tbody></table></div>
           <div class="row" style="margin-top:10px"><button class="btn" id="csv">⬇ Descarregar (CSV)</button></div>` : '';
         $$('[data-veu]').forEach(b => b.onclick = async () => {
           try { const x = await crida({ action: 'alumne', password: pw, usuari: b.dataset.veu }); const r = x.resum;
             modal(`<h2>${esc(x.compte.nom)} <small class="muted">${esc(x.compte.usuari)} · ${esc(x.compte.classe)}</small></h2>
-              <p>${esc(r.nivellNom)} · ${r.torns} torns · nota mitjana <b>${r.notaMitja == null ? '—' : r.notaMitja}</b> · ${r.ascensos} ascensos · ${r.broncas} broncas${r.acomiadaments ? ' · ' + r.acomiadaments + ' acomiadaments' : ''}</p>
+              <p>${nomMag(r.magatzem)} · ${esc(r.nivellNom)} · ${r.torns} torns · nota mitjana <b>${r.notaMitja == null ? '—' : r.notaMitja}</b> · ${r.ascensos} ascensos · ${r.broncas} broncas${r.acomiadaments ? ' · ' + r.acomiadaments + ' acomiadaments' : ''}</p>
               <div class="taula-w"><table class="t"><thead><tr><th>Torn</th><th>Nivell</th><th class="n">Nota</th><th class="n">Prod.</th><th class="n">Qualitat</th><th class="n">Seguretat</th><th class="n">Errors</th><th>Cap</th></tr></thead><tbody>
               ${r.historial.map(h => `<tr><td>${h.torn}</td><td>${h.nivell}</td><td class="n"><b>${h.nota}</b></td><td class="n">${h.productivitat}</td><td class="n">${h.qualitat}</td><td class="n">${h.seguretat}</td><td class="n">${h.errors}</td><td>${h.canvi === 'ascens' ? '🎉 ascens' : h.canvi === 'acomiadament' ? '📄 acomiadament' : h.veredicte === 'bronca' ? '⚠ bronca' : h.veredicte === 'bo' ? '✓' : ''}</td></tr>`).join('')}</tbody></table></div>
-              ${x.partides.length ? `<p class="small muted">Partides anteriors: ${x.partides.map(p => esc(p.nivellNom) + ' (' + p.torns + ' torns, nota ' + (p.notaMitja == null ? '—' : p.notaMitja) + ')').join(' · ')}</p>` : ''}
+              ${x.partides.length ? `<p class="small muted">Partides anteriors: ${x.partides.map(p => nomMag(p.magatzem) + ' · ' + esc(p.nivellNom) + ' (' + p.torns + ' torns, nota ' + (p.notaMitja == null ? '—' : p.notaMitja) + ')').join(' · ')}</p>` : ''}
               <div class="row"><button class="btn" id="tc" data-focus>Tancar</button></div>`, (m) => { $('#tc', m).onclick = tancaModal; }, { ample: true, tancable: true });
           } catch (e) { toast(esc(e.message), 'neg'); }
         });
@@ -388,8 +412,8 @@
           $('#ok', m).onclick = async () => { try { await crida({ action: 'alumne-contrasenya', password: pw, usuari: b.dataset.pwu, nova: $('#npw', m).value }); tancaModal(); toast('Contrasenya canviada.', 'pos'); } catch (e) { $('#npE', m).textContent = e.message; } };
         }, { tancable: true }));
         if ($('#csv')) $('#csv').onclick = () => { const q = (v) => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
-          const txt = '\ufeff' + [['Alumne', 'Usuari', 'Grup', 'Nivell', 'Torns', 'Nota mitjana', 'Avisos', 'Broncas', 'Ascensos', 'Errors freqüents', 'Lliçons encertades', 'Lliçons respostes'].map(q).join(';')]
-            .concat(ll.map(a => { const p = a.partida || {}; return [a.nom, a.usuari, a.classe, p.nivellNom, p.torns, p.notaMitja, p.avisos, p.broncas, p.ascensos, (p.errorsFreq || []).map(([t, n]) => (NOM_TEMA[t] || t) + ' ' + n).join(', '), p.llEnc, p.llResp].map(q).join(';'); })).join('\n');
+          const txt = '\ufeff' + [['Alumne', 'Usuari', 'Grup', 'Magatzem', 'Nivell', 'Torns', 'Nota mitjana', 'Avisos', 'Broncas', 'Ascensos', 'Errors freqüents', 'Lliçons encertades', 'Lliçons respostes'].map(q).join(';')]
+            .concat(ll.map(a => { const p = a.partida || {}; return [a.nom, a.usuari, a.classe, p.magatzem ? (D.MAGATZEMS[p.magatzem] || {}).nom : '', p.nivellNom, p.torns, p.notaMitja, p.avisos, p.broncas, p.ascensos, (p.errorsFreq || []).map(([t, n]) => (NOM_TEMA[t] || t) + ' ' + n).join(', '), p.llEnc, p.llResp].map(q).join(';'); })).join('\n');
           const el = document.createElement('a'); el.href = URL.createObjectURL(new Blob([txt], { type: 'text/csv' })); el.download = 'palet-alumnes.csv'; document.body.appendChild(el); el.click(); el.remove(); };
       } catch (e) { $('#est').textContent = e.message; }
     };

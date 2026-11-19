@@ -8,16 +8,20 @@ const t = (c, nom) => { if (c) ok++; else { ko++; console.log('✘', nom); } };
 // Tria una ubicació correcta per a un producte (nivells amb ubicació lliure)
 function ubicacioCorrecta(s, prod, usades) {
   const N = E.nivell(s);
-  if (!N.lliure) return D.UBICACIO[prod];
-  const u = E.totesUbicacions().find(u => !E.problemesUbicacio(prod, u, { nivellsRack: N.nivellsRack }).length && !(s.stock[u] || []).some(x => x.prod !== prod && x.q > 0) && (!usades[u] || usades[u] === prod));
-  usades[u] = prod; return u;
+  if (!E.lliure(s)) return D.UBICACIO[prod];
+  const modDe = (u) => u.slice(0, 4);
+  const u = E.totesUbicacions().find(u => !E.problemesUbicacio(prod, u, { nivellsRack: N.nivellsRack }).length && !(s.stock[u] || []).some(x => x.prod !== prod && x.q > 0) && !E.mescla(s.stock, prod, u) && (!usades[u] || usades[u] === prod) && (!usades[modDe(u)] || usades[modDe(u)] === prod));
+  usades[u] = prod; if (E.tipusU(E.parse(u)) === 'compacte') usades[modDe(u)] = prod; return u;
 }
 // Juga un torn: perfecte o amb errors
 function jugaTorn(s, mode) {
-  const usades = {}, t = s.dia, res = { recepcio: {}, ubicacions: {}, picking: [], palets: [], carrega: {}, incidents: [], inventari: { recomptes: {}, comandes: {} }, fi: 13 * 60 };
+  const M = E.mag(s), usades = {}, t = s.dia, res = { recepcio: {}, ubicacions: {}, picking: [], palets: [], carrega: {}, incidents: [], inventari: { recomptes: {}, comandes: {} }, cross: {}, fred: {}, fi: 13 * 60 };
   t.recepcions.forEach(rc => rc.carregues.forEach(c => {
     if (mode === 'bo') res.recepcio[c.id] = c.problema || 'accepta'; else res.recepcio[c.id] = 'accepta';
-    if (res.recepcio[c.id] === 'accepta') res.ubicacions[c.id] = mode === 'bo' ? ubicacioCorrecta(s, c.prod, usades) : 'A-06-2-B';
+    if (res.recepcio[c.id] !== 'accepta') return;
+    if (M.mode === 'cross') { const cam = t.camions.find(cm => cm.ruta.includes(c.desti)); res.cross[c.id] = { moll: mode === 'bo' ? cam.moll : 5 - cam.moll, minut: cam.sortida - 20 }; return; }
+    res.ubicacions[c.id] = mode === 'bo' ? ubicacioCorrecta(s, c.prod, usades) : 'A-02-2-B';
+    res.fred[c.id] = mode === 'bo' ? 10 : 90;
   }));
   // Les ubicacions s'apliquen a l'estoc dins de puntua; el picking es fa sobre l'estoc d'abans
   t.comandes.forEach(o => {
@@ -33,9 +37,10 @@ function jugaTorn(s, mode) {
     if (mode === 'bo') pila.sort((a, b) => (E.P(a).fragil ? 1 : 0) - (E.P(b).fragil ? 1 : 0) || E.P(b).pes - E.P(a).pes);
     else pila.sort((a, b) => (E.P(b).fragil ? 1 : 0) - (E.P(a).fragil ? 1 : 0));
     const cam = t.camions.find(c => c.id === o.camio);
-    res.palets.push({ comanda: o.id, pila, moll: cam.moll, minut: mode === 'bo' ? cam.sortida - 30 : cam.sortida + 20 });
+    const vol = pila.reduce((a, x) => a + (E.P(x).vol || 1), 0);
+    res.palets.push({ comanda: o.id, pila, moll: cam.moll, minut: mode === 'bo' ? cam.sortida - 30 : cam.sortida + 20, caixa: mode === 'bo' ? Object.keys(D.CAIXES).find(b => D.CAIXES[b].vol >= vol) : 'L' });
   });
-  t.camions.forEach(cam => { const ids = cam.ruta.map(cl => t.comandes.find(o => o.client === cl && o.camio === cam.id).id); res.carrega[cam.id] = mode === 'bo' ? ids.slice().reverse() : ids; });
+  if (M.mode === 'estoc') t.camions.forEach(cam => { const ids = cam.ruta.map(cl => t.comandes.find(o => o.client === cl && o.camio === cam.id).id); res.carrega[cam.id] = mode === 'bo' ? ids.slice().reverse() : ids; });
   if (t.inventari) {
     t.inventari.recomptes.forEach(rc => { res.inventari.recomptes[rc.slot] = mode === 'bo' ? rc.real : rc.teoric; });
     t.inventari.puntComanda.forEach(pc => { const punt = pc.consumDia * pc.termini + pc.seguretat; if (mode === 'bo' && E.estocDe(s, pc.prod) <= punt) res.inventari.comandes[pc.prod] = 10; });
@@ -76,6 +81,28 @@ function jugaTorn(s, mode) {
 { // Determinisme: la mateixa llavor genera el mateix torn
   const a = E.crearPartida({ llavor: 99 }), b = E.crearPartida({ llavor: 99 });
   t(JSON.stringify(a.dia) === JSON.stringify(b.dia) && JSON.stringify(a.stock) === JSON.stringify(b.stock), 'mateixa llavor, mateix torn');
+}
+{ // Cada tipus de magatzem: un bon treballador hi fa carrera, i les normes de cada estanteria
+  for (const mg of Object.keys(D.MAGATZEMS)) {
+    const s = E.crearPartida({ llavor: 21, magatzem: mg }), notes = [];
+    t(E.mag(s) === D.MAGATZEMS[mg] && (D.MAG.mode === 'cross' || Object.keys(s.stock).length >= D.PROD.length), mg + ': estoc inicial ubicat');
+    t(Object.keys(s.stock).every(u => !E.problemesUbicacio(s.stock[u][0].prod, u, {}).length), mg + ': l\'estoc inicial compleix les normes');
+    for (let i = 0; i < 20 && s.nivell < 5; i++) { const h = jugaTorn(s, 'bo'); notes.push(h.nota); if (h.errors.length + h.greus.length) console.log('  ' + mg + ' errors en un torn perfecte:', h.errors.concat(h.greus).map(e => e[1]).slice(0, 2)); E.continuar(s); }
+    console.log(D.MAGATZEMS[mg].nom + ' · notes:', notes.join(', '));
+    t(s.nivell === 5 && notes.every(n => n >= D.NOTA_BONA), mg + ': un bon treballador arriba a cap de magatzem');
+    const d = E.crearPartida({ llavor: 22, magatzem: mg }); const hd = jugaTorn(d, 'dolent');
+    t(hd.veredicte === 'bronca', mg + ': el treballador descuidat rep bronca');
+    if (mg === 'cross') t(hd.errors.concat(hd.greus).some(e => e[0] === 'cross') && !d.dia.comandes.length, 'cross-docking: la mercaderia va al moll del seu destí, sense ubicar-la');
+    if (mg === 'fred') t(hd.errors.some(e => e[0] === 'fred'), 'frigorífic: massa temps fora del fred trenca la cadena de fred');
+  }
+  D.usa('fred');
+  t(E.problemesUbicacio('iogurt', 'C-01-1-A').some(x => /congelaria/.test(x)) && E.problemesUbicacio('gelat', 'B-01-1-A').some(x => /descongelaria/.test(x)), 'refrigerats i congelats, cadascun a la seva cambra');
+  t(!E.totesUbicacions().includes('A-01-3-A') && E.nivellsDe('A', 1) === 2, 'l\'estanteria dinàmica només té dos nivells');
+  D.usa('recanvis');
+  t(E.problemesUbicacio('tubs', 'A-01-1-A').some(x => /cantilever/.test(x)) && !E.problemesUbicacio('tubs', 'B-02-2-A').length, 'les càrregues llargues van al cantilever');
+  t(E.problemesUbicacio('cargols', 'C-01-1-A').length > 0 && !E.problemesUbicacio('ciment', 'C-01-2-A').length, 'l\'estanteria compacta és per a sacs, no per a peces petites');
+  t(E.problemesUbicacio('cargols', 'A-03-3-B').length === 0 && E.problemesUbicacio('cable', 'A-01-1-A').some(x => /picking/.test(x)), 'les peces petites a picking; el que pesa, no');
+  D.usa('aliment');
 }
 console.log(ko ? '✘ ' + ko + ' errors · ' + ok + ' correctes' : '✔ ' + ok + ' comprovacions del motor de Palet');
 process.exit(ko ? 1 : 0);

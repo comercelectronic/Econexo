@@ -34,7 +34,7 @@ export const SIMULADORES: Simulador[] = [
   },
   {
     id: 'palet', name: 'Palet', interno: true,
-    desc: 'Juego de almacén: empiezas de mozo y la jefa te asciende (o te despide). Recepción y control de la mercancía, ubicación, picking con FEFO, palés bien montados y camiones que salen a su hora, con el reloj en marcha y la seguridad en juego.',
+    desc: 'Juego de almacén: empiezas de mozo y la jefa te asciende (o te despide). Eliges el almacén (alimentación, frigorífico, cross-docking, comercio electrónico o recambios), con estanterías convencionales, dinámicas, móviles, compactas, cantilever y de picking. Recepción, ubicación, picking con FEFO, palés bien montados y camiones que salen a su hora, con el reloj en marcha y la seguridad en juego.',
     url: '/jocs/palet/', idiomas: 'Catalán',
     para: [{ ciclo: 'actividades-comerciales', modulo: 'tecnicas-de-almacen' }]
   }

@@ -204,3 +204,21 @@ select.inp { width: auto; min-width: 200px; }
 .compte-box > span { flex: 1 1 200px; }
 .fcompte { display: grid; gap: 10px; }
 .taula-w { overflow-x: auto; }
+
+/* Tipus de magatzem i d'estanteria */
+.mags { display: grid; gap: 8px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.rack .tp { position: absolute; right: 4px; bottom: 13px; font-size: 9px; font-weight: 800; opacity: .85; }
+.rack.t-dinamic { background: linear-gradient(#2f9e8f, #1f6f64); } .rack.t-mobil { background: linear-gradient(#6d5bd0, #463a96); }
+.rack.t-compacte { background: linear-gradient(#a0522d, #6b3519); } .rack.t-cantilever { background: linear-gradient(#5f6b7a, #3c4450); }
+.rack.t-picking { background: linear-gradient(#d97706, #92400e); }
+.banda { position: absolute; border-radius: 10px; border: 2px solid #7fb6e8; } .banda span { position: absolute; right: 8px; top: 4px; font-size: 11px; font-weight: 800; color: #1e3a8a; }
+.banda.refri { background: rgba(160, 210, 255, .35); } .banda.conge { background: rgba(120, 170, 255, .45); border-color: #4f7fd6; }
+.z-cross { background: rgba(155, 122, 232, .12); display: grid; place-items: center; text-align: center; } .z-cross p { color: #10243d; max-width: 360px; font-weight: 600; }
+.carrils { display: flex; gap: 40px; font-weight: 800; color: #5b21b6; }
+.estants { display: grid; gap: 8px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); margin-top: 8px; }
+.estant { display: grid; gap: 3px; padding: 10px; border-radius: 10px; background: var(--sup); border-left: 5px solid #2f6fbf; }
+.estant.t-dinamic { border-left-color: #2f9e8f; } .estant.t-mobil { border-left-color: #6d5bd0; } .estant.t-compacte { border-left-color: #a0522d; } .estant.t-cantilever { border-left-color: #5f6b7a; } .estant.t-picking { border-left-color: #d97706; }
+.tag.t-dinamic { background: #2f9e8f; color: #fff; } .tag.t-mobil { background: #6d5bd0; color: #fff; } .tag.t-compacte { background: #a0522d; color: #fff; } .tag.t-cantilever { background: #5f6b7a; color: #fff; } .tag.t-picking { background: #d97706; color: #fff; } .tag.t-convencional { background: #2f6fbf; color: #fff; }
+tr.bloq td { opacity: .55; }
+.emb { display: grid; gap: 6px; padding: 10px; border-radius: 10px; background: var(--sup); margin-bottom: 8px; }
+.amaga-mobil { } @media (max-width: 640px) { .amaga-mobil { display: none; } }
