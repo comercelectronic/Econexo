@@ -68,13 +68,13 @@
     let ve, palets, deixalles, estatics, bays, incid, cops, t0, acabat, recorregut, recCorrecte, estabMax, tEstab, bolcat, fiAuto, darrerAv;
     const toro = cfg.vehicle === 'toro';
     const s = PH.obre({
-      titol: cfg.titol, consigna: cfg.consigna, W: 1000, H: 560,
+      titol: cfg.titol, consigna: cfg.consigna, W: 1000, H: 560, rellotge: cfg.rellotge,
       controls: toro
         ? '<b>W/S</b> o <b>↑/↓</b>: endavant / enrere (frenen si vas en sentit contrari) · <b>A/D</b> o <b>←/→</b>: direcció (roda del darrere: la cua gira) · <b>Espai</b>: fre · <b>R/F</b>: puja / baixa les forquilles · <b>T/G</b>: inclina el pal endavant / enrere.'
         : '<b>W/S</b> o <b>↑/↓</b>: estira (endavant) / empeny (enrere) · <b>A/D</b> o <b>←/→</b>: gira la llança · <b>Espai</b>: frena · <b>E</b>: bomba (cada cop puja les forquilles) · <b>Q</b>: palanca per baixar.',
       tactil: `<div class="pad"><button class="btn small" data-k="a">◀</button><div class="pad-v"><button class="btn small" data-k="w">▲</button><button class="btn small" data-k="s">▼</button></div><button class="btn small" data-k="d">▶</button></div><button class="btn small" data-k=" ">Fre</button>`
         + (toro ? `<button class="btn small" data-k="r">Forquilles ⬆</button><button class="btn small" data-k="f">Forquilles ⬇</button><button class="btn small" data-k="t">Pal ⤼</button><button class="btn small" data-k="g">Pal ⤽</button>` : `<button class="btn small" data-k="e">Bomba ⬆</button><button class="btn small" data-k="q">Baixa ⬇</button>`),
-      onReinicia: () => munta(), onFet: () => avalua('manual'), onSurt: () => onFi && onFi(null), pas, dibuixa
+      onReinicia: () => munta(), onFet: () => avalua('manual'), onSurt: () => onFi && onFi(null, s.temps), pas, dibuixa
     });
     s.onTecla = (t) => { if (!toro && t === 'e' && !acabat) bomba(); };
 
@@ -425,7 +425,7 @@
       if (bolcat) nota = Math.min(nota, 10);
       if (com === 'manual' && !colOk && cfg.desti) mal.unshift('Has acabat abans de deixar el palet al seu lloc.');
       nota = Math.max(0, Math.min(100, Math.round(nota)));
-      const r = { titol: cfg.titol, nota, temps, cops: cops.length, copsForts: forts.length, malmesos: malmesos.map(b => ({ nom: b.pr.nom, prod: b.pr.id, estat: b.estat })), caiguts: caiguts.length, precisio: prec, colocat: colOk, bolcat, incidents: incid.map(i => i.txt), usCorrecte: pctUs,
+      const r = { titol: cfg.titol, nota, temps, tempsTotal: s.temps, cops: cops.length, copsForts: forts.length, malmesos: malmesos.map(b => ({ nom: b.pr.nom, prod: b.pr.id, estat: b.estat })), caiguts: caiguts.length, precisio: prec, colocat: colOk, bolcat, incidents: incid.map(i => i.txt), usCorrecte: pctUs,
         kpi: [['Temps', temps + ' s'], ['Cops', cops.length, cops.length ? 'warn' : 'pos'], ['Malmesos / caiguts', malmesos.length + ' / ' + caiguts.length, malmesos.length + caiguts.length ? 'neg' : 'pos'], ['Precisió', prec == null ? '—' : prec + ' %'], ['Estabilitat màx.', Math.round(Math.min(1.5, estabMax) * 100) + ' %', estabMax > 0.9 ? 'neg' : estabMax > 0.6 ? 'warn' : 'pos'], ['Ús correcte', pctUs + ' %']],
         mal, be, consell: cfg.consell };
       s.resultat(r, [[cfg.botoSeguent || 'Continua', () => { s.tanca(); onFi && onFi(r); }], ['Torna-ho a provar', () => { s.pausa(false); munta(); }]]);

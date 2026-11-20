@@ -113,6 +113,8 @@
   };
   D.MAGATZEM_PER_DEFECTE = 'aliment';
   // Temps màxim fora del fred (minuts de joc) des que s'accepta al moll fins que és a la cambra
+  // Rellotge del torn durant les maniobres físiques: minuts de torn per segon real (1 s real = 4 s de torn)
+  D.HAB_MIN_PER_S = 4 / 60;
   D.FRED_MAX = { refri: 40, conge: 25 };
   // Caixes del comerç electrònic: volum màxim que hi cap
   D.CAIXES = { S: { nom: 'Petita', vol: 2 }, M: { nom: 'Mitjana', vol: 4 }, L: { nom: 'Gran', vol: 8 } };

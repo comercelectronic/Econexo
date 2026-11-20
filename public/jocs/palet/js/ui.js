@@ -321,17 +321,21 @@
     const ambVehicle = info.tipus === 'ubicar' && (info.equip === 'toro' || info.niv === 1);
     if (pr.mans === 0 && !ambVehicle) return continua();   // més de 25 kg: no es fa a mà
     ctrl && ctrl.pausa(true);
-    const fi = (r) => {
+    const RITME = D.HAB_MIN_PER_S;
+    const fi = (r, tSortida) => {
+      const seg = r ? r.tempsTotal : (tSortida || 0), min = seg * RITME;
       const reg = r ? { tipus: info.tipus, prod: info.prod, minut: info.minut, nota: r.nota, malmesos: (r.malmesos || []).map(m => ({ nom: m.nom, estat: m.estat })), caiguts: (r.caiguts || 0) + (r.perduts || 0), copsForts: r.copsForts || 0, greu: r.bolcat ? 'bolcada' : (r.incidents || []).some(t => /bigues/.test(t)) ? 'palet' : null }
         : { tipus: info.tipus, prod: info.prod, minut: info.minut, nota: 0, abandonat: true };
       ctrl && ctrl.habilitat(reg);
       if (r && (reg.malmesos.length || reg.greu)) toast(`${montse('petita')} <span><b>Montse:</b> ${reg.greu === 'bolcada' ? 'Has bolcat el toro! Això és gravíssim.' : reg.greu ? 'Un palet a terra des de les bigues… Revisa com el deixes.' : 'Compte amb la mercaderia: el que es trenca és una merma.'}</span>`, 'bronca', 5000);
-      ctrl && ctrl.pausa(false); continua();
+      ctrl && ctrl.avanca(min);
+      if (min >= 1) toast(`🕗 La maniobra t'ha portat ${Math.round(min)} min del torn.`, '', 3000);
+      ctrl && ctrl.pausa(false); continua(0.3);
     };
     const u = E.parse(info.codi);
-    if (ambVehicle) return PH.vehicle(cfgUbicaVehicle(info, u), fi);
-    if (info.tipus === 'ubicar') return PH.manual(cfgUbicaMa(info, u, pr), fi);
-    return PH.manual(cfgPicking(info, pr), fi);
+    const cfg = ambVehicle ? cfgUbicaVehicle(info, u) : info.tipus === 'ubicar' ? cfgUbicaMa(info, u, pr) : cfgPicking(info, pr);
+    cfg.rellotge = { inici: ctrl ? ctrl.estat().minut : info.minut, ritme: RITME, hora: E.hora };
+    return (ambVehicle ? PH.vehicle : PH.manual)(cfg, fi);
   }
   // Maniobra amb transpalet o toro davant del passadís real (amb els palets que hi ha a l'estoc)
   function cfgUbicaVehicle(info, u) {

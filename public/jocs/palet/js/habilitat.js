@@ -102,7 +102,7 @@
       el, cv, ctx, W, H, tecles, temps: 0,
       // Coordenades del punter en unitats del món
       mon: (e) => { const rc = cv.getBoundingClientRect(); ox = rc.left; oy = rc.top; return { x: (e.clientX - ox) / k, y: (e.clientY - oy) / k }; },
-      hud: (h) => { el.querySelector('#hHud').innerHTML = h; },
+      hud: (h) => { const r = o.rellotge; el.querySelector('#hHud').innerHTML = (r ? `<span class="chip rell" title="Rellotge del torn">🕗 ${r.hora(r.inici + s.temps * r.ritme)}</span>` : '') + h; },
       avis: (txt, cls, ms) => {
         const a = el.querySelector('#hAvis'), d = document.createElement('div'); d.className = 'hab-msg ' + (cls || ''); d.innerHTML = txt; a.appendChild(d);
         while (a.children.length > 3) a.firstChild.remove();
@@ -189,10 +189,10 @@
     const M = window.Matter, B = M.Bodies, Bo = M.Body;
     let eng, objs, estatics, mans, punter, angle, t0, cops, events, acabat;
     const s = PH.obre({
-      titol: cfg.titol, consigna: cfg.consigna, W: 1000, H: 560,
+      titol: cfg.titol, consigna: cfg.consigna, W: 1000, H: 560, rellotge: cfg.rellotge,
       controls: '<b>Ratolí</b>: mou les mans · <b>botó esquerre</b> (o Z): mà esquerra · <b>botó dret</b> (o X): mà dreta · <b>Espai</b>: les dues mans · <b>roda</b> o <b>Q/E</b>: gira el canell. Els objectes de més de 8 kg necessiten les dues mans; més de 25 kg, un mitjà mecànic.',
       tactil: `<span class="small muted">Arrossega per moure les mans</span><button class="btn small" data-k="z">✋ Esquerra</button><button class="btn small" data-k="x">Dreta ✋</button><button class="btn small" data-k=" ">🙌 Les dues</button><button class="btn small" data-k="q">↺</button><button class="btn small" data-k="e">↻</button>`,
-      onReinicia: () => munta(), onFet: () => avalua(true), onSurt: () => onFi && onFi(null),
+      onReinicia: () => munta(), onFet: () => avalua(true), onSurt: () => onFi && onFi(null, s.temps),
       pas, dibuixa
     });
     // Ratolí
@@ -383,7 +383,7 @@
       nota -= Math.min(20, cops * 3);
       if (cops) mal.push(`${cops} cops lleus durant la manipulació. Moviments més suaus, sobretot amb el que és fràgil.`); else if (!objs.some(b => b.estat !== 'be')) be.push('Cap cop: manipulació molt acurada.');
       nota = Math.max(0, Math.min(100, Math.round(nota)));
-      const r = { titol: cfg.titol, nota, temps, cops, malmesos: objs.filter(b => b.estat !== 'be').map(b => ({ nom: b.nom, prod: b.pr.id, estat: b.estat })), perduts: objs.filter(b => b.fora && b.estat !== 'trencat').length,
+      const r = { titol: cfg.titol, nota, temps, tempsTotal: s.temps, cops, malmesos: objs.filter(b => b.estat !== 'be').map(b => ({ nom: b.nom, prod: b.pr.id, estat: b.estat })), perduts: objs.filter(b => b.fora && b.estat !== 'trencat').length,
         kpi: [['Temps', temps + ' s'], ['Cops lleus', cops, cops ? 'warn' : 'pos'], ['Productes malmesos', objs.filter(b => b.estat !== 'be').length, objs.some(b => b.estat !== 'be') ? 'neg' : 'pos'], ['Col·locació', c.res.filter(x => x.ok && x.dret).length + ' / ' + c.res.length]],
         mal, be, consell: cfg.consell };
       s.resultat(r, [[cfg.botoSeguent || 'Continua', () => { s.tanca(); onFi && onFi(r); }], ['Torna-ho a provar', () => { s.pausa(false); munta(); }]]);

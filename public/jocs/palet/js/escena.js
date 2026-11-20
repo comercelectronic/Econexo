@@ -210,7 +210,7 @@
               if (u.niv > NIV.nivellsRack) return op.avis(`Amb el ${EQ.nom.toLowerCase()} no arribes al nivell ${u.niv}.`);
               const temps = u.niv <= 2 ? 1.5 : 2.5;
               const c0 = w.porta.c;
-              const fes = () => treballa(temps, () => {
+              const fes = (tm) => treballa(tm != null ? tm : temps, () => {
                 if (NIV.equip === 'transpalet' && u.niv >= 2 && p.pes >= 15) { res.incidents.push({ tipus: 'sobreesforc', minut: Math.round(minut), prod: w.porta.c.prod }); bombolla('Ai, l\'esquena!', 'neg'); op.bronca && op.bronca(`Has pujat a mà ${p.nom.toLowerCase()} (${p.pes} kg) al nivell ${u.niv}. El que pesa, a terra. Sobreesforç.`); }
                 res.ubicacions[w.porta.c.id] = codi;
                 if (p.fred) res.fred[w.porta.c.id] = Math.round(minut - w.porta.arribada);
@@ -219,7 +219,7 @@
                 fxText(w.x, w.y - 50, '📦 ' + codi, 'pos'); w.porta = null; pintaCarrega(); pintaRacks(); op.canvi && op.canvi();
               });
               // Mode habilitat: la maniobra física de col·locar-la (transpalet, toro o a mà)
-              if (op.habilitat) op.habilitat({ tipus: 'ubicar', prod: c0.prod, cid: c0.id, codi, niv: u.niv, equip: NIV.equip, stock, minut: Math.round(minut) }, fes); else fes();
+              if (op.habilitat) op.habilitat({ tipus: 'ubicar', prod: c0.prod, cid: c0.id, codi, niv: u.niv, equip: NIV.equip, stock, minut: Math.round(minut) }, (tm) => fes(tm)); else fes();
             });
           } else if (w.comanda) {
             op.mostraModul({ pas, mod, stock, mode: 'picking', comanda: w.comanda, nivellsRack: NIV.nivellsRack }, (sel) => {
@@ -231,7 +231,7 @@
               if (tp === 'compacte' && vius[vius.length - 1] !== x) return op.avis('En una estanteria compacta només pots agafar l\'últim palet que ha entrat (LIFO).');
               const u = E.parse(codi);
               if (u.niv > NIV.nivellsRack) return op.avis(`Amb el ${EQ.nom.toLowerCase()} no arribes al nivell ${u.niv}.`);
-              const fes = () => treballa(0.8 + q * 0.5, () => {
+              const fes = (tm) => treballa(tm != null ? tm : 0.8 + q * 0.5, () => {
                 // En una onada, cada unitat va a la primera comanda que la necessita
                 let oid = w.comanda.id;
                 if (ECOM) { const o = w.ona.find(o => { const l = o.linies.find(l => l.prod === x.prod); return l && w.piles[o.id].filter(p => p === x.prod).length < l.q; }) || w.ona.find(o => o.linies.some(l => l.prod === x.prod)) || w.ona[0]; oid = o.id; }
@@ -240,7 +240,7 @@
                 fxText(w.x, w.y - 50, '+' + q + ' ' + D.productes[x.prod].nom, 'pos'); pintaCarrega(); pintaRacks(); op.canvi && op.canvi();
               });
               // Mode habilitat: agafar les caixes i posar-les al palet de la comanda, a mà
-              if (op.habilitat) op.habilitat({ tipus: 'picking', prod: x.prod, q, codi, niv: u.niv, pila: ECOM ? [] : w.pila.slice(), equip: NIV.equip, minut: Math.round(minut) }, fes); else fes();
+              if (op.habilitat) op.habilitat({ tipus: 'picking', prod: x.prod, q, codi, niv: u.niv, pila: ECOM ? [] : w.pila.slice(), equip: NIV.equip, minut: Math.round(minut) }, (tm) => fes(tm)); else fes();
             });
           }
         }));
@@ -293,6 +293,8 @@
         w.porta.estat = 'acceptada'; carregues.splice(carregues.indexOf(w.porta), 1); carregues.push(w.porta); w.porta = null; pintaCarrega(); pintaMoll();
       },
       pressa(v) { pressa = !!v; },
+      // El temps de la maniobra física (minuts de joc) avança el rellotge del torn
+      avanca(m) { minut = Math.min(D.TORN_FI, minut + m); op.rellotge && op.rellotge(minut); },
       habilitat(r) { (res.habilitat = res.habilitat || []).push(r); op.canvi && op.canvi(); },
       pausa(v) { pausa = !!v; },
       velocitat(v) { vel = v; },
