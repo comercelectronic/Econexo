@@ -109,4 +109,47 @@ const env = { IG_TOKEN: 'IGTOKEN-INICIAL-1234567890', URL: 'https://ecoynexo.com
   t(r3.prova && r3.post === null && r3.seguent === '2026-11-23-a', 'en mode de prova, un dia sense post diu quin és el següent');
   await assert.rejects(executa({ cal, store: magatzem(), env: {}, fetch: simula().fetch, avui: '2026-11-25', espera }), /IG_TOKEN/); ok++;
 }
+// Publicació per etapes (Netlify talla les funcions programades als 30 s)
+{ const calE = { posts: [{ id: '2026-11-20-m', fecha: '2026-11-20', hora: '12:00', slides: [{}, {}, {}, {}, {}, {}], texto: 'Marge comercial' }] };
+  function lent({ estat = () => 'FINISHED', publicats = [] } = {}) {
+    let n = 0; const crides = [], captions = {};
+    const fetch = async (url, o = {}) => {
+      const u = new URL(url), p = o.body ? Object.fromEntries(o.body) : Object.fromEntries(u.searchParams);
+      crides.push({ ruta: u.pathname, metode: o.method || 'GET', p });
+      const resp = (d) => ({ ok: true, status: 200, json: async () => d });
+      if (u.pathname.endsWith('/media') && (o.method || 'GET') === 'GET') return resp({ data: publicats.map((c, k) => ({ id: 'P' + k, caption: c })) });
+      if (u.pathname.endsWith('/media_publish')) { publicats.push(captions[p.creation_id]); return resp({ id: 'M-' + p.creation_id }); }
+      if (u.pathname.endsWith('/media')) { const id = 'C' + (++n); if (p.caption) captions[id] = p.caption; return resp({ id }); }
+      return resp({ status_code: estat(u.pathname.split('/').pop()) });
+    };
+    return { fetch, crides, publicats };
+  }
+  const envE = Object.assign({ IG_USER_ID: '9' }, env);
+  // 1a execució: Instagram encara processa les imatges i s'acaba el temps → es desa l'estat
+  const s = magatzem(); let rell = 0;
+  const a1 = lent({ estat: () => 'IN_PROGRESS' });
+  const r1 = await executa({ cal: calE, store: s, env: envE, fetch: a1.fetch, avui: '2026-11-20', hora: '12:00', espera, pressupost: 10000, rellotge: () => (rell += 3000), ara: Date.parse('2026-11-20T11:00:00Z') });
+  const st = JSON.parse(s.d.publicats)['2026-11-20-m'];
+  t(r1.enCurs && st.fase === 'fills' && st.fills.length === 6, 'si s\'acaba el temps, l\'estat queda desat a mitges (6 imatges pujades)');
+  t(a1.crides.filter(c => c.p.is_carousel_item === 'true').length === 6, 'les 6 imatges es pugen alhora, un sol cop');
+  // 2a execució: continua on s'havia quedat, sense tornar a pujar les imatges
+  const a2 = lent();
+  const r2 = await executa({ cal: calE, store: s, env: envE, fetch: a2.fetch, avui: '2026-11-20', hora: '12:15', espera, ara: Date.parse('2026-11-20T11:15:00Z') });
+  t(r2.fet && !a2.crides.some(c => c.p.is_carousel_item === 'true') && a2.crides.filter(c => c.ruta.endsWith('/media_publish')).length === 1, 'la següent execució continua i publica una sola vegada');
+  t(triaPost(calE, JSON.parse(s.d.publicats), '2026-11-20', '12:30').post === null, 'un cop publicat ja no es torna a provar');
+  // Un post encallat amb l'estat antic «publicant» es torna a provar, i si ja és a Instagram no es duplica
+  const s3 = magatzem(); await s3.setJSON('publicats', { '2026-11-20-m': { publicant: true, at: '2026-11-20T11:00:00Z' } });
+  t(triaPost(calE, { '2026-11-20-m': { publicant: true } }, '2026-11-20', '21:00').post.id === '2026-11-20-m', 'un post encallat «publicant» es torna a provar');
+  const a3 = lent({ publicats: ['Marge comercial'] });
+  const r3 = await executa({ cal: calE, store: s3, env: envE, fetch: a3.fetch, avui: '2026-11-20', hora: '21:00', espera, ara: Date.parse('2026-11-20T20:00:00Z') });
+  t(r3.jaHiEra && !a3.crides.some(c => c.metode === 'POST'), 'si ja era a Instagram, no es torna a publicar');
+  const a4 = lent();
+  const r4 = await executa({ cal: calE, store: magatzem(), env: envE, fetch: a4.fetch, avui: '2026-11-20', hora: '21:00', espera, ara: Date.parse('2026-11-20T20:00:00Z') });
+  t(r4.fet && a4.publicats.length === 1, 'i si no hi era, es publica');
+  // Si la funció es va tallar just després de publicar, el contenidor surt PUBLISHED: no es torna a publicar
+  const s5 = magatzem(); await s5.setJSON('publicats', { '2026-11-20-m': { fase: 'contenidor', contenidor: 'C7', at: '2026-11-20T11:00:00Z' } });
+  const a5 = lent({ estat: () => 'PUBLISHED' });
+  const r5 = await executa({ cal: calE, store: s5, env: envE, fetch: a5.fetch, avui: '2026-11-20', hora: '12:15', espera, ara: Date.parse('2026-11-20T11:15:00Z') });
+  t(r5.fet && !a5.crides.some(c => c.ruta.endsWith('/media_publish')), 'un contenidor ja publicat no es torna a publicar');
+}
 console.log('✔ ' + ok + ' comprovacions de la publicació a Instagram');
