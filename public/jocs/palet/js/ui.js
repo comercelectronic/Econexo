@@ -446,14 +446,14 @@
     Object.keys(info.stock).forEach(k => {
       const v = E.parse(k); if (!v || v.pas !== u.pas || v.niv > 4 || k === info.codi) return;
       const viu = info.stock[k].filter(x => x.q > 0); if (!viu.length) return;
-      palets.push({ bay: `${v.pas}-${String(v.mod).padStart(2, '0')}-${v.pos}`, nivell: v.niv, prods: Array(4).fill(viu[0].prod) });
+      palets.push({ bay: `${v.pas}-${String(v.mod).padStart(2, '0')}-${v.pos}`, nivell: v.niv, prods: viu.flatMap(x => Array(x.q).fill(x.prod)).slice(0, 8), n: 1 });   // les unitats que hi ha de veritat a l'estoc
     });
     const toro = info.equip === 'toro';
-    palets.push({ forq: true, objectiu: true, prods: Array(8).fill(info.prod) });
+    palets.push({ forq: true, objectiu: true, prods: [info.prod], n: 1 });   // exactament la càrrega de l'albarà (1 unitat)
     const bay = `${u.pas}-${String(u.mod).padStart(2, '0')}-${u.pos}`;
     return {
       vehicle: toro ? 'toro' : 'transpalet', titol: `Ubica ${P(info.prod).nom.toLowerCase()} a ${info.codi}`,
-      consigna: `Deixa el palet a <b>${bay}</b>${u.niv > 1 ? `, <b>nivell ${u.niv}</b>` : ', a terra'}. ${toro ? 'Puja les forquilles davant de la prestatgeria, entra, baixa i surt.' : 'Entra empenyent, ben alineat, i baixa amb Q.'}`,
+      consigna: `Porta la càrrega de l'albarà (<b>1 × ${esc(P(info.prod).nom)}</b>) a <b>${bay}</b>${u.niv > 1 ? `, <b>nivell ${u.niv}</b>` : ', a terra'}. ${toro ? 'Puja les forquilles davant de la prestatgeria, entra, baixa i surt.' : 'Entra empenyent, ben alineat, i baixa amb Q.'}`,
       mapa: { zones: [], linies: [[60, 130, 960, 130]], files: [{ pas: u.pas, x0: 150, y: 60, n: ids.length, cara: 1, ids, nivells: window.PH.NIVELLS_CM.slice(0, Math.max(...ids.map((x, i) => E.nivellsDe(u.pas, Math.floor(i / D.POSICIONS.length) + 1)))) }], parets: [{ x: 0, y: 500, w: 1000, h: 60, nom: 'la paret' }],
         inici: toro ? { x: 470, y: 320, a: 0 } : { x: 500, y: 320, a: 0 }, palets },   // al mig del passadís
       desti: { bay, nivell: u.niv }, botoSeguent: 'Torna al torn',
@@ -463,9 +463,9 @@
   // Ubicar a mà (transpalet, nivell 2): pujar les caixes al prestatge
   function cfgUbicaMa(info, u, pr) {
     const w = pr.mida[0] * 2, h = pr.mida[1] * 2, objs = [];
-    for (let i = 0; i < 3; i++) objs.push({ id: info.prod, x: 80 + w / 2 + i * (w + 4), y: 380 - h / 2 - 1, desti: 'prest' });
+    objs.push({ id: info.prod, x: 80 + w / 2, y: 380 - h / 2 - 1, desti: 'prest' });   // la càrrega de l'albarà: 1 unitat
     return {
-      titol: `Col·loca ${pr.nom.toLowerCase()} a ${info.codi}`, consigna: `Puja les caixes al <b>nivell ${u.niv}</b> de la prestatgeria. ${pr.mans === 2 ? 'Pesen: agafa-les amb les <b>dues mans</b>.' : ''}`,
+      titol: `Col·loca ${pr.nom.toLowerCase()} a ${info.codi}`, consigna: `Puja <b>${esc(pr.nom.toLowerCase())}</b> (1 unitat, la de l'albarà) al <b>nivell ${u.niv}</b> de la prestatgeria. ${pr.mans === 2 ? `Pesa ${pr.pes} kg: agafa-la amb les <b>dues mans</b>.` : ''}`,
       estatics: [{ x: 60, y: 380, w: 380, h: 18, tipus: 'taula' }, { x: 560, y: 250, w: 380, h: 12, tipus: 'prestatge' }, { x: 930, y: 120, w: 10, h: 130, tipus: 'prestatge' }],
       zones: { prest: { x: 560, y: 110, w: 370, h: 140, nom: 'al prestatge', etiqueta: info.codi } }, objectes: objs, botoSeguent: 'Torna al torn',
       consell: 'Aixeca amb les cames, apropa la càrrega al cos i no giris el tronc carregat. Més de 25 kg, mai a mà.'
