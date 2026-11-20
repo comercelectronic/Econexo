@@ -38,6 +38,10 @@ export default async function RootLayout({ children, params }: Props) {
   const t = tr(lang as Lang);
   return (
     <html lang={lang} className={`${inter.variable} ${manrope.variable} ${comic.variable}`}>
+      <head>
+        {/* Codi d'AdSense a l'HTML de la pàgina (com recomana Google) */}
+        {SITE.adsenseAccount && <script async data-adsense="1" src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${SITE.adsenseAccount}`} crossOrigin="anonymous" />}
+      </head>
       <body>
         <a href="#contenido" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-white focus:p-2">{t('Saltar al contenido')}</a>
         <LangProvider lang={lang as Lang}>
