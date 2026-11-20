@@ -113,6 +113,32 @@
     const ant = S; S = p; desa(); desaNuvol(); S = ant;
   }
 
+  /* ---------- Rànquing de classe ---------- */
+  const MEDALLA = ['🥇', '🥈', '🥉'];
+  const COM_PUNTS = 'Punts totals: 100 per nivell assolit (de mosso a cap de magatzem) + el doble de la nota mitjana dels torns + 10 per contingut del mòdul assolit + fins a 40 pel taller d\'habilitat. Punts de la setmana: la suma de les notes dels torns jugats els darrers 7 dies.';
+  function taulaRanquing(ll, mode, ambNomComplet) {
+    const ord = ll.slice().sort((a, b) => b[mode] - a[mode] || b.total - a.total);
+    return `<div class="taula-w"><table class="t ranq"><thead><tr><th class="n">#</th><th>Alumne</th><th>Nivell</th><th class="n">Torns</th><th class="n">Continguts</th><th class="n">${mode === 'total' ? 'Punts' : 'Punts setmana'}</th></tr></thead><tbody>
+      ${ord.map((a, i) => `<tr class="${a.jo ? 'jo' : ''}"><td class="n">${MEDALLA[i] || i + 1}</td><td><b>${esc(a.nom)}</b>${a.jo ? ' <span class="tag blau">Tu</span>' : ''}</td><td class="small">${esc(a.nivellNom || '')}</td><td class="n">${a.torns}</td><td class="n">${a.assolits}</td><td class="n"><b>${a[mode]}</b></td></tr>`).join('')}</tbody></table></div>`;
+  }
+  async function ranquing(mode) {
+    mode = mode || 'total';
+    app.innerHTML = `<main class="config" style="max-width:860px"><button class="btn ghost small" id="enr">← Tornar</button><h1>🏆 Rànquing de la classe</h1><div id="rq"><p class="muted">Carregant…</p></div></main>`;
+    $('#enr').onclick = portada;
+    try {
+      const d = await crida({ action: 'ranquing', token: compte.token });
+      if (!d.actiu) { $('#rq').innerHTML = `<p>El rànquing del grup <b>${esc(d.classe)}</b> encara no està activat. El teu professor el pot activar des del mode docent.</p>`; return; }
+      $('#rq').innerHTML = `<p class="muted">Grup <b>${esc(d.classe)}</b> · ${d.alumnes.length} alumnes amb partida.</p>
+        <div class="seg"><button data-m="total" class="${mode === 'total' ? 'on' : ''}">Total</button><button data-m="setmana" class="${mode === 'setmana' ? 'on' : ''}">Aquesta setmana</button></div>
+        ${d.alumnes.length ? taulaRanquing(d.alumnes, mode) : '<p class="muted">Encara no hi ha ningú amb torns jugats.</p>'}
+        <p class="small muted">${esc(COM_PUNTS)}</p>`;
+      $$('[data-m]').forEach(b => b.onclick = () => ranquing(b.dataset.m));
+    } catch (e) {
+      if (/sessió/i.test(e.message)) { desaCompte(null); }
+      $('#rq').innerHTML = `<p class="neg">${esc(e.message)}</p>`;
+    }
+  }
+
   /* ---------- Portada ---------- */
   function portada() {
     aturaTorn(); S = null;
@@ -125,12 +151,13 @@
         <button class="btn ${pot ? '' : 'prim'} big" data-a="juga">📦 Juga <small>comença de mosso</small></button>
         <button class="btn big" data-a="taller">🎯 Taller d'habilitat <small>mans, transpalet i toro</small></button>
         ${pot ? '<button class="btn big" data-a="progres">📚 Què he treballat <small>continguts del mòdul</small></button>' : ''}
+        ${compte ? `<button class="btn big" data-a="ranquing">🏆 Rànquing de la classe <small>grup ${esc(compte.classe)}</small></button>` : ''}
         <button class="btn big" data-a="ajuda">❓ Com es juga</button>
         <button class="btn big" data-a="docent">🧑‍🏫 Mode docent <small>progrés dels alumnes</small></button>
         <a class="btn big" href="https://ecoynexo.com/ca/aprender/actividades-comerciales/tecnicas-de-almacen/" target="_blank" rel="noopener">📚 Lliçons del mòdul <small>Tècniques de magatzem</small></a>
       </nav>
       <p class="peu">Simulador del mòdul Tècniques de magatzem (CFGM Activitats Comercials) · ECOyNEXO</p></div></main>`;
-    $$('[data-a]').forEach(b => b.onclick = () => ({ continua: () => { S = desat; joc(); }, juga: configurar, ajuda, docent, taller: () => window.PH.taller(app, portada, notaTaller), progres, compte: () => modalCompte('entrar'), surt: () => { desaCompte(null); portada(); } })[b.dataset.a]());
+    $$('[data-a]').forEach(b => b.onclick = () => ({ continua: () => { S = desat; joc(); }, juga: configurar, ajuda, docent, taller: () => window.PH.taller(app, portada, notaTaller), progres, ranquing: () => ranquing(), compte: () => modalCompte('entrar'), surt: () => { desaCompte(null); portada(); } })[b.dataset.a]());
   }
   function configurar() {
     let nivell = 1, mag = D.MAGATZEM_PER_DEFECTE, hab = 'delicades', lloc = 'vic';
@@ -547,7 +574,20 @@
         const d = await crida({ action: 'alumnes', password: pw }); try { sessionStorage.setItem('palet-pw', pw); } catch (e) { }
         const g = grup && d.grups.includes(grup) ? grup : '';
         $('#gr').innerHTML = d.grups.length ? `<select class="inp" id="selG"><option value="">Tots els grups (${d.alumnes.length})</option>${d.grups.map(x => `<option ${x === g ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select>` : '';
+        const actiuRq = g && d.configs && d.configs[g] && d.configs[g].ranquing;
+        $('#gr').innerHTML += g ? ` <button class="btn small ${actiuRq ? 'verd' : ''}" id="rqOn" title="Si està activat, l'alumnat del grup veu el rànquing a la portada del joc">🏆 Rànquing per a l'alumnat: ${actiuRq ? 'activat' : 'desactivat'}</button> <button class="btn small" id="rqVeu">Veure el rànquing</button>` : ' <span class="small muted">Tria un grup per activar-ne o veure\'n el rànquing.</span>';
         if ($('#selG')) $('#selG').onchange = () => { grup = $('#selG').value; carrega2(); };
+        if ($('#rqOn')) $('#rqOn').onclick = async () => { try { await crida({ action: 'grup-config', password: pw, classe: g, ranquing: !actiuRq }); toast(!actiuRq ? 'Rànquing activat: l\'alumnat del grup ' + esc(g) + ' ja el pot veure.' : 'Rànquing desactivat per a l\'alumnat.', 'pos'); carrega2(); } catch (e) { toast(esc(e.message), 'neg'); } };
+        if ($('#rqVeu')) $('#rqVeu').onclick = async () => {
+          try {
+            const r = await crida({ action: 'ranquing-docent', password: pw, classe: g });
+            const pinta = (mode) => modal(`<h2>🏆 Rànquing · ${esc(g)}</h2><p class="small muted">${r.actiu ? 'L\'alumnat el veu amb el nom i la inicial del cognom.' : 'Ara només el veus tu (està desactivat per a l\'alumnat).'}</p>
+              <div class="seg"><button data-m="total" class="${mode === 'total' ? 'on' : ''}">Total</button><button data-m="setmana" class="${mode === 'setmana' ? 'on' : ''}">Aquesta setmana</button></div>
+              ${r.alumnes.length ? taulaRanquing(r.alumnes, mode) : '<p class="muted">Encara no hi ha ningú amb torns jugats.</p>'}<p class="small muted">${esc(COM_PUNTS)}</p>
+              <div class="row"><button class="btn" id="tc" data-focus>Tancar</button></div>`, (m) => { $('#tc', m).onclick = tancaModal; $$('[data-m]', m).forEach(b => b.onclick = () => pinta(b.dataset.m)); }, { ample: true, tancable: true });
+            pinta('total');
+          } catch (e) { toast(esc(e.message), 'neg'); }
+        };
         const ll = d.alumnes.filter(a => !g || a.classe === g);
         $('#est').textContent = ll.length ? '' : 'Encara no hi ha cap alumne amb compte.';
         const data = (t) => t ? new Date(t).toLocaleString('ca', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—';
