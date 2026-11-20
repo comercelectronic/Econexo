@@ -96,23 +96,47 @@
     $$('[data-a]').forEach(b => b.onclick = () => ({ continua: () => { S = desat; joc(); }, juga: configurar, ajuda, docent, taller: () => window.PH.taller(app, portada), compte: () => modalCompte('entrar'), surt: () => { desaCompte(null); portada(); } })[b.dataset.a]());
   }
   function configurar() {
-    let nivell = 1, mag = D.MAGATZEM_PER_DEFECTE, hab = 'delicades';
+    let nivell = 1, mag = D.MAGATZEM_PER_DEFECTE, hab = 'delicades', lloc = 'vic';
+    const av = Object.assign({}, D.AVATAR_DEFECTE);
+    let nom = compte ? compte.nom.split(' ')[0] : '', empresa = D.EMPRESES[0];
+    const durada = (k) => Math.round(D.TORN_SEGONS * (D.DURADA_HAB[k] || 1) / 60 * 10) / 10;
+    const mostres = (camp, vals) => `<div class="mostres">${vals.map(v => `<button class="mostra ${av[camp] === v ? 'on' : ''}" data-av="${camp}" data-v="${v}" style="--c:${v}" aria-label="${camp} ${v}"></button>`).join('')}</div>`;
     const draw = () => {
+      const P = D.POBLES[lloc];
       app.innerHTML = `<main class="config"><button class="btn ghost small" id="enr">← Tornar</button><h1>Primer dia a la feina</h1>
-        <label class="f">El teu nom<input class="inp" id="nom" maxlength="30" placeholder="Ex.: Laia"></label>
-        <h2>A quin magatzem treballes?</h2>
+        <section class="pers"><div class="pers-prev">${PS.persona(av, 2.6)}</div><div class="pers-opc">
+          <label class="f">El teu nom<input class="inp" id="nom" maxlength="30" placeholder="Ex.: Laia" value="${esc(nom)}"></label>
+          <div class="pers-fila"><span class="small">Pell</span>${mostres('pell', D.AVATAR.pell)}</div>
+          <div class="pers-fila"><span class="small">Cabells</span>${mostres('cabell', D.AVATAR.cabell)}</div>
+          <div class="pers-fila"><span class="small">Pentinat</span><div class="seg">${D.AVATAR.pentinat.map(([k, n]) => `<button data-av="pentinat" data-v="${k}" class="${av.pentinat === k ? 'on' : ''}">${n}</button>`).join('')}</div></div>
+          <div class="pers-fila"><span class="small">Samarreta</span>${mostres('samarreta', D.AVATAR.samarreta)}</div>
+          <div class="pers-fila"><span class="small">Armilla</span><div class="seg">${D.AVATAR.armilla.map(([k, n]) => `<button data-av="armilla" data-v="${k}" class="${av.armilla === k ? 'on' : ''}">${n}</button>`).join('')}</div></div>
+          ${av.armilla ? '' : '<p class="small neg">⚠️ Al moll i entre vehicles, l\'armilla d\'alta visibilitat és obligatòria. La Montse t\'ho recordarà.</p>'}
+        </div></section>
+        <h2>On és el magatzem?</h2><p class="muted small">Treballes en una empresa de logística d'Osona. Les botigues clients són dels pobles del voltant.</p>
+        <div class="pobles">${Object.entries(D.POBLES).map(([k, p]) => `<button class="niv ${k === lloc ? 'on' : ''}" data-lloc="${k}"><b>📍 ${esc(p.nom)}</b><span class="small muted">${esc(p.desc)}</span></button>`).join('')}</div>
+        <p class="small">Botigues clients: ${P.clients.map(id => esc(D.CLIENTS.find(c => c.id === id).nom.replace('Botiga de ', ''))).join(', ')}.</p>
+        <label class="f">Nom de l'empresa<input class="inp" id="emp" maxlength="40" list="emps" value="${esc(empresa)}"><datalist id="emps">${D.EMPRESES.map(e => `<option value="${esc(e)}">`).join('')}</datalist></label>
+        <h2>Quin tipus de magatzem?</h2>
         <div class="mags">${Object.entries(D.MAGATZEMS).map(([k, M]) => `<button class="niv ${k === mag ? 'on' : ''}" data-mag="${k}"><b>${M.icona} ${esc(M.nom)}</b><span class="small muted">${esc(M.desc)}</span><span class="small">${[...new Set(Object.values(M.passadissos).flatMap(p => [p.tipus].concat(Object.values(p.mods || {}))))].filter(x => x !== 'cap').map(x => D.ESTANTERIES[x].nom).join(' · ') || 'Sense estanteries'}</span></button>`).join('')}</div>
         <h2>On comences?</h2><p class="muted small">Normalment es comença de mosso i la cap t'ascendeix. Per practicar una part concreta, pots començar en un altre nivell.</p>
         <div class="nivells">${D.NIVELLS.map(N => `<button class="niv ${N.n === nivell ? 'on' : ''}" data-n="${N.n}"><b>${N.n}. ${esc(N.nom)}</b><span class="small muted">${esc(N.desc)}</span></button>`).join('')}</div>
         <h2>Habilitat física</h2><p class="muted small">Manipular les caixes amb les mans i conduir el transpalet i el toro de veritat: els cops, les caigudes i els aixafaments fan malbé la mercaderia.</p>
-        <div class="seg hab-seg">${HAB_MODES.map(([k, n]) => `<button data-hab="${k}" class="${k === hab ? 'on' : ''}">${esc(n)}</button>`).join('')}</div><p class="small muted">${esc(HAB_MODES.find(x => x[0] === hab)[2])}</p>
+        <div class="seg hab-seg">${HAB_MODES.map(([k, n]) => `<button data-hab="${k}" class="${k === hab ? 'on' : ''}">${esc(n)}</button>`).join('')}</div><p class="small muted">${esc(HAB_MODES.find(x => x[0] === hab)[2])} El torn dura uns <b>${String(durada(hab)).replace('.', ',')} minuts</b> a velocitat ×1.</p>
         <div class="row" style="margin-top:18px"><button class="btn prim big" id="go">Entrar al magatzem →</button></div></main>`;
+      const guarda = () => { nom = $('#nom').value; empresa = $('#emp').value; };
+      const refa = (fn) => () => { guarda(); fn(); const y = window.scrollY; draw(); window.scrollTo(0, y); };
       $('#enr').onclick = portada;
-      $$('[data-n]').forEach(b => b.onclick = () => { nivell = +b.dataset.n; const v = $('#nom').value; draw(); $('#nom').value = v; });
-      $$('[data-mag]').forEach(b => b.onclick = () => { mag = b.dataset.mag; const v = $('#nom').value; draw(); $('#nom').value = v; });
-      $$('[data-hab]').forEach(b => b.onclick = () => { hab = b.dataset.hab; const v = $('#nom').value; draw(); $('#nom').value = v; });
-      if (compte) $('#nom').value = compte.nom.split(' ')[0];
-      $('#go').onclick = () => { const nom = $('#nom').value.trim().slice(0, 30) || 'Treballador'; S = E.crearPartida({ nom, nivell, magatzem: mag, habilitat: hab, llavor: (Date.now() % 2e9) | 1 }); desa(); joc(); };
+      $$('[data-n]').forEach(b => b.onclick = refa(() => { nivell = +b.dataset.n; }));
+      $$('[data-mag]').forEach(b => b.onclick = refa(() => { mag = b.dataset.mag; }));
+      $$('[data-hab]').forEach(b => b.onclick = refa(() => { hab = b.dataset.hab; }));
+      $$('[data-lloc]').forEach(b => b.onclick = refa(() => { lloc = b.dataset.lloc; }));
+      $$('[data-av]').forEach(b => b.onclick = refa(() => { av[b.dataset.av] = b.dataset.v; }));
+      $('#go').onclick = () => {
+        guarda();
+        S = E.crearPartida({ nom: nom.trim().slice(0, 30) || 'Treballador', nivell, magatzem: mag, habilitat: hab, lloc, empresa: empresa.trim().slice(0, 40) || D.EMPRESES[0], avatar: Object.assign({}, av), llavor: (Date.now() % 2e9) | 1 });
+        desa(); joc();
+      };
     };
     draw();
   }
@@ -140,7 +164,7 @@
   }
   function capcalera(extra) {
     const N = E.nivell(S);
-    return `<header class="top">${logo()}<div class="info"><span class="chip">📅 ${E.data(S.dia.dia)} · torn ${S.torn}</span><span class="chip" title="${esc(D.MAG.nom)}">${D.MAG.icona} <span class="amaga-mobil">${esc(D.MAG.nom)}</span></span><span class="chip niv-chip">${esc(N.nom)}</span><span class="chip">${esc(S.config.nom)}</span>${avisos()}${extra || ''}</div>
+    return `<header class="top">${logo()}<div class="info"><span class="chip">📅 ${E.data(S.dia.dia)} · torn ${S.torn}</span><span class="chip" title="${esc(D.MAG.nom)}">${D.MAG.icona} <span class="amaga-mobil">${esc(D.MAG.nom)}</span></span><span class="chip niv-chip">${esc(N.nom)}</span>${S.config.lloc && D.POBLES[S.config.lloc] ? `<span class="chip amaga-mobil" title="${esc(S.config.empresa || '')}">📍 ${esc(D.POBLES[S.config.lloc].nom)}</span>` : ''}<span class="chip chip-av">${PS.persona(S.config.avatar, 0.5)}${esc(S.config.nom)}</span>${avisos()}${extra || ''}</div>
       <div class="acc"><button class="btn small ghost" id="bAj" aria-label="Com es juga">❓</button><button class="btn small ghost" id="bMenu" aria-label="Menú">☰</button></div></header>`;
   }
   function lligaCap() { $('#bAj').onclick = ajuda; $('#bMenu').onclick = () => { desa(); portada(); }; }
@@ -153,8 +177,18 @@
     const cam = t.camions.map(c => `<li>🚛 Surt a les <b>${E.hora(c.sortida)}</b> del <b>moll ${c.moll}</b>: ${c.transportista ? esc(c.transportista) : c.ruta.map(nomClient).join(' → ')}</li>`).join('');
     const tipus = [...new Set(D.PASSADISSOS.flatMap(p => [p.tipus].concat(Object.values(p.mods))))].filter(x => x !== 'cap');
     const frase = primer && S.torn === 1 ? D.FRASES.benvinguda[0] : primer ? `Avui comences de ${N.nom.toLowerCase()}. ${N.desc}` : S.darrer && S.darrer.veredicte === 'bronca' ? 'Espero que avui vagi millor que ahir. Vigila el que et vaig dir.' : 'Bon dia! Aquí tens la feina d\'avui.';
+    const notes = [];
+    const dt = new Date(Date.UTC(2026, 10, 1 + t.dia)), dd = dt.getUTCDate(), mm = dt.getUTCMonth() + 1;
+    if (t.boira) notes.push('Avui hi ha boira a la Plana i els camions dels proveïdors arribaran tard. Aprofita per avançar feina, però compte amb els vehicles: amb boira, a poc a poc al moll.');
+    if (dd === 11 && mm === 11) notes.push('Per Sant Martí, mata el porc i enceta el vi! És temps de matança: avui sortiran moltes llonganisses.');
+    if (mm === 12 && dd >= 15 && dd <= 24) notes.push('Arriba Nadal: les botigues ho volen tot per ahir. Que no surti cap camió buit.');
+    if (dd === 27 && mm === 11) notes.push('Avui és el Black Friday: molta feina, però sense córrer més del compte.');
+    if (S.config.avatar && !S.config.avatar.armilla) notes.push('I posa\'t l\'armilla, que al moll és obligatòria.');
+    const dita = D.DITES[(S.torn + (S.config.llavor || 0)) % D.DITES.length];
+    const lloc = S.config.lloc && D.POBLES[S.config.lloc];
     app.innerHTML = `<div class="pant">${capcalera()}<main class="brief">
-      ${diu(esc(frase))}
+      ${diu(esc(frase) + (notes.length ? ' ' + esc(notes.join(' ')) : '') + `<br><i class="small">${esc(dita)}</i>`)}
+      ${lloc ? `<p class="small muted lloc-brief">🏭 <b>${esc(S.config.empresa || '')}</b> · ${esc(lloc.nom)} (Osona)${t.boira ? ' · 🌫️ Boira' : ''}</p>` : ''}
       <section class="sec mag-card"><h2>${D.MAG.icona} ${esc(D.MAG.nom)}</h2><p class="small">${esc(D.MAG.desc)}</p>
         ${tipus.length ? `<div class="estants">${tipus.map(x => `<div class="estant t-${x}"><b>${esc(D.ESTANTERIES[x].nom)}</b><span class="small muted">${esc(D.ESTANTERIES[x].desc)}</span><span class="small">Passadís ${D.PASSADISSOS.filter(p => p.tipus === x || Object.values(p.mods).includes(x)).map(p => p.id).join(', ')}</span></div>`).join('')}</div>` : ''}</section>
       <section class="sec"><h2>Feina d'avui</h2><ul class="llista">${rec}${cam}${D.MAG.mode === 'cross' ? '<li>🔀 Classifica cada càrrega pel seu destí i porta-la al moll del camió que hi va abans que surti</li>' : ''}${t.comandes.length ? `<li>📋 ${t.comandes.length} comandes ${D.MAG.mode === 'ecom' ? 'web per preparar per onades i embalar' : 'de botigues per preparar'}</li>` : ''}${t.inventari ? `<li>🔢 Recompte de ${t.inventari.recomptes.length} ubicacions i revisió del punt de comanda</li>` : ''}</ul>
@@ -334,6 +368,7 @@
     };
     const u = E.parse(info.codi);
     const cfg = ambVehicle ? cfgUbicaVehicle(info, u) : info.tipus === 'ubicar' ? cfgUbicaMa(info, u, pr) : cfgPicking(info, pr);
+    cfg.avatar = Object.assign({}, D.AVATAR_DEFECTE, S.config.avatar || {});
     cfg.rellotge = { inici: ctrl ? ctrl.estat().minut : info.minut, ritme: RITME, hora: E.hora };
     return (ambVehicle ? PH.vehicle : PH.manual)(cfg, fi);
   }

@@ -94,6 +94,8 @@
   E.estocDe = (s, prod) => Object.values(s.stock).reduce((a, l) => a + l.filter(x => x.prod === prod).reduce((b, x) => b + x.q, 0), 0);
 
   // Data del joc (dia 1 = dilluns 2 de novembre)
+  // Botigues clients segons el poble del magatzem
+  E.clients = (s) => { const P = s.config && s.config.lloc && D.POBLES[s.config.lloc]; return P ? P.clients.map(id => D.CLIENTS.find(c => c.id === id)) : D.CLIENTS.slice(0, 5); };
   E.data = (dia) => { const d = new Date(Date.UTC(2026, 10, 1 + dia)); return d.getUTCDate() + '/' + (d.getUTCMonth() + 1); };
   E.hora = (min) => String(Math.floor(min / 60)).padStart(2, '0') + ':' + String(Math.floor(min % 60)).padStart(2, '0');
 
@@ -104,7 +106,7 @@
     const t = { torn: dia, dia, nivell: s.nivell, magatzem: D.MAG_ID, recepcions: [], comandes: [], camions: [], inventari: null };
     // Cross-docking: camions de sortida (per saber el destí de cada càrrega)
     if (M.mode === 'cross') {
-      const cl = barreja(r, D.CLIENTS), nCli = s.nivell >= 3 ? 3 : 2;
+      const cl = barreja(r, E.clients(s)), nCli = s.nivell >= 3 ? 3 : 2;
       [0, 1].forEach(k => t.camions.push({ id: 'k' + (k + 1), moll: 2 + k, sortida: D.TORN_INICI + 210 + k * 120, ruta: cl.slice(k * nCli, k * nCli + nCli).map(c => c.id) }));
     }
     // Recepcions: camions de proveïdor amb càrregues; algunes tenen problemes
@@ -151,7 +153,7 @@
       }
     } else if (TQ.includes('picking')) {
       const nCam = TQ.includes('carrega') ? 2 : 1;
-      const clients = barreja(r, D.CLIENTS);
+      const clients = barreja(r, E.clients(s));
       let ci = 0;
       const reserva = {}, queda = (id) => E.estocDe(s, id) - (reserva[id] || 0);
       for (let k = 0; k < nCam; k++) {
@@ -174,6 +176,10 @@
       t.inventari = { recomptes: slots.map((slot, i) => { const teoric = s.stock[slot].reduce((a, x) => a + x.q, 0); const real = i === 0 ? Math.max(0, teoric - 1 - Math.floor(r() * 2)) : teoric; return { slot, teoric, real }; }),
         puntComanda: D.PROD.filter(id => P(id).rot === 'A').map(id => ({ prod: id, consumDia: 1 + Math.floor(r() * 2), termini: 1 + Math.floor(r() * 3), seguretat: 1 + Math.floor(r() * 2) })) };
     }
+    // Boira a la Plana (de novembre a març): els camions dels proveïdors arriben tard
+    const mes = new Date(Date.UTC(2026, 10, 1 + dia)).getUTCMonth(), rb = E.rngDe(s.config.llavor, 'boira' + dia);
+    t.boira = (mes >= 10 || mes <= 2) && rb() < 0.3;
+    if (t.boira && M.mode !== 'cross') t.recepcions.forEach(rc => { rc.arribada += 15 + Math.floor(rb() * 25); });
     s.dia = t; s.fase = 'briefing';
     return t;
   };

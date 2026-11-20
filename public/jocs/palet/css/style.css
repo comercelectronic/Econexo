@@ -276,3 +276,18 @@ body.hab-obert { overflow: hidden; }
 .hab-guia kbd { background: var(--sup2); border: 1px solid var(--vora); border-bottom-width: 2px; border-radius: 5px; padding: 0 5px; font: 600 12px var(--font); color: var(--text); }
 .hab-guia p { margin: 6px 0 0; }
 @media (max-width: 760px) { .hab-guia { width: auto; left: 8px; right: 8px; top: auto; bottom: 8px; padding: 6px 10px; } .hab-guia li:not(.ara) { display: none; } .hab-guia ol { list-style: none; padding: 0; } }
+/* ---------- Personatge i escenari (Osona) ---------- */
+.pers { display: flex; gap: 18px; align-items: flex-start; flex-wrap: wrap; background: var(--bg2); border: 1px solid var(--vora); border-radius: var(--r); padding: 14px; margin: 12px 0 8px; }
+.pers-prev { background: radial-gradient(circle at 50% 70%, #31415a, #1d293b); border-radius: 14px; padding: 10px 18px; display: flex; align-items: center; justify-content: center; min-width: 120px; }
+.pers-opc { display: grid; gap: 10px; flex: 1 1 300px; }
+.pers-fila { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; } .pers-fila > .small { width: 74px; color: var(--text2); }
+.mostres { display: flex; gap: 6px; flex-wrap: wrap; }
+.mostra { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--vora); background: var(--c); cursor: pointer; padding: 0; }
+.mostra.on { outline: 3px solid var(--groc); outline-offset: 2px; }
+.pobles { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin: 10px 0; }
+.chip-av { display: inline-flex; align-items: center; gap: 4px; } .chip-av svg { margin: -6px 0 -4px -4px; }
+.lloc-brief { margin: -6px 0 10px; }
+.retol-emp { position: absolute; left: 20px; top: 4px; background: #1f2937; color: #f8fafc; font: 700 13px var(--font); letter-spacing: .02em; padding: 4px 12px; border-radius: 6px; border: 2px solid #f5c542; box-shadow: 0 2px 6px rgba(0,0,0,.25); z-index: 2; pointer-events: none; }
+.boira { position: absolute; inset: 0; pointer-events: none; z-index: 6; background: radial-gradient(ellipse at 50% 50%, rgba(235,240,245,0) 35%, rgba(235,240,245,.55) 100%); animation: boira 14s ease-in-out infinite alternate; }
+@keyframes boira { from { opacity: .7; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .boira { animation: none; } }

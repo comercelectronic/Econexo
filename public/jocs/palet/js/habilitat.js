@@ -412,7 +412,7 @@
       // braços i mans
       ['L', 'R'].forEach((m, i) => {
         const h = mans[m], sg = i ? 1 : -1;
-        c.strokeStyle = i ? '#e07b39' : '#3d7fd9'; c.lineWidth = 14; c.lineCap = 'round'; c.globalAlpha = 0.35;
+        c.strokeStyle = cfg.avatar ? cfg.avatar.samarreta : (i ? '#e07b39' : '#3d7fd9'); c.lineWidth = 14; c.lineCap = 'round'; c.globalAlpha = cfg.avatar ? 0.6 : 0.35;
         c.beginPath(); c.moveTo(500 + sg * 40, 600); c.quadraticCurveTo(500 + sg * 120, (600 + h.y) / 2 + 40, h.x, h.y + 8); c.stroke(); c.globalAlpha = 1;
         c.fillStyle = h.agafat ? (i ? '#e07b39' : '#3d7fd9') : '#fff'; c.strokeStyle = i ? '#e07b39' : '#3d7fd9'; c.lineWidth = 3;
         c.beginPath(); c.arc(h.x, h.y, h.agafat ? 8 : 10, 0, Math.PI * 2); c.fill(); c.stroke();

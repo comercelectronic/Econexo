@@ -503,12 +503,12 @@
         c.fillStyle = '#4b5563'; c.fillRect(6, -22, 8, 44);                                    // pal
         c.fillStyle = '#111'; c.fillRect(-10, -31, 14, 6); c.fillRect(-10, 25, 14, 6);             // rodes davant
         c.save(); c.translate(-64, 0); c.rotate(ve.d * -1); c.fillRect(-7, -31, 14, 6); c.fillRect(-7, 25, 14, 6); c.restore();
-        c.fillStyle = '#e07b39'; c.beginPath(); c.arc(-34, 0, 9, 0, Math.PI * 2); c.fill();     // conductor
+        c.fillStyle = (cfg.avatar && cfg.avatar.cabell) || '#e07b39'; c.beginPath(); c.arc(-34, 0, 9, 0, Math.PI * 2); c.fill();     // conductor (vist de dalt: el cap)
       } else {
         c.fillStyle = '#e07b39'; PH.rrect(c, 50, -15, 16, 30, 4); c.fill();
         c.save(); c.translate(58, 0); c.rotate(ve.d * -1);
         c.strokeStyle = '#333'; c.lineWidth = 3; c.beginPath(); c.moveTo(0, 0); c.lineTo(36, 0); c.stroke(); c.fillStyle = '#333'; c.fillRect(34, -8, 4, 16);
-        c.fillStyle = '#3d7fd9'; c.beginPath(); c.arc(44, 0, 9, 0, Math.PI * 2); c.fill(); c.fillStyle = '#f0c7a0'; c.beginPath(); c.arc(44, 0, 5, 0, Math.PI * 2); c.fill();
+        const avv = cfg.avatar || {}; c.fillStyle = avv.armilla || avv.samarreta || '#3d7fd9'; c.beginPath(); c.arc(44, 0, 9, 0, Math.PI * 2); c.fill(); c.fillStyle = avv.cabell || '#5a3825'; c.beginPath(); c.arc(44, 0, 5, 0, Math.PI * 2); c.fill();
         c.restore();
       }
       c.restore();

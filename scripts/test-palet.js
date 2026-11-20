@@ -117,5 +117,13 @@ function jugaTornAmb(s, hab) { const orig = E.puntua; let h; E.puntua = (ss, res
   const be = jugaTornAmb(s3, [{ tipus: 'ubicar', prod: 'aigua', nota: 95, malmesos: [], caiguts: 0, copsForts: 0 }]);
   t(be.bons.some(b => /habilitat 95/.test(b)) && !be.errors.some(e => e[0] === 'manipulacio'), 'les maniobres netes es reconeixen');
 }
+{ // Osona: botigues del voltant del poble del magatzem i boira a la Plana
+  const s = E.crearPartida({ llavor: 41, nivell: 4, lloc: 'manlleu' });
+  t(s.dia.comandes.every(o => D.POBLES.manlleu.clients.includes(o.client)), 'les comandes són de botigues del voltant del magatzem');
+  t(E.clients(E.crearPartida({ llavor: 41 })).map(c => c.id).join() === 'vic,manlleu,torello,tona,centelles', 'les partides antigues mantenen les botigues de sempre');
+  let boira = 0, ok2 = true;
+  for (let ll = 1; ll <= 60; ll++) { const p = E.crearPartida({ llavor: ll, nivell: 2 }); const q = E.crearPartida({ llavor: ll, nivell: 2 }); if (p.dia.boira) { boira++; ok2 = ok2 && p.dia.recepcions.every((rc, i) => rc.arribada >= D.TORN_INICI); } void q; }
+  t(boira > 5 && boira < 35 && ok2, 'alguns matins d\'hivern hi ha boira (' + boira + ' de 60)');
+}
 console.log(ko ? '✘ ' + ko + ' errors · ' + ok + ' correctes' : '✔ ' + ok + ' comprovacions del motor de Palet');
 process.exit(ko ? 1 : 0);

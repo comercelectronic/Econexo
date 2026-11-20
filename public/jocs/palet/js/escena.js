@@ -33,12 +33,20 @@
   PS.nodeModul = nodeModul;
 
   /* ---------- Dibuix ---------- */
-  function persona(cos, cap) {
-    return `<svg viewBox="0 0 40 52" width="34" height="44" aria-hidden="true"><ellipse cx="20" cy="49" rx="11" ry="3" fill="rgba(0,0,0,.18)"/>
-      <rect x="11" y="22" width="18" height="20" rx="6" fill="${cos}"/><rect x="11" y="22" width="18" height="6" fill="#F5A524" opacity=".9"/>
+  // Personatge: pell, cabells (color i pentinat), samarreta i armilla d'alta visibilitat
+  function persona(av, mida) {
+    av = Object.assign({}, D.AVATAR_DEFECTE, av || {});
+    const c = av.cabell, m = mida || 1;
+    const darrere = av.pentinat === 'llarg' ? `<path d="M11.5 13a8.5 8.5 0 0 1 17 0v11h-3.5v-6h-10v6h-3.5z" fill="${c}"/>` : av.pentinat === 'cua' ? `<path d="M27 12c5 2 5 10 2 13-1-4-2-7-4-9z" fill="${c}"/>` : '';
+    const dalt = { curt: `<path d="M12 12a8 8 0 0 1 16 0c-3-2-5-2.5-8-2.5S15 10 12 12z" fill="${c}"/>`, llarg: `<path d="M12 12a8 8 0 0 1 16 0c-3-2-5-2.5-8-2.5S15 10 12 12z" fill="${c}"/>`, cua: `<path d="M12 12a8 8 0 0 1 16 0c-3-2-5-2.5-8-2.5S15 10 12 12z" fill="${c}"/>`,
+      monyo: `<circle cx="20" cy="4.5" r="3.6" fill="${c}"/><path d="M12 12a8 8 0 0 1 16 0c-3-2-5-2.5-8-2.5S15 10 12 12z" fill="${c}"/>`, rapat: `<path d="M12.5 11a7.6 7.6 0 0 1 15 0c-3-1.4-5-1.8-7.5-1.8s-4.5.4-7.5 1.8z" fill="${c}" opacity=".75"/>` }[av.pentinat] || '';
+    const armilla = av.armilla ? `<path d="M11 25h5.5v15H11zM23.5 25H29v15h-5.5z" fill="${av.armilla}"/><rect x="11" y="33" width="18" height="2.4" fill="#f1f5f9" opacity=".95"/>` : '';
+    return `<svg viewBox="0 0 40 52" width="${34 * m}" height="${44 * m}" aria-hidden="true"><ellipse cx="20" cy="49" rx="11" ry="3" fill="rgba(0,0,0,.18)"/>${darrere}
+      <rect x="11" y="22" width="18" height="20" rx="6" fill="${av.samarreta}"/>${armilla}
       <rect x="13" y="40" width="5" height="9" rx="2" fill="#334155"/><rect x="22" y="40" width="5" height="9" rx="2" fill="#334155"/>
-      <circle cx="20" cy="14" r="8" fill="#f2c9a0"/><path d="M12 12a8 8 0 0 1 16 0" fill="${cap}"/></svg>`;
+      <circle cx="20" cy="14" r="8" fill="${av.pell}"/>${dalt}<circle cx="17" cy="15" r=".9" fill="#222"/><circle cx="23" cy="15" r=".9" fill="#222"/></svg>`;
   }
+  PS.persona = persona;
   function vehicle(eq) {
     if (eq === 'toro') return `<svg class="veh" viewBox="0 0 60 40" width="60" height="40" aria-hidden="true"><rect x="16" y="6" width="30" height="28" rx="5" fill="#F5C542" stroke="#8a6d00"/><rect x="40" y="4" width="10" height="32" rx="3" fill="#555"/><rect x="2" y="9" width="16" height="4" fill="#777"/><rect x="2" y="27" width="16" height="4" fill="#777"/><circle cx="22" cy="36" r="4" fill="#222"/><circle cx="40" cy="36" r="4" fill="#222"/></svg>`;
     return `<svg class="veh" viewBox="0 0 60 40" width="60" height="40" aria-hidden="true"><rect x="2" y="9" width="34" height="5" rx="1" fill="#E05A47"/><rect x="2" y="26" width="34" height="5" rx="1" fill="#E05A47"/><rect x="34" y="8" width="8" height="24" rx="2" fill="#c0392b"/><path d="M42 20h12" stroke="#333" stroke-width="3"/><circle cx="56" cy="20" r="3" fill="#333"/></svg>`;
@@ -46,7 +54,7 @@
   const caixa = (prod, mida) => { const p = D.productes[prod]; return `<span class="cx" style="--c:${p.color};width:${mida}px;height:${mida}px" title="${esc(p.nom)}">${p.fragil ? '<i class="ic-fragil">⚠</i>' : ''}${p.fred ? '<i class="ic-fred">❄</i>' : ''}${p.perill ? '<i class="ic-perill">◆</i>' : ''}</span>`; };
   PS.caixa = caixa;
 
-  function plano(nivell) {
+  function plano(nivell, retol, boira) {
     const Z = D.ZONES;
     const TEMP = { refri: 'Cambra de refrigerats · 0-4 °C', conge: 'Cambra de congelats · −18 °C' };
     const racks = D.PASSADISSOS.map(p => {
@@ -69,6 +77,7 @@
       ${zona(Object.assign({}, Z.expedicio, D.MAG.mode === 'ecom' ? { nom: 'Embalatge i expedició' } : {}), 'z-exp', '<div class="moll" style="left:-6px;top:30px">MOLL 2</div><div class="moll" style="left:-6px;top:130px">MOLL 3</div><button class="moll-btn" data-moll="2" style="top:28px">Deixar al moll 2</button><button class="moll-btn" data-moll="3" style="top:128px">Deixar al moll 3</button><div class="palets-moll" id="pm2" style="top:62px"></div><div class="palets-moll" id="pm3" style="top:162px"></div>')}
       ${D.MAG.zones.includes('fred') ? zona(Z.fred, 'z-fred', fred) : ''}${D.MAG.zones.includes('perill') ? zona(Z.perill, 'z-perill', perill) : ''}
       <div class="park" style="left:140px;top:300px">P</div>
+      ${retol ? `<div class="retol-emp">🏭 ${esc(retol)}</div>` : ''}${boira ? '<div class="boira" aria-hidden="true"></div>' : ''}
       <div class="sortida" style="left:${Z.sortida.x - 14}px;top:${Z.sortida.y - 40}px" title="Sortida d'emergència">🚪<span>SORTIDA</span></div>
       <div class="extintor" style="left:1060px;top:420px" title="Extintor">🧯</div>
       ${racks}
@@ -82,7 +91,7 @@
   PS.torn = function (el, s, op) {
     const t = s.dia, NIV = E.nivell(s), EQ = D.EQUIPS[NIV.equip];
     const r = E.rngDe(s.config.llavor, 'escena' + s.torn);
-    el.innerHTML = `<div class="esc"><div class="esc-in">${plano(s.nivell)}</div></div>`;
+    el.innerHTML = `<div class="esc"><div class="esc-in">${plano(s.nivell, s.config.empresa ? s.config.empresa + (s.config.lloc && D.POBLES[s.config.lloc] ? ' · ' + D.POBLES[s.config.lloc].nom : '') : '', s.dia && s.dia.boira)}</div></div>`;
     const inEl = el.querySelector('.esc-in'), mg = el.querySelector('.mg'), ags = el.querySelector('#ags'), fx = el.querySelector('#fx');
     // Escalat a l'amplada disponible
     let escala = 1;
@@ -96,6 +105,7 @@
     if (t.inventari) t.inventari.recomptes.forEach(rc => { let falta = rc.teoric - rc.real; (stock[rc.slot] || []).slice().reverse().forEach(x => { const m = Math.min(falta, x.q); x.q -= m; falta -= m; }); });
     const carregues = [];                                       // càrregues del moll de recepció
     let minut = D.TORN_INICI, pausa = !!op.pausa, vel = 1, pressa = false, acabat = false;
+    const SEG_TORN = D.TORN_SEGONS * ((D.DURADA_HAB || {})[s.config.habilitat] || 1);   // amb habilitat física el torn dura més
     const arribades = new Set();
     function arribaCamio(rc) {
       if (arribades.has(rc.id)) return; arribades.add(rc.id);
@@ -104,12 +114,12 @@
       pintaMoll(); pintaCamions(); op.canvi && op.canvi();
     }
     // Treballador
-    const ag = document.createElement('div'); ag.className = 'treb'; ag.innerHTML = vehicle(NIV.equip) + `<span class="persona">${persona('#2563eb', '#1e3a8a')}</span><span class="carrega"></span><span class="bomb" hidden></span>`; ags.appendChild(ag);
+    const ag = document.createElement('div'); ag.className = 'treb'; ag.innerHTML = vehicle(NIV.equip) + `<span class="persona">${persona(s.config.avatar)}</span><span class="carrega"></span><span class="bomb" hidden></span>`; ags.appendChild(ag);
     const w = { x: N.park[0], y: N.park[1], node: 'park', path: [], porta: null, ocupat: null, pila: [], comanda: null, ona: [], piles: {}, dir: 1 };
     const ECOM = D.MAG.mode === 'ecom', CROSS = D.MAG.mode === 'cross';
     let obert = null;   // passadís mòbil obert
     // Cap (la Montse) que passa de tant en tant
-    const cap = document.createElement('div'); cap.className = 'cap-ag'; cap.innerHTML = persona('#9B7AE8', '#5b21b6') + '<span class="nom">Montse</span>'; cap.style.transform = `translate(${N.L2[0] - 17}px,${N.L2[1] - 60}px)`; ags.appendChild(cap);
+    const cap = document.createElement('div'); cap.className = 'cap-ag'; cap.innerHTML = persona({ pell: '#f0c7a0', cabell: '#5a3825', pentinat: 'llarg', samarreta: '#9B7AE8', armilla: '' }) + '<span class="nom">Montse</span>'; cap.style.transform = `translate(${N.L2[0] - 17}px,${N.L2[1] - 60}px)`; ags.appendChild(cap);
     function posa() { ag.style.transform = `translate(${w.x - 30}px,${w.y - 34}px) scaleX(${w.dir})`; }
     posa();
     function bombolla(t, cls) { const b = ag.querySelector('.bomb'); b.hidden = false; b.className = 'bomb ' + (cls || ''); b.textContent = t; clearTimeout(b._t); b._t = setTimeout(() => { b.hidden = true; }, 2200); }
@@ -315,9 +325,9 @@
       const dt = Math.min(0.1, (ara - ultim) / 1000); ultim = ara;
       if (!pausa && !acabat) {
         const dj = dt * vel;
-        minut += dj * (D.TORN_FI - D.TORN_INICI) / D.TORN_SEGONS;
+        minut += dj * (D.TORN_FI - D.TORN_INICI) / SEG_TORN;
         t.recepcions.forEach(rc => { if (minut >= rc.arribada) arribaCamio(rc); });
-        if (w.ocupat === 'treballa') { w.treball.resta -= dj * (D.TORN_FI - D.TORN_INICI) / D.TORN_SEGONS; if (w.treball.resta <= 0) { const f = w.treball.fet; w.ocupat = null; w.treball = null; ag.classList.remove('treballant'); f && f(); } }
+        if (w.ocupat === 'treballa') { w.treball.resta -= dj * (D.TORN_FI - D.TORN_INICI) / SEG_TORN; if (w.treball.resta <= 0) { const f = w.treball.fet; w.ocupat = null; w.treball = null; ag.classList.remove('treballant'); f && f(); } }
         else for (let k = 0; k < Math.round(vel); k++) mou(dt);
         // La cap fa la ronda
         capT += dj; if (capT > 25) { capT = 0; const nodes = ['rec', 'L2', 'b3', 'R2', 'exp']; const n2 = N[nodes[Math.floor(r() * nodes.length)]]; cap.style.transform = `translate(${n2[0] - 17}px,${n2[1] - 60}px)`; }

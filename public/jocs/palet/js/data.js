@@ -18,7 +18,7 @@
     ous:      { nom: 'Ous 12 dotzenes', ean: '8412345000116', pes: 8, rot: 'A', fragil: 1, cad: 28, color: '#f5deb3', icona: 'ous' },
     iogurt:   { nom: 'Iogurts 24 unitats', ean: '8412345000123', pes: 3.2, rot: 'A', cad: 21, fred: 'refri', color: '#f7f7ff', icona: 'iogurt' },
     formatge: { nom: 'Formatge fresc 12 unitats', ean: '8412345000130', pes: 3, rot: 'B', cad: 14, fred: 'refri', color: '#fff6d6', icona: 'formatge' },
-    embotit:  { nom: 'Embotit 10 peces', ean: '8412345000147', pes: 5, rot: 'B', cad: 45, fred: 'refri', color: '#c0505a', icona: 'embotit' },
+    embotit:  { nom: 'Llonganissa de Vic 10 peces', ean: '8412345000147', pes: 5, rot: 'B', cad: 45, fred: 'refri', color: '#c0505a', icona: 'embotit' },
     gelat:    { nom: 'Gelats 20 unitats', ean: '8412345000154', pes: 4, rot: 'C', cad: 365, fred: 'conge', color: '#bfe3ff', icona: 'gelat' },
     pesols:   { nom: 'Pèsols congelats 10 bosses', ean: '8412345000161', pes: 5, rot: 'B', cad: 365, fred: 'conge', color: '#7bc67e', icona: 'bossa' },
     lleixiu:  { nom: 'Lleixiu 4 × 5 L', ean: '8412345000178', pes: 21, rot: 'B', perill: 'corrosiu', color: '#9ad0ec', icona: 'garrafa' },
@@ -158,9 +158,37 @@
   // Clients (botigues) que fan comandes i rutes dels camions
   D.CLIENTS = [
     { id: 'vic', nom: 'Botiga de Vic' }, { id: 'manlleu', nom: 'Botiga de Manlleu' }, { id: 'torello', nom: 'Botiga de Torelló' },
-    { id: 'tona', nom: 'Botiga de Tona' }, { id: 'centelles', nom: 'Botiga de Centelles' }
+    { id: 'tona', nom: 'Botiga de Tona' }, { id: 'centelles', nom: 'Botiga de Centelles' },
+    { id: 'roda', nom: 'Botiga de Roda de Ter' }, { id: 'santhipolit', nom: 'Botiga de Sant Hipòlit' }, { id: 'gurb', nom: 'Botiga de Gurb' },
+    { id: 'taradell', nom: 'Botiga de Taradell' }, { id: 'calldetenes', nom: 'Botiga de Calldetenes' }, { id: 'seva', nom: 'Botiga de Seva' },
+    { id: 'sqb', nom: 'Botiga de Sant Quirze de Besora' }, { id: 'prats', nom: 'Botiga de Prats de Lluçanès' }
   ];
+  // On és el magatzem (Osona): cada poble té les seves botigues clients als pobles del voltant
+  D.POBLES = {
+    vic: { nom: 'Vic', desc: 'Capital d\'Osona, al bell mig de la Plana. Mercat cada dimarts i dissabte i molt de moviment de camions.', clients: ['manlleu', 'torello', 'tona', 'taradell', 'calldetenes'] },
+    manlleu: { nom: 'Manlleu', desc: 'Vora el Ter, amb tradició industrial i tèxtil. Camions cap al Ripollès i la Plana.', clients: ['vic', 'torello', 'roda', 'santhipolit', 'gurb'] },
+    torello: { nom: 'Torelló', desc: 'A la vall del Ges, porta del Bisaura. Rutes cap a la muntanya.', clients: ['manlleu', 'santhipolit', 'sqb', 'vic', 'roda'] },
+    tona: { nom: 'Tona', desc: 'Al sud de la Plana, a tocar de la C-17. Bona sortida cap a Barcelona.', clients: ['vic', 'centelles', 'taradell', 'seva', 'calldetenes'] },
+    centelles: { nom: 'Centelles', desc: 'A la porta sud d\'Osona, al costat de la C-17 i el Congost.', clients: ['tona', 'seva', 'vic', 'taradell', 'calldetenes'] },
+    roda: { nom: 'Roda de Ter', desc: 'Entre el Ter i la Plana, a prop de Vic i Manlleu.', clients: ['manlleu', 'vic', 'calldetenes', 'torello', 'santhipolit'] },
+    santhipolit: { nom: 'Sant Hipòlit de Voltregà', desc: 'Al Voltreganès, entre Manlleu i Torelló, vora el Ter.', clients: ['manlleu', 'torello', 'sqb', 'roda', 'vic'] },
+    gurb: { nom: 'Gurb', desc: 'Polígons al costat de Vic i de l\'Eix Transversal. Rutes cap al Lluçanès.', clients: ['vic', 'manlleu', 'prats', 'calldetenes', 'roda'] }
+  };
+  D.EMPRESES = ['Logística del Ter', 'Magatzems de la Plana', 'Distribucions del Montseny', 'Emmagatzematge Puigsacalm', 'Transports i Magatzems del Lluçanès'];
+  // El teu personatge
+  D.AVATAR = {
+    pell: ['#f6d7bd', '#f2c9a0', '#d9a273', '#b07a4f', '#7a4b2a', '#4e2f1c'],
+    cabell: ['#1f1a17', '#5a3825', '#a0652f', '#d6b26e', '#b5452f', '#9aa0a6', '#1e3a8a'],
+    pentinat: [['curt', 'Curt'], ['llarg', 'Llarg'], ['cua', 'Cua'], ['monyo', 'Monyo'], ['rapat', 'Rapat']],
+    samarreta: ['#2563eb', '#16a34a', '#dc2626', '#7c3aed', '#0f172a', '#e5e7eb', '#f59e0b'],
+    armilla: [['#F5A524', 'Taronja'], ['#d4e83a', 'Groc fluor'], ['#36B37E', 'Verda'], ['', 'Sense armilla']]
+  };
+  D.AVATAR_DEFECTE = { pell: '#f2c9a0', cabell: '#1e3a8a', pentinat: 'curt', samarreta: '#2563eb', armilla: '#F5A524' };
+  // La Montse comenta el dia
+  D.DITES = ['Qui matina, fa farina.', 'A poc a poc i bona lletra.', 'De mica en mica s\'omple la pica.', 'Feina feta no fa destorb.', 'Val més prevenir que curar.', 'Les coses ben fetes, ben semblen.'];
   D.PROVEIDORS = ['Distribucions Osona', 'Majorista del Ter', 'Proveïments Lluçanès', 'Logística Plana de Vic', 'Central de Compres Ripollès'];
+  // Amb habilitat física el torn dura més (temps real): les maniobres també són feina
+  D.DURADA_HAB = { off: 1, delicades: 1.5, totes: 2 };
 
   // Torn: durada en minuts del rellotge (de 8:00 a 14:00) i segons reals a velocitat ×1
   D.TORN_INICI = 8 * 60; D.TORN_FI = 14 * 60; D.TORN_SEGONS = 420;
