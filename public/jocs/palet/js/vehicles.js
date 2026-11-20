@@ -210,12 +210,13 @@
         const r = relacio(p, ve.x, ve.y, ve.a, ve.f);
         p.rel = r;
         // Carregar: forquilles dins i pugen fins al tauler de dalt
-        if (r.ok && r.prof > 8 && ve.f >= p.z + OBERT && ve.f > (ve.fAnt || 0) + 1e-4 && !ve.carrega) {
+        if (r.alineat && r.prof > 8 && ve.f >= p.z + OBERT && ve.f > (ve.fAnt || 0) + 1e-4 && (ve.fAnt || 0) <= p.z + OBERT + 1.01 && !ve.carrega) {   // les forquilles eren dins l'obertura i pugen
           p.carregat = true; p.dx = r.px; p.dy = r.py; p.da = r.da; p.malIntro = r.prof < 46; p.mogut = true; p.bay = null;
           ve.carrega = p; p.z = ve.f - OBERT;
           if (p.malIntro) s.avis('Les forquilles no estan introduïdes del tot: la càrrega va desequilibrada.', 'warn', 3000);
         }
       });
+      ve.dinsDe = palets.find(p => !p.carregat && p.rel && p.rel.alineat && p.rel.prof > 8) || null;
       if (ve.carrega) {
         const p = ve.carrega;
         const zNova = ve.f - OBERT;
@@ -279,7 +280,7 @@
         const rel = relacio(p, x, y, a, ve.f);
         const fBand = [ve.f - FORQ, ve.f];
         const fSolapa = fBand[0] < alc[1] && fBand[1] > alc[0];
-        if (fSolapa && !rel.ok) for (const c of forq) { const r = xoca(c, O); if (r) return { amb: { tipus: 'palet', nom: rel.alcadaOk ? 'el palet (forquilles mal alineades)' : 'el palet (forquilles a una alçada que no és la de l\'obertura)', palet: p }, part: 'forquilles', r }; }
+        if (fSolapa && !rel.ok && !(rel.alineat && rel.prof > 8 && p === (ve.dinsDe || null))) for (const c of forq) { const r = xoca(c, O); if (r) return { amb: { tipus: 'palet', nom: rel.alcadaOk ? 'el palet (forquilles mal alineades)' : 'el palet (forquilles a una alçada que no és la de l\'obertura)', palet: p }, part: 'forquilles', r }; }
         if (PO && alcPal[0] < alc[1] && alcPal[1] > alc[0]) { const r = xoca(PO, O); if (r) return { amb: { tipus: 'palet', nom: 'un altre palet', palet: p }, part: 'palet', r }; }
       }
       // Deixalles (productes per terra): s'empenyen
