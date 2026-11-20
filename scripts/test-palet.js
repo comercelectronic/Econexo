@@ -125,5 +125,16 @@ function jugaTornAmb(s, hab) { const orig = E.puntua; let h; E.puntua = (ss, res
   for (let ll = 1; ll <= 60; ll++) { const p = E.crearPartida({ llavor: ll, nivell: 2 }); const q = E.crearPartida({ llavor: ll, nivell: 2 }); if (p.dia.boira) { boira++; ok2 = ok2 && p.dia.recepcions.every((rc, i) => rc.arribada >= D.TORN_INICI); } void q; }
   t(boira > 5 && boira < 35 && ok2, 'alguns matins d\'hivern hi ha boira (' + boira + ' de 60)');
 }
+{ // Continguts del mòdul treballats
+  const s = E.crearPartida({ llavor: 51, nivell: 2, magatzem: 'aliment', avatar: { armilla: '#F5A524' } });
+  for (let i = 0; i < 4; i++) { jugaTorn(s, 'bo'); E.continuar(s); }
+  const c = E.cobertura(s);
+  t(s.historial.every(h => h.cont && h.cont['2.2']), 'cada torn registra els continguts treballats');
+  t(E.estatCont(c['4.2']) === 'assolit' && E.estatCont(c['4.4']) === 'no', 'el picking amb FEFO s\'assoleix; l\'inventari (nivell 5) encara no');
+  const z = E.crearPartida({ llavor: 53, nivell: 2 }); E.puntua(z, { recepcio: {}, ubicacions: {}, picking: [], palets: [], carrega: {}, incidents: [], inventari: { recomptes: {}, comandes: {} }, cross: {}, fred: {}, fi: 8 * 60 });
+  t(!Object.keys(z.historial[0].cont).length, 'un torn acabat sense fer res no compta com a treballat');
+  const d = E.crearPartida({ llavor: 52, nivell: 2 }); jugaTorn(d, 'dolent');
+  t(d.historial[0].cont['4.2'] === 'err', 'els errors de FEFO marquen el contingut amb errors');
+}
 console.log(ko ? '✘ ' + ko + ' errors · ' + ok + ' correctes' : '✔ ' + ok + ' comprovacions del motor de Palet');
 process.exit(ko ? 1 : 0);

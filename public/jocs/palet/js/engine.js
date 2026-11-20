@@ -94,6 +94,49 @@
   E.estocDe = (s, prod) => Object.values(s.stock).reduce((a, l) => a + l.filter(x => x.prod === prod).reduce((b, x) => b + x.q, 0), 0);
 
   // Data del joc (dia 1 = dilluns 2 de novembre)
+
+  /* ---------- Continguts del mòdul treballats ---------- */
+  // Continguts que es treballen en un torn (ok) i on hi ha hagut errors (err)
+  E.contTorn = function (config, nivell, cats, hab, actiu) {
+    config = config || {};
+    const M = D.MAGATZEMS[config.magatzem] || D.MAGATZEMS.aliment, N = D.NIVELLS[(nivell || 1) - 1] || D.NIVELLS[0];
+    let TQ = N.tasques.slice();
+    if (M.mode === 'cross') TQ = ['recepcio', 'cross']; else if (M.mode === 'ecom') TQ = TQ.filter(x => x !== 'carrega');
+    if (actiu) TQ = TQ.filter(x => actiu[x]);
+    const c = {}, fet = (...k) => k.forEach(x => { if (!c[x]) c[x] = 'ok'; });
+    if (actiu && !TQ.length && !(hab || []).length) return c;   // torn sense feina feta
+    fet('1.1', '1.2', '3.5', '7.1', '7.4', '8.1', '8.4');
+    if (TQ.includes('recepcio')) fet('2.1', '2.2', '2.3', '2.4', '2.5');
+    if (TQ.includes('ubicacio')) fet('1.4', '1.5', '1.6');
+    const tipus = new Set(Object.values(M.passadissos).flatMap(p => [p.tipus].concat(Object.values(p.mods || {}))));
+    if (['dinamic', 'compacte', 'mobil', 'cantilever', 'picking'].some(x => tipus.has(x))) fet('1.3');
+    const prods = M.prods.map(id => D.productes[id]).filter(Boolean);
+    if (prods.some(p => p.fred) || M.zones.includes('fred')) fet('3.1', '3.2');
+    if (prods.some(p => p.fragil)) fet('3.3');
+    if (prods.some(p => p.perill) || M.zones.includes('perill')) fet('3.4');
+    if (TQ.includes('picking')) fet('5.1', '5.2', '5.3', '5.4', '4.2', '8.2');
+    if (TQ.includes('carrega') || TQ.includes('cross')) fet('5.6');
+    if (TQ.includes('inventari')) fet('4.1', '4.4', '4.5');
+    fet(N.equip === 'toro' ? '6.2' : '6.1', '6.4'); if (N.equip === 'toro') fet('6.3');
+    (hab || []).forEach(x => { if (x.mitja === 'ma') fet('7.2'); if (x.mitja === 'toro') fet('6.2', '6.3'); if (x.mitja === 'transpalet') fet('6.1'); });
+    if (config.avatar) { if (config.avatar.armilla) fet('7.3'); else c['7.3'] = 'err'; }
+    (cats || []).forEach(k => (D.TEMARI.errors[k] || []).forEach(x => { if (c[x]) c[x] = 'err'; }));
+    return c;
+  };
+  // Completa els torns antics (d'abans d'aquest registre)
+  const actiuDeKpi = (k) => k ? { recepcio: k.recOk > 0 || k.carregues > 0 && k.recOk > 0, ubicacio: k.ubicades > 0, picking: k.liniesOk > 0, carrega: k.aTemps > 0, inventari: k.recomptesFets > 0, cross: k.crossOk > 0 } : null;
+  E.migraCont = function (s) { (s.historial || []).forEach(h => { if (!h.cont) h.cont = E.contTorn(s.config, h.nivell, (h.errors || []).concat(h.greus || []).map(e => e[0]), [], actiuDeKpi(h.kpi)); }); };
+  // Estat d'un contingut a partir dels torns, les lliçons i el taller
+  E.estatCont = (x) => { if (!x || (!x.fets && x.teoria == null && x.taller == null)) return 'no'; const pct = x.fets ? x.ok / x.fets : 0; return (x.fets >= 3 && pct >= 0.75) || (x.fets >= 1 && x.taller >= 65 && pct >= 0.5) ? 'assolit' : 'treballat'; };
+  // Cobertura del temari d'una partida: { codi: { fets, ok, teoria, taller } }
+  E.cobertura = function (s) {
+    const out = {};
+    D.TEMARI.continguts.forEach(([k]) => { out[k] = { fets: 0, ok: 0, teoria: null, taller: null }; });
+    (s.historial || []).forEach(h => { const c = h.cont || E.contTorn(s.config, h.nivell, (h.errors || []).concat(h.greus || []).map(e => e[0])); Object.keys(c).forEach(k => { if (!out[k]) return; out[k].fets++; if (c[k] === 'ok') out[k].ok++; }); });
+    Object.entries(s.llicons || {}).forEach(([id, r]) => (D.TEMARI.llicons[id] || []).forEach(k => { if (out[k]) out[k].teoria = out[k].teoria || !!(r && r.ok); }));
+    Object.entries(s.taller || {}).forEach(([id, n]) => (D.TEMARI.taller[id] || []).forEach(k => { if (out[k]) out[k].taller = Math.max(out[k].taller || 0, +n || 0); }));
+    return out;
+  };
   // Botigues clients segons el poble del magatzem
   E.clients = (s) => { const P = s.config && s.config.lloc && D.POBLES[s.config.lloc]; return P ? P.clients.map(id => D.CLIENTS.find(c => c.id === id)) : D.CLIENTS.slice(0, 5); };
   E.data = (dia) => { const d = new Date(Date.UTC(2026, 10, 1 + dia)); return d.getUTCDate() + '/' + (d.getUTCMonth() + 1); };
@@ -347,6 +390,11 @@
     const r = E.rngDe(s.config.llavor, 'frase' + s.torn);
     const h = { torn: s.torn, dia: t.dia, nivell: s.nivell, nota, productivitat, qualitat, seguretat, veredicte, canvi, frase: tria(r, D.FRASES[canvi === 'ascens' ? 'ascens' : canvi === 'acomiadament' ? 'acomiadament' : veredicte]).replace('{0}', canvi === 'ascens' ? D.NIVELLS[s.nivell].nom.toLowerCase() : ''),
       errors: err, greus, bons, kpi: Object.assign({}, k, { caducats, fi: res.fi, comandesATemps: k.comandes ? Math.round(k.aTemps / k.comandes * 100) : null, errorsPicking: k.linies ? Math.round((k.linies - k.liniesOk) / k.linies * 100) : null }), avisos: s.avisos };
+    const recFets = t.inventari ? t.inventari.recomptes.filter(rc => res.inventari.recomptes[rc.slot] != null).length : 0;
+    h.kpi.recomptesFets = recFets;
+    h.cont = E.contTorn(s.config, s.nivell, err.concat(greus).map(e => e[0]), HB, {
+      recepcio: Object.keys(res.recepcio).length > 0, ubicacio: Object.keys(res.ubicacions).length > 0, picking: res.picking.length > 0,
+      carrega: Object.keys(res.carrega || {}).length > 0 || (res.palets || []).length > 0, inventari: recFets > 0 || Object.keys(res.inventari.comandes || {}).length > 0, cross: Object.keys(res.cross || {}).length > 0 });
     s.historial.push(h); s.darrer = h;
     s.xp += Math.max(0, nota);
     if (canvi === 'ascens') { s.nivell++; s.tornsBons = 0; s.avisos = 0; }

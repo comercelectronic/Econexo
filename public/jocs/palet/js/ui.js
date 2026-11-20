@@ -77,6 +77,42 @@
   const barra = (v, c) => `<span class="barra"><i style="width:${Math.max(0, Math.min(100, v))}%;background:${c}"></i></span>`;
   const avisos = () => `<span class="avisos" title="Avisos de la cap">${Array.from({ length: D.AVISOS_ACOMIADAMENT }, (_, i) => `<i class="${i < S.avisos ? 'on' : ''}">!</i>`).join('')}</span>`;
 
+  /* ---------- Continguts del mòdul treballats ---------- */
+  const EST_TXT = { assolit: ['✓', 'Assolit'], treballat: ['•', 'Treballat'], no: ['○', 'Encara no'], fora: ['—', 'Fora del joc'] };
+  const estatDe = (k, x) => D.TEMARI.fora.includes(k) ? 'fora' : E.estatCont(x);
+  // Resum per bloc: [assolits, treballats, jugables]
+  function resumBlocs(cob) {
+    const out = {};
+    Object.keys(D.TEMARI.blocs).forEach(b => { out[b] = [0, 0, 0]; });
+    D.TEMARI.continguts.forEach(([k]) => { const b = k.split('.')[0], e = estatDe(k, cob && cob[k]); if (e === 'fora') return; out[b][2]++; if (e === 'assolit') out[b][0]++; if (e !== 'no') out[b][1]++; });
+    return out;
+  }
+  function htmlCobertura(cob) {
+    const rb = resumBlocs(cob);
+    const tot = Object.values(rb).reduce((a, x) => [a[0] + x[0], a[1] + x[1], a[2] + x[2]], [0, 0, 0]);
+    return `<div class="cob-tot"><b>${tot[0]}</b> continguts assolits i <b>${tot[1]}</b> treballats de ${tot[2]} que es practiquen al joc.</div>
+      <p class="small muted cob-llegenda">${['assolit', 'treballat', 'no', 'fora'].map(e => `<span class="cob-e ${e}">${EST_TXT[e][0]}</span> ${EST_TXT[e][1]}`).join(' · ')}. Assolit: practicat en 3 torns o més amb un 75 % sense errors (o un bon resultat al taller d'habilitat).</p>
+      ${D.RA && D.RA.length ? `<h3 class="h3">Resultats d'aprenentatge</h3><div class="cob-ra">${D.RA.map(ra => { const ks = ra.continguts.filter(k => !D.TEMARI.fora.includes(k)), as = ks.filter(k => estatDe(k, cob[k]) === 'assolit').length, tr = ks.filter(k => estatDe(k, cob[k]) !== 'no').length; return `<div class="cob-ra-f"><b>${esc(ra.codi)}</b> <span class="small">${esc(ra.text)}</span><span class="barra"><i style="width:${ks.length ? as / ks.length * 100 : 0}%;background:var(--verd)"></i></span><small class="muted">${as} assolits · ${tr} treballats · ${ks.length} continguts</small></div>`; }).join('')}</div>` : ''}
+      <div class="cob-blocs">${Object.entries(D.TEMARI.blocs).map(([b, nom]) => `<section class="cob-bloc"><h3><span>${b}. ${esc(nom)}</span><small>${rb[b][0]}/${rb[b][2]}</small></h3><span class="barra"><i style="width:${rb[b][2] ? rb[b][0] / rb[b][2] * 100 : 0}%;background:var(--verd)"></i></span>
+        <ul>${D.TEMARI.continguts.filter(([k]) => k.split('.')[0] === b).map(([k, t]) => { const x = cob && cob[k], e = estatDe(k, x); return `<li class="${e}"><span class="cob-e ${e}" title="${EST_TXT[e][1]}">${EST_TXT[e][0]}</span><span><b>${k}</b> ${esc(t)}${x && e !== 'fora' && (x.fets || x.teoria != null || x.taller != null) ? `<small class="muted">${x.fets ? x.fets + ' torn' + (x.fets > 1 ? 's' : '') + ' · ' + Math.round(x.ok / x.fets * 100) + ' % sense errors' : ''}${x.teoria != null ? ' · 📘 lliçó ' + (x.teoria ? '✓' : '✗') : ''}${x.taller != null ? ' · 🎯 taller ' + x.taller : ''}</small>` : ''}</span></li>`; }).join('')}</ul></section>`).join('')}</div>`;
+  }
+  function progres() {
+    const p = carrega();
+    if (!p) return portada();
+    E.migraCont(p);
+    app.innerHTML = `<main class="config" style="max-width:1100px"><button class="btn ghost small" id="enr">← Tornar</button><h1>📚 Què he treballat</h1>
+      <p class="muted">Continguts del mòdul <b>Tècniques de magatzem</b> que has practicat a Palet: als torns, a les lliçons i al taller d'habilitat. ${p.historial.length} torns jugats.</p>
+      ${htmlCobertura(E.cobertura(p))}
+      <p class="small"><a href="https://ecoynexo.com/ca/aprender/actividades-comerciales/tecnicas-de-almacen/" target="_blank" rel="noopener">📖 Repassa els continguts a les lliçons d'ECO i NEXO ↗</a></p></main>`;
+    $('#enr').onclick = portada;
+  }
+  // Resultats del taller a la partida (perquè comptin al progrés i els vegi el professorat)
+  function notaTaller(id, nota) {
+    const p = carrega(); if (!p) return;
+    p.taller = p.taller || {}; p.taller[id] = Math.max(p.taller[id] || 0, nota);
+    const ant = S; S = p; desa(); desaNuvol(); S = ant;
+  }
+
   /* ---------- Portada ---------- */
   function portada() {
     aturaTorn(); S = null;
@@ -88,12 +124,13 @@
         ${pot ? `<button class="btn prim big" data-a="continua">▶ Continua <small>${esc(desat.config.nom)} · ${(D.MAGATZEMS[desat.config.magatzem] || D.MAGATZEMS.aliment).icona} ${esc(D.NIVELLS[desat.nivell - 1].nom)} · torn ${desat.torn}</small></button>` : ''}
         <button class="btn ${pot ? '' : 'prim'} big" data-a="juga">📦 Juga <small>comença de mosso</small></button>
         <button class="btn big" data-a="taller">🎯 Taller d'habilitat <small>mans, transpalet i toro</small></button>
+        ${pot ? '<button class="btn big" data-a="progres">📚 Què he treballat <small>continguts del mòdul</small></button>' : ''}
         <button class="btn big" data-a="ajuda">❓ Com es juga</button>
         <button class="btn big" data-a="docent">🧑‍🏫 Mode docent <small>progrés dels alumnes</small></button>
         <a class="btn big" href="https://ecoynexo.com/ca/aprender/actividades-comerciales/tecnicas-de-almacen/" target="_blank" rel="noopener">📚 Lliçons del mòdul <small>Tècniques de magatzem</small></a>
       </nav>
       <p class="peu">Simulador del mòdul Tècniques de magatzem (CFGM Activitats Comercials) · ECOyNEXO</p></div></main>`;
-    $$('[data-a]').forEach(b => b.onclick = () => ({ continua: () => { S = desat; joc(); }, juga: configurar, ajuda, docent, taller: () => window.PH.taller(app, portada), compte: () => modalCompte('entrar'), surt: () => { desaCompte(null); portada(); } })[b.dataset.a]());
+    $$('[data-a]').forEach(b => b.onclick = () => ({ continua: () => { S = desat; joc(); }, juga: configurar, ajuda, docent, taller: () => window.PH.taller(app, portada, notaTaller), progres, compte: () => modalCompte('entrar'), surt: () => { desaCompte(null); portada(); } })[b.dataset.a]());
   }
   function configurar() {
     let nivell = 1, mag = D.MAGATZEM_PER_DEFECTE, hab = 'delicades', lloc = 'vic';
@@ -156,7 +193,7 @@
   function joc() {
     aturaTorn();
     if (!S) return portada();
-    E.mag(S); desa();
+    E.mag(S); E.migraCont(S); desa();
     if (S.fase === 'final') return final();
     if (S.fase === 'resultat') return resultat();
     if (S.fase === 'torn') S.fase = 'briefing';   // un torn a mitges es torna a començar
@@ -358,8 +395,9 @@
     const RITME = D.HAB_MIN_PER_S;
     const fi = (r, tSortida) => {
       const seg = r ? r.tempsTotal : (tSortida || 0), min = seg * RITME;
-      const reg = r ? { tipus: info.tipus, prod: info.prod, minut: info.minut, nota: r.nota, malmesos: (r.malmesos || []).map(m => ({ nom: m.nom, estat: m.estat })), caiguts: (r.caiguts || 0) + (r.perduts || 0), copsForts: r.copsForts || 0, greu: r.bolcat ? 'bolcada' : (r.incidents || []).some(t => /bigues/.test(t)) ? 'palet' : null }
-        : { tipus: info.tipus, prod: info.prod, minut: info.minut, nota: 0, abandonat: true };
+      const mitja = ambVehicle ? (info.equip === 'toro' ? 'toro' : 'transpalet') : 'ma';
+      const reg = r ? { tipus: info.tipus, mitja, prod: info.prod, minut: info.minut, nota: r.nota, malmesos: (r.malmesos || []).map(m => ({ nom: m.nom, estat: m.estat })), caiguts: (r.caiguts || 0) + (r.perduts || 0), copsForts: r.copsForts || 0, greu: r.bolcat ? 'bolcada' : (r.incidents || []).some(t => /bigues/.test(t)) ? 'palet' : null }
+        : { tipus: info.tipus, mitja, prod: info.prod, minut: info.minut, nota: 0, abandonat: true };
       ctrl && ctrl.habilitat(reg);
       if (r && (reg.malmesos.length || reg.greu)) toast(`${montse('petita')} <span><b>Montse:</b> ${reg.greu === 'bolcada' ? 'Has bolcat el toro! Això és gravíssim.' : reg.greu ? 'Un palet a terra des de les bigues… Revisa com el deixes.' : 'Compte amb la mercaderia: el que es trenca és una merma.'}</span>`, 'bronca', 5000);
       ctrl && ctrl.avanca(min);
@@ -513,18 +551,31 @@
         const ll = d.alumnes.filter(a => !g || a.classe === g);
         $('#est').textContent = ll.length ? '' : 'Encara no hi ha cap alumne amb compte.';
         const data = (t) => t ? new Date(t).toLocaleString('ca', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—';
-        $('#ta').innerHTML = ll.length ? `<div class="taula-w"><table class="t"><thead><tr><th>Alumne</th><th>Grup</th><th>Magatzem</th><th>Nivell</th><th class="n">Torns</th><th class="n">Nota mitjana</th><th class="n">Avisos</th><th>Errors més freqüents</th><th class="n">Lliçons</th><th>Darrer desat</th><th></th></tr></thead><tbody>
+        $('#ta').innerHTML = ll.length ? `<div class="taula-w"><table class="t"><thead><tr><th>Alumne</th><th>Grup</th><th>Magatzem</th><th>Nivell</th><th class="n">Torns</th><th class="n">Nota mitjana</th><th class="n">Avisos</th><th>Errors més freqüents</th><th class="n">Lliçons</th><th class="n" title="Continguts assolits / treballats">Continguts</th><th>Darrer desat</th><th></th></tr></thead><tbody>
           ${ll.map(a => { const p = a.partida; return `<tr><td><b>${esc(a.nom)}</b><br><small class="muted">${esc(a.usuari)}</small></td><td>${esc(a.classe)}</td>
             <td>${p ? nomMag(p.magatzem) : ''}</td><td>${p ? esc(p.nivellNom) + (p.acomiadat ? ' <span class="tag vermell">acomiadat</span>' : '') : '<span class="muted">Sense partida</span>'}</td><td class="n">${p ? p.torns : ''}</td><td class="n">${p && p.notaMitja != null ? '<b>' + p.notaMitja + '</b>' : ''}</td><td class="n">${p ? p.avisos + ' / 3' : ''}</td>
-            <td class="small">${p ? p.errorsFreq.map(([t, n]) => esc(NOM_TEMA[t] || t) + ' (' + n + ')').join(', ') || '—' : ''}</td><td class="n">${p ? p.llEnc + ' / ' + p.llResp : ''}</td><td class="small">${data(p ? p.at : a.darrer)}</td>
+            <td class="small">${p ? p.errorsFreq.map(([t, n]) => esc(NOM_TEMA[t] || t) + ' (' + n + ')').join(', ') || '—' : ''}</td><td class="n">${p ? p.llEnc + ' / ' + p.llResp : ''}</td><td class="n">${p && p.cont ? (() => { const t = Object.values(resumBlocs(p.cont)).reduce((a, x) => [a[0] + x[0], a[1] + x[1]], [0, 0]); return `<b>${t[0]}</b> / ${t[1]}`; })() : ''}</td><td class="small">${data(p ? p.at : a.darrer)}</td>
             <td><div class="row" style="flex-wrap:nowrap">${p ? `<button class="btn small" data-veu="${esc(a.usuari)}">Veure</button>` : ''}<button class="btn small ghost" data-pwu="${esc(a.usuari)}" title="Canviar la contrasenya">🔑</button></div></td></tr>`; }).join('')}</tbody></table></div>
-          <div class="row" style="margin-top:10px"><button class="btn" id="csv">⬇ Descarregar (CSV)</button></div>` : '';
+          <div class="row" style="margin-top:10px"><button class="btn" id="grupCont">📊 Continguts del grup</button><button class="btn" id="csv">⬇ Descarregar (CSV)</button></div>` : '';
+        if ($('#grupCont')) $('#grupCont').onclick = () => {
+          const amb = ll.filter(a => a.partida && a.partida.cont), cel = (x) => { const v = x[2] ? Math.round(x[0] / x[2] * 100) : 0; return `<td class="n cob-cel" style="--v:${v}" title="${x[0]} assolits, ${x[1]} treballats de ${x[2]}">${x[0]}/${x[2]}</td>`; };
+          const perCont = D.TEMARI.continguts.filter(([k]) => !D.TEMARI.fora.includes(k)).map(([k, t]) => [k, t, amb.filter(a => estatDe(k, a.partida.cont[k]) === 'assolit').length, amb.filter(a => estatDe(k, a.partida.cont[k]) !== 'no').length]);
+          modal(`<h2>📊 Continguts treballats${g ? ' · ' + esc(g) : ''}</h2><p class="small muted">Continguts assolits per bloc del temari (sobre els que es practiquen al joc). ${amb.length} alumnes amb partida.</p>
+            <div class="taula-w"><table class="t cob-mat"><thead><tr><th>Alumne</th>${Object.entries(D.TEMARI.blocs).map(([b, n]) => `<th class="n" title="${esc(n)}">${b}</th>`).join('')}</tr></thead><tbody>
+            ${amb.map(a => { const rb = resumBlocs(a.partida.cont); return `<tr><td>${esc(a.nom)}</td>${Object.keys(D.TEMARI.blocs).map(b => cel(rb[b])).join('')}</tr>`; }).join('')}</tbody></table></div>
+            <p class="small">${Object.entries(D.TEMARI.blocs).map(([b, n]) => `<b>${b}</b> ${esc(n)}`).join(' · ')}</p>
+            <h3 class="h3">Per contingut</h3><div class="taula-w"><table class="t"><thead><tr><th>Contingut</th><th class="n">Assolit</th><th class="n">Treballat</th></tr></thead><tbody>
+            ${perCont.map(([k, t, as, tr]) => `<tr class="${tr === 0 ? 'muted' : ''}"><td><b>${k}</b> ${esc(t)}</td><td class="n">${as} / ${amb.length}</td><td class="n">${tr} / ${amb.length}</td></tr>`).join('')}</tbody></table></div>
+            <p class="small muted">Fora del joc (cal treballar-los a classe): ${D.TEMARI.continguts.filter(([k]) => D.TEMARI.fora.includes(k)).map(([k, t]) => k + ' ' + esc(t)).join(' · ')}.</p>
+            <div class="row"><button class="btn" id="tc" data-focus>Tancar</button></div>`, (m) => { $('#tc', m).onclick = tancaModal; }, { ample: true, tancable: true });
+        };
         $$('[data-veu]').forEach(b => b.onclick = async () => {
           try { const x = await crida({ action: 'alumne', password: pw, usuari: b.dataset.veu }); const r = x.resum;
             modal(`<h2>${esc(x.compte.nom)} <small class="muted">${esc(x.compte.usuari)} · ${esc(x.compte.classe)}</small></h2>
               <p>${nomMag(r.magatzem)} · ${esc(r.nivellNom)} · ${r.torns} torns · nota mitjana <b>${r.notaMitja == null ? '—' : r.notaMitja}</b> · ${r.ascensos} ascensos · ${r.broncas} broncas${r.acomiadaments ? ' · ' + r.acomiadaments + ' acomiadaments' : ''}</p>
               <div class="taula-w"><table class="t"><thead><tr><th>Torn</th><th>Nivell</th><th class="n">Nota</th><th class="n">Prod.</th><th class="n">Qualitat</th><th class="n">Seguretat</th><th class="n">Errors</th><th>Cap</th></tr></thead><tbody>
               ${r.historial.map(h => `<tr><td>${h.torn}</td><td>${h.nivell}</td><td class="n"><b>${h.nota}</b></td><td class="n">${h.productivitat}</td><td class="n">${h.qualitat}</td><td class="n">${h.seguretat}</td><td class="n">${h.errors}</td><td>${h.canvi === 'ascens' ? '🎉 ascens' : h.canvi === 'acomiadament' ? '📄 acomiadament' : h.veredicte === 'bronca' ? '⚠ bronca' : h.veredicte === 'bo' ? '✓' : ''}</td></tr>`).join('')}</tbody></table></div>
+              <h3 class="h3">Continguts del mòdul treballats</h3>${r.cont ? htmlCobertura(r.cont) : '<p class="small muted">Encara no hi ha dades: es calculen quan l\'alumne torna a jugar o obre el joc.</p>'}
               ${x.partides.length ? `<p class="small muted">Partides anteriors: ${x.partides.map(p => nomMag(p.magatzem) + ' · ' + esc(p.nivellNom) + ' (' + p.torns + ' torns, nota ' + (p.notaMitja == null ? '—' : p.notaMitja) + ')').join(' · ')}</p>` : ''}
               <div class="row"><button class="btn" id="tc" data-focus>Tancar</button></div>`, (m) => { $('#tc', m).onclick = tancaModal; }, { ample: true, tancable: true });
           } catch (e) { toast(esc(e.message), 'neg'); }
@@ -534,8 +585,8 @@
           $('#ok', m).onclick = async () => { try { await crida({ action: 'alumne-contrasenya', password: pw, usuari: b.dataset.pwu, nova: $('#npw', m).value }); tancaModal(); toast('Contrasenya canviada.', 'pos'); } catch (e) { $('#npE', m).textContent = e.message; } };
         }, { tancable: true }));
         if ($('#csv')) $('#csv').onclick = () => { const q = (v) => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
-          const txt = '\ufeff' + [['Alumne', 'Usuari', 'Grup', 'Magatzem', 'Nivell', 'Torns', 'Nota mitjana', 'Avisos', 'Broncas', 'Ascensos', 'Errors freqüents', 'Lliçons encertades', 'Lliçons respostes'].map(q).join(';')]
-            .concat(ll.map(a => { const p = a.partida || {}; return [a.nom, a.usuari, a.classe, p.magatzem ? (D.MAGATZEMS[p.magatzem] || {}).nom : '', p.nivellNom, p.torns, p.notaMitja, p.avisos, p.broncas, p.ascensos, (p.errorsFreq || []).map(([t, n]) => (NOM_TEMA[t] || t) + ' ' + n).join(', '), p.llEnc, p.llResp].map(q).join(';'); })).join('\n');
+          const txt = '\ufeff' + [['Alumne', 'Usuari', 'Grup', 'Magatzem', 'Nivell', 'Torns', 'Nota mitjana', 'Avisos', 'Broncas', 'Ascensos', 'Errors freqüents', 'Lliçons encertades', 'Lliçons respostes', 'Continguts assolits', 'Continguts treballats'].concat(Object.keys(D.TEMARI.blocs).map(b => 'Bloc ' + b + ' (assolits)')).map(q).join(';')]
+            .concat(ll.map(a => { const p = a.partida || {}; return [a.nom, a.usuari, a.classe, p.magatzem ? (D.MAGATZEMS[p.magatzem] || {}).nom : '', p.nivellNom, p.torns, p.notaMitja, p.avisos, p.broncas, p.ascensos, (p.errorsFreq || []).map(([t, n]) => (NOM_TEMA[t] || t) + ' ' + n).join(', '), p.llEnc, p.llResp].concat(p.cont ? (() => { const rb = resumBlocs(p.cont), t = Object.values(rb).reduce((a, x) => [a[0] + x[0], a[1] + x[1]], [0, 0]); return [t[0], t[1]].concat(Object.keys(D.TEMARI.blocs).map(b => rb[b][0] + '/' + rb[b][2])); })() : []).map(q).join(';'); })).join('\n');
           const el = document.createElement('a'); el.href = URL.createObjectURL(new Blob([txt], { type: 'text/csv' })); el.download = 'palet-alumnes.csv'; document.body.appendChild(el); el.click(); el.remove(); };
       } catch (e) { $('#est').textContent = e.message; }
     };

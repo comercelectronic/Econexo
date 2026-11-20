@@ -214,6 +214,20 @@
     acomiadament: ['Ho sento, però amb tants avisos no puc continuar comptant amb tu. Pots tornar a provar-ho des del principi del nivell.']
   };
 
+  // Temari del mòdul Tècniques de magatzem (el mateix que les lliçons d'ECO i NEXO)
+  D.TEMARI = {
+    blocs: {"1": "Organització del magatzem", "2": "Recepció de mercaderies", "3": "Emmagatzematge i conservació", "4": "Gestió d'estocs i inventaris", "5": "Preparació de comandes i expedició", "6": "Equips de manipulació", "7": "Prevenció de riscos laborals al magatzem", "8": "Gestió informatitzada, traçabilitat i indicadors"},
+    continguts: [["1.1", "El magatzem: funcions i tipus"], ["1.2", "Zones del magatzem i distribució en planta"], ["1.3", "Sistemes d'emmagatzematge: convencional, compacte, dinàmic i mòbil"], ["1.4", "Ubicació fixa i ubicació caòtica"], ["1.5", "Codificació d'ubicacions"], ["1.6", "Criteris de col·locació: rotació ABC, pes, volum i compatibilitat"], ["2.1", "Documentació de la recepció: comanda, albarà i factura"], ["2.2", "Control quantitatiu i qualitatiu de la mercaderia"], ["2.3", "Incidències en la recepció: faltes, sobrants i danys"], ["2.4", "Codificació i etiquetatge: EAN, GS1-128 i RFID"], ["2.5", "Registre d'entrades"], ["3.1", "Condicions de conservació: temperatura, humitat i llum"], ["3.2", "Productes peribles i cadena de fred"], ["3.3", "Productes fràgils"], ["3.4", "Mercaderies perilloses: classificació, etiquetatge i compatibilitats"], ["3.5", "Unitats de càrrega: palets, caixes i contenidors"], ["4.1", "Tipus d'estoc: mínim, de seguretat, màxim i punt de comanda"], ["4.2", "Rotació d'estocs i sistemes FIFO, FEFO i LIFO"], ["4.3", "Valoració d'existències"], ["4.4", "Inventaris: tipus i realització"], ["4.5", "Mermes, trencaments i diferències d'inventari"], ["4.6", "Anàlisi ABC de les existències"], ["5.1", "L'ordre de comanda i la llista de picking"], ["5.2", "Sistemes de picking: per comanda, per zones i per onades"], ["5.3", "Rutes de preparació"], ["5.4", "Embalatge, paletització i etiquetatge d'expedició"], ["5.5", "Documentació de l'expedició: albarà i carta de port (CMR)"], ["5.6", "Càrrega del vehicle i ordre de càrrega"], ["6.1", "Transpalet manual i elèctric"], ["6.2", "Apiladors i carretons elevadors"], ["6.3", "Capacitat de càrrega i diagrama de càrrega"], ["6.4", "Formació i normes d'ús dels equips"], ["7.1", "Riscos al magatzem: caigudes, cops, atropellaments i atrapaments"], ["7.2", "Manipulació manual de càrregues"], ["7.3", "Equips de protecció individual (EPI) i senyalització"], ["7.4", "Pla d'emergència i incendis"], ["8.1", "Sistemes de gestió de magatzem (SGM)"], ["8.2", "Lectors de codis i traçabilitat"], ["8.3", "Logística inversa: devolucions"], ["8.4", "Indicadors de gestió del magatzem"]]
+  };
+  // Què es treballa al joc de cada contingut. Els que no hi surten es marquen «fora del joc».
+  D.TEMARI.fora = ['4.3', '4.6', '5.5', '8.3'];
+  // Errors de l'informe de la cap → continguts on s'ha fallat
+  D.TEMARI.errors = { recepcio: ['2.2', '2.3'], ubicacio: ['1.5', '1.6'], fefo: ['4.2'], picking: ['5.1'], trencament: ['5.4', '3.3'], expedicio: ['5.6'], carrega: ['5.6'], seguretat: ['7.1'], inventari: ['4.1', '4.4'], merma: ['4.5'], cross: ['5.6'], fred: ['3.2'], caixa: ['5.4'], manipulacio: ['7.2'] };
+  // Lliçons del joc i exercicis del taller → continguts
+  D.TEMARI.llicons = { recepcio: ['2.1', '2.2', '2.3'], codis: ['1.5'], criteris: ['1.6'], fefo: ['4.2'], picking: ['5.1'], paletitzar: ['5.4'], rutes: ['5.3'], carrega: ['5.6'], seguretat: ['7.1'], transpalet: ['6.1'], fred: ['3.2'], perillosos: ['3.4'], estanteries: ['1.3'], compacta: ['1.3'], cross: ['1.1'], ecom: ['5.2', '5.4'], fredtemps: ['3.2'], inventari: ['4.1', '4.4'] };
+  D.TEMARI.taller = { manual: ['7.2', '3.3'], extraccio: ['7.2', '3.3'], transpalet: ['6.1'], toro: ['6.2', '6.3', '6.4'] };
+  // Resultats d'aprenentatge oficials: s'hi posaran amb el text del currículum (cada RA amb els seus continguts)
+  D.RA = [];
   // Valor de cada aspecte a la nota del torn
   D.PESOS_NOTA = { productivitat: 0.35, qualitat: 0.4, seguretat: 0.25 };
 

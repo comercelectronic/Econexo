@@ -60,7 +60,7 @@
   ];
 
   // Pàgina del taller
-  PH.taller = function (app, onTorna) {
+  PH.taller = function (app, onTorna, onNota) {
     const d = llegeix();
     app.innerHTML = `<main class="config taller"><button class="btn ghost small" id="enr">← Tornar</button>
       <h1>🎯 Taller d'habilitat</h1>
@@ -74,8 +74,8 @@
     app.querySelectorAll('[data-x]').forEach(b => b.onclick = () => {
       const x = PH.EXERCICIS[+b.dataset.x];
       x.obre((r) => {
-        if (r) { const dd = llegeix(); if (!dd[x.id] || r.nota > dd[x.id].nota) dd[x.id] = { nota: r.nota, data: Date.now() }; desa(dd); }
-        PH.taller(app, onTorna);
+        if (r) { const dd = llegeix(); if (!dd[x.id] || r.nota > dd[x.id].nota) dd[x.id] = { nota: r.nota, data: Date.now() }; desa(dd); onNota && onNota(x.id, r.nota); }
+        PH.taller(app, onTorna, onNota);
       });
     });
   };
