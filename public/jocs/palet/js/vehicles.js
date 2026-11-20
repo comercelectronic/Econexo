@@ -197,6 +197,7 @@
       if (toro && ve.carrega && ve.tilt < -0.5 && Math.abs(ve.v) > 10) avis('tilt', 'Per circular amb càrrega, inclina el pal enrere (G): la càrrega queda recolzada.', 'warn', 6000);
       ve.fAnt = ve.f;
       hud(mC);
+      guia();
       comprovaFi(dt);
     }
     function avis(clau, txt, cls, cada) { const t = s.temps; if (darrerAv[clau] && t - darrerAv[clau] < (cada || 3000) / 1000) return; darrerAv[clau] = t; s.avis(txt, cls, 3200); }
@@ -456,6 +457,7 @@
       if (ve.carrega) dibuixaPalet(c, ve.carrega);
       // Guia d'alineació quan les forquilles s'acosten a un palet
       palets.forEach(p => { if (p.carregat || !p.rel) return; const r = p.rel; if (r.prof > 0 || Math.abs(r.px) < 90) { if (Math.abs(r.px) < 110 && Math.abs(r.py) < 40) { c.fillStyle = r.ok ? 'rgba(54,179,126,.9)' : 'rgba(239,98,98,.9)'; c.font = 'bold 12px Inter, sans-serif'; c.textAlign = 'center'; c.fillText(r.ok ? (r.prof > 45 ? '✓ Forquilles dins' : '✓ Alineat') : !r.alcadaOk ? '✗ Alçada' : '✗ Alinea', p.x, p.y - 30); } } });
+      dibuixaGuia(c);
       if (toro) dibuixaLateral(c);
       if (bolcat) { c.fillStyle = 'rgba(200,0,0,.15)'; c.fillRect(0, 0, 1000, 560); }
     }
@@ -509,6 +511,70 @@
       c.restore();
     }
     // Vista lateral (toro): alçada de forquilles, inclinació del pal i nivells de la prestatgeria del davant
+    /* ----- Guia pas a pas ----- */
+    let guiaIdx = -1, guiaObj = null;
+    function guia() {
+      const p = palets.find(x => x.objectiu);
+      if (!p || !cfg.desti) return;
+      const bay = bays.find(b => b.id === cfg.desti.bay); if (!bay) return;
+      const niv = cfg.desti.nivell, hB = bay.nivells[niv - 1] || 0;
+      const PASSOS = toro ? [
+        ['Baixa les forquilles a 5-10 cm', 'Tecla <kbd>F</kbd>. Després apunta les forquilles (davant del toro) cap al palet.'],
+        ['Fica les forquilles fins al fons', 'Avança a poc a poc amb <kbd>W</kbd>, recte cap al palet. Si surt «✗ Alinea», recula (<kbd>S</kbd>) i corregeix amb <kbd>A</kbd>/<kbd>D</kbd>.'],
+        ['Aixeca el palet i inclina el pal enrere', 'Puja a 15-20 cm amb <kbd>R</kbd> i inclina el pal enrere amb <kbd>G</kbd>.'],
+        [`Porta'l davant de ${bay.id}`, `Recula amb <kbd>S</kbd>, gira amb <kbd>A</kbd>/<kbd>D</kbd> i posa't davant de la ubicació amb les forquilles mirant la prestatgeria. A poc a poc: la cua gira molt.`],
+        [`Atura't i puja les forquilles a ${hB + 12}-${hB + 30} cm`, niv > 1 ? `Tecla <kbd>R</kbd>. La biga del nivell ${niv} és a ${hB} cm: el palet ha de passar per sobre (mira la vista lateral).` : 'A terra no cal pujar: deixa les forquilles a 15-20 cm.'],
+        ['Entra a poc a poc fins que el palet sigui dins', 'Avança amb <kbd>W</kbd>, recte. Atura\'t abans de tocar el fons.'],
+        [niv > 1 ? `Baixa fins que el palet reposi a la biga (${hB} cm)` : 'Baixa el palet fins a terra', 'Tecla <kbd>F</kbd>, a poc a poc. Quan el palet es recolza, s\'avisa.'],
+        ['Surt marxa enrere i baixa les forquilles', 'Recula recte amb <kbd>S</kbd> i baixa les forquilles amb <kbd>F</kbd> fins a 15-20 cm.']
+      ] : [
+        ['Posa\'t d\'esquena al palet', 'Les forquilles (grises) són al darrere; tu ets el cercle blau de la llança. Gira amb <kbd>A</kbd>/<kbd>D</kbd> fins que les forquilles apuntin al palet.'],
+        ['Recula per ficar les forquilles fins al fons', 'Empeny amb <kbd>S</kbd>, a poc a poc i recte. Si surt «✗ Alinea», estira (<kbd>W</kbd>) i torna-hi.'],
+        ['Aixeca el palet amb la bomba', 'Prem <kbd>E</kbd> un o dos cops.'],
+        [`Estira'l fins davant de ${bay.id}`, 'Camina endavant amb <kbd>W</kbd> i gira amb <kbd>A</kbd>/<kbd>D</kbd>. Sense girs bruscos: la càrrega pot caure.'],
+        [`Entra d'esquena a ${bay.id}, ben recte`, 'Posa les forquilles mirant la ubicació i recula amb <kbd>S</kbd> a poc a poc.'],
+        ['Baixa el palet', 'Mantén premuda <kbd>Q</kbd> fins que el palet toqui a terra.'],
+        ['Treu les forquilles', 'Estira amb <kbd>W</kbd>, recte, fins que les forquilles surtin del palet.']
+      ];
+      const F = forqFrame(ve.x, ve.y, ve.a), dirRack = bay.cara > 0 ? -Math.PI / 2 : Math.PI / 2;
+      const ax = bay.x + bay.w / 2, ay = bay.yFront + bay.cara * 45;
+      const rel = relacio(p, ve.x, ve.y, ve.a, ve.f);
+      const aLaUbic = p.bay === cfg.desti.bay && p.nivell === niv && !p.carregat;
+      let idx;
+      if (aLaUbic) idx = rel.prof > 0 || (toro && ve.f > 40) ? PASSOS.length - 1 : PASSOS.length;
+      else if (!p.carregat) {
+        if (rel.prof >= 46) idx = toro ? 2 : 2;
+        else if (rel.prof > 0 || (rel.alineat && Math.abs(rel.px) < 120)) idx = toro && !rel.alcadaOk ? 0 : 1;
+        else idx = toro && ve.f > 11 ? 0 : (toro ? 1 : 0);
+        if (toro && idx === 1 && !rel.alineat) idx = rel.alcadaOk ? 1 : 0;
+      } else {
+        const dins = Math.abs(p.x - ax) < 30 && p.y > bay.y - 12 && p.y < bay.y + bay.d + 12;
+        const davant = Math.hypot(p.x - ax, p.y - ay) < 110 && Math.abs(angDif(F.a, dirRack)) < 0.35;
+        if (dins) idx = toro ? 6 : 5;
+        else if (toro && (ve.f < 12 || ve.tilt < 2) && !davant && Math.hypot(p.x - ax, p.y - ay) > 160) idx = 2;
+        else if (davant) idx = toro ? (p.z < hB + 2 ? 4 : 5) : 4;
+        else idx = 3;
+      }
+      guiaObj = idx <= 1 || (idx === 2 && !p.carregat) ? { x: p.x, y: p.y, txt: 'Palet' } : idx < PASSOS.length - (toro ? 2 : 2) ? { x: ax, y: idx >= (toro ? 5 : 4) ? bay.y + bay.d / 2 : ay, txt: bay.id } : null;
+      if (idx === guiaIdx) return;
+      guiaIdx = idx;
+      let g = s.el.querySelector('#hGuia');
+      if (!g) { g = document.createElement('div'); g.id = 'hGuia'; g.className = 'hab-guia'; s.el.querySelector('.hab-c').appendChild(g); }
+      g.innerHTML = `<b>Passos</b><ol>${PASSOS.map(([t, d], i) => `<li class="${i < idx ? 'fet' : i === idx ? 'ara' : ''}"><span>${t}</span>${i === idx ? `<small>${d}</small>` : ''}</li>`).join('')}</ol>${idx >= PASSOS.length ? '<p class="pos small">✓ Fet! Ja pots prémer «He acabat».</p>' : ''}`;
+    }
+    function dibuixaGuia(c) {
+      // Rètols del vehicle durant els primers segons
+      if (s.temps - t0 < 8) {
+        const F = forqFrame(ve.x, ve.y, ve.a), [fx, fy] = mon(TV.forq.llarg + 14, 0, F.x, F.y, F.a);
+        c.font = 'bold 12px Inter, sans-serif'; c.textAlign = 'center'; c.fillStyle = '#111827';
+        c.fillText('forquilles', fx, fy - 18 < 10 ? fy + 24 : fy - 18);
+      }
+      if (!guiaObj || acabat) return;
+      const t = (s.temps * 3) % (Math.PI * 2), r = 26 + Math.sin(t) * 5;
+      c.strokeStyle = 'rgba(155,122,232,.9)'; c.lineWidth = 3; c.setLineDash([6, 5]);
+      c.beginPath(); c.arc(guiaObj.x, guiaObj.y, r, 0, Math.PI * 2); c.stroke(); c.setLineDash([]);
+      c.fillStyle = '#6b4fc8'; c.font = 'bold 12px Inter, sans-serif'; c.textAlign = 'center'; c.fillText('➜ ' + guiaObj.txt, guiaObj.x, guiaObj.y - r - 6);
+    }
     function dibuixaLateral(c) {
       const X = 14, Y = 398, W = 270, H = 150;
       c.save(); c.fillStyle = 'rgba(17,24,39,.85)'; PH.rrect(c, X, Y, W, H, 10); c.fill();
