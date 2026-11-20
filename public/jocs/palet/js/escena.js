@@ -119,7 +119,7 @@
     const ECOM = D.MAG.mode === 'ecom', CROSS = D.MAG.mode === 'cross';
     let obert = null;   // passadís mòbil obert
     // Cap (la Montse) que passa de tant en tant
-    const cap = document.createElement('div'); cap.className = 'cap-ag'; cap.innerHTML = persona({ pell: '#f0c7a0', cabell: '#5a3825', pentinat: 'llarg', samarreta: '#9B7AE8', armilla: '' }) + '<span class="nom">Montse</span>'; cap.style.transform = `translate(${N.L2[0] - 17}px,${N.L2[1] - 60}px)`; ags.appendChild(cap);
+    const cap = document.createElement('div'); cap.className = 'cap-ag'; cap.innerHTML = persona({ pell: '#7a4b2a', cabell: '#1f1a17', pentinat: 'monyo', samarreta: '#9B7AE8', armilla: '' }) + '<span class="nom">Montse</span>'; cap.style.transform = `translate(${N.L2[0] - 17}px,${N.L2[1] - 60}px)`; ags.appendChild(cap);
     function posa() { ag.style.transform = `translate(${w.x - 30}px,${w.y - 34}px) scaleX(${w.dir})`; }
     posa();
     function bombolla(t, cls) { const b = ag.querySelector('.bomb'); b.hidden = false; b.className = 'bomb ' + (cls || ''); b.textContent = t; clearTimeout(b._t); b._t = setTimeout(() => { b.hidden = true; }, 2200); }
