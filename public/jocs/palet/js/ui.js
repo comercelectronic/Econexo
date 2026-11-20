@@ -351,7 +351,7 @@
       vehicle: toro ? 'toro' : 'transpalet', titol: `Ubica ${P(info.prod).nom.toLowerCase()} a ${info.codi}`,
       consigna: `Deixa el palet a <b>${bay}</b>${u.niv > 1 ? `, <b>nivell ${u.niv}</b>` : ', a terra'}. ${toro ? 'Puja les forquilles davant de la prestatgeria, entra, baixa i surt.' : 'Entra empenyent, ben alineat, i baixa amb Q.'}`,
       mapa: { zones: [], linies: [[60, 130, 960, 130]], files: [{ pas: u.pas, x0: 150, y: 60, n: ids.length, cara: 1, ids, nivells: window.PH.NIVELLS_CM.slice(0, Math.max(...ids.map((x, i) => E.nivellsDe(u.pas, Math.floor(i / D.POSICIONS.length) + 1)))) }], parets: [{ x: 0, y: 500, w: 1000, h: 60, nom: 'la paret' }],
-        inici: toro ? { x: 120, y: 300, a: 0 } : { x: 70, y: 300, a: Math.PI }, palets },
+        inici: toro ? { x: 120, y: 300, a: 0 } : { x: 120, y: 300, a: 0 }, palets },
       desti: { bay, nivell: u.niv }, botoSeguent: 'Torna al torn',
       consell: toro ? 'Circula amb la càrrega baixa i el pal enrere; puja-la només davant de la ubicació i aturat.' : 'Estira per desplaçar-te; empeny a poc a poc i alineat per entrar a la ubicació.'
     };

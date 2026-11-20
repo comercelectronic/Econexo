@@ -176,7 +176,9 @@
       const nx = ve.x + Math.cos(ve.a) * ve.v * dt, ny = ve.y + Math.sin(ve.a) * ve.v * dt, na = ve.a + om * dt;
       // Palets: lligar el que es carrega, comprovar alineacions
       actualitzaPalets(dt);
-      const xc = colisions(nx, ny, na);
+      let xc = colisions(nx, ny, na);
+      // Si ja estava encallat (tocant alguna cosa), deixa'l sortir si el moviment l'allunya
+      if (xc) { const ara = colisions(ve.x, ve.y, ve.a); if (ara && xc.r && ara.r && xc.r.pen < ara.r.pen - 0.01) xc = null; }
       if (xc && xc.suau && Math.abs(ms(ve.v)) < 0.5) ve.v = 0;
       if (xc) {
         const vImp = Math.abs(ms(ve.v));
