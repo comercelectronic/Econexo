@@ -42,3 +42,7 @@ h1, h2, h3, h4, .font-display { font-family: var(--font-display); letter-spacing
 .prose-ec th { background: var(--color-mist); color: var(--color-navy); font-weight: 700; }
 .prose-ec code { background: var(--color-mist); padding: .1em .35em; border-radius: 4px; font-size: .9em; }
 .prose-ec strong { color: var(--color-navy); }
+
+/* AdSense: si Google no hi posa cap anunci («unfilled»), s'amaga el bloc sencer (rètol inclòs) per no deixar un forat en blanc */
+ins.adsbygoogle[data-ad-status="unfilled"] { display: none !important; }
+aside:has(> ins.adsbygoogle[data-ad-status="unfilled"]) { display: none; }
