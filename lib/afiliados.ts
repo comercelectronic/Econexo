@@ -8,6 +8,7 @@ export type Recomendacion = { titulo: string; desc: string; q?: string; url?: st
 // Només enllaços a fitxes de producte (amazon.es/dp/…): les pàgines de cerca d'Amazon fallen sovint («Lo sentimos»)
 // quan s'hi arriba des d'un altre web. `q` és la cerca per trobar el producte a Amazon i copiar-ne l'enllaç (SiteStripe).
 const ambTag = (u: string) => { try { const x = new URL(u); x.searchParams.set('tag', SITE.amazonTag); return x.toString(); } catch { return u; } };
+export const ambTagAmazon = (u: string) => ambTag(u);
 export const amazonUrl = (r: Recomendacion) => ambTag(r.url || '');
 
 // Per mòdul: «llibre» (llibre de text) i una recomanació per a cada bloc del temari
@@ -50,3 +51,6 @@ export function recomanacions(modulo: string, codigos: string[] = []): Recomenda
   const blocs = [...new Set(codigos.map((c) => c.split('.')[0]))].filter((b) => m[b]);
   return [m.llibre, ...blocs.slice(0, 2).map((b) => m[b]), ...(blocs.length ? [] : [m['1']])].filter((r) => r && r.url);
 }
+
+// Programa de recompenses: Amazon paga un import fix per cada alta a la prova de Prime Student (només per a universitaris)
+export const PRIME_STUDENT = { url: 'https://www.amazon.es/joinstudent', titulo: 'Prime Student: 90 días de prueba', desc: 'Para estudiantes universitarios mayores de 18 años: envío rápido gratuito, Prime Video y descuentos para estudiantes. Tras la prueba, 24,95 €/año.' };

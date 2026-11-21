@@ -1,5 +1,5 @@
 // «Para profundizar»: material recomanat amb enllaços d'afiliat d'Amazon (marcats com a patrocinats).
-import { recomanacions, amazonUrl } from '@/lib/afiliados';
+import { recomanacions, amazonUrl, ambTagAmazon, PRIME_STUDENT } from '@/lib/afiliados';
 import { tr, type Lang } from '@/lib/i18n';
 
 export function PerAprofundir({ modulo, codigos, lang }: { modulo: string; codigos?: string[]; lang: Lang }) {
@@ -19,6 +19,9 @@ export function PerAprofundir({ modulo, codigos, lang }: { modulo: string; codig
           </li>
         ))}
       </ul>
+      <a href={ambTagAmazon(PRIME_STUDENT.url)} target="_blank" rel="sponsored nofollow noopener" className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl border border-dashed border-line p-3 text-sm hover:border-teal">
+        <b className="text-navy">🎓 {t(PRIME_STUDENT.titulo)}</b><span className="text-muted">{t(PRIME_STUDENT.desc)}</span><span className="font-semibold text-teal">{t('Más información →')}</span>
+      </a>
       <p className="mt-3 text-xs text-muted">{t('Enlaces de afiliado: si compras a través de ellos, ECOyNEXO recibe una pequeña comisión sin que te cueste más.')}</p>
     </section>
   );
