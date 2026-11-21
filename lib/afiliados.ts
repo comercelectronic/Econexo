@@ -35,7 +35,7 @@ export const RECOMENDADOS: Record<string, Record<string, Recomendacion>> = {
     '8': { titulo: "Libros sobre el plan de marketing", desc: "Paso a paso, del análisis a las acciones.", q: "libro plan de marketing paso a paso" }
   },
   'comercio-electronico': {
-    'llibre': { titulo: "Libro de texto: Comercio electrónico (grado medio)", desc: "Los libros del módulo de las editoriales de FP, para repasar la teoría de clase.", q: "Comercio electrónico grado medio libro" },
+    'llibre': { titulo: "Libro de texto: Comercio electrónico (grado medio)", desc: "El libro del módulo, con la teoría de la tienda online.", q: "Comercio electrónico grado medio libro", url: 'https://www.amazon.es/dp/8448196848' },
     '1': { titulo: "Libros de marketing digital", desc: "Estrategia, embudo de ventas y métricas.", q: "libro marketing digital" },
     '2': { titulo: "Libros para crear una tienda online", desc: "Catálogo, pagos, envíos y atención al cliente.", q: "libro crear tienda online ecommerce" },
     '3': { titulo: "Libros de SEO y posicionamiento web", desc: "Cómo hacer que una web salga en Google.", q: "libro SEO posicionamiento web" },
