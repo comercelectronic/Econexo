@@ -13,7 +13,7 @@ export const amazonUrl = (r: Recomendacion) => ambTag(r.url || '');
 // Per mòdul: «llibre» (llibre de text) i una recomanació per a cada bloc del temari
 export const RECOMENDADOS: Record<string, Record<string, Recomendacion>> = {
   'tecnicas-de-almacen': {
-    'llibre': { titulo: "Libro de texto: Técnicas de almacén (grado medio)", desc: "Los libros del módulo de las editoriales de FP, para repasar la teoría de clase.", q: "Técnicas de almacén grado medio libro" },
+    'llibre': { titulo: "Libro de texto: Técnicas de almacén (2.ª edición, 2023)", desc: "El libro del módulo, para repasar recepción, ubicación, picking y stocks.", q: "Técnicas de almacén grado medio libro", url: 'https://www.amazon.es/dp/8428359431' },
     '1': { titulo: "Libros de organización de almacenes", desc: "Distribución en planta, zonas y sistemas de almacenaje.", q: "libro organización y gestión de almacenes" },
     '2': { titulo: "Libros de compras y aprovisionamiento", desc: "Del pedido al proveedor a la recepción de la mercancía.", q: "libro gestión de compras aprovisionamiento" },
     '3': { titulo: "Libros de logística y almacenaje", desc: "Conservación, cadena de frío y unidades de carga.", q: "libro logística almacenaje" },
