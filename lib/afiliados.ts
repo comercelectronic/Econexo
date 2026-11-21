@@ -1,11 +1,14 @@
-// Material recomanat amb enllaços d'afiliat d'Amazon.es: cerques a Amazon amb l'identificador d'afiliat.
+// Material recomanat amb enllaços d'afiliat d'Amazon.es (fitxes de producte amb l'identificador d'afiliat).
 // Cada lliçó mostra el llibre de text del mòdul i una recomanació del seu bloc del temari.
-// Per canviar una recomanació per un producte concret, posa-hi `url` amb l'enllaç d'afiliat que dona el panell d'Amazon (SiteStripe).
+// Una recomanació només es mostra quan té `url`: l'enllaç d'un producte concret (SiteStripe o amazon.es/dp/ASIN).
 import { SITE } from './site';
 
 export type Recomendacion = { titulo: string; desc: string; q?: string; url?: string };
 
-export const amazonUrl = (r: Recomendacion) => r.url || `https://www.amazon.es/s?k=${encodeURIComponent(r.q || r.titulo)}&tag=${SITE.amazonTag}`;
+// Només enllaços a fitxes de producte (amazon.es/dp/…): les pàgines de cerca d'Amazon fallen sovint («Lo sentimos»)
+// quan s'hi arriba des d'un altre web. `q` és la cerca per trobar el producte a Amazon i copiar-ne l'enllaç (SiteStripe).
+const ambTag = (u: string) => { try { const x = new URL(u); x.searchParams.set('tag', SITE.amazonTag); return x.toString(); } catch { return u; } };
+export const amazonUrl = (r: Recomendacion) => ambTag(r.url || '');
 
 // Per mòdul: «llibre» (llibre de text) i una recomanació per a cada bloc del temari
 export const RECOMENDADOS: Record<string, Record<string, Recomendacion>> = {
@@ -45,5 +48,5 @@ export const RECOMENDADOS: Record<string, Record<string, Recomendacion>> = {
 export function recomanacions(modulo: string, codigos: string[] = []): Recomendacion[] {
   const m = RECOMENDADOS[modulo]; if (!m) return [];
   const blocs = [...new Set(codigos.map((c) => c.split('.')[0]))].filter((b) => m[b]);
-  return [m.llibre, ...blocs.slice(0, 2).map((b) => m[b]), ...(blocs.length ? [] : [m['1']])].filter(Boolean);
+  return [m.llibre, ...blocs.slice(0, 2).map((b) => m[b]), ...(blocs.length ? [] : [m['1']])].filter((r) => r && r.url);
 }
