@@ -1,5 +1,5 @@
 /* Agència Digital — service worker: permet jugar sense connexió i instal·lar el joc com a app */
-const CACHE = 'agencia-digital-v36';
+const CACHE = 'agencia-digital-v37';
 const ASSETS = [
   './', './index.html', './style.css', './manifest.webmanifest',
   './js/i18n.js', './js/i18n-es.js', './js/i18n-en.js', './js/art.js', './js/data-lessons.js', './js/data-story1.js', './js/data-story2.js', './js/data-story3.js', './js/data-temari.js', './js/data-web.js', './js/data-projects.js', './js/data-entregues.js', './js/data-llibreta.js', './js/data-upgrades.js', './js/data-comercmons.js', './js/data-mon-world.js', './js/cm-battle.js', './js/art-comercmons.js', './js/world.js', './js/game.js', './guia.html', './js/guia.js',
@@ -20,7 +20,6 @@ self.addEventListener('fetch', (e) => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   const sameOrigin = url.origin === self.location.origin;
-  if (!sameOrigin && !url.hostname.endsWith('gstatic.com') && !url.hostname.endsWith('googleapis.com')) return; // anuncis i altres serveis externs: directes a la xarxa
   e.respondWith(
     fetch(req).then((res) => {
       if (res.ok && (sameOrigin || url.hostname.endsWith('gstatic.com') || url.hostname.endsWith('googleapis.com'))) {
