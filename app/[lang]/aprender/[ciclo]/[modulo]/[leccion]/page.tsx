@@ -63,7 +63,7 @@ export default async function LeccionPage({ params }: Props) {
       {tools.length > 0 && <section className="mt-10"><h2 className="text-xl font-extrabold text-navy">{t('Herramientas relacionadas')}</h2><div className="mt-3 flex flex-wrap gap-2">{tools.map((x) => <Link key={x.slug} href={lp(lang, `/herramientas/${x.slug}/`)} className="rounded-full border border-line px-4 py-2 text-sm font-semibold text-navy hover:border-teal">{t(x.name)} →</Link>)}</div></section>}
       {reading.length > 0 && <section className="mt-10"><h2 className="mb-3 text-xl font-extrabold text-navy">{t('Para saber más')}</h2><div className="grid gap-4 md:grid-cols-3">{reading.map((a) => <ArticleCard key={a.url} a={a} lang={lang} />)}</div></section>}
 
-      <PerAprofundir modulo={modulo} lang={lang} />
+      <PerAprofundir modulo={modulo} codigos={l.codigos} lang={lang} />
 
       <nav className="mt-12 flex justify-between gap-4 border-t border-line pt-6" aria-label={t('Lecciones')}>
         {prev ? <Link href={lp(lang, prev.url)} className="max-w-[48%] text-sm"><span className="text-muted">{t('← Anterior')}</span><br /><b className="text-navy">{prev.titulo}</b></Link> : <span />}

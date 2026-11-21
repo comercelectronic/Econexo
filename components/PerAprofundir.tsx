@@ -1,14 +1,14 @@
 // «Para profundizar»: material recomanat amb enllaços d'afiliat d'Amazon (marcats com a patrocinats).
-import { RECOMENDADOS, amazonUrl } from '@/lib/afiliados';
+import { recomanacions, amazonUrl } from '@/lib/afiliados';
 import { tr, type Lang } from '@/lib/i18n';
 
-export function PerAprofundir({ modulo, lang }: { modulo: string; lang: Lang }) {
-  const t = tr(lang), rs = RECOMENDADOS[modulo];
+export function PerAprofundir({ modulo, codigos, lang }: { modulo: string; codigos?: string[]; lang: Lang }) {
+  const t = tr(lang), rs = recomanacions(modulo, codigos);
   if (!rs || !rs.length) return null;
   return (
     <section className="mt-10 rounded-2xl border border-line p-5">
       <h2 className="text-xl font-extrabold text-navy">📚 {t('Para profundizar')}</h2>
-      <ul className="mt-3 grid gap-3 md:grid-cols-2">
+      <ul className={`mt-3 grid gap-3 ${rs.length > 2 ? 'md:grid-cols-3' : 'md:grid-cols-2'}`}>
         {rs.map((r) => (
           <li key={r.titulo}>
             <a href={amazonUrl(r)} target="_blank" rel="sponsored nofollow noopener" className="block h-full rounded-xl bg-mist p-4 hover:ring-2 hover:ring-teal">
