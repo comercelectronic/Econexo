@@ -15,6 +15,8 @@ export const SITE = {
   adSlot: '8367079092',
   // Bloc multiplex (graella d'anuncis amb aspecte de contingut recomanat)
   adSlotMultiplex: '1698950158',
+  // Identificador d'afiliat d'Amazon.es (no és secret: va a tots els enllaços d'afiliat)
+  amazonTag: 'ecoynexo-21',
   defaultAuthor: 'Redacción ECOyNEXO'
 };
 

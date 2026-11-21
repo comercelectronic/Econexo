@@ -38,7 +38,7 @@ export function Footer({ lang }: { lang: Lang }) {
           <ul className="space-y-1.5 text-sm">{INFO.map(([slug, label]) => <li key={slug}><Link className="hover:text-teal" href={l(lang, `/${slug}/`)}>{t(label)}</Link></li>)}</ul>
         </div>
       </div>
-      <p className="border-t border-white/10 px-4 py-5 text-center text-xs text-white/50">© {new Date().getFullYear()} ECOyNEXO. {t('Los contenidos son informativos y educativos; no constituyen asesoramiento financiero personalizado.')}</p>
+      <p className="border-t border-white/10 px-4 py-5 text-center text-xs text-white/50">© {new Date().getFullYear()} ECOyNEXO. {t('Los contenidos son informativos y educativos; no constituyen asesoramiento financiero personalizado.')} {t('Como afiliado de Amazon, ECOyNEXO obtiene ingresos por las compras adscritas que cumplen los requisitos aplicables.')}</p>
     </footer>
   );
 }

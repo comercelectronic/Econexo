@@ -8,6 +8,7 @@ import { LANGS, isLang, l as lp, tr } from '@/lib/i18n';
 import { published } from '@/lib/content';
 import { TOOLS, codigosTool } from '@/lib/tools';
 import { ArticleCard } from '@/components/ArticleCard';
+import { PerAprofundir } from '@/components/PerAprofundir';
 
 export const dynamicParams = false;
 export const generateStaticParams = () => LANGS.flatMap((lang) => ciclosLive().flatMap((c) => c.modulos.flatMap((m) => lecciones(lang, c.slug, m.slug).map((x) => ({ lang, ciclo: c.slug, modulo: m.slug, leccion: x.slug })))));
@@ -61,6 +62,8 @@ export default async function LeccionPage({ params }: Props) {
       )}
       {tools.length > 0 && <section className="mt-10"><h2 className="text-xl font-extrabold text-navy">{t('Herramientas relacionadas')}</h2><div className="mt-3 flex flex-wrap gap-2">{tools.map((x) => <Link key={x.slug} href={lp(lang, `/herramientas/${x.slug}/`)} className="rounded-full border border-line px-4 py-2 text-sm font-semibold text-navy hover:border-teal">{t(x.name)} →</Link>)}</div></section>}
       {reading.length > 0 && <section className="mt-10"><h2 className="mb-3 text-xl font-extrabold text-navy">{t('Para saber más')}</h2><div className="grid gap-4 md:grid-cols-3">{reading.map((a) => <ArticleCard key={a.url} a={a} lang={lang} />)}</div></section>}
+
+      <PerAprofundir modulo={modulo} lang={lang} />
 
       <nav className="mt-12 flex justify-between gap-4 border-t border-line pt-6" aria-label={t('Lecciones')}>
         {prev ? <Link href={lp(lang, prev.url)} className="max-w-[48%] text-sm"><span className="text-muted">{t('← Anterior')}</span><br /><b className="text-navy">{prev.titulo}</b></Link> : <span />}
