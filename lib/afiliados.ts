@@ -24,7 +24,7 @@ export const RECOMENDADOS: Record<string, Record<string, Recomendacion>> = {
     '8': { titulo: "Libros de logística 4.0 y SGA", desc: "Sistemas de gestión de almacén, trazabilidad e indicadores.", q: "libro logística 4.0 sistemas de gestión de almacén" }
   },
   'marketing-en-la-actividad-comercial': {
-    'llibre': { titulo: "Libro de texto: Marketing en la actividad comercial (grado medio)", desc: "Los libros del módulo de las editoriales de FP, para repasar la teoría de clase.", q: "Marketing en la actividad comercial grado medio libro" },
+    'llibre': { titulo: "Libro de texto: Marketing en la actividad comercial (grado medio)", desc: "El libro del módulo, para seguir la teoría de clase.", q: "Marketing en la actividad comercial grado medio libro", url: 'https://www.amazon.es/dp/8448624246' },
     '1': { titulo: "Libros de marketing para empezar", desc: "Los conceptos básicos con casos reales de marcas.", q: "libro marketing para principiantes" },
     '2': { titulo: "Libros sobre el comportamiento del consumidor", desc: "Por qué compramos lo que compramos.", q: "libro comportamiento del consumidor" },
     '3': { titulo: "Libros de investigación de mercados", desc: "Encuestas, fuentes de información y análisis de datos.", q: "libro investigación de mercados" },
