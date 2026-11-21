@@ -54,3 +54,4 @@ export function recomanacions(modulo: string, codigos: string[] = []): Recomenda
 
 // Programa de recompenses: Amazon paga un import fix per cada alta a la prova de Prime Student (només per a universitaris)
 export const PRIME_STUDENT = { url: 'https://www.amazon.es/joinstudent', titulo: 'Prime Student: 90 días de prueba', desc: 'Para estudiantes universitarios mayores de 18 años: envío rápido gratuito, Prime Video y descuentos para estudiantes. Tras la prueba, 24,95 €/año.' };
+export const PRIME = { url: 'https://www.amazon.es/pruebaprime', titulo: 'Amazon Prime: periodo de prueba gratis', desc: 'Para mayores de 18 años: envío en 1 día gratis en más de un millón de productos y acceso prioritario a las ofertas flash. Si no la cancelas, al acabar la prueba se paga la cuota de Prime.' };
