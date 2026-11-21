@@ -39,6 +39,8 @@ export default async function RootLayout({ children, params }: Props) {
   return (
     <html lang={lang} className={`${inter.variable} ${manrope.variable} ${comic.variable}`}>
       <head>
+        {/* Google Tag Manager amb el mode de consentiment (primer de tot: abans de la publicitat) */}
+        <script src="/analytics.js" />
         {/* Codi d'AdSense a l'HTML de la pàgina (com recomana Google) */}
         {SITE.adsenseAccount && <script async data-adsense="1" src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${SITE.adsenseAccount}`} crossOrigin="anonymous" />}
       </head>
