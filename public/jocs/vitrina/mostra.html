@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="ca"><head><meta charset="utf-8"><title>Vitrina · mostra</title>
+<link rel="stylesheet" href="../mercadeja/css/fonts.css">
+<style>body{margin:0;background:#101318;font-family:Inter,sans-serif;color:#e8ecf1;padding:20px}
+.g{display:grid;grid-template-columns:1fr 1fr;gap:18px}.c{background:#1a1e25;border-radius:12px;overflow:hidden}
+.c h3{margin:0;padding:10px 14px;font-size:15px;font-weight:600}.c small{color:#9aa6b4;font-weight:400}
+svg{display:block;width:100%;height:auto}</style></head>
+<body><div class="g" id="g"></div>
+<script src="js/art.js"></script><script src="js/escena.js"></script><script src="js/dades.js"></script>
+<script>
+document.getElementById('g').innerHTML = VD.EXEMPLES.map(e => { const m = VD.MARQUES[e.marca], z = VD.ZONES[m.zona];
+  return `<div class="c"><h3>${e.titol} <small>· ${z.nom} · ${e.nit ? 'nit' : 'dia'}</small></h3>${VE.aparador({ zona: m.zona, marca: m, ap: e.ap, nit: e.nit, vianants: e.vianants })}</div>`; }).join('');
+</script></body></html>
