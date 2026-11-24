@@ -383,6 +383,41 @@
       "texto": "¿Tus alumnos serían capaces de convertir una tienda de barrio en una gran empresa? 🏪➡️🏢\n\nMercadeja es un juego gratuito para enseñar las 4P:\n🛒 Por la mañana deciden productos, precios, stock, personal y promoción\n🧍 Durante el día atienden a los clientes con su personaje\n📊 Por la noche, la cuenta de resultados les explica qué ha pasado\n\nY pueden crecer en 5 fases: tienda grande, supermercado, cadena… hasta gran empresa.\n\nPara clase: 26 lecciones ligadas a los resultados de aprendizaje, retos con ranking en directo y panel del profe con el progreso de cada alumno.\n\n(De momento está en catalán.)\n\nPruébalo en ecoynexo.com → Simuladores (enlace en la bio).\n\n#ProfesFP #FPComercio #Gamificación #MarketingMix #RecursosEducativos #FormaciónProfesional #InnovaciónEducativa #ecoynexo"
     },
     {
+      "id": "2026-11-25-reel-agencia",
+      "fecha": "2026-11-25",
+      "hora": "19:00",
+      "tema": "profes",
+      "reel": {
+        "guio": "agencia",
+        "ganxo": "Marketing digital en FP: **una agencia** que dirigen tus alumnos",
+        "escenes": [
+          {
+            "de": "personatge",
+            "a": "historia",
+            "text": "Cada alumno crea su personaje y **su agencia**"
+          },
+          {
+            "de": "historia",
+            "a": "decisio",
+            "text": "Una historia con **clientes reales** de Osona",
+            "vel": 1.4
+          },
+          {
+            "de": "decisio",
+            "a": "fi2",
+            "text": "Y cada decisión tiene **consecuencias**"
+          }
+        ],
+        "personatge": "eco-contento",
+        "final": {
+          "titol": "Agència Digital: **comercio electrónico** jugando",
+          "boto": "ecoynexo.com/es/simuladores",
+          "text": "Proyectos reales que corriges con rúbrica. En catalán, castellano e inglés."
+        }
+      },
+      "texto": "Marketing digital en FP… con una agencia que dirigen tus alumnos 💻\n\nAgència Digital es un juego gratuito para el módulo de Comercio electrónico:\n🧑‍💼 Cada alumno crea su personaje y monta su agencia en Vic\n🤝 Clientes con problemas reales: un horno, un restaurante, una fábrica, una tienda online…\n🎯 Decisiones con consecuencias y lecciones del currículo\n📝 Proyectos reales (planes, campañas y webs) que corriges con rúbrica, con ayuda de la IA\n\nEn catalán, castellano e inglés. En el navegador.\n\n📌 Guárdalo y compártelo con tu departamento.\nEnlace en la bio → Simuladores. #ProfesFP #FPComercio #FormaciónProfesional #DocentesFP #Gamificación #RecursosEducativos #InnovaciónEducativa #AprendizajeBasadoEnJuegos #ClaustroVirtual #ecoynexo #MarketingDigital #ComercioElectrónico"
+    },
+    {
       "id": "2026-11-26-equilibrio",
       "fecha": "2026-11-26",
       "hora": "12:00",
@@ -568,41 +603,6 @@
         }
       },
       "texto": "Las 4P se entienden mejor con una tienda en las manos 🏪\n\nMercadeja es un juego gratuito para Marketing en la actividad comercial:\n🛒 Cada alumno abre su tienda de barrio y compite con otras tres\n💶 Decide producto, precio, stock, personal y promoción\n📚 26 mini lecciones ligadas a los resultados de aprendizaje\n🏆 Retos de clase con ranking en directo y panel del profe\n\nEn el navegador, sin instalar nada. De momento, en catalán.\n\n📌 Guárdalo y pásalo a quien dé marketing en tu centro.\nEnlace en la bio → Simuladores. #ProfesFP #FPComercio #FormaciónProfesional #DocentesFP #Gamificación #RecursosEducativos #InnovaciónEducativa #AprendizajeBasadoEnJuegos #ClaustroVirtual #ecoynexo #MarketingMix #4P"
-    },
-    {
-      "id": "2026-12-05-reel-agencia",
-      "fecha": "2026-12-05",
-      "hora": "19:00",
-      "tema": "profes",
-      "reel": {
-        "guio": "agencia",
-        "ganxo": "Marketing digital en FP: **una agencia** que dirigen tus alumnos",
-        "escenes": [
-          {
-            "de": "personatge",
-            "a": "historia",
-            "text": "Cada alumno crea su personaje y **su agencia**"
-          },
-          {
-            "de": "historia",
-            "a": "decisio",
-            "text": "Una historia con **clientes reales** de Osona",
-            "vel": 1.4
-          },
-          {
-            "de": "decisio",
-            "a": "fi2",
-            "text": "Y cada decisión tiene **consecuencias**"
-          }
-        ],
-        "personatge": "eco-contento",
-        "final": {
-          "titol": "Agència Digital: **comercio electrónico** jugando",
-          "boto": "ecoynexo.com/es/simuladores",
-          "text": "Proyectos reales que corriges con rúbrica. En catalán, castellano e inglés."
-        }
-      },
-      "texto": "Marketing digital en FP… con una agencia que dirigen tus alumnos 💻\n\nAgència Digital es un juego gratuito para el módulo de Comercio electrónico:\n🧑‍💼 Cada alumno crea su personaje y monta su agencia en Vic\n🤝 Clientes con problemas reales: un horno, un restaurante, una fábrica, una tienda online…\n🎯 Decisiones con consecuencias y lecciones del currículo\n📝 Proyectos reales (planes, campañas y webs) que corriges con rúbrica, con ayuda de la IA\n\nEn catalán, castellano e inglés. En el navegador.\n\n📌 Guárdalo y compártelo con tu departamento.\nEnlace en la bio → Simuladores. #ProfesFP #FPComercio #FormaciónProfesional #DocentesFP #Gamificación #RecursosEducativos #InnovaciónEducativa #AprendizajeBasadoEnJuegos #ClaustroVirtual #ecoynexo #MarketingDigital #ComercioElectrónico"
     }
   ]
 }
