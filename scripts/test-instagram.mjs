@@ -21,8 +21,8 @@ for (const p of CAL.posts) {
   t(p.texto.length <= 2200 && (p.texto.match(/#\w/g) || []).length <= 30, 'text i etiquetes dins del límit: ' + p.id);
 }
 t(new Set(CAL.posts.map(p => p.fecha + ' ' + (p.hora || '18:00'))).size === CAL.posts.length, 'com a molt un post per dia i hora');
-{ const dia = CAL.posts.filter(p => p.fecha === '2026-11-25'); const fets = {}; // dos posts el mateix dia: cadascun a la seva hora
-  t(triaPost({ posts: dia }, fets, '2026-11-25', '12:00').post.id === '2026-11-25-mercadeja' && triaPost({ posts: dia }, { '2026-11-25-mercadeja': { media: 'M' } }, '2026-11-25', '18:59').post === null && triaPost({ posts: dia }, { '2026-11-25-mercadeja': { media: 'M' } }, '2026-11-25', '19:00').post.id === '2026-11-25-reel-agencia', 'dos posts el mateix dia surten cadascun a la seva hora'); }
+{ const dia = { posts: [{ id: '2026-11-25-reel', fecha: '2026-11-25', hora: '12:00', texto: 'R' }, { id: '2026-11-25-post', fecha: '2026-11-25', hora: '19:00', slides: [{}], texto: 'P' }] }; // dos posts el mateix dia
+  t(triaPost(dia, {}, '2026-11-25', '12:00').post.id === '2026-11-25-reel' && triaPost(dia, { '2026-11-25-reel': { media: 'M' } }, '2026-11-25', '18:59').post === null && triaPost(dia, { '2026-11-25-reel': { media: 'M' } }, '2026-11-25', '19:00').post.id === '2026-11-25-post', 'dos posts el mateix dia surten cadascun a la seva hora'); }
 
 // Data de Madrid
 t(avuiMadrid(new Date('2026-11-23T23:30:00Z')) === '2026-11-24', 'la data es calcula a l\'hora de Madrid');
