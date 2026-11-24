@@ -16,7 +16,7 @@ export type Simulador = { id: string; name: string; desc: string; url: string; i
 export const SIMULADORES: Simulador[] = [
   {
     id: 'aparadors-bcn', name: 'Aparadors BCN', interno: true,
-    desc: 'Observa escaparates reales de Barcelona y abre tu propio taller. Monta dos campañas, combina productos y luces y gana estrellas respetando el presupuesto del comercio.',
+    desc: 'Recorre seis zonas inspiradas en Barcelona, conversa con sus vecinos y estudia 36 escaparates. Resuelve 108 encargos de tres dificultades con un taller de composición, iluminación, presupuesto y tiempo.',
     url: '/jocs/aparadors-bcn/', idiomas: 'Castellano',
     para: [{ ciclo: 'actividades-comerciales', modulo: 'dinamizacion-del-punto-de-venta' }]
   },
