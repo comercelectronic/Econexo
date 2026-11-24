@@ -10,8 +10,14 @@ let ok = 0; const t = (c, nom) => { assert.ok(c, nom); ok++; };
 const ids = new Set();
 for (const p of CAL.posts) {
   t(/^\d{4}-\d{2}-\d{2}$/.test(p.fecha) && p.id.startsWith(p.fecha) && !ids.has(p.id), 'id i data: ' + p.id); ids.add(p.id);
-  t(p.slides.length >= 1 && p.slides.length <= 10, 'entre 1 i 10 imatges: ' + p.id);
-  t(p.slides.every((_, k) => fs.existsSync(new URL(`../public/ig/${p.id}/${k + 1}.jpg`, import.meta.url))), 'imatges generades: ' + p.id);
+  if (p.reel) { // reel: vídeo i portada generats, i guió existent
+    t(['reel.mp4', 'portada.jpg'].every(f => fs.existsSync(new URL(`../public/ig/${p.id}/${f}`, import.meta.url))), 'vídeo i portada del reel generats: ' + p.id);
+    t(fs.statSync(new URL(`../public/ig/${p.id}/reel.mp4`, import.meta.url)).size < 100 * 1048576, 'el vídeo del reel fa menys de 100 MB: ' + p.id);
+    t(fs.existsSync(new URL(`./instagram/guions/${p.reel.guio}.json`, import.meta.url)) && p.reel.escenes.length >= 1, 'guió i escenes del reel: ' + p.id);
+  } else {
+    t(p.slides.length >= 1 && p.slides.length <= 10, 'entre 1 i 10 imatges: ' + p.id);
+    t(p.slides.every((_, k) => fs.existsSync(new URL(`../public/ig/${p.id}/${k + 1}.jpg`, import.meta.url))), 'imatges generades: ' + p.id);
+  }
   t(p.texto.length <= 2200 && (p.texto.match(/#\w/g) || []).length <= 30, 'text i etiquetes dins del límit: ' + p.id);
 }
 t(new Set(CAL.posts.map(p => p.fecha)).size === CAL.posts.length, 'com a molt un post per dia');
@@ -151,5 +157,16 @@ const env = { IG_TOKEN: 'IGTOKEN-INICIAL-1234567890', URL: 'https://ecoynexo.com
   const a5 = lent({ estat: () => 'PUBLISHED' });
   const r5 = await executa({ cal: calE, store: s5, env: envE, fetch: a5.fetch, avui: '2026-11-20', hora: '12:15', espera, ara: Date.parse('2026-11-20T11:15:00Z') });
   t(r5.fet && !a5.crides.some(c => c.ruta.endsWith('/media_publish')), 'un contenidor ja publicat no es torna a publicar');
+  // Reels: contenidor REELS amb el vídeo i la portada; si Instagram encara processa el vídeo, es publica en una execució següent
+  const calR = { posts: [{ id: '2026-11-29-reel-x', fecha: '2026-11-29', hora: '19:00', reel: { guio: 'x', escenes: [] }, texto: 'Reel per a profes' }] };
+  const sR = magatzem(); let rr = 0;
+  const aR1 = lent({ estat: () => 'IN_PROGRESS' });
+  const rR1 = await executa({ cal: calR, store: sR, env: Object.assign({ URL: 'https://ecoynexo.com' }, envE), fetch: aR1.fetch, avui: '2026-11-29', hora: '19:00', espera, pressupost: 10000, rellotge: () => (rr += 3000), ara: Date.parse('2026-11-29T18:00:00Z') });
+  const cR = aR1.crides.find(c => c.metode === 'POST' && c.ruta.endsWith('/media'));
+  t(cR && cR.p.media_type === 'REELS' && cR.p.video_url === 'https://ecoynexo.com/ig/2026-11-29-reel-x/reel.mp4' && cR.p.cover_url === 'https://ecoynexo.com/ig/2026-11-29-reel-x/portada.jpg' && cR.p.caption === 'Reel per a profes' && cR.p.share_to_feed === 'true', 'el reel es crea amb el vídeo, la portada i el text');
+  t(rR1.enCurs && aR1.crides.filter(c => c.metode === 'POST').length === 1, 'mentre Instagram processa el vídeo, no es publica ni es torna a pujar');
+  const aR2 = lent();
+  const rR2 = await executa({ cal: calR, store: sR, env: envE, fetch: aR2.fetch, avui: '2026-11-29', hora: '19:15', espera, ara: Date.parse('2026-11-29T18:15:00Z') });
+  t(rR2.fet && !aR2.crides.some(c => c.metode === 'POST' && c.ruta.endsWith('/media')) && aR2.crides.filter(c => c.ruta.endsWith('/media_publish')).length === 1, 'quan el vídeo està processat, el reel es publica una sola vegada');
 }
 console.log('✔ ' + ok + ' comprovacions de la publicació a Instagram');

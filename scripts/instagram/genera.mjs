@@ -125,6 +125,7 @@ const b = await chromium.launch();
 const pg = await b.newPage({ viewport: { width: 1080, height: 1350 } });
 for (const post of CAL.posts) {
   if (nomes && post.id !== nomes) continue;
+  if (post.reel) continue; // els reels es generen amb scripts/instagram/reel.mjs
   if (post.slides.length > 10) throw new Error(post.id + ': com a molt 10 imatges per carrusel');
   const dir = path.join(ARREL, 'public/ig', post.id); fs.mkdirSync(dir, { recursive: true });
   for (let i = 0; i < post.slides.length; i++) {

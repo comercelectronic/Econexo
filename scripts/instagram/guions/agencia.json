@@ -1,0 +1,13 @@
+{
+  "url": "/jocs/agencia-digital/",
+  "passos": [
+    "wait:1200", "click:Castellano", "wait:500",
+    "eval:document.querySelector('#aUser').value='laia.puig';document.querySelectorAll('input[type=password]').forEach(i=>i.value='demo1234')",
+    "css:#authF button[type=submit], #authF .btn", "wait:1500",
+    "mark:personatge", "click:Femenino", "wait:500", "click:Media melena", "wait:700", "click:Ondulado", "wait:700", "click:Coleta", "wait:900",
+    "click:Empezar la aventura", "wait:1600",
+    "mark:historia", "css:button:has-text('Empezar')", "wait:1800",
+    "css:.dlg", "wait:1300", "css:.dlg", "wait:1300", "css:.dlg", "wait:1300", "css:.dlg", "wait:1100", "css:.dlg", "wait:1100", "css:.dlg", "wait:1100", "css:.dlg", "wait:1100", "css:.dlg", "wait:900",
+    "mark:decisio", "wait:1800", "click:Perfil creativo", "wait:2500", "mark:fi2"
+  ]
+}

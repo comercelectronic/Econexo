@@ -1,0 +1,15 @@
+{
+  "url": "/jocs/mercadeja/",
+  "passos": [
+    "wait:1200", "mark:inici",
+    "click:Juga", "wait:1100",
+    "click:Obrir la botiga", "wait:1400", "click:Entesos", "wait:600",
+    "mark:llico", "wait:2600", "click:Les quatre P no són coherent", "wait:2200", "mark:llicofi",
+    "click:Continuar", "wait:900",
+    "mark:pla", "css:button:has-text('+')", "wait:600", "css:button:has-text('+')", "wait:800",
+    "click:Promoció", "wait:1500", "click:Producte i preu", "wait:900", "mark:plafi",
+    "click:Obrir la botiga", "wait:1300",
+    "click:Entesos", "wait:400", "mark:dia",
+    "click:Ninot automàtic", "wait:300", "css:button:has-text('▶▶')", "wait:7000", "mark:diafi"
+  ]
+}

@@ -1,6 +1,6 @@
 # Instagram d'ECOyNEXO
 
-Publicació automàtica: cada hora en punt, la funció programada
+Publicació automàtica: cada 15 minuts, la funció programada
 `netlify/functions/instagram-publica.mjs` mira si a `calendario.json` hi ha un post al qual ja li ha arribat l'hora i el publica.
 
 ## Afegir posts
@@ -13,6 +13,17 @@ Publicació automàtica: cada hora en punt, la funció programada
    Avisa si el text arriba al peu o si el personatge el tapa.
 3. Revisa-les: `python3 scripts/instagram/mostra.py mostra.jpg <id>`.
 4. Proves: `node scripts/test-instagram.mjs`. Després, commit i push a `main`.
+
+## Reels
+
+Un post amb `reel` (en lloc de `slides`) es publica com a reel: vídeo vertical 1080×1920 que juga un simulador.
+
+- `reel.guio`: guió de `scripts/instagram/guions/<guio>.json` (què es clica al joc, amb marques de temps `mark:nom`).
+- `reel.ganxo`: el text dels primers segons. `reel.escenes`: trossos de la gravació (`de` → `a`, entre marques), amb el `text` de dalt i la velocitat `vel`.
+- `reel.final`: targeta final (`titol`, `boto`, `text`). `reel.personatge`: el personatge de sota el joc.
+
+Genera'l amb `node scripts/instagram/reel.mjs [id]` (Playwright i ffmpeg): desa `public/ig/<id>/reel.mp4` i `portada.jpg`.
+Si canvia un joc, torna'l a generar i revisa'l: el guió clica botons pel seu text.
 
 Un post que no s'ha pogut publicar es torna a provar l'endemà; si ja fa més d'un dia, se salta.
 

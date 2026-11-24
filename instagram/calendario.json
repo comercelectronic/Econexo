@@ -492,6 +492,117 @@
         }
       ],
       "texto": "Hoy es Black Friday… así que hablemos del anuncio más famoso contra el Black Friday 🧥\n\nEn 2011, Patagonia publicó un anuncio a página completa en The New York Times pidiendo… que no compraras su chaqueta si no la necesitabas.\n\n¿Por qué funcionó? Porque era coherente con lo que la marca ya hacía (reparaciones, compromisos ambientales). No era una provocación: era una expresión de sus valores.\n\n💡 Una marca clara atrae a los clientes adecuados y aleja a los demás.\n💡 Los valores solo son creíbles si se ven en las decisiones del día a día.\n\n👉 ¿Podría hacer algo así una tienda de tu barrio sin parecer una contradicción?\n\nCaso completo en ecoynexo.com (enlace en la bio).\n\n#CasosDeMarketing #Patagonia #Branding #BlackFriday #MarketingConValores #FPMarketing #FPComercio #ecoynexo"
+    },
+    {
+      "id": "2026-11-29-reel-palet",
+      "fecha": "2026-11-29",
+      "hora": "19:00",
+      "tema": "profes",
+      "reel": {
+        "guio": "palet",
+        "ganxo": "¿Y si tu alumnado aprendiera almacén **trabajando en uno**?",
+        "escenes": [
+          {
+            "de": "inici",
+            "a": "torn",
+            "text": "Cada alumno crea su mozo de almacén y **elige el almacén**"
+          },
+          {
+            "de": "torn",
+            "a": "tornfi",
+            "text": "Recibe camiones, revisa la mercancía y ubica palés **contra reloj**"
+          },
+          {
+            "de": "taller",
+            "a": "tallerfi",
+            "text": "Y en el taller conduce el **transpalet** con física real",
+            "vel": 1.5
+          }
+        ],
+        "personatge": "eco-senalando",
+        "final": {
+          "titol": "Palet: simulador de **técnicas de almacén**",
+          "boto": "ecoynexo.com/es/simuladores",
+          "text": "Gratis, en el navegador, con panel del profe para seguir el progreso. De momento, en catalán."
+        }
+      },
+      "texto": "Profe de FP: ¿y si tu alumnado aprendiera almacén trabajando en uno? 📦\n\nPalet es un simulador gratuito para el módulo de Técnicas de almacén:\n🚚 Reciben camiones y revisan la mercancía\n🏷️ Ubican palés, preparan pedidos con FEFO y cargan el camión a su hora\n🛒 En el taller, conducen el transpalet y la carretilla con física real\n🧑‍🏫 Y tú lo sigues desde el panel del profe\n\nFunciona en el navegador, sin instalar nada. De momento, en catalán.\n\n📌 Guárdalo para tu próxima programación y compártelo con tu departamento.\nEnlace en la bio → Simuladores. #ProfesFP #FPComercio #FormaciónProfesional #DocentesFP #Gamificación #RecursosEducativos #InnovaciónEducativa #AprendizajeBasadoEnJuegos #ClaustroVirtual #ecoynexo #TécnicasDeAlmacén #Logística"
+    },
+    {
+      "id": "2026-12-02-reel-mercadeja",
+      "fecha": "2026-12-02",
+      "hora": "19:00",
+      "tema": "profes",
+      "reel": {
+        "guio": "mercadeja",
+        "ganxo": "Las 4P se entienden mejor con **una tienda en las manos**",
+        "escenes": [
+          {
+            "de": "inici",
+            "a": "llico",
+            "text": "Cada alumno abre su **tienda de barrio**"
+          },
+          {
+            "de": "llico",
+            "a": "llicofi",
+            "text": "Con mini lecciones ligadas a los **RA del currículo**"
+          },
+          {
+            "de": "pla",
+            "a": "plafi",
+            "text": "Decide producto, precio, stock y promoción: **las 4P**",
+            "vel": 1.2
+          },
+          {
+            "de": "dia",
+            "a": "diafi",
+            "text": "Y atiende a los clientes… que **se van** si esperan demasiado",
+            "vel": 1.2
+          }
+        ],
+        "personatge": "nexo-explicando",
+        "final": {
+          "titol": "Mercadeja: de tienda de barrio a **gran empresa**",
+          "boto": "ecoynexo.com/es/simuladores",
+          "text": "Gratis, con retos de clase y ranking en directo. De momento, en catalán."
+        }
+      },
+      "texto": "Las 4P se entienden mejor con una tienda en las manos 🏪\n\nMercadeja es un juego gratuito para Marketing en la actividad comercial:\n🛒 Cada alumno abre su tienda de barrio y compite con otras tres\n💶 Decide producto, precio, stock, personal y promoción\n📚 26 mini lecciones ligadas a los resultados de aprendizaje\n🏆 Retos de clase con ranking en directo y panel del profe\n\nEn el navegador, sin instalar nada. De momento, en catalán.\n\n📌 Guárdalo y pásalo a quien dé marketing en tu centro.\nEnlace en la bio → Simuladores. #ProfesFP #FPComercio #FormaciónProfesional #DocentesFP #Gamificación #RecursosEducativos #InnovaciónEducativa #AprendizajeBasadoEnJuegos #ClaustroVirtual #ecoynexo #MarketingMix #4P"
+    },
+    {
+      "id": "2026-12-05-reel-agencia",
+      "fecha": "2026-12-05",
+      "hora": "19:00",
+      "tema": "profes",
+      "reel": {
+        "guio": "agencia",
+        "ganxo": "Marketing digital en FP: **una agencia** que dirigen tus alumnos",
+        "escenes": [
+          {
+            "de": "personatge",
+            "a": "historia",
+            "text": "Cada alumno crea su personaje y **su agencia**"
+          },
+          {
+            "de": "historia",
+            "a": "decisio",
+            "text": "Una historia con **clientes reales** de Osona",
+            "vel": 1.4
+          },
+          {
+            "de": "decisio",
+            "a": "fi2",
+            "text": "Y cada decisión tiene **consecuencias**"
+          }
+        ],
+        "personatge": "eco-contento",
+        "final": {
+          "titol": "Agència Digital: **comercio electrónico** jugando",
+          "boto": "ecoynexo.com/es/simuladores",
+          "text": "Proyectos reales que corriges con rúbrica. En catalán, castellano e inglés."
+        }
+      },
+      "texto": "Marketing digital en FP… con una agencia que dirigen tus alumnos 💻\n\nAgència Digital es un juego gratuito para el módulo de Comercio electrónico:\n🧑‍💼 Cada alumno crea su personaje y monta su agencia en Vic\n🤝 Clientes con problemas reales: un horno, un restaurante, una fábrica, una tienda online…\n🎯 Decisiones con consecuencias y lecciones del currículo\n📝 Proyectos reales (planes, campañas y webs) que corriges con rúbrica, con ayuda de la IA\n\nEn catalán, castellano e inglés. En el navegador.\n\n📌 Guárdalo y compártelo con tu departamento.\nEnlace en la bio → Simuladores. #ProfesFP #FPComercio #FormaciónProfesional #DocentesFP #Gamificación #RecursosEducativos #InnovaciónEducativa #AprendizajeBasadoEnJuegos #ClaustroVirtual #ecoynexo #MarketingDigital #ComercioElectrónico"
     }
   ]
 }

@@ -11,6 +11,8 @@
 //   IG_USER_ID  identificador del compte d'Instagram (obligatori amb el testimoni de Facebook; opcional amb el d'Instagram).
 //   IG_PROVA=1  (opcional) mode de prova: ho escriu al registre però no publica res.
 // Les imatges es serveixen des de la mateixa web: <URL>/ig/<id>/<n>.jpg (es generen amb scripts/instagram/genera.mjs).
+// Els reels (posts amb «reel»): <URL>/ig/<id>/reel.mp4 i portada.jpg (es generen amb scripts/instagram/reel.mjs).
+// Instagram tarda uns minuts a processar un vídeo: la funció el deixa en procés i el publica en una execució següent.
 // Netlify Blobs, magatzem 'instagram': 'publicats' (posts ja fets) i 'token' (testimoni renovat).
 import { getStore } from '@netlify/blobs';
 import CAL from '../../instagram/calendario.json' with { type: 'json' };
@@ -97,8 +99,9 @@ export async function executa({ cal = CAL, store, env, fetch, avui, hora, ara = 
     const recents = (await api.crida('GET', `/${usuari}/media`, { fields: 'id,caption,timestamp', limit: '15' })).data || [];
     const ja = recents.find(m => mateixText(m.caption, post.texto));
     if (ja) { fets[post.id] = { media: ja.id, at: ja.timestamp || iso(), trobat: true }; await desa(); console.log('Ja era a Instagram, no es torna a publicar:', post.id); return { fet: false, jaHiEra: true, post: post.id }; }
-    const imgs = post.slides.map((_, k) => `${base}/ig/${post.id}/${k + 1}.jpg`);
-    if (imgs.length === 1) st = { fase: 'contenidor', contenidor: (await api.crida('POST', `/${usuari}/media`, { image_url: imgs[0], caption: post.texto })).id, at: iso() };
+    const imgs = (post.slides || []).map((_, k) => `${base}/ig/${post.id}/${k + 1}.jpg`);
+    if (post.reel) st = { fase: 'contenidor', contenidor: (await api.crida('POST', `/${usuari}/media`, { media_type: 'REELS', video_url: `${base}/ig/${post.id}/reel.mp4`, cover_url: `${base}/ig/${post.id}/portada.jpg`, caption: post.texto, share_to_feed: 'true' })).id, at: iso() };
+    else if (imgs.length === 1) st = { fase: 'contenidor', contenidor: (await api.crida('POST', `/${usuari}/media`, { image_url: imgs[0], caption: post.texto })).id, at: iso() };
     else st = { fase: 'fills', fills: (await Promise.all(imgs.map(u => api.crida('POST', `/${usuari}/media`, { image_url: u, is_carousel_item: 'true' })))).map(x => x.id), at: iso() };
     fets[post.id] = st; await desa();
   }
@@ -114,7 +117,7 @@ export async function executa({ cal = CAL, store, env, fetch, avui, hora, ara = 
       }
     } else {
       const e = await api.crida('GET', '/' + st.contenidor, { fields: 'status_code' });
-      if (e.status_code === 'ERROR' || e.status_code === 'EXPIRED') await falla('Instagram no ha pogut processar la imatge (' + e.status_code + ').');
+      if (e.status_code === 'ERROR' || e.status_code === 'EXPIRED') await falla('Instagram no ha pogut processar ' + (post.reel ? 'el vídeo' : 'la imatge') + ' (' + e.status_code + ').');
       if (e.status_code === 'PUBLISHED') { fets[post.id] = { media: st.contenidor, at: iso() }; await desa(); console.log('Ja estava publicat a Instagram:', post.id); return { fet: true, post: post.id, media: st.contenidor }; }
       if (e.status_code === 'FINISHED') {
         const media = (await api.crida('POST', `/${usuari}/media_publish`, { creation_id: st.contenidor })).id;
@@ -123,7 +126,7 @@ export async function executa({ cal = CAL, store, env, fetch, avui, hora, ara = 
         return { fet: true, post: post.id, media };
       }
     }
-    if (resta() < 5000) { console.log('Instagram encara processa les imatges de', post.id, '(' + st.fase + '): continuarà a la propera execució.'); return { fet: false, enCurs: true, post: post.id, fase: st.fase }; }
+    if (resta() < 5000) { console.log('Instagram encara processa ' + (post.reel ? 'el vídeo' : 'les imatges') + ' de', post.id, '(' + st.fase + '): continuarà a la propera execució.'); return { fet: false, enCurs: true, post: post.id, fase: st.fase }; }
     await espera(1500);
   }
 }
