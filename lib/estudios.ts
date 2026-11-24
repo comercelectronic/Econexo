@@ -15,6 +15,12 @@ export const GRADOS = [
 export type Simulador = { id: string; name: string; desc: string; url: string; idiomas: string; interno?: boolean; para: { ciclo: string; modulo: string }[] };
 export const SIMULADORES: Simulador[] = [
   {
+    id: 'aparadors-bcn', name: 'Aparadors BCN', interno: true,
+    desc: 'Observa escaparates reales de Barcelona y abre tu propio taller. Monta dos campañas, combina productos y luces y gana estrellas respetando el presupuesto del comercio.',
+    url: '/jocs/aparadors-bcn/', idiomas: 'Castellano',
+    para: [{ ciclo: 'actividades-comerciales', modulo: 'dinamizacion-del-punto-de-venta' }]
+  },
+  {
     id: 'agencia-digital', name: 'Agència Digital',
     desc: 'Dirige tu propia agencia de marketing digital en Vic: clientes reales, decisiones con consecuencias, proyectos que corrige la IA y tu profesor, mundo explorable y mercado entre las agencias de tu clase.',
     url: '/jocs/agencia-digital/', idiomas: 'Catalán, castellano e inglés',
