@@ -20,9 +20,9 @@ K = 0.575  # radio visible de un metaball aislado (rigidez 2, umbral 0.6)
 
 # ---------------------------------------------------------------- reparto
 CAST = {
-    'lia': dict(nombre='Lía', h=1.66, female=True, belly=0.0, skin='#d9a27c', hair='#5a3424', hair_style='coleta',
-                eyes='#5b3a22', top='#c7861c', under='#f3efe6', pants='#3a5f8f', shoes='#f2f0ea', sole='#c9c3b8',
-                belt='#5a3a2a', sleeve=1.0, jacket=True),
+    'lia': dict(nombre='Lía', h=1.64, female=True, belly=0.0, skin='#d8a27e', hair='#4a2a1c', hair_style='rizado', bun=True, eyes='#5b3a22',
+                top='#efe6d6', sleeve=.62, vest=dict(kind='mosaic', cols=['#f2c13a', '#2f5fb3', '#e8edf2', '#e07b2c', '#3d8a5a']),
+                scarf=['#a8352c', '#a8352c'], pants='#8f8070', shoes='#6b4126', sole='#3a2414', belt='#6b4228', toolbelt=True, earrings=True),
     'joan': dict(nombre='Joan', h=1.70, female=False, belly=0.022, skin='#e0b08f', hair='#d2cfc9', hair_style='canoso',
                  beard=True, eyes='#4a6a8a', top='#5c86a8', pants='#4b4540', shoes='#4a2f22', sole='#2b1d16',
                  belt='#2b1d16', sleeve=0.58, apron='#9c3b35'),
@@ -41,23 +41,48 @@ CAST = {
     'nil': dict(nombre='Nil', h=1.78, female=False, belly=0.0, skin='#b37a55', hair='#2b2220', hair_style='gorra',
                   cap='#c0392b', eyes='#3a2a20', top='#6c4a9a', pants='#2d2f36', shoes='#e8e3d8', sole='#b02a2a',
                   sleeve=1.0, hood=True),
-    # Vianants del barri: gent de Barcelona de totes les edats (passer=True: sense full de vistes)
-    'avia': dict(nombre='Àvia', passer=True, h=1.55, female=True, belly=.02, skin='#efc9b0', hair='#e6e2dc', hair_style='mono', eyes='#5a6a7a',
-                 top='#7a5c8e', pants='#4a4a5a', skirt='#4a4a5a', legs='#c9b3a0', shoes='#3a2f2a', sole='#1e1a17', sleeve=1.0, trolley='#2f5d8a'),
-    'avi': dict(nombre='Avi', passer=True, h=1.68, female=False, belly=.03, skin='#dcae8c', hair='#bdb8b0', hair_style='boina', cap='#33343a',
-                eyes='#4a3a2a', top='#8a8f7a', pants='#5a5550', shoes='#2b211b', sole='#15110e', belt='#2b211b', sleeve=1.0, glasses='#5a4a3a', jacket=True, under='#e8e2d4'),
-    'turista': dict(nombre='Turista', passer=True, h=1.82, female=False, belly=.01, skin='#f0bda5', hair='#d8b56a', hair_style='corto', eyes='#4f7fa8',
-                    top='#f2f2ee', pants='#b9a37a', shorts=True, shoes='#ffffff', sole='#9a9a9a', sleeve=.3, backpack='#3a6ea5', glasses='#222222', sun=True),
-    'oficinista': dict(nombre='Oficinista', passer=True, h=1.70, female=True, belly=0, skin='#c58c66', hair='#2b1a14', hair_style='coleta', eyes='#3a2416',
-                       top='#2e3a4f', under='#ffffff', pants='#2e3a4f', shoes='#1a1a1a', sole='#0d0d0d', sleeve=1.0, jacket=True, bag='#6b3e26'),
-    'estudiant': dict(nombre='Estudiant', passer=True, h=1.76, female=False, belly=0, skin='#6b4532', hair='#151010', hair_style='rizado', eyes='#2a1a10',
-                      top='#3e7d5a', pants='#3b4a6b', shoes='#eaeaea', sole='#c43c3c', sleeve=1.0, hood=True, backpack='#222428'),
-    'veina': dict(nombre='Veïna', passer=True, h=1.64, female=True, belly=.01, skin='#b98563', hair='#8c3b4f', hair_style='mocador', eyes='#3a2416',
-                  top='#d8c7a8', pants='#3c3a46', shoes='#2a2a2a', sole='#111111', sleeve=1.0, bag='#a0703c'),
-    'noia': dict(nombre='Noia', passer=True, h=1.66, female=True, belly=0, skin='#a8704f', hair='#3a2418', hair_style='rizado', eyes='#2f1d12',
-                 top='#e2725b', pants='#2c3e6b', shoes='#f3efe6', sole='#d8d2c4', belt='#5a3a2a', sleeve=.3, bag='#e9dcc0'),
-    'senyor': dict(nombre='Senyor', passer=True, h=1.75, female=False, belly=.025, skin='#e8c0a0', hair='#6b5a4a', hair_style='calvo', beard=True, eyes='#5a7a5a',
-                   top='#a63c3c', pants='#3d4a5c', shoes='#3a2a1f', sole='#1a120d', belt='#2a1d15', sleeve=1.0),
+    # Vianants de Barcelona, fets a partir de les fitxes de referència (passer=True: sense full de vistes)
+    'avi_barca': dict(nombre='Avi del Barça', passer=True, h=1.70, female=False, belly=.02, skin='#d9a07c', hair='#cfcac2', hair_style='rizado', beard=True, eyes='#4a3a2a',
+                      hat='cap', hat_col='#1f2c6e', hat_col2='#a3203a', pat=dict(kind='vstripes', cols=['#a3203a', '#1f2c6e'], w=.045), top='#a3203a', sleeve=.45,
+                      scarf=['#a3203a', '#1f2c6e'], fringe='#e2b23a', satchel=True, tied='#8a8468', pants='#3f4d6e', shoes='#2a3358', sole='#e8e2d6', paint=True),
+    'forner': dict(nombre='Forner', passer=True, h=1.62, female=True, belly=.015, skin='#d6a688', hair='#8a8580', hair_style='mono', eyes='#4a3a2a',
+                   hat='kerchief', hat_col='#e6d8c4', top='#e9dcc6', sleeve=.7, apron='#c9b79a', apron_long=True, pants='#4e4440', shoes='#5a4334', sole='#2e221a', earrings=True, towel=True),
+    'music': dict(nombre='Music', passer=True, h=1.76, female=False, belly=0, skin='#c28b66', hair='#2a1d17', hair_style='rizado', beard=True, eyes='#2a1a10',
+                  top='#e6dbc6', sleeve=.7, vest=dict(kind='solid', cols=['#2a2428']), scarf=['#9b2f45', '#6b3f8a'], guitar=True, pants='#4a3a34', shoes='#5a3a2a', sole='#e8e2d6', earrings=True),
+    'llibreter': dict(nombre='Llibreter', passer=True, h=1.68, female=False, belly=.01, skin='#e4b896', hair='#d8d4cc', hair_style='canoso', glasses='#3a2e25', eyes='#4a3a2a',
+                      hat='flatcap', hat_col='#6b5640', top='#a89270', jacket=True, under='#e9dfcc', sleeve=1.0, scarf=['#6e2a35', '#8e4a3e'], satchel=True, belt='#3a2618',
+                      pants='#4a3a30', shoes='#6b4a30', sole='#2e2016'),
+    'mosaicista': dict(nombre='Mosaicista', passer=True, h=1.72, female=False, belly=0, skin='#d0a07c', hair='#a9a49c', hair_style='rizado', beard=True, eyes='#4a3a2a',
+                       hat='flatcap_goggles', hat_col='#6b5640', top='#e6dbc6', sleeve=.7, vest=dict(kind='mosaic', cols=['#4a3a30', '#2f5fb3', '#f2c13a', '#e8edf2', '#d9583f']),
+                       toolbelt=True, belt='#5a3a22', pants='#6f6a66', shoes='#5a3a22', sole='#2e2016'),
+    'florista': dict(nombre='Florista', passer=True, h=1.62, female=True, belly=.015, skin='#c99272', hair='#3a2418', hair_style='rizado', eyes='#3a2416',
+                     hat='bandana', hat_col='#d9583f', pat=dict(kind='floral', cols=['#efe2c8', '#2f5fb3', '#d9583f', '#e6b23a']), top='#efe2c8', sleeve=.7,
+                     apron='#5f6a4a', apron_long=True, pants='#5f6a4a', shoes='#e8e0d0', sole='#a3203a', basket=True, earrings=True),
+    'taxista': dict(nombre='Taxista', passer=True, h=1.75, female=False, belly=.01, skin='#d29a78', hair='#5a5550', hair_style='rizado', sun_head=True, eyes='#3a2a20',
+                    top='#26262a', yoke='#e2b23a', jacket=True, under='#d8d2c4', sleeve=1.0, pants='#3a3634', belt='#1a1a1a', shoes='#3a3a3e', sole='#c9c3b8', walkie=True),
+    'vermut': dict(nombre='Cambrera', passer=True, h=1.65, female=True, belly=.01, skin='#c99272', hair='#2a1d17', hair_style='mono', eyes='#3a2416',
+                   hat='bandana', hat_col='#a3302a', pat=dict(kind='vstripes', cols=['#e8d2c4', '#c9a8a0'], w=.02), top='#e8d2c4', sleeve=.7,
+                   apron='#2e2e36', apron_long=True, pants='#5a5236', shoes='#5a3626', sole='#2e1a12', towel=True, earrings=True),
+    'avia_mercat': dict(nombre='Avia del mercat', passer=True, h=1.55, female=True, belly=.03, skin='#e2b49a', hair='#b5b0a8', hair_style='mono', eyes='#5a6a7a',
+                        top='#7a3a48', jacket=True, under='#e8d8c0', sleeve=1.0, scarf=['#e8d8c0', '#8a3a48'], satchel=True, netbag=True,
+                        pants='#4a3e3a', shoes='#8a7458', sole='#e0d6c4', earrings=True),
+    'pescador': dict(nombre='Pescador', passer=True, h=1.68, female=False, belly=.01, skin='#b07a55', hair='#bdb8b0', hair_style='corto', beard=True, eyes='#4a3a2a',
+                     hat='beanie', hat_col='#23284a', top='#a89a7a', jacket=True, under='#2a3058', sleeve=.85, satchel=True, belt='#c9a96e',
+                     pants='#4a4e6e', shoes='#3a3e50', sole='#c9a96e'),
+    'music_jove': dict(nombre='Music jove', passer=True, h=1.78, female=False, belly=0, skin='#c99272', hair='#2a1d17', hair_style='rizado', eyes='#2a1a10',
+                       hat='flatcap', hat_col='#5a4636', top='#d8ccb6', jacket=True, under='#f0e8da', sleeve=.8, scarf=['#a8352c', '#a8352c'], guitar=True, case_col='#4a2a26',
+                       satchel=True, pants='#6e2e36', shoes='#2e2a2a', sole='#e8e2d6', earrings=True),
+    'jove_barca': dict(nombre='Jove del Barca', passer=True, h=1.79, female=False, belly=0, skin='#d29a78', hair='#2a1d17', hair_style='rizado', eyes='#3a2a20',
+                       pat=dict(kind='vstripes', cols=['#a3203a', '#1f2c6e'], w=.045), top='#a3203a', sleeve=.45, scarf=['#a3203a', '#1f2c6e'], fringe='#e2b23a',
+                       tied='#232848', pants='#3f5480', shoes='#f2efe6', sole='#c9a96e', paint=True),
+    'skater': dict(nombre='Skater', passer=True, h=1.80, female=False, belly=0, skin='#c99272', hair='#4a2e1e', hair_style='rizado', sun_head=True, eyes='#3a2a20',
+                   pat=dict(kind='vstripes', cols=['#f2ece2', '#c9786e'], w=.03), top='#f2ece2', sleeve=.45, open=True, shorts=True, socks=True,
+                   pants='#2e2e32', shoes='#232326', sole='#e8e2d6', skate=True),
+    'merce': dict(nombre='Merce', passer=True, h=1.63, female=True, belly=.02, skin='#c99272', hair='#2a1d17', hair_style='rizado', bun=True, eyes='#3a2416',
+                  hat='bandana', hat_col='#d9583f', pat=dict(kind='floral', cols=['#f2e6d2', '#ef8a1f', '#5a8a3a']), top='#f2e6d2', sleeve=.7,
+                  apron='#8e2f2a', apron_long=True, pants='#2a2a2e', shoes='#4a4a4e', sole='#c9c3b8', earrings=True),
+    'casteller': dict(nombre='Casteller', passer=True, h=1.75, female=False, belly=0, skin='#c99272', hair='#2a1d17', hair_style='corto', eyes='#3a2a20',
+                      hat='mocador_cast', hat_col='#b8262a', top='#f4f2ee', sleeve=.75, pants='#f0eee8', sash='#1a1a1a', sash_fringe=True, shoes='#1a1a1a', sole='#c9a96e'),
 }
 
 # ---------------------------------------------------------------- utilidades
@@ -238,6 +263,9 @@ def hair_blobs(c, body, name):
                 ok = (not front and -12 <= el <= 25) or (front and abs(az) > 55 and 0 <= el <= 25)
             else:
                 ok = (el >= 30 - (8 if abs(az) > 45 else 0)) if front else (el >= (-14 if abs(az) > 110 else 4))
+            hat = c.get('hat')
+            if hat in ('cap', 'beanie', 'flatcap', 'flatcap_goggles') and el >= 18: ok = False      # sota el barret no hi ha cabell
+            if hat in ('kerchief', 'mocador_cast') and (el >= 5 or abs(az) < 100): ok = False
             if not ok: continue
             p = raycast(bvh, center, d, .13 * h)
             if p is None: continue
@@ -337,7 +365,72 @@ def clothing(c, body, J):
         parts.append((prim('cube', base + Vector((0, 0, .2)) * h, (.07 * h, .09 * h, .13 * h)), 'acc', 'hand.R'))
         parts.append((prim('cube', (tip + base + Vector((0, 0, .34 * h))) / 2, (.006 * h, .006 * h, (tip.z - .34 * h) / 2 + .02 * h)), 'sole', 'hand.R'))
         for s in (-1, 1): parts.append((prim('sphere', base + Vector((s * .07, .02, .04)) * h, (.012 * h, .04 * h, .04 * h), seg=12), 'sole', 'hand.R'))
-    return parts
+    return parts + extras(c, body, J)
+
+
+def extras(c, body, J):
+    """Barrets i complements de les fitxes de referència dels vianants de Barcelona."""
+    h = c['h']; dg = bpy.context.evaluated_depsgraph_get(); bvh = BVHTree.FromObject(body, dg); out = []
+    V = lambda x, y, z: Vector((x, y, z)) * h
+    def sph(p, r, mat, bone, seg=16): out.append((prim('sphere', V(*p), tuple(v * h for v in r), seg=seg), mat, bone))
+    def box(p, r, mat, bone, rot=(0, 0, 0)): out.append((prim('cube', V(*p), tuple(v * h for v in r), rot=rot), mat, bone))
+    def tor(p, rx, ry, minor, mat, bone, axis=(0, 0, 1)): out.append((ring(V(*p), axis, rx * h, ry * h, minor * h), mat, bone))
+    hat = c.get('hat')
+    if hat in ('flatcap', 'flatcap_goggles'):
+        sph((0, .0, .978), (.092, .104, .04), 'hat', 'head'); box((0, -.098, .962), (.058, .032, .005), 'hat', 'head', rot=(radians(-12), 0, 0))
+        if hat == 'flatcap_goggles':
+            for s in (-1, 1): tor((s * .028, -.07, .99), .018, .018, .005, 'metal', 'head', axis=(0, 1, .4))
+    elif hat == 'beanie':
+        sph((0, .008, .962), (.088, .098, .07), 'hat', 'head'); tor((0, .006, .948), .085, .095, .013, 'hat', 'head')
+    elif hat == 'cap':
+        sph((0, .008, .962), (.086, .096, .062), 'hat', 'head'); sph((0, -.105, .95), (.06, .055, .007), 'hat2', 'head')
+    elif hat in ('kerchief', 'mocador_cast'):
+        sph((0, .014, .958), (.088, .1, .066), 'hat', 'head'); box((0, .1, .9), (.03, .006, .045), 'hat', 'head', rot=(radians(18), 0, 0))
+        sph((0, .1, .935), (.018, .014, .015), 'hat', 'head')
+    elif hat == 'bandana':
+        tor((0, .006, .962), .094, .106, .011, 'hat', 'head', axis=(0, -.15, 1)); sph((.02, -.03, 1.02), (.018, .014, .012), 'hat', 'head'); sph((-.02, -.03, 1.02), (.018, .014, .012), 'hat', 'head')
+    if c.get('bun'): sph((0, .085, 1.02), (.048, .045, .045), 'hair', 'head')
+    if c.get('sun_head'):
+        for s in (-1, 1): sph((s * .026, -.05, 1.0), (.02, .006, .015), 'pupil', 'head')
+    if c.get('earrings'):
+        for s in (-1, 1): tor((s * .07, .004, .882), .007, .007, .0018, 'gold', 'head', axis=(1, 0, 0))
+    if c.get('paint'):
+        p = raycast(bvh, V(.045, -1, .897), (0, 1, 0))
+        if p is not None:
+            for k, col in enumerate(('paint1', 'paint2')): out.append((prim('cube', p + V(0, -.002, .006 - k * .009), (.016 * h, .002 * h, .003 * h)), col, 'head'))
+    if c.get('scarf'):          # bufanda al coll amb dues caigudes a ratlles
+        tor((0, .004, .79), .07, .066, .018, 'scarf0', 'chest')
+        for s in (-1, 1):
+            for k in range(9): box((s * .04, -.078, .77 - k * .024), (.016, .007, .012), 'scarf' + str(k % 2), 'chest')
+            if c.get('fringe'): box((s * .045, -.075, .55), (.02, .008, .012), 'fringe', 'chest')
+    if c.get('satchel'):        # bandolera: corretja en diagonal i bossa al maluc
+        a, b = V(.11, -.07, .78), V(-.13, -.07, .53); m = (a + b) / 2; d = b - a
+        o = prim('cube', m, (.009 * h, .004 * h, d.length / 2)); o.rotation_euler = Vector((0, 0, 1)).rotation_difference(d.normalized()).to_euler(); bpy.ops.object.transform_apply(rotation=True)
+        out.append((o, 'leather', 'chest')); box((-.15, -.02, .5), (.022, .07, .055), 'leather', 'hips'); box((-.15, -.04, .52), (.024, .055, .02), 'leather2', 'hips')
+    if c.get('guitar'):         # estoig de guitarra a l'esquena
+        p = raycast(bvh, V(0, 1, .66), (0, -1, 0)); y = (p.y / h if p else .08) + .05
+        o = prim('sphere', V(.03, y, .62), (.085 * h, .04 * h, .2 * h), seg=20); o.rotation_euler = (0, radians(-15), 0); bpy.ops.object.transform_apply(rotation=True); out.append((o, 'case', 'chest'))
+        o = prim('cube', V(.09, y, .86), (.025 * h, .025 * h, .09 * h)); o.rotation_euler = (0, radians(-15), 0); bpy.ops.object.transform_apply(rotation=True); out.append((o, 'case', 'chest'))
+    if c.get('skate'):          # monopatí penjat a l'esquena
+        p = raycast(bvh, V(0, 1, .66), (0, -1, 0)); y = (p.y / h if p else .08) + .03
+        o = prim('cube', V(.02, y, .66), (.06 * h, .008 * h, .24 * h)); o.rotation_euler = (0, radians(-20), 0); bpy.ops.object.transform_apply(rotation=True); out.append((o, 'case', 'chest'))
+    if c.get('basket'):         # cistell de vímet amb flors al maluc
+        out.append((prim('cone', V(.16, -.02, .52), (.065 * h, .055 * h, .08 * h), seg=16), 'wicker', 'hips'))
+        for k in range(9): sph((.16 + math.cos(k * 2.4) * .04, -.02 + math.sin(k * 2.4) * .035, .6 + (k % 3) * .02), (.02, .02, .02), 'flower' + str(k % 4), 'hips', seg=10)
+    if c.get('netbag'):         # xarxa amb taronges a la mà
+        tip = Vector(J['tipR']); out.append((prim('sphere', V(tip.x, tip.y, tip.z - .07), (.05 * h, .045 * h, .06 * h), seg=12), 'net', 'hand.R'))
+        for k in range(5): sph((tip.x + math.cos(k * 1.3) * .025, tip.y + math.sin(k * 1.3) * .022, tip.z - .08 + (k % 2) * .02), (.021, .021, .021), 'orange', 'hand.R', seg=10)
+    if c.get('tied'):           # jaqueta lligada a la cintura
+        tor((0, .006, .5), .12, .1, .022, 'tied', 'hips')
+        for s in (-1, 1): box((s * .03, -.105, .44), (.03, .012, .06), 'tied', 'hips', rot=(0, s * radians(20), 0))
+        box((0, .11, .42), (.13, .012, .1), 'tied', 'hips')
+    if c.get('toolbelt'):       # cinturó d'eines amb pinzells
+        for s in (-1, 1): box((s * .12, -.04, .49), (.03, .025, .04), 'leather', 'hips')
+        for k in range(3): out.append((prim('sphere', V(.11 + k * .012, -.045, .54), (.004 * h, .004 * h, .035 * h), seg=8), 'gold', 'hips'))
+    if c.get('towel'): box((.13, -.06, .45), (.035, .006, .07), 'towel', 'hips')
+    if c.get('walkie'): box((.13, -.05, .5), (.012, .01, .025), 'pupil', 'hips')
+    if c.get('sash_fringe'): box((-.1, -.06, .45), (.03, .008, .07), 'sash', 'hips')
+    return out
 
 # ---------------------------------------------------------------- materiales por zona
 
@@ -358,6 +451,15 @@ def palette(c):
     if c.get('cap'): P['cap'] = material('gorra', c['cap'], .75)
     acc = c.get('backpack') or c.get('bag') or c.get('trolley')
     if acc: P['acc'] = material('accesorio', acc, .6)
+    X = {'hat': c.get('hat_col'), 'hat2': c.get('hat_col2') or c.get('hat_col'), 'metal': '#8a8f96', 'gold': '#d4a640', 'paint1': '#a3203a', 'paint2': '#1f2c6e',
+         'leather': '#6b4228', 'leather2': '#7d5233', 'case': c.get('case_col', '#2a2220'), 'wicker': '#c9a15e', 'net': '#e8dcc0', 'orange': '#ef8a1f',
+         'tied': c.get('tied'), 'towel': '#e9d6c9', 'sash': c.get('sash'), 'fringe': c.get('fringe'), 'socks': '#f2f0ea', 'yoke': c.get('yoke')}
+    for k, v in X.items():
+        if v: P[k] = material(k, v, .3 if k in ('metal', 'gold') else .75, 1.0 if k in ('metal', 'gold') else 0)
+    for k, v in enumerate(c.get('scarf') or []): P['scarf' + str(k)] = material('bufanda' + str(k), v, .9)
+    for k, v in enumerate(['#e04a5c', '#f3c63f', '#c45ab3', '#7a5ac8']): P['flower' + str(k)] = material('flor' + str(k), v, .7)
+    for k, v in enumerate((c.get('pat') or {}).get('cols', [])): P['pat' + str(k)] = material('estampat' + str(k), v, .85)
+    for k, v in enumerate((c.get('vest') or {}).get('cols', [])): P['vest' + str(k)] = material('armilla' + str(k), v, .7)
     return P
 
 
@@ -372,7 +474,7 @@ def zone(c, J, p):
         return 'top'
     if c.get('hood') and y > .03 and z < .865 and z > .74: return 'top'
     if (z > .80 and abs(x) < .06) or z > .845: return 'skin'
-    if c.get('apron') and y < 0 and abs(x) < .1 and .45 < z < .72: return 'apron'
+    if c.get('apron') and y < 0 and abs(x) < (.13 if c.get('apron_long') else .1) and (.3 if c.get('apron_long') else .45) < z < .72 and not (abs(x) > .13): return 'apron'
     if c.get('skirt'):
         return 'legs' if z < .34 else 'top'
     if c.get('shorts') and z < .33: return 'skin'
@@ -380,6 +482,29 @@ def zone(c, J, p):
     if z < .528: return 'pants'
     if c.get('jacket') and abs(x) < .026 and y < 0 and .56 < z < .80: return 'under'
     return 'top'
+
+
+def zone_x(c, J, p):
+    """Zona amb estampats: ratlles, mosaic, flors, armilla, coll obert, canesú, faixa i mitjons."""
+    z0 = zone(c, J, p); x, y, z = p
+    k = 'L' if x > 0 else 'R'; arm = abs(x) > .13 and seg_dist(Vector(p), Vector(J['shoulder' + k]), Vector(J['tip' + k])) < .065
+    hsh = lambda: int(abs(math.floor(x / .022) * 73856093 ^ math.floor(y / .022) * 19349663 ^ math.floor(z / .022) * 83492791))
+    if c.get('sash') and not arm and .49 < z < .575 and z0 in ('top', 'pants', 'belt'): return 'sash'
+    if c.get('shorts') and c.get('socks') and .062 <= z < .17: return 'socks'
+    if z0 == 'top':
+        if c.get('open') and not arm and y < 0 and z > .56 and abs(x) < .012 + .045 * (z - .56) / .24: return 'skin'
+        if c.get('yoke') and z > .735: return 'yoke'
+        v = c.get('vest')
+        if v and not arm and .5 < z < .79 and not (y < 0 and abs(x) < .036):
+            n = len(v['cols']); return 'vest' + str(hsh() % n if v.get('kind') == 'mosaic' else 0)
+        pt = c.get('pat')
+        if pt:
+            w = pt.get('w', .035); kd = pt['kind']; n = len(pt['cols'])
+            if kd == 'vstripes': return 'pat' + str(int(math.floor((x + 1) / w)) % 2)
+            if kd == 'hstripes': return 'pat' + str(int(math.floor(z / w)) % 2)
+            if kd == 'mosaic': return 'pat' + str(hsh() % n)
+            if kd == 'floral': q = hsh() % 10; return 'pat' + str(0 if q < 7 else 1 + q % (n - 1))
+    return z0
 
 
 def cut_planes(c, J, body):
@@ -391,6 +516,14 @@ def cut_planes(c, J, body):
     if c.get('skirt'): planes.append(((0, 0, .34), (0, 0, 1)))
     if c.get('shorts'): planes.append(((0, 0, .33), (0, 0, 1)))
     planes += [((x, 0, 0), (1, 0, 0)) for x in (-.06, .06)]
+    pt = c.get('pat') or {}
+    if pt.get('kind') == 'vstripes': planes += [((-1 + k * pt.get('w', .035), 0, 0), (1, 0, 0)) for k in range(int(1 / pt.get('w', .035)) * 2 + 1) if abs(-1 + k * pt.get('w', .035)) < .25]
+    if pt.get('kind') == 'hstripes': planes += [((0, 0, k * pt.get('w', .035)), (0, 0, 1)) for k in range(int(.5 / pt.get('w', .035)), int(.8 / pt.get('w', .035)) + 1)]
+    if c.get('vest'): planes += [((0, 0, .5), (0, 0, 1)), ((0, 0, .79), (0, 0, 1)), ((-.036, 0, 0), (1, 0, 0)), ((.036, 0, 0), (1, 0, 0))]
+    if c.get('sash'): planes += [((0, 0, .49), (0, 0, 1)), ((0, 0, .575), (0, 0, 1))]
+    if c.get('yoke'): planes.append(((0, 0, .735), (0, 0, 1)))
+    if c.get('socks'): planes.append(((0, 0, .17), (0, 0, 1)))
+    if c.get('apron_long'): planes += [((0, 0, .3), (0, 0, 1))]
     for k in 'LR':
         sh, d = Vector(J['shoulder' + k]), Vector(J['armdir' + k])
         for t in {min(c['sleeve'], 1.0), 1.0}: planes.append((tuple(sh + d * .34 * t), tuple(d)))
@@ -448,7 +581,7 @@ def assign_zones(c, J, body, P):
     h = c['h']; v = body.data.vertices
     for poly in body.data.polygons:
         ctr = sum((v[i].co for i in poly.vertices), Vector()) / len(poly.vertices) / h
-        poly.material_index = names.index(zone(c, J, tuple(ctr)))
+        poly.material_index = names.index(zone_x(c, J, tuple(ctr)))
     return names
 
 # ---------------------------------------------------------------- pesos

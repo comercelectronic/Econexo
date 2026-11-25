@@ -10,7 +10,11 @@ window.Vianants = (() => {
   const rowY = r => window.Barcelona3D ? Barcelona3D.ROWY[r] : 26 + r * 335;
   const CROSS = Array.from({length: 6}, (_, k) => 320 + k * 360);
   const SHOPS = Array.from({length: 6}, (_, k) => 158 + k * 360);
-  const MODELS = ['avia', 'avi', 'turista', 'oficinista', 'estudiant', 'veina', 'noia', 'senyor'];
+  // Gent de Barcelona (fitxes de referència): cada zona té els seus personatges més habituals.
+  const MODELS = ['avi_barca', 'forner', 'music', 'llibreter', 'mosaicista', 'florista', 'taxista', 'vermut', 'avia_mercat', 'pescador', 'music_jove', 'jove_barca', 'skater', 'merce', 'casteller'];
+  const BY_ZONE = [['jove_barca', 'avi_barca', 'taxista', 'llibreter', 'mosaicista'], ['taxista', 'llibreter', 'jove_barca', 'music_jove', 'forner'],
+    ['skater', 'casteller', 'music_jove', 'avia_mercat', 'avi_barca', 'jove_barca'], ['avia_mercat', 'forner', 'vermut', 'llibreter', 'music', 'merce', 'jove_barca'],
+    ['florista', 'merce', 'music', 'mosaicista', 'avia_mercat', 'casteller'], ['pescador', 'skater', 'vermut', 'music', 'avi_barca']];
   let seed = 20261125;
   const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
   const stats = Array.from({length: 36}, () => ({pas: 0, par: 0, ent: 0, tic: 0}));
@@ -20,9 +24,9 @@ window.Vianants = (() => {
   for (let row = 0; row < ROWS; row++) {
     const zone = Z()[row];
     for (let j = 0; j < zone.people; j++) {
-      const side = rnd() < .5 ? 0 : 1, [a, b] = zone.lanes[side], model = MODELS[(uid * 3 + row) % MODELS.length];
+      const side = rnd() < .5 ? 0 : 1, [a, b] = zone.lanes[side], model = BY_ZONE[row][j % BY_ZONE[row].length];
       agents.push({uid: uid++, row, j, side, lane: a + rnd() * (b - a), x: 60 + rnd() * (W - 120), y: road(row) + a,
-        dir: rnd() < .5 ? -1 : 1, speed: (model === 'avia' || model === 'avi' ? 16 : 24) + rnd() * 12, model, tint: rnd() < .5 ? 0 : 1 + (row * 7 + j) % 6,
+        dir: rnd() < .5 ? -1 : 1, speed: (/avi|llibreter|pescador/.test(model) ? 16 : model === 'skater' ? 34 : 24) + rnd() * 12, model, tint: 0,
         state: 'walk', until: 0, yaw: 0, moving: true, lastShop: -1, lastCross: -1, away: rnd() < .3, shop: -1});
     }
   }

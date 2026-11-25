@@ -3,7 +3,7 @@
    se muestra el personaje poligonal de respaldo. */
 window.Personajes3D = (() => {
   const T = THREE, BASE = './personajes/', SCALE = 27;       // 1 m ≈ 27 unidades del barrio
-  const MODELS = ['lia', 'joan', 'ada', 'laia', 'jan', 'nuria', 'nil'];
+  const MODELS = ['lia', 'joan', 'ada', 'laia', 'jan', 'nuria', 'nil'];  // els vianants són a Vianants.MODELS
   const cache = {}, waiting = {};
   const loader = T.GLTFLoader ? new T.GLTFLoader() : null;
   const palette = {prenda: ['#8a3b52', '#2f6f73', '#b5832a', '#4b5f8f', '#6e7d43', '#a2503a', '#5d4a7a', '#c9b48f'],
@@ -17,6 +17,7 @@ window.Personajes3D = (() => {
   function preload() { return Promise.all(MODELS.map(load)) }
 
   function actor(scene, id, fallback, tint) {
+    if (fallback) fallback.g.visible = false;
     const g = new T.Group(); scene.add(g);
     let mixer = null, actions = {}, current = null, inner = null, last = performance.now(), lx = null, lz = null, speed = 0;
     let oneShot = null, oneShotUntil = 0, mood = null;
@@ -38,7 +39,7 @@ window.Personajes3D = (() => {
       if (fallback) fallback.g.visible = false;
       play('reposo', 0);
     }
-    load(id).then(attach);
+    let requested = false;   // el GLB es descarrega el primer cop que el personatge és visible
 
     function play(name, fade = .22) {
       const a = actions[name]; if (!a || a === current) return;
@@ -55,6 +56,7 @@ window.Personajes3D = (() => {
       /** Estado de ánimo mientras está quieto: null (reposo) o 'hablar'. */
       set mood(v) { mood = v },
       pose(x, z, angle, phase, moving) {
+        if (!requested) { requested = true; load(id).then(attach) }
         const now = performance.now(), dt = Math.min(.1, (now - last) / 1000); last = now;
         if (!inner) { if (fallback) { fallback.g.visible = g.visible; fallback.pose(x, z, angle, phase, moving) } return }
         if (lx !== null && dt > 0) { const v = Math.hypot(x - lx, z - lz) / dt; speed += (v - speed) * Math.min(1, dt * 8) }
