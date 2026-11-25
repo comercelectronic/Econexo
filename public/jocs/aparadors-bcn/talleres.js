@@ -122,7 +122,7 @@ window.Talleres = (() => {
         if (p.psy.length !== 2) return step4(tx({es: 'Elige exactamente dos técnicas psicológicas.', ca: 'Tria exactament dues tècniques psicològiques.'}));
         if (!p.media.length) return step4(tx({es: 'Sin medios nadie se enterará de la promoción.', ca: 'Sense mitjans ningú no s\'assabentarà de la promoció.'}));
         if (c > BUDGET) return step4(tx({es: 'Te has pasado del presupuesto.', ca: 'T\'has passat del pressupost.'}));
-        pass(['5.2', '5.4']); result(simulate(p));
+        pass(['5.2', '5.4']); const res = simulate(p); window.Missions ? Missions.promoWeek(res, () => result(res)) : result(res);
       };
     }
     function result(r) {
@@ -501,7 +501,7 @@ window.Talleres = (() => {
       ['titular', 'precio', 'beneficio'].forEach(k => $(k).onchange = e => { c[k] = e.target.value; s3() });
       ['font', 'bg', 'fg', 'accent', 'plv'].forEach(k => $(k).onchange = e => { c[k] = e.target.value; s3() });
       $('size').onchange = e => { c.size = +e.target.value; s3() };
-      if ($('next')) $('next').onclick = () => { pass(['3.2', '3.4', '3.5', '3.6']); ra().cartel = {...c}; save(); s4() };
+      if ($('next')) $('next').onclick = () => { pass(['3.2', '3.4', '3.5', '3.6']); ra().cartel = {...c}; save(); window.Missions ? Missions.posterView(s4) : s4() };
     }
     function s4(msg) { // 3.7 montaje seguro
       show(title, sub, head + (msg ? '<p class="reply bad">' + msg + '</p>' : '') + '<h3>' + tx({es: '4. Hay que colgar la guirnalda de rosas a 2,8 m de altura. ¿Cómo lo hacéis?', ca: '4. Cal penjar la garlanda de roses a 2,8 m d\'alçada. Com ho feu?'}) + '</h3><div class="choices">' +
@@ -611,5 +611,7 @@ window.Talleres = (() => {
                  2: {label: {es: 'Preparar la campaña de Sant Jordi de Laia (RA3)', ca: 'Preparar la campanya de Sant Jordi de la Laia (RA3)'}, open: carteles, done: () => !!ra().cartel},
                  3: {label: {es: 'Reorganizar la tienda de Jan (RA1)', ca: 'Reorganitzar la botiga d\'en Jan (RA1)'}, open: tienda, done: () => !!ra().tienda},
                  5: {label: {es: 'Ordenar el lineal de Nil (RA2)', ca: 'Endreçar el lineal d\'en Nil (RA2)'}, open: lineal, done: () => !!ra().lineal}};
-  return {promo, control, report, lineal, tienda, carteles, estudio, menu, tx, ra, byNpc};
+  // Dades de partida per jugar el RA6 sense haver fet el RA5.
+  function presetPromo() { if (!ra().promo) { ra().promo = simulate({scen: 'temporada', goal: 'liquidar', tech: 'descuento', psy: ['psicologico', 'escasez'], media: ['vinilo', 'cartel', 'redes'], depth: 25}); save() } }
+  return {promo, control, report, lineal, tienda, carteles, estudio, menu, tx, ra, byNpc, presetPromo};
 })();

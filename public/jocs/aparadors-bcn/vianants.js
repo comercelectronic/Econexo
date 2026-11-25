@@ -44,10 +44,11 @@ window.Vianants = (() => {
       if (a.away) { if (now > a.until || (rush && rush.shop / 6 | 0) === a.row) { a.away = false; a.x = a.dir > 0 ? 20 : W - 20; a.state = 'walk' } else continue }
       if (contact && contact.uid === a.uid) { a.moving = false; continue }
       if (a.state === 'walk') {
-        a.moving = true; a.x += a.dir * a.speed * dt;
+        a.moving = true; const px = a.x; a.x += a.dir * a.speed * dt;
+        const crossed = X => (px - X) * (a.x - X) <= 0;   // ha passat per davant de X en aquest fotograma
         a.y += ((ry + a.lane) - a.y) * Math.min(1, dt * 2);
         a.yaw = a.dir > 0 ? Math.PI / 2 : -Math.PI / 2;
-        const k = SHOPS.findIndex(x => Math.abs(x - a.x) < 4);
+        const k = SHOPS.findIndex(crossed);
         if (k >= 0 && k !== a.lastShop) {
           a.lastShop = k; const i = shopOf(a, k); stats[i].pas++;
           let p = a.side === 0 ? .1 + appeal(i) * .7 : .03 + appeal(i) * .15;
@@ -55,7 +56,7 @@ window.Vianants = (() => {
           if (rush && rush.shop === i) p = .9;
           if (rnd() < p) { a.shop = i; stats[i].par++; a.x = SHOPS[k] + (rnd() - .5) * 60; set(a, 'look', now, 2 + rnd() * 5); continue }
         }
-        const c = CROSS.findIndex(x => Math.abs(x - a.x) < 4);
+        const c = CROSS.findIndex(crossed);
         if (zone.road && c >= 0 && c !== a.lastCross) { a.lastCross = c; if (rnd() < .3) { a.x = CROSS[c]; set(a, 'wait', now, 1 + rnd() * 3); continue } }
         if (!zone.road && rnd() < dt * .02) { set(a, 'wait', now, .2); continue }
         if (rnd() < dt * .03) set(a, 'phone', now, 2 + rnd() * 4);
@@ -88,5 +89,8 @@ window.Vianants = (() => {
   }
   return {agents, update, MODELS, stats,
     setAppeal: f => appeal = f, setPrisma: f => prisma = f, isPrisma: i => prisma(i), appealOf: i => appeal(i),
-    rush: (shop, ms) => { rush = {shop, until: performance.now() + ms} }};
+    rush: (shop, ms) => {
+      rush = {shop, until: performance.now() + ms}; const row = shop / 6 | 0, sx = SHOPS[shop % 6];
+      agents.filter(a => a.row === row).forEach((a, k) => { a.away = false; a.state = 'walk'; a.x = sx + (k % 2 ? -1 : 1) * (90 + k * 45); a.dir = a.x < sx ? 1 : -1; a.lastShop = -1 });
+    }};
 })();
