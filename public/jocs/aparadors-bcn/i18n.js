@@ -75,7 +75,7 @@ window.I18N = (() => {
     ['Desde la acera', 'Des de la vorera'], ['Ángulo desde la acera', 'Angle des de la vorera'], ['Volver al montaje', 'Tornar al muntatge'],
     ['Producto visible', 'Producte visible'], ['Asociación comercial', 'Associació comercial'], ['Jerarquía y aire', 'Jerarquia i aire'],
     ['Ritmo y alturas', 'Ritme i alçades'], ['Iluminación', 'Il·luminació'], ['Soporte y mensaje', 'Suport i missatge'], ['Viabilidad', 'Viabilitat'],
-    ['Plano del barrio', 'Plànol del barri'], ['Cristal con reflejos', 'Vidre amb reflexos'], ['Paseo de estudio con Joan (RA4)', 'Passeig d\'estudi amb en Joan (RA4)'], ['Atardecer', 'Capvespre'], ['Noche', 'Nit'],
+    ['Plano del barrio', 'Plànol del barri'], ['Plano de Barcelona', 'Plànol de Barcelona'], [' · 36 comercios', ' · 36 comerços'], ['Toca una tienda del plano para caminar hasta su puerta. El punto rojo eres tú; los lilas, los vecinos.', 'Toca una botiga del plànol per caminar fins a la porta. El punt vermell ets tu; els liles, els veïns.'], ['Lista de comercios', 'Llista de comerços'], ['Cristal con reflejos', 'Vidre amb reflexos'], ['Paseo de estudio con Joan (RA4)', 'Passeig d\'estudi amb en Joan (RA4)'], ['Atardecer', 'Capvespre'], ['Noche', 'Nit'],
     ['Este navegador no ofrece aceleración 3D. Puedes continuar el montaje en el editor.', 'Aquest navegador no ofereix acceleració 3D. Pots continuar el muntatge a l\'editor.']
   ].sort((a, b) => b[0].length - a[0].length);
 
