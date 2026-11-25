@@ -351,9 +351,109 @@ window.Talleres = (() => {
     s1();
   }
 
+  /* ------------------------------------------------------------ RA1 · Superficie comercial (Jan) */
+  const GW = 8, GH = 6, DOOR = [5, 5], EXIT = [0, 0], EXT = [7, 0];
+  const ITEMS = {
+    C: {n: {es: 'Caja', ca: 'Caixa'}, c: '#183e3a', max: 1},
+    G: {n: {es: 'Góndola de lámparas', ca: 'Góndola de llums'}, c: '#9a6a44', max: 10},
+    N: {n: {es: 'Bombillas (compra habitual)', ca: 'Bombetes (compra habitual)'}, c: '#e0a53a', max: 1},
+    X: {n: {es: 'Expositor de novedades', ca: 'Expositor de novetats'}, c: '#9667bc', max: 2},
+    L: {n: {es: 'Foco de acento', ca: 'Focus d\'accent'}, c: '#ffd36b', max: 3}
+  };
+  function tienda(onDone) {
+    const title = tx({es: 'La tienda de Jan', ca: 'La botiga d\'en Jan'}), sub = tx({es: 'Lámparas y diseño · Jan', ca: 'Llums i disseny · Jan'});
+    const head = '<p class="taller-ra">RA1 · ' + tx({es: 'Organizar la superficie comercial', ca: 'Organitzar la superfície comercial'}) + '</p>';
+    const quiz = (q, opts, okIdx, wrong, ca, next) => {
+      const draw = msg => {
+        show(title, sub, head + (msg ? '<p class="reply bad">' + msg + '</p>' : '') + '<h3>' + tx(q) + '</h3><div class="choices">' + opts.map((t, i) => '<button data-q="' + i + '">' + tx(t) + '</button>').join('') + '</div>');
+        sheet.querySelectorAll('[data-q]').forEach(b => b.onclick = () => +b.dataset.q === okIdx ? (pass(ca), next()) : draw(tx(wrong)));
+      }; draw();
+    };
+    function s1() { // 1.5 barreras
+      const B = [{t: {es: 'Escalón de 15 cm en la entrada', ca: 'Graó de 15 cm a l\'entrada'}, fix: {es: 'Rampa con poca pendiente', ca: 'Rampa amb poc pendent'}},
+                 {t: {es: 'Puerta de cristal pesada y cerrada', ca: 'Porta de vidre pesada i tancada'}, fix: {es: 'Puerta abierta o automática', ca: 'Porta oberta o automàtica'}},
+                 {t: {es: 'Escaparate tapado que no deja ver el interior', ca: 'Aparador tapat que no deixa veure l\'interior'}, fix: {es: 'Interior visible e iluminado desde la calle', ca: 'Interior visible i il·luminat des del carrer'}},
+                 {t: {es: 'Vendedor esperando en la puerta', ca: 'Venedor esperant a la porta'}, fix: {es: 'Saludar desde dentro y dejar mirar con calma', ca: 'Saludar des de dins i deixar mirar amb calma'}}];
+      show(title, sub, head + '<p>' + tx({es: 'Jan: «La gente mira mis lámparas desde fuera pero no entra.» Elige una solución para cada barrera física o psicológica.', ca: 'Jan: «La gent mira els meus llums des de fora però no entra.» Tria una solució per a cada barrera física o psicològica.'}) + '</p><div class="ratios">' +
+        B.map((b, i) => '<label class="ratio"><span>' + tx(b.t) + '</span><select data-i="' + i + '"><option value="">—</option>' + B.map((x, j) => '<option value="' + j + '">' + tx(x.fix) + '</option>').join('') + '</select><em></em></label>').join('') + '</div><button class="primary" id="ok">' + tx({es: 'Comprobar', ca: 'Comprovar'}) + '</button>');
+      $('ok').onclick = () => { let bad = 0; sheet.querySelectorAll('[data-i]').forEach(s => { const g = s.value === s.dataset.i; s.parentNode.classList.toggle('ok', g); s.parentNode.classList.toggle('ko', !g); bad += !g }); if (!bad) { pass(['1.5']); setTimeout(s2, 400) } };
+    }
+    const plan = Array.from({length: GH}, () => Array(GW).fill(''));
+    let brush = 'G';
+    const fixed = (x, y) => (x === DOOR[0] && y === DOOR[1]) ? '⇩' : (x === EXIT[0] && y === EXIT[1]) ? '⇧' : (x === EXT[0] && y === EXT[1]) ? '🧯' : '';
+    function heat() {
+      const H = plan.map((row, y) => row.map((k, x) => {
+        if (k || fixed(x, y)) return null;
+        let h = .95 - .55 * Math.hypot(x - DOOR[0], y - DOOR[1]) / 6 + (x >= 4 ? .1 : -.18);
+        plan.forEach((r, yy) => r.forEach((it, xx) => { const d = Math.hypot(x - xx, y - yy);
+          if (it === 'N' && d <= 2.3) h += .45 * (1 - d / 3); if (it === 'L' && d <= 1.6) h += .28; if (it === 'X' && d <= 1.6) h += .18; if (it === 'C' && d <= 1.2) h += .12 }));
+        return Math.max(0, Math.min(1, h));
+      }));
+      return H;
+    }
+    function reach() {
+      const seen = new Set(), q = [DOOR.join(',')]; seen.add(q[0]);
+      while (q.length) { const [x, y] = q.shift().split(',').map(Number);
+        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const nx = x + dx, ny = y + dy, key = nx + ',' + ny;
+          if (nx < 0 || ny < 0 || nx >= GW || ny >= GH || seen.has(key) || plan[ny][nx]) continue; seen.add(key); q.push(key) } }
+      return seen;
+    }
+    function checks() {
+      const H = heat(), R = reach(), cells = [];
+      plan.forEach((r, y) => r.forEach((k, x) => k && cells.push({k, x, y})));
+      const near = (c, set) => [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => set.has((c.x + dx) + ',' + (c.y + dy)));
+      const count = k => cells.filter(c => c.k === k).length, C = cells.find(c => c.k === 'C'), N = cells.find(c => c.k === 'N');
+      const free = []; H.forEach((r, y) => r.forEach((h, x) => h !== null && free.push(h)));
+      return [
+        [count('G') >= 4 && count('C') === 1 && count('N') === 1, tx({es: 'Mobiliario completo: caja, bombillas y al menos 4 góndolas', ca: 'Mobiliari complet: caixa, bombetes i almenys 4 góndoles'}), '1.2'],
+        [!!C && Math.hypot(C.x - DOOR[0], C.y - DOOR[1]) <= 2.3, tx({es: 'Caja junto a la salida', ca: 'Caixa al costat de la sortida'}), '1.2'],
+        [!!N && N.y <= 1, tx({es: 'Producto de compra habitual al fondo: obliga a recorrer la tienda', ca: 'Producte de compra habitual al fons: obliga a recórrer la botiga'}), '1.6'],
+        [free.length && Math.min(...free) >= .3, tx({es: 'Ninguna zona fría sin calentar (mapa de calor)', ca: 'Cap zona freda sense escalfar (mapa de calor)'}), '1.4'],
+        [cells.every(c => near(c, R)) && [...R].filter(k => { const [x, y] = k.split(',').map(Number); return !fixed(x, y) }).length === free.length, tx({es: 'Circulación fluida: todos los pasillos y muebles accesibles desde la entrada', ca: 'Circulació fluida: tots els passadissos i mobles accessibles des de l\'entrada'}), '1.6'],
+        [R.has('1,0') || R.has('0,1'), tx({es: 'Salida de emergencia despejada', ca: 'Sortida d\'emergència lliure'}), '1.8'],
+        [R.has('6,0') || R.has('7,1'), tx({es: 'Extintor accesible', ca: 'Extintor accessible'}), '1.8']
+      ];
+    }
+    function s2(sim) {
+      const H = sim ? heat() : null, ck = sim ? checks() : null;
+      const color = h => 'hsl(' + Math.round(220 - 220 * h) + ',70%,' + (62 - 10 * h) + '%)';
+      show(title, sub, head + '<h3>' + tx({es: 'Plano de la tienda', ca: 'Plànol de la botiga'}) + '</h3><p><small>' + tx({es: 'Cada casilla mide 1,20 m. ⇩ entrada · ⇧ salida de emergencia · 🧯 extintor. Elige un elemento y toca el plano; simula para ver el mapa de calor de 30 clientes.', ca: 'Cada casella fa 1,20 m. ⇩ entrada · ⇧ sortida d\'emergència · 🧯 extintor. Tria un element i toca el plànol; simula per veure el mapa de calor de 30 clients.'}) + '</small></p>' +
+        '<div class="brush">' + Object.entries(ITEMS).map(([k, it]) => '<button data-b="' + k + '" class="' + (brush === k ? 'on' : '') + '"><span class="sw" style="background:' + it.c + '">' + k + '</span> ' + tx(it.n) + '</button>').join('') + '<button data-b="" class="' + (brush === '' ? 'on' : '') + '">' + tx({es: 'Borrar', ca: 'Esborrar'}) + '</button></div>' +
+        '<div class="floorplan">' + plan.map((row, y) => row.map((k, x) => { const f = fixed(x, y);
+          return '<button data-c="' + x + ',' + y + '"' + (f ? ' disabled' : '') + ' style="' + (k ? 'background:' + ITEMS[k].c + ';color:#fff' : H && H[y][x] !== null ? 'background:' + color(H[y][x]) : '') + '">' + (f || k) + '</button>' }).join('')).join('') + '</div>' +
+        (ck ? '<div class="checklist">' + ck.map(([ok, t]) => '<p class="' + (ok ? '' : 'bad') + '">' + (ok ? '✓ ' : '✗ ') + t + '</p>').join('') + '</div>' : '') +
+        '<button class="primary" id="sim">' + tx({es: 'Simular 30 clientes', ca: 'Simular 30 clients'}) + '</button>' + (ck && ck.every(c => c[0]) ? ' <button class="primary" id="next">' + tx({es: 'Continuar', ca: 'Continuar'}) + '</button>' : ''));
+      sheet.querySelectorAll('[data-b]').forEach(b => b.onclick = () => { brush = b.dataset.b; s2(sim) });
+      sheet.querySelectorAll('[data-c]').forEach(b => b.onclick = () => {
+        const [x, y] = b.dataset.c.split(',').map(Number);
+        if (brush && plan.flat().filter(k => k === brush).length >= ITEMS[brush].max && plan[y][x] !== brush) return;
+        plan[y][x] = brush; s2(false);
+      });
+      $('sim').onclick = () => s2(true);
+      if ($('next')) $('next').onclick = () => { pass(['1.2', '1.4', '1.6', '1.8']); s3() };
+    }
+    const s3 = () => quiz({es: 'Has puesto las bombillas al fondo y focos en la zona fría. ¿Qué técnica de merchandising es?', ca: 'Has posat les bombetes al fons i focus a la zona freda. Quina tècnica de marxandatge és?'},
+      [{es: 'Calentar puntos fríos con productos imán y animación', ca: 'Escalfar punts freds amb productes imant i animació'}, {es: 'Cross merchandising', ca: 'Cross merchandising'}, {es: 'Venta a granel', ca: 'Venda a granel'}], 0,
+      {es: 'Piensa en para qué sirve el mapa de calor.', ca: 'Pensa per a què serveix el mapa de calor.'}, ['1.3'], s4);
+    const s4 = () => quiz({es: 'Jan agrupa el suelo por familias (sobremesa, techo, pie). ¿Qué ventaja e inconveniente tiene?', ca: 'En Jan agrupa el terra per famílies (sobretaula, sostre, peu). Quin avantatge i inconvenient té?'},
+      [{es: 'El cliente encuentra antes lo que busca, pero recorre menos tienda y compra menos por impulso.', ca: 'El client troba abans el que busca, però recorre menys botiga i compra menys per impuls.'},
+       {es: 'No tiene inconvenientes.', ca: 'No té inconvenients.'}, {es: 'Obliga a duplicar el stock de cada familia.', ca: 'Obliga a duplicar l\'estoc de cada família.'}], 0,
+      {es: 'Toda distribución tiene ventajas e inconvenientes para la circulación.', ca: 'Tota distribució té avantatges i inconvenients per a la circulació.'}, ['1.7'], s5);
+    const s5 = () => quiz({es: 'Jan quiere sacar un expositor y un toldo a la acera. ¿Qué necesita?', ca: 'En Jan vol treure un expositor i un tendal a la vorera. Què necessita?'},
+      [{es: 'Nada, si es pequeño y lo retira por la noche.', ca: 'Res, si és petit i el retira a la nit.'},
+       {es: 'Pedir al Ayuntamiento la autorización de ocupación de la vía pública y pagar la tasa; el toldo, además, según la normativa municipal.', ca: 'Demanar a l\'Ajuntament l\'autorització d\'ocupació de la via pública i pagar la taxa; el tendal, a més, segons la normativa municipal.'},
+       {es: 'Solo el permiso de la comunidad de vecinos.', ca: 'Només el permís de la comunitat de veïns.'}], 1,
+      {es: 'La acera es espacio público: lo regula el Ayuntamiento.', ca: 'La vorera és espai públic: ho regula l\'Ajuntament.'}, ['1.1'], () => {
+        ra().tienda = {fecha: new Date().toISOString().slice(0, 10)}; save();
+        show(title, sub, head + '<p class="reply">' + tx({es: 'Jan: «Ahora la gente entra, da la vuelta entera y descubre las lámparas del fondo. Esto una pantalla no lo hace.»', ca: 'Jan: «Ara la gent entra, fa la volta sencera i descobreix els llums del fons. Això una pantalla no ho fa.»'}) + '</p><button class="primary" id="next">' + tx({es: 'Continuar', ca: 'Continuar'}) + '</button>');
+        $('next').onclick = () => onDone ? onDone() : menu();
+      });
+    s1();
+  }
+
   /* ------------------------------------------------------------ Cuaderno de RA */
   const RAS = [
-    {n: 1, t: {es: 'Organizar la superficie comercial', ca: 'Organitzar la superfície comercial'}, ca: 8, who: 'Jan'},
+    {n: 1, t: {es: 'Organizar la superficie comercial', ca: 'Organitzar la superfície comercial'}, ca: 8, who: 'Jan', open: () => tienda()},
     {n: 2, t: {es: 'Colocar y reponer productos en el lineal', ca: 'Col·locar i reposar productes al lineal'}, ca: 8, who: 'Nil', open: () => lineal()},
     {n: 3, t: {es: 'Decoración, rotulación y cartelería', ca: 'Decoració, retolació i cartellisme'}, ca: 7, who: 'Laia'},
     {n: 4, t: {es: 'Montar escaparates', ca: 'Muntar aparadors'}, ca: 8, who: tx({es: 'Encargos', ca: 'Encàrrecs'})},
@@ -386,6 +486,7 @@ window.Talleres = (() => {
 
   // Taller que cada vecino ofrece tras convencerle en la historia.
   const byNpc = {4: {label: {es: 'Ayudar a Núria con una promoción (RA5)', ca: 'Ajudar la Núria amb una promoció (RA5)'}, open: promo, done: () => !!ra().promo},
+                 3: {label: {es: 'Reorganizar la tienda de Jan (RA1)', ca: 'Reorganitzar la botiga d\'en Jan (RA1)'}, open: tienda, done: () => !!ra().tienda},
                  5: {label: {es: 'Ordenar el lineal de Nil (RA2)', ca: 'Endreçar el lineal d\'en Nil (RA2)'}, open: lineal, done: () => !!ra().lineal}};
-  return {promo, control, report, lineal, menu, tx, ra, byNpc};
+  return {promo, control, report, lineal, tienda, menu, tx, ra, byNpc};
 })();
