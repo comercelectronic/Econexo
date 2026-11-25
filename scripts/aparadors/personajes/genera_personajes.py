@@ -41,6 +41,23 @@ CAST = {
     'nil': dict(nombre='Nil', h=1.78, female=False, belly=0.0, skin='#b37a55', hair='#2b2220', hair_style='gorra',
                   cap='#c0392b', eyes='#3a2a20', top='#6c4a9a', pants='#2d2f36', shoes='#e8e3d8', sole='#b02a2a',
                   sleeve=1.0, hood=True),
+    # Vianants del barri: gent de Barcelona de totes les edats (passer=True: sense full de vistes)
+    'avia': dict(nombre='Àvia', passer=True, h=1.55, female=True, belly=.02, skin='#efc9b0', hair='#e6e2dc', hair_style='mono', eyes='#5a6a7a',
+                 top='#7a5c8e', pants='#4a4a5a', skirt='#4a4a5a', legs='#c9b3a0', shoes='#3a2f2a', sole='#1e1a17', sleeve=1.0, trolley='#2f5d8a'),
+    'avi': dict(nombre='Avi', passer=True, h=1.68, female=False, belly=.03, skin='#dcae8c', hair='#bdb8b0', hair_style='boina', cap='#33343a',
+                eyes='#4a3a2a', top='#8a8f7a', pants='#5a5550', shoes='#2b211b', sole='#15110e', belt='#2b211b', sleeve=1.0, glasses='#5a4a3a', jacket=True, under='#e8e2d4'),
+    'turista': dict(nombre='Turista', passer=True, h=1.82, female=False, belly=.01, skin='#f0bda5', hair='#d8b56a', hair_style='corto', eyes='#4f7fa8',
+                    top='#f2f2ee', pants='#b9a37a', shorts=True, shoes='#ffffff', sole='#9a9a9a', sleeve=.3, backpack='#3a6ea5', glasses='#222222', sun=True),
+    'oficinista': dict(nombre='Oficinista', passer=True, h=1.70, female=True, belly=0, skin='#c58c66', hair='#2b1a14', hair_style='coleta', eyes='#3a2416',
+                       top='#2e3a4f', under='#ffffff', pants='#2e3a4f', shoes='#1a1a1a', sole='#0d0d0d', sleeve=1.0, jacket=True, bag='#6b3e26'),
+    'estudiant': dict(nombre='Estudiant', passer=True, h=1.76, female=False, belly=0, skin='#6b4532', hair='#151010', hair_style='rizado', eyes='#2a1a10',
+                      top='#3e7d5a', pants='#3b4a6b', shoes='#eaeaea', sole='#c43c3c', sleeve=1.0, hood=True, backpack='#222428'),
+    'veina': dict(nombre='Veïna', passer=True, h=1.64, female=True, belly=.01, skin='#b98563', hair='#8c3b4f', hair_style='mocador', eyes='#3a2416',
+                  top='#d8c7a8', pants='#3c3a46', shoes='#2a2a2a', sole='#111111', sleeve=1.0, bag='#a0703c'),
+    'noia': dict(nombre='Noia', passer=True, h=1.66, female=True, belly=0, skin='#a8704f', hair='#3a2418', hair_style='rizado', eyes='#2f1d12',
+                 top='#e2725b', pants='#2c3e6b', shoes='#f3efe6', sole='#d8d2c4', belt='#5a3a2a', sleeve=.3, bag='#e9dcc0'),
+    'senyor': dict(nombre='Senyor', passer=True, h=1.75, female=False, belly=.025, skin='#e8c0a0', hair='#6b5a4a', hair_style='calvo', beard=True, eyes='#5a7a5a',
+                   top='#a63c3c', pants='#3d4a5c', shoes='#3a2a1f', sole='#1a120d', belt='#2a1d15', sleeve=1.0),
 }
 
 # ---------------------------------------------------------------- utilidades
@@ -200,7 +217,7 @@ def hair_blobs(c, body, name):
     dg = bpy.context.evaluated_depsgraph_get(); bvh = BVHTree.FromObject(body, dg)
     center = Vector((0, -.004, .915)) * h
     H = Blobs('Pelo' + name.capitalize(), h)
-    thick = {'corto': .013, 'coleta': .011, 'bob': .016, 'mono': .012, 'canoso': .011, 'gorra': .010}[style]
+    thick = {'corto': .013, 'coleta': .011, 'bob': .016, 'mono': .012, 'canoso': .011, 'gorra': .010, 'boina': .010, 'mocador': .016, 'rizado': .02, 'calvo': .008}[style]
     for el in range(-80, 91, 9):
         for az in range(-180, 180, 10):
             e, a = radians(el), radians(az)
@@ -211,6 +228,12 @@ def hair_blobs(c, body, name):
                 ok = ok and not (abs(az) < 72 and el < 12)
             elif style == 'canoso':
                 ok = (abs(az) > 80 and -12 <= el <= 28) or (abs(az) > 120 and el < 50)
+            elif style == 'mocador':   # pañuelo: cubre cabeza, orejas y cuello, deja la cara
+                ok = not (abs(az) < 58 and -48 < el < 36) and el >= -75
+            elif style == 'calvo':
+                ok = abs(az) > 95 and -10 <= el <= 12
+            elif style == 'boina':
+                ok = (not front and -12 <= el <= 22) or (front and abs(az) > 55 and 0 <= el <= 22)
             elif style == 'gorra':
                 ok = (not front and -12 <= el <= 25) or (front and abs(az) > 55 and 0 <= el <= 25)
             else:
@@ -218,7 +241,11 @@ def hair_blobs(c, body, name):
             if not ok: continue
             p = raycast(bvh, center, d, .13 * h)
             if p is None: continue
-            H.ball(p / h + d * thick * .25, thick * (1.25 if el > 40 else 1.0))
+            r = thick * (1.25 if el > 40 else 1.0)
+            if style == 'rizado':   # rizos: bolas de tamaño irregular que sobresalen a distintas alturas
+                k = ((el * 7 + az * 13) % 17) / 17; r *= .55 + .9 * k
+                H.ball(p / h + d * thick * (.3 + 1.1 * k), r); continue
+            H.ball(p / h + d * thick * .25, r)
     if style == 'coleta':
         top = raycast(bvh, center, Vector((0, .5, .35)))
         if top is not None:
@@ -228,8 +255,13 @@ def hair_blobs(c, body, name):
     if style == 'mono':
         top = raycast(bvh, center, Vector((0, .6, .8)))
         if top is not None: H.ball(top / h + Vector((0, .02, .02)), .034)
-    hair = to_mesh(H.obj, name + '_pelo'); decimate(hair, 2500)
-    parts = [(hair, 'hair', 'head')]
+    parts = []
+    if len(H.mb.elements):
+        hair = to_mesh(H.obj, name + '_pelo'); decimate(hair, 2500); parts.append((hair, 'hair', 'head'))
+    if style == 'boina':
+        top = raycast(bvh, center, Vector((0, .1, 1)))
+        if top is not None:
+            parts.append((prim('sphere', top + Vector((0, .006, .004)) * h, (.078 * h, .082 * h, .022 * h), seg=20), 'cap', 'head'))
     if c.get('beard'):
         Bd = Blobs('Barba' + name.capitalize(), h)
         for el in range(-80, -24, 7):
@@ -276,18 +308,35 @@ def face_parts(c, body):
             parts.append((prim('cube', ec + Vector((s * .022, .03, .002)) * h, (.0015 * h, .035 * h, .0015 * h)), 'glasses', 'head'))
     if c.get('glasses'):
         parts.append((prim('cube', Vector((0, -.083, .927)) * h, (.008 * h, .0015 * h, .0015 * h)), 'glasses', 'head'))
+    if c.get('sun'):   # ulleres de sol: vidres foscos
+        for s in (-1, 1):
+            p = raycast(bvh, (s * .029 * h, -1, .925 * h), (0, 1, 0))
+            if p is not None: parts.append((prim('sphere', p + Vector((0, -.012, 0)) * h, (.019 * h, .004 * h, .016 * h), seg=14), 'pupil', 'head'))
     m = raycast(bvh, (0, -1, .874 * h), (0, 1, 0))
     if m is not None:
         parts.append((prim('sphere', m + Vector((0, .002, 0)) * h, (.019 * h, .004 * h, .0045 * h), seg=14), 'lips', 'head'))
     return parts
 
 
-def clothing(c, body):
+def clothing(c, body, J):
     """Prendas rígidas extra: delantal y falda."""
     h = c['h']; dg = bpy.context.evaluated_depsgraph_get(); bvh = BVHTree.FromObject(body, dg); parts = []
     if c.get('skirt'):
         sk = prim('cone', (0, 0, .43 * h), (.17 * h, .15 * h, .22 * h), seg=24)
         parts.append((sk, 'skirt', 'hips'))
+    if c.get('backpack'):   # motxilla a l'esquena
+        p = raycast(bvh, (0, 1, .66 * h), (0, -1, 0)); y = (p.y if p else .08 * h) + .045 * h
+        parts.append((prim('sphere', (0, y, .65 * h), (.085 * h, .05 * h, .115 * h), seg=16), 'acc', 'chest'))
+        for s in (-1, 1): parts.append((prim('cube', (s * .06 * h, y - .07 * h, .72 * h), (.008 * h, .07 * h, .005 * h)), 'acc', 'chest'))
+    tip = Vector(J['tipR']) * h
+    if c.get('bag'):        # bossa a la mà dreta
+        parts.append((prim('cube', tip + Vector((0, 0, -.06)) * h, (.018 * h, .07 * h, .055 * h)), 'acc', 'hand.R'))
+        parts.append((prim('torus', tip + Vector((0, 0, .0)) * h, (.035 * h, .035 * h, .035 * h), rot=(0, radians(90), 0)), 'acc', 'hand.R'))
+    if c.get('trolley'):    # carro de la compra
+        base = Vector((tip.x - .02 * h, .12 * h, 0))
+        parts.append((prim('cube', base + Vector((0, 0, .2)) * h, (.07 * h, .09 * h, .13 * h)), 'acc', 'hand.R'))
+        parts.append((prim('cube', (tip + base + Vector((0, 0, .34 * h))) / 2, (.006 * h, .006 * h, (tip.z - .34 * h) / 2 + .02 * h)), 'sole', 'hand.R'))
+        for s in (-1, 1): parts.append((prim('sphere', base + Vector((s * .07, .02, .04)) * h, (.012 * h, .04 * h, .04 * h), seg=12), 'sole', 'hand.R'))
     return parts
 
 # ---------------------------------------------------------------- materiales por zona
@@ -307,6 +356,8 @@ def palette(c):
     if c.get('legs'): P['legs'] = material('medias', c['legs'], .6)
     if c.get('glasses'): P['glasses'] = material('gafas', c['glasses'], .3, 1.0)
     if c.get('cap'): P['cap'] = material('gorra', c['cap'], .75)
+    acc = c.get('backpack') or c.get('bag') or c.get('trolley')
+    if acc: P['acc'] = material('accesorio', acc, .6)
     return P
 
 
@@ -324,6 +375,7 @@ def zone(c, J, p):
     if c.get('apron') and y < 0 and abs(x) < .1 and .45 < z < .72: return 'apron'
     if c.get('skirt'):
         return 'legs' if z < .34 else 'top'
+    if c.get('shorts') and z < .33: return 'skin'
     if c.get('belt') and .528 < z < .548: return 'belt'
     if z < .528: return 'pants'
     if c.get('jacket') and abs(x) < .026 and y < 0 and .56 < z < .80: return 'under'
@@ -337,6 +389,7 @@ def cut_planes(c, J, body):
     if c.get('hood'): planes.append(((0, .03, 0), (0, 1, 0)))
     if c.get('apron'): planes += [((x, 0, 0), (1, 0, 0)) for x in (-.1, .1)] + [((0, 0, z), (0, 0, 1)) for z in (.45, .72)] + [((0, 0, 0), (0, 1, 0))]
     if c.get('skirt'): planes.append(((0, 0, .34), (0, 0, 1)))
+    if c.get('shorts'): planes.append(((0, 0, .33), (0, 0, 1)))
     planes += [((x, 0, 0), (1, 0, 0)) for x in (-.06, .06)]
     for k in 'LR':
         sh, d = Vector(J['shoulder' + k]), Vector(J['armdir' + k])
@@ -575,7 +628,7 @@ def make(key, do_render=True):
         obj.data.materials.clear(); obj.data.materials.append(P[mat]); obj.select_set(True)
     body.select_set(True); bpy.context.view_layer.objects.active = body; bpy.ops.object.join()
     skin_weights(body, J, h)
-    extra = face_parts(c, body) + hair_blobs(c, body, key) + clothing(c, body)
+    extra = face_parts(c, body) + hair_blobs(c, body, key) + clothing(c, body, J)
     for obj, mat, bone in extra:
         obj.data.materials.clear(); obj.data.materials.append(P[mat]); rigid(obj, bone)
     bpy.ops.object.select_all(action='DESELECT')
@@ -593,7 +646,7 @@ def make(key, do_render=True):
                               export_force_sampling=True, export_optimize_animation_size=True)
     tris = sum(len(p.vertices) - 2 for p in body.data.polygons)
     print(f'[pj] {key}: {tris} triángulos, {len(rig.data.bones)} huesos -> {key}.glb')
-    if do_render: render_views(key, c, [body, rig])
+    if do_render and not c.get('passer'): render_views(key, c, [body, rig])
 
 
 if __name__ == '__main__':

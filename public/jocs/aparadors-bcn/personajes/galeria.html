@@ -1,0 +1,14 @@
+<!doctype html><html lang="ca"><meta charset="utf-8"><title>Galeria de personatges · Aparadors BCN</title>
+<style>body{margin:0;background:#efe4cf;font:14px system-ui}canvas{display:block}#t{position:fixed;top:8px;left:12px;color:#183e3a}</style>
+<div id="t">Galeria de personatges (arrossega per girar)</div>
+<script src="../three.min.js"></script><script src="../GLTFLoader.js"></script><script src="../SkeletonUtils.js"></script>
+<script>
+const ids=(new URLSearchParams(location.search).get('ids')||'avia,avi,turista,oficinista,estudiant,veina,noia,senyor').split(',');
+const T=THREE,r=new T.WebGLRenderer({antialias:true});r.setPixelRatio(devicePixelRatio);r.outputEncoding=T.sRGBEncoding;document.body.append(r.domElement);
+const sc=new T.Scene();sc.background=new T.Color('#efe4cf');sc.add(new T.HemisphereLight('#fff4df','#a89a8d',.9));const sun=new T.DirectionalLight('#ffe5c0',1.1);sun.position.set(-2,4,5);sc.add(sun);
+const cam=new T.PerspectiveCamera(30,1,.1,100);let yaw=0;const mixers=[];const clock=new T.Clock();const groups=[];
+const L=new T.GLTFLoader();ids.forEach((id,i)=>L.load(id+'.glb',g=>{const o=g.scene;o.position.x=(i-(ids.length-1)/2)*.75;sc.add(o);groups.push(o);const m=new T.AnimationMixer(o);const clip=g.animations.find(a=>a.name===(new URLSearchParams(location.search).get('anim')||'reposo'));if(clip)m.clipAction(clip).play();mixers.push(m)}));
+let drag=null;addEventListener('pointerdown',e=>drag=e.clientX);addEventListener('pointerup',()=>drag=null);addEventListener('pointermove',e=>{if(drag!==null){yaw+=(e.clientX-drag)*.01;drag=e.clientX}});
+function loop(){const w=innerWidth,h=innerHeight;r.setSize(w,h);cam.aspect=w/h;cam.updateProjectionMatrix();cam.position.set(0,1.1,Math.max(5.2,ids.length*.75/cam.aspect*1.9));cam.lookAt(0,.85,0);
+groups.forEach(g=>g.rotation.y=yaw);const dt=clock.getDelta();mixers.forEach(m=>m.update(dt));r.render(sc,cam);requestAnimationFrame(loop)}loop();
+</script></html>
