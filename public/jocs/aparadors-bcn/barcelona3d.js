@@ -41,6 +41,14 @@ window.Barcelona3D = (() => {
 
   // Posició de cada fila d'illes (eix z). Després de la fila 2 hi ha la Plaça de Catalunya, un espai obert.
   const ROWY = [26, 361, 696, 1331, 1666, 2001], H = 2350;
+  // Lloc de cada botiga al mapa (fila per fila). La llista de botigues no canvia d'ordre, així les partides guardades es mantenen.
+  const AT = [1, 5, 10, 15, 32, 23,      // Passeig de Gràcia: moda, disseny, òptica, joieria, il·luminació, ceràmica
+              3, 2, 11, 28, 30, 33,      // Passeig de Gràcia · Gran Via: Barça Store, Loewe, papereria, parament, muntanya, cosmètica
+              6, 9, 12, 17, 20, 21,      // Plaça de Catalunya: Fnac, discos, fotografia, joguines, cafè, electrònica
+              4, 14, 18, 19, 29, 7,      // Portal de l'Àngel: cereria, luthier, merceria, llibreria, enquadernació, pastisseria
+              0, 8, 16, 24, 25, 27,      // La Rambla: Escribà, flors, calçat, viatges, fleca, segona mà
+              13, 22, 26, 31, 35, 34];   // Port Vell: bicis, perfumeria, running, patinatge, nàutica, jocs
+  const SLOT = []; AT.forEach((store, slot) => SLOT[store] = slot);
   const roadZ = r => ROWY[r] + (r === 2 ? 412 : 262);
   // De nord a sud, com a la ciutat. road: si la fila té calçada central per a cotxes.
   const ZONES = [
@@ -133,7 +141,7 @@ window.Barcelona3D = (() => {
         windowBay(x + j * 65, h + f * fh + 3, zf, 1, i * 97 + f * 7 + j, sh);
         windowBay(x + j * 65, h + f * fh + 3, zb, -1, i * 53 + f * 11 + j, sh);
       }
-      if (ZONES[Math.floor(i / 6)].k === 'pg') {   // tribuna modernista i coronament ondulat
+      if (ZONES[Math.floor(SLOT[i] / 6)].k === 'pg') {   // tribuna modernista i coronament ondulat
         B(solid, STONE, x, h + 22, zf + 9, 120, 40, 18); B(solid, GLASS, x, h + 22, zf + 18.5, 108, 30, 1); for (let k = -2; k <= 2; k++) B(solid, STONE, x + k * 27, h + 22, zf + 19, 3, 34, 2);
         for (let k = -3; k <= 3; k++) E(solid, STONE, x + k * 33, top + 14, zc + 55, 30, 16, 6);
       }
@@ -265,5 +273,5 @@ window.Barcelona3D = (() => {
       if (p.fly > 0) { p.fly += .016; const a = k * 1.3; m.position.set(p.hx + Math.cos(a) * p.fly * 120, Math.sin(Math.min(p.fly, 3) / 3 * Math.PI) * 90, p.hz + Math.sin(a) * p.fly * 120); m.rotation.y = -a + Math.PI / 2; if (p.fly > 3) { p.fly = -4 } }
       else { if (p.fly < 0) p.fly = Math.min(0, p.fly + .016); m.position.set(p.hx, 0, p.hz); m.rotation.y = Math.sin(t * .001 + k) * 2; m.children[1].position.y = 4.2 - (Math.sin(t * .01 + k * 3) > .7 ? 1.6 : 0); m.visible = p.fly === 0 || d > 60 } });
   }
-  return {build, glowMat, ZONES, ROWY, H, roadZ, update, hasRoad: r => ZONES[r].road};
+  return {build, glowMat, ZONES, ROWY, H, roadZ, AT, SLOT, update, hasRoad: r => ZONES[r].road};
 })();

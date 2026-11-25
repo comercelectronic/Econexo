@@ -7,6 +7,7 @@ window.Vianants = (() => {
   const W = 2190, ROWS = 6;
   const Z = () => window.Barcelona3D ? Barcelona3D.ZONES : Array.from({length: 6}, () => ({road: true, lanes: [[-40, -33], [38, 62]], people: 4}));
   const road = r => window.Barcelona3D ? Barcelona3D.roadZ(r) : 26 + r * 335 + 262;
+  const AT = window.Barcelona3D ? Barcelona3D.AT : Array.from({length: 36}, (_, k) => k), SLOT = window.Barcelona3D ? Barcelona3D.SLOT : AT;
   const rowY = r => window.Barcelona3D ? Barcelona3D.ROWY[r] : 26 + r * 335;
   const CROSS = Array.from({length: 6}, (_, k) => 320 + k * 360);
   const SHOPS = Array.from({length: 6}, (_, k) => 158 + k * 360);
@@ -33,7 +34,7 @@ window.Vianants = (() => {
   agents.forEach(a => a.y = road(a.row) + a.lane);
   let last = 0;
   const set = (a, s, now, secs) => { a.state = s; a.until = now + secs * 1000 };
-  const shopOf = (a, k) => a.row * 6 + k;
+  const shopOf = (a, k) => AT[a.row * 6 + k];
 
   function update(now, contact) {
     const speedUp = rush && now < rush.until ? 3 : 1; if (rush && now >= rush.until) rush = null;
@@ -41,7 +42,7 @@ window.Vianants = (() => {
     for (const a of agents) {
       const zone = Z()[a.row], ry = road(a.row);
       if (a.away && !a.until) a.until = now + rnd() * 15000;
-      if (a.away) { if (now > a.until || (rush && rush.shop / 6 | 0) === a.row) { a.away = false; a.x = a.dir > 0 ? 20 : W - 20; a.state = 'walk' } else continue }
+      if (a.away) { if (now > a.until || (rush && SLOT[rush.shop] / 6 | 0) === a.row) { a.away = false; a.x = a.dir > 0 ? 20 : W - 20; a.state = 'walk' } else continue }
       if (contact && contact.uid === a.uid) { a.moving = false; continue }
       if (a.state === 'walk') {
         a.moving = true; const px = a.x; a.x += a.dir * a.speed * dt;
@@ -73,7 +74,7 @@ window.Vianants = (() => {
           } else a.state = 'walk';
         }
       } else if (a.state === 'enter') {                                    // camina fins a la porta i entra
-        a.moving = true; const i = a.shop, dx = (36 + (i % 6) * 360 + 186) - a.x, dy = (rowY(i / 6 | 0) + 205) - a.y, d = Math.hypot(dx, dy);
+        a.moving = true; const i = a.shop, dx = (36 + (SLOT[i] % 6) * 360 + 186) - a.x, dy = (rowY(SLOT[i] / 6 | 0) + 205) - a.y, d = Math.hypot(dx, dy);
         a.yaw = Math.atan2(dx, dy);
         if (d < 3) { a.state = 'inside'; a.until = now + (5 + rnd() * 10) * 1000; if (rnd() < .3 + appeal(i) * .5 || (rush && rush.shop === i)) stats[i].tic++ }
         else { const v = Math.min(d, a.speed * dt); a.x += dx / d * v; a.y += dy / d * v }
@@ -90,7 +91,7 @@ window.Vianants = (() => {
   return {agents, update, MODELS, stats,
     setAppeal: f => appeal = f, setPrisma: f => prisma = f, isPrisma: i => prisma(i), appealOf: i => appeal(i),
     rush: (shop, ms) => {
-      rush = {shop, until: performance.now() + ms}; const row = shop / 6 | 0, sx = SHOPS[shop % 6];
+      rush = {shop, until: performance.now() + ms}; const row = SLOT[shop] / 6 | 0, sx = SHOPS[SLOT[shop] % 6];
       agents.filter(a => a.row === row).forEach((a, k) => { a.away = false; a.state = 'walk'; a.x = sx + (k % 2 ? -1 : 1) * (90 + k * 45); a.dir = a.x < sx ? 1 : -1; a.lastShop = -1 });
     }};
 })();
