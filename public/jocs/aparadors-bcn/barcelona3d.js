@@ -94,13 +94,15 @@ window.Barcelona3D = (() => {
     }
     function plane(x, z, seed) {
       B(solid, '#3d3f41', x, .7, z, 15, 1.2, 15);                                  // alcorque
-      shape(solid, 'taper', BARK, x, 26, z, 5.5, 52, 5.5);
-      shape(solid, 'taper', '#c9c2a8', x + 1.2, 18, z + 1.6, 3, 14, 3);             // corteza moteada
+      // Plàtan alt, com els de l'Eixample: la copa queda per sobre de la línia de visió de la càmera.
+      shape(solid, 'taper', BARK, x, 50, z, 5.5, 100, 5.5);
+      shape(solid, 'taper', '#c9c2a8', x + 1.2, 22, z + 1.6, 3, 18, 3);             // escorça clapejada
+      for (const s of [-1, 1]) shape(solid, 'taper', BARK, x + s * 7, 96, z, 2.5, 26, 2.5, 0, 0, s * .5); // branques
       for (let k = 0; k < 6; k++) {
-        const a = k * 1.05 + seed, r = 13 + rnd(seed, k) * 6;
-        shape(solid, 'ball', LEAVES[(seed + k) % 4], x + Math.cos(a) * r, 64 + rnd(seed, k + 9) * 16, z + Math.sin(a) * r * .8, 30, 22, 28);
+        const a = k * 1.05 + seed, r = 15 + rnd(seed, k) * 7;
+        shape(solid, 'ball', LEAVES[(seed + k) % 4], x + Math.cos(a) * r, 108 + rnd(seed, k + 9) * 14, z + Math.sin(a) * r * .8, 32, 22, 30);
       }
-      shape(solid, 'ball', LEAVES[seed % 4], x, 80, z, 34, 24, 32);
+      shape(solid, 'ball', LEAVES[seed % 4], x, 124, z, 36, 24, 34);
     }
     function lamp(x, z) {
       shape(solid, 'round', IRON, x, 2, z, 6, 4, 6);
