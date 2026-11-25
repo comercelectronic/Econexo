@@ -251,10 +251,110 @@ window.Talleres = (() => {
     $('next').onclick = () => onDone ? onDone(inf) : menu();
   }
 
+  /* ------------------------------------------------------------ RA2 · Lineal y planograma (Nil) */
+  const PROD = [
+    {k: 'A', n: {es: 'Café en grano de la casa 250 g', ca: 'Cafè en gra de la casa 250 g'}, v: 40, m: 3.2, fam: 'cafe', peso: 1, c: '#7b4a2e'},
+    {k: 'B', n: {es: 'Café molido 250 g', ca: 'Cafè mòlt 250 g'}, v: 30, m: 2.5, fam: 'cafe', peso: 1, c: '#9a6a44'},
+    {k: 'C', n: {es: 'Descafeinado 250 g', ca: 'Descafeïnat 250 g'}, v: 8, m: 2.4, fam: 'cafe', peso: 1, c: '#c49a6c'},
+    {k: 'D', n: {es: 'Saco de café 1 kg', ca: 'Sac de cafè 1 kg'}, v: 12, m: 6, fam: 'cafe', peso: 4, c: '#5b3a24'},
+    {k: 'E', n: {es: 'Cafetera italiana', ca: 'Cafetera italiana'}, v: 4, m: 9, fam: 'acc', peso: 2, c: '#8d9aa6'},
+    {k: 'F', n: {es: 'Filtros de papel', ca: 'Filtres de paper'}, v: 18, m: .9, fam: 'acc', peso: 1, c: '#e8dcc0'},
+    {k: 'G', n: {es: 'Bombones de café', ca: 'Bombons de cafè'}, v: 22, m: 1.8, fam: 'dulce', peso: 1, c: '#b0413e'},
+    {k: 'H', n: {es: 'Taza edición barrio', ca: 'Tassa edició barri'}, v: 1, m: 4, fam: 'acc', peso: 2, c: '#3f7f8c'}
+  ];
+  const FAM = {cafe: {es: 'Café', ca: 'Cafè'}, acc: {es: 'Accesorios', ca: 'Accessoris'}, dulce: {es: 'Dulces (impulso)', ca: 'Dolços (impuls)'}};
+  const LEVELS = [{n: {es: 'Cabeza', ca: 'Cap'}, f: .55}, {n: {es: 'Ojos', ca: 'Ulls'}, f: 1}, {n: {es: 'Manos', ca: 'Mans'}, f: .85}, {n: {es: 'Suelo', ca: 'Terra'}, f: .45}];
+  const COLS = 6, PER_FACING = 8;
+
+  function lineal(onDone) {
+    const title = tx({es: 'El lineal de Nil', ca: 'El lineal d\'en Nil'}), sub = tx({es: 'Cafetería y tienda de café · Nil', ca: 'Cafeteria i botiga de cafè · Nil'});
+    const head = '<p class="taller-ra">RA2 · ' + tx({es: 'Colocar, exponer y reponer productos', ca: 'Col·locar, exposar i reposar productes'}) + '</p>';
+    const P = k => PROD.find(p => p.k === k);
+    const table = list => '<table class="datos"><tr><th></th><th>' + tx({es: 'Producto', ca: 'Producte'}) + '</th><th>' + tx({es: 'Ventas/semana', ca: 'Vendes/setmana'}) + '</th><th>' + tx({es: 'Margen/u', ca: 'Marge/u'}) + '</th><th>' + tx({es: 'Peso', ca: 'Pes'}) + '</th></tr>' +
+      list.map(p => '<tr><td><span class="sw" style="background:' + p.c + '">' + p.k + '</span></td><td>' + tx(p.n) + '</td><td>' + p.v + '</td><td>' + eur(p.m) + '</td><td>' + (p.peso >= 4 ? tx({es: 'pesado', ca: 'pesant'}) : p.peso + ' kg') + '</td></tr>').join('') + '</table>';
+    function s1(msg) { // 2.1 dimensiones del surtido
+      show(title, sub, head + '<p>' + tx({es: 'Nil: «Prisma dice que mi estantería es un caos. Ayúdame a ordenarla antes de que vengan a hacer fotos.»', ca: 'Nil: «Prisma diu que la meva prestatgeria és un caos. Ajuda\'m a endreçar-la abans que vinguin a fer fotos.»'}) + '</p>' + table(PROD) + (msg ? '<p class="reply bad">' + msg + '</p>' : '') +
+        '<h3>' + tx({es: '1. El surtido tiene tres familias y la de café, cuatro referencias. ¿Cómo se describe?', ca: '1. L\'assortiment té tres famílies i la de cafè, quatre referències. Com es descriu?'}) + '</h3><div class="choices">' +
+        [[0, {es: 'Amplitud 3 (familias) y profundidad 4 en café (referencias de esa familia).', ca: 'Amplitud 3 (famílies) i profunditat 4 en cafè (referències d\'aquesta família).'}],
+         [1, {es: 'Amplitud 8 (referencias) y profundidad 3 (familias).', ca: 'Amplitud 8 (referències) i profunditat 3 (famílies).'}],
+         [2, {es: 'Profundidad 3 y amplitud 4.', ca: 'Profunditat 3 i amplitud 4.'}]].map(([i, t]) => '<button data-a="' + i + '">' + tx(t) + '</button>').join('') + '</div>');
+      sheet.querySelectorAll('[data-a]').forEach(b => b.onclick = () => b.dataset.a === '0' ? (pass(['2.1']), s2()) : s1(tx({es: 'La amplitud cuenta familias o líneas; la profundidad, referencias dentro de cada una.', ca: 'L\'amplitud compta famílies o línies; la profunditat, referències dins de cadascuna.'})));
+    }
+    function s2(msg) { // 2.2 umbral de supresión
+      show(title, sub, head + table(PROD) + (msg ? '<p class="reply bad">' + msg + '</p>' : '') + '<h3>' + tx({es: '2. El lineal solo tiene 24 frontales. Nil fija el umbral de supresión en 2 ventas por semana. ¿Qué referencia retiras?', ca: '2. El lineal només té 24 frontals. En Nil fixa el llindar de supressió en 2 vendes per setmana. Quina referència retires?'}) + '</h3><div class="choices">' +
+        PROD.map(p => '<button data-p="' + p.k + '">' + p.k + ' · ' + tx(p.n) + '</button>').join('') + '</div>');
+      sheet.querySelectorAll('[data-p]').forEach(b => b.onclick = () => b.dataset.p === 'H' ? (pass(['2.2']), s3()) : s2(b.dataset.p === 'E'
+        ? tx({es: 'La cafetera vende poco pero supera el umbral y deja mucho margen.', ca: 'La cafetera ven poc però supera el llindar i deixa molt de marge.'})
+        : tx({es: 'Esa referencia supera el umbral de 2 ventas semanales.', ca: 'Aquesta referència supera el llindar de 2 vendes setmanals.'})));
+    }
+    function s3(msg) { // 2.5 familias
+      const list = PROD.filter(p => p.k !== 'H');
+      show(title, sub, head + (msg ? '<p class="reply bad">' + msg + '</p>' : '') + '<h3>' + tx({es: '3. Clasifica cada referencia en su familia', ca: '3. Classifica cada referència en la seva família'}) + '</h3><div class="ratios">' +
+        list.map(p => '<label class="ratio"><span><span class="sw" style="background:' + p.c + '">' + p.k + '</span> ' + tx(p.n) + '</span><select data-f="' + p.k + '"><option value="">—</option>' + Object.entries(FAM).map(([k, f]) => '<option value="' + k + '">' + tx(f) + '</option>').join('') + '</select><em></em></label>').join('') + '</div><button class="primary" id="ok">' + tx({es: 'Comprobar', ca: 'Comprovar'}) + '</button>');
+      $('ok').onclick = () => {
+        let bad = 0; sheet.querySelectorAll('[data-f]').forEach(s => { const good = s.value === P(s.dataset.f).fam; s.parentNode.classList.toggle('ok', good); s.parentNode.classList.toggle('ko', !good); if (!good) bad++ });
+        if (!bad) { pass(['2.5']); setTimeout(s4, 400) } else if (!$('hint')) $('ok').insertAdjacentHTML('afterend', '<p id="hint" class="reply">' + tx({es: 'Los bombones se compran por impulso: no son café ni accesorio.', ca: 'Els bombons es compren per impuls: no són cafè ni accessori.'}) + '</p>');
+      };
+    }
+    const grid = Array.from({length: 4}, () => Array(COLS).fill(''));
+    let brush = 'A';
+    function evaluate() {
+      const facings = {}, levels = {};
+      grid.forEach((row, l) => row.forEach(k => { if (!k) return; facings[k] = (facings[k] || 0) + 1; (levels[k] ||= []).push(l) }));
+      let sales = 0, profit = 0, lost = 0; const rows = [];
+      for (const p of PROD.filter(p => p.k !== 'H')) {
+        const f = facings[p.k] || 0, lv = levels[p.k] || [];
+        const vis = f ? lv.reduce((v, l) => v + LEVELS[l].f, 0) / lv.length : 0;
+        const demand = p.v * vis * (1 + Math.min(.15, (f - 1) * .03));
+        const cap = f * PER_FACING, sold = Math.min(demand, cap); lost += demand - sold;
+        sales += sold; profit += sold * p.m; rows.push({p, f, sold: Math.round(sold), cap, rupt: demand > cap});
+      }
+      const tot = PROD.filter(p => p.k !== 'H').reduce((v, p) => v + p.v, 0), used = Object.values(facings).reduce((a, b) => a + b, 0);
+      const checks = [
+        [PROD.filter(p => p.k !== 'H').every(p => facings[p.k] >= 1), tx({es: 'Lineal mínimo: todas las referencias con al menos un frontal', ca: 'Lineal mínim: totes les referències amb almenys un frontal'})],
+        [!facings.H, tx({es: 'La referencia suprimida no ocupa espacio', ca: 'La referència suprimida no ocupa espai'})],
+        [(levels.D || []).every(l => l === 3) && !!levels.D, tx({es: 'Productos pesados en el nivel suelo', ca: 'Productes pesants al nivell terra'})],
+        [(levels.A || []).includes(1), tx({es: 'El más vendido y rentable a la altura de los ojos', ca: 'El més venut i rendible a l\'altura dels ulls'})],
+        [(levels.G || []).some(l => l === 1 || l === 2), tx({es: 'Producto de impulso al alcance (ojos o manos)', ca: 'Producte d\'impuls a l\'abast (ulls o mans)'})],
+        [rows.every(r => !r.rupt), tx({es: 'Sin roturas de stock: frontales proporcionales a las ventas', ca: 'Sense trencaments d\'estoc: frontals proporcionals a les vendes'})]
+      ];
+      return {rows, sales, profit, lost, used, tot, checks};
+    }
+    function s4(sim) { // 2.3, 2.4, 2.6, 2.8 editor del lineal
+      const r = sim ? evaluate() : null;
+      show(title, sub, head + '<h3>' + tx({es: '4. Monta el lineal (4 niveles × 6 frontales)', ca: '4. Munta el lineal (4 nivells × 6 frontals)'}) + '</h3><p><small>' + tx({es: 'Elige un producto y toca los huecos. Cada frontal guarda 8 unidades y Nil repone una vez por semana.', ca: 'Tria un producte i toca els buits. Cada frontal guarda 8 unitats i en Nil reposa una vegada per setmana.'}) + '</small></p>' +
+        '<div class="brush">' + PROD.map(p => '<button data-b="' + p.k + '" class="' + (brush === p.k ? 'on' : '') + '" title="' + tx(p.n) + '"><span class="sw" style="background:' + p.c + '">' + p.k + '</span> ' + p.v + '/s</button>').join('') + '<button data-b="" class="' + (brush === '' ? 'on' : '') + '">' + tx({es: 'Vaciar', ca: 'Buidar'}) + '</button></div>' +
+        '<div class="shelf">' + grid.map((row, l) => '<div class="lvl"><b>' + tx(LEVELS[l].n) + '</b>' + row.map((k, c) => '<button data-c="' + l + ',' + c + '" style="' + (k ? 'background:' + P(k).c + ';color:#fff' : '') + '">' + (k || '') + '</button>').join('') + '</div>').join('') + '</div>' +
+        (r ? '<table class="datos">' + r.rows.map(x => '<tr><td>' + x.p.k + ' · ' + tx(x.p.n) + '</td><td>' + x.f + ' ' + tx({es: 'frontales', ca: 'frontals'}) + '</td><td>' + x.sold + ' u</td><td>' + (x.rupt ? '<b class="bad">' + tx({es: 'Rotura de stock', ca: 'Trencament d\'estoc'}) + '</b>' : '✓') + '</td></tr>').join('') +
+          '<tr><td><b>' + tx({es: 'Beneficio bruto semanal', ca: 'Benefici brut setmanal'}) + '</b></td><td></td><td colspan="2"><b>' + eur(r.profit) + '</b> · ' + tx({es: 'ventas perdidas', ca: 'vendes perdudes'}) + ': ' + Math.round(r.lost) + ' u</td></tr></table>' +
+          '<div class="checklist">' + r.checks.map(([ok, t]) => '<p class="' + (ok ? '' : 'bad') + '">' + (ok ? '✓ ' : '✗ ') + t + '</p>').join('') + '</div>' : '') +
+        '<button class="primary" id="sim">' + tx({es: 'Simular una semana', ca: 'Simular una setmana'}) + '</button>' + (r && r.checks.every(c => c[0]) ? ' <button class="primary" id="next">' + tx({es: 'Continuar', ca: 'Continuar'}) + '</button>' : ''));
+      sheet.querySelectorAll('[data-b]').forEach(b => b.onclick = () => { brush = b.dataset.b; s4(sim) });
+      sheet.querySelectorAll('[data-c]').forEach(b => b.onclick = () => { const [l, c] = b.dataset.c.split(',').map(Number); grid[l][c] = brush; s4(false) });
+      $('sim').onclick = () => { pass(['2.3', '2.4']); s4(true) };
+      if ($('next')) $('next').onclick = () => { pass(['2.6', '2.8']); s5() };
+    }
+    function s5(msg) { // 2.7 interpretar un planograma
+      const plan = [['C', 'C', 'F', 'F', 'D', 'D'], ['E', 'B', 'B', 'G', 'G', 'C'], ['A', 'A', 'B', 'B', 'F', 'F'], ['A', 'A', 'A', 'E', 'D', 'D']];
+      show(title, sub, head + '<h3>' + tx({es: '5. Prisma ha enviado este planograma para otra tienda. ¿Cuál es su error más grave?', ca: '5. Prisma ha enviat aquest planograma per a una altra botiga. Quin és l\'error més greu?'}) + '</h3>' +
+        '<div class="shelf small">' + plan.map((row, l) => '<div class="lvl"><b>' + tx(LEVELS[l].n) + '</b>' + row.map(k => '<span style="background:' + P(k).c + '">' + k + '</span>').join('') + '</div>').join('') + '</div>' + (msg ? '<p class="reply bad">' + msg + '</p>' : '') + '<div class="choices">' +
+        [[0, {es: 'Los sacos de 1 kg (D) están en el nivel cabeza: es peligroso y difícil de coger.', ca: 'Els sacs d\'1 kg (D) són al nivell cap: és perillós i difícil d\'agafar.'}],
+         [1, {es: 'Los filtros (F) deberían estar en el nivel ojos.', ca: 'Els filtres (F) haurien de ser al nivell ulls.'}],
+         [2, {es: 'Hay demasiados frontales de café molido (B).', ca: 'Hi ha massa frontals de cafè mòlt (B).'}]].map(([i, t]) => '<button data-x="' + i + '">' + tx(t) + '</button>').join('') + '</div>');
+      sheet.querySelectorAll('[data-x]').forEach(b => b.onclick = () => {
+        if (b.dataset.x !== '0') return s5(tx({es: 'Fíjate en la seguridad y en el peso de cada referencia según el nivel.', ca: 'Fixa\'t en la seguretat i en el pes de cada referència segons el nivell.'}));
+        pass(['2.7']); ra().lineal = {fecha: new Date().toISOString().slice(0, 10), profit: +evaluate().profit.toFixed(2)}; save();
+        show(title, sub, head + '<p class="reply">' + tx({es: 'Nil: «Ahora el café que más vendo está donde la gente mira, y no me quedo sin bombones el viernes. Prisma no podrá decir que esto es un caos.»', ca: 'Nil: «Ara el cafè que més venc és on la gent mira, i no em quedo sense bombons el divendres. Prisma no podrà dir que això és un caos.»'}) + '</p><button class="primary" id="next">' + tx({es: 'Continuar', ca: 'Continuar'}) + '</button>');
+        $('next').onclick = () => onDone ? onDone() : menu();
+      });
+    }
+    s1();
+  }
+
   /* ------------------------------------------------------------ Cuaderno de RA */
   const RAS = [
     {n: 1, t: {es: 'Organizar la superficie comercial', ca: 'Organitzar la superfície comercial'}, ca: 8, who: 'Jan'},
-    {n: 2, t: {es: 'Colocar y reponer productos en el lineal', ca: 'Col·locar i reposar productes al lineal'}, ca: 8, who: 'Nil'},
+    {n: 2, t: {es: 'Colocar y reponer productos en el lineal', ca: 'Col·locar i reposar productes al lineal'}, ca: 8, who: 'Nil', open: () => lineal()},
     {n: 3, t: {es: 'Decoración, rotulación y cartelería', ca: 'Decoració, retolació i cartellisme'}, ca: 7, who: 'Laia'},
     {n: 4, t: {es: 'Montar escaparates', ca: 'Muntar aparadors'}, ca: 8, who: tx({es: 'Encargos', ca: 'Encàrrecs'})},
     {n: 5, t: {es: 'Acciones promocionales', ca: 'Accions promocionals'}, ca: 5, who: 'Núria', open: () => promo()},
@@ -284,5 +384,8 @@ window.Talleres = (() => {
     sheet.querySelectorAll('[data-ra]').forEach(b => b.onclick = () => RAS.find(x => x.n === +b.dataset.ra).open());
   }
 
-  return {promo, control, report, menu, tx, ra};
+  // Taller que cada vecino ofrece tras convencerle en la historia.
+  const byNpc = {4: {label: {es: 'Ayudar a Núria con una promoción (RA5)', ca: 'Ajudar la Núria amb una promoció (RA5)'}, open: promo, done: () => !!ra().promo},
+                 5: {label: {es: 'Ordenar el lineal de Nil (RA2)', ca: 'Endreçar el lineal d\'en Nil (RA2)'}, open: lineal, done: () => !!ra().lineal}};
+  return {promo, control, report, lineal, menu, tx, ra, byNpc};
 })();
