@@ -77,12 +77,24 @@ window.I18N = (() => {
     ['Ritmo y alturas', 'Ritme i alçades'], ['Iluminación', 'Il·luminació'], ['Soporte y mensaje', 'Suport i missatge'], ['Viabilidad', 'Viabilitat'],
     ['Plano del barrio', 'Plànol del barri'], ['Plano de Barcelona', 'Plànol de Barcelona'], [' · 36 comercios', ' · 36 comerços'], ['Toca una tienda del plano para caminar hasta su puerta. El punto rojo eres tú; los lilas, los vecinos.', 'Toca una botiga del plànol per caminar fins a la porta. El punt vermell ets tu; els liles, els veïns.'], ['Lista de comercios', 'Llista de comerços'], ['Cristal con reflejos', 'Vidre amb reflexos'], ['Paseo de estudio con Joan (RA4)', 'Passeig d\'estudi amb en Joan (RA4)'], ['Atardecer', 'Capvespre'], ['Noche', 'Nit'],
     ['Este navegador no ofrece aceleración 3D. Puedes continuar el montaje en el editor.', 'Aquest navegador no ofereix acceleració 3D. Pots continuar el muntatge a l\'editor.']
-  ].sort((a, b) => b[0].length - a[0].length);
+  ];
+  // Diccionari ampliat del contingut del joc (lliçons, botigues, editor, quadern): ca-joc.json.
+  if (lang === 'ca') try {
+    const x = new XMLHttpRequest(); x.open('GET', 'ca-joc.json', false); x.send();
+    if (x.status === 200) for (const [es, ca] of Object.entries(JSON.parse(x.responseText))) CA.push([es, ca]);
+  } catch {}
+  // Les entrades curtes (p. ex. «tarta», «pan», «y») només se substitueixen com a paraula sencera,
+  // perquè no trenquin altres paraules («pantalla»…). Les llargues es poden trobar dins d'un text més gran.
+  // El joc a vegades posa en minúscula la primera lletra («Principi de recorrido visual…»): afegeix-ne la variant.
+  for (const [es, ca] of [...CA]) { const lo = es.charAt(0).toLowerCase() + es.slice(1); if (lo !== es && !CA.some(e => e[0] === lo)) CA.push([lo, ca.charAt(0).toLowerCase() + ca.slice(1)]) }
+  const ESC = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const DICT = CA.sort((a, b) => b[0].length - a[0].length).map(([es, ca]) => ({es, ca,
+    re: es.trim().length <= 16 && /^\p{L}/u.test(es) && /\p{L}$/u.test(es) ? new RegExp('(?<!\\p{L})' + ESC(es) + '(?!\\p{L})', 'gu') : null}));
 
   function tr(s) {
     if (lang !== 'ca' || !s || !/[a-záéíóúñ]/i.test(s)) return s;
     let out = s;
-    for (const [es, ca] of CA) if (out.includes(es)) out = out.split(es).join(ca);
+    for (const d of DICT) if (out.includes(d.es)) out = d.re ? out.replace(d.re, d.ca) : out.split(d.es).join(d.ca);
     return out;
   }
   function walk(root) {
