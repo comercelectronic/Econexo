@@ -29,8 +29,8 @@ window.Guia = (() => {
       const sub = [4, 9].map(i => [!!st.pruebas[i], {es: 'Ensayo en ' + shopName(i), ca: 'Assaig a ' + shopName(i)}]);
       if (!(saved.ra && saved.ra.estudio) && !hasJob(4) && !hasJob(9)) return {t: {es: 'Recomendado: pasea con Joan para aprender a mirar escaparates (RA4).', ca: 'Recomanat: passeja amb en Joan per aprendre a mirar aparadors (RA4).'}, npc: 0, act: () => Missions.storyTaller ? Talleres.estudio(storyPanel) : null, sub, chap: 1};
       for (const i of [4, 9]) {
-        if (!hasJob(i)) return {t: {es: 'Monta el escaparate de ' + shopName(i) + ' (' + zoneOf(i) + '): entra en la tienda y elige un encargo.', ca: 'Munta l\'aparador de ' + shopName(i) + ' (' + zoneOf(i) + '): entra a la botiga i tria un encàrrec.'}, shop: i, sub, chap: 1};
-        if (!st.pruebas[i]) return {t: {es: 'Registra el ensayo de ' + shopName(i) + ' en el panel «Historia». Si no supera a la pantalla (16 paradas), mejora el escaparate.', ca: 'Registra l\'assaig de ' + shopName(i) + ' al panell «Història». Si no supera la pantalla (16 aturades), millora l\'aparador.'}, act: storyPanel, sub, chap: 1};
+        if (!hasJob(i)) return {t: {es: 'Monta el escaparate de ' + shopName(i) + ' (' + zoneOf(i) + ') en 3D y supera a la pantalla en la hora punta.', ca: 'Munta l\'aparador de ' + shopName(i) + ' (' + zoneOf(i) + ') en 3D i supera la pantalla a l\'hora punta.'}, shop: i, sub, chap: 1};
+        if (!st.pruebas[i]) return {t: {es: 'Tu escaparate de ' + shopName(i) + ' aún no supera a la pantalla (16 de 40). Vuelve a montarlo en 3D.', ca: 'El teu aparador de ' + shopName(i) + ' encara no supera la pantalla (16 de 40). Torna a muntar-lo en 3D.'}, shop: i, sub, chap: 1};
       }
     }
     if (st.fase === 2) {
@@ -131,7 +131,7 @@ window.Guia = (() => {
   const CHAPTERS = {
     1: [{who: 'joan', npc: 0, gesture: 'hablar', text: {es: 'Haremos un ensayo justo: el mismo número de peatones delante de tu escaparate y delante de una pantalla de Prisma.', ca: 'Farem un assaig just: el mateix nombre de vianants davant del teu aparador i davant d\'una pantalla de Prisma.'}},
         {who: null, shop: 4, text: () => tx({es: 'Primero, la <b>Cereria Subirà</b> (Portal de l\'Àngel). Después, <b>Discos Volta</b> (Plaça de Catalunya). Monta un encargo en cada tienda.', ca: 'Primer, la <b>Cereria Subirà</b> (Portal de l\'Àngel). Després, <b>Discos Volta</b> (Plaça de Catalunya). Munta un encàrrec a cada botiga.'})},
-        {who: 'lia', text: {es: 'Si mi escaparate consigue más de 16 paradas de cada 40 peatones, superaré a la pantalla. Luego lo registro en «Historia».', ca: 'Si el meu aparador aconsegueix més de 16 aturades de cada 40 vianants, superaré la pantalla. Després ho registro a «Història».'}}],
+        {who: 'lia', text: {es: 'Montaré cada escaparate en 3D y lo abriré en hora punta: si más de 16 de cada 40 peatones se paran, gano a la pantalla.', ca: 'Muntaré cada aparador en 3D i l\'obriré en hora punta: si més de 16 de cada 40 vianants s\'aturen, guanyo la pantalla.'}}],
     2: [{who: null, text: {es: '<b>Capítulo 3 · Reunir apoyos.</b> Tienes 5 días hasta la asamblea. Para ganarla necesitas: 3 vecinos a favor, escuchar a Ada y un informe con ratios.', ca: '<b>Capítol 3 · Reunir suports.</b> Tens 5 dies fins a l\'assemblea. Per guanyar-la necessites: 3 veïns a favor, escoltar l\'Ada i un informe amb ràtios.'}},
         {who: 'lia', text: {es: 'Hablar es gratis, pero cada taller ocupa un día. Un vecino convencido solo es <b>firme</b> cuando su tienda ha mejorado: si no, Prisma puede recuperarlo los días 3 y 5.', ca: 'Parlar és gratis, però cada taller ocupa un dia. Un veí convençut només és <b>ferm</b> quan la seva botiga ha millorat: si no, Prisma el pot recuperar els dies 3 i 5.'}}]
   };

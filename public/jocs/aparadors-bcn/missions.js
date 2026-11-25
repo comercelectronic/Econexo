@@ -56,6 +56,7 @@ window.Missions = (() => {
     const all = Array.from({length: CAN[n]}, (_, k) => n + '.' + (k + 1));
     const ev = {stars: st, misses: s.misses, secs: Math.round((Date.now() - s.start) / 1000), date: new Date().toISOString().slice(0, 10), got: all.filter(c => ca[c]), log: [...new Set(s.log)].slice(0, 10)};
     const R = Talleres.ra(); R.evid ||= {}; if (!R.evid[n] || st >= R.evid[n].stars) R.evid[n] = ev; save();
+    if (window.Sons) { if (st >= 2) { Sons.play('fanfare'); Sons.confetti() } else Sons.play('win') }
     if (s.story) return onDone && onDone(ev);
     evidence(n, ev, true);
   }
@@ -92,10 +93,7 @@ window.Missions = (() => {
       const before = JSON.stringify(saved.jobs['4-0'] || null);
       show(tx({es: 'El encargo de la Cereria Subirà', ca: 'L\'encàrrec de la Cereria Subirà'}), 'RA4 · ' + tx(RA[4].t),
         '<p>' + tx({es: 'Joan: «Ahora te toca a ti. Monta el escaparate de la cerería: elige productos, soporte, luz y mensaje, y entrégalo antes de que se acabe el turno».', ca: 'Joan: «Ara et toca a tu. Munta l\'aparador de la cereria: tria productes, suport, llum i missatge, i lliura\'l abans que s\'acabi el torn».'}) + '</p><button class="primary" id="go">' + tx({es: 'Abrir el taller', ca: 'Obrir el taller'}) + '</button>');
-      $('go').onclick = () => {
-        edit(4, 0);
-        const poll = setInterval(() => { if (JSON.stringify(saved.jobs['4-0'] || null) !== before) { clearInterval(poll); setTimeout(cb, 1200) } }, 800);
-      };
+      $('go').onclick = () => Aparador3D.open(4, () => setTimeout(cb, 300));
     });
   }
 
@@ -272,7 +270,7 @@ window.Missions = (() => {
       return play([{who: 'prisma', focus: shopSpot(NPC_SHOP[strong]), text: {es: 'Prisma llama a ' + NAMES[NPC_MODELS[strong]] + ' con una oferta mejor…', ca: 'Prisma truca a ' + NAMES[NPC_MODELS[strong]] + ' amb una oferta millor…'}},
         {who: NPC_MODELS[strong], npc: strong, focus: actors[strong], gesture: 'hablar', text: {es: 'No, gracias. Mi tienda ya funciona mejor que vuestra pantalla.', ca: 'No, gràcies. La meva botiga ja funciona millor que la vostra pantalla.'}}], cont);
     }
-    const id = weak[0], who = NPC_MODELS[id];
+    const id = weak[0], who = NPC_MODELS[id]; window.Sons?.play('alarm');
     ST().apoyos[id] = false; (ST().perduts ||= {})[id] = true; save();
     play([
       {who: 'prisma', focus: shopSpot(NPC_SHOP[id]), dz: 170, text: {es: 'Contraataque: Prisma ofrece a ' + NAMES[who] + ' el doble de renta. La pantalla vuelve a su escaparate.', ca: 'Contraatac: Prisma ofereix a ' + NAMES[who] + ' el doble de renda. La pantalla torna al seu aparador.'}},
@@ -308,7 +306,7 @@ window.Missions = (() => {
     const firmN = [2, 3, 4, 5].filter(id => ST().apoyos[id] && firm(id)).length, inf = Talleres.ra().informe;
     const ev = Talleres.ra().evid || {}, avg = Object.values(ev).reduce((a, e) => a + e.stars, 0) / Math.max(1, Object.keys(ev).length);
     const tier = firmN === 4 && inf?.eficaz && avg >= 2.5 ? 3 : firmN >= 2 && inf ? 2 : 1;
-    ST().final = tier; save();
+    ST().final = tier; save(); if (window.Sons) { Sons.play('fanfare'); Sons.confetti(260) }
     const txt = {3: {es: 'Barcelona conserva todos sus escaparates. Prisma retira las pantallas y propone colaborar con las tiendas en lugar de taparlas.', ca: 'Barcelona conserva tots els aparadors. Prisma retira les pantalles i proposa col·laborar amb les botigues en lloc de tapar-les.'},
                  2: {es: 'Los escaparates se quedan. Algunas pantallas siguen en la calle, pero cada mes se medirá quién atrae más.', ca: 'Els aparadors es queden. Algunes pantalles continuen al carrer, però cada mes es mesurarà qui atreu més.'},
                  1: {es: 'Los escaparates se quedan por muy poco. Los vecinos piden ver resultados reales el mes que viene.', ca: 'Els aparadors es queden per molt poc. Els veïns demanen veure resultats reals el mes que ve.'}}[tier];
