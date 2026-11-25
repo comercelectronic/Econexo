@@ -324,6 +324,7 @@ window.Talleres = (() => {
       const r = sim ? evaluate() : null;
       show(title, sub, head + '<h3>' + tx({es: '4. Monta el lineal (4 niveles × 6 frontales)', ca: '4. Munta el lineal (4 nivells × 6 frontals)'}) + '</h3><p><small>' + tx({es: 'Elige un producto y toca los huecos. Cada frontal guarda 8 unidades y Nil repone una vez por semana.', ca: 'Tria un producte i toca els buits. Cada frontal guarda 8 unitats i en Nil reposa una vegada per setmana.'}) + '</small></p>' +
         '<div class="brush">' + PROD.map(p => '<button data-b="' + p.k + '" class="' + (brush === p.k ? 'on' : '') + '" title="' + tx(p.n) + '"><span class="sw" style="background:' + p.c + '">' + p.k + '</span> ' + p.v + '/s</button>').join('') + '<button data-b="" class="' + (brush === '' ? 'on' : '') + '">' + tx({es: 'Vaciar', ca: 'Buidar'}) + '</button></div>' +
+        '<div id="int3d" class="int3d"></div>' +
         '<div class="shelf">' + grid.map((row, l) => '<div class="lvl"><b>' + tx(LEVELS[l].n) + '</b>' + row.map((k, c) => '<button data-c="' + l + ',' + c + '" style="' + (k ? 'background:' + P(k).c + ';color:#fff' : '') + '">' + (k || '') + '</button>').join('') + '</div>').join('') + '</div>' +
         (r ? '<table class="datos">' + r.rows.map(x => '<tr><td>' + x.p.k + ' · ' + tx(x.p.n) + '</td><td>' + x.f + ' ' + tx({es: 'frontales', ca: 'frontals'}) + '</td><td>' + x.sold + ' u</td><td>' + (x.rupt ? '<b class="bad">' + tx({es: 'Rotura de stock', ca: 'Trencament d\'estoc'}) + '</b>' : '✓') + '</td></tr>').join('') +
           '<tr><td><b>' + tx({es: 'Beneficio bruto semanal', ca: 'Benefici brut setmanal'}) + '</b></td><td></td><td colspan="2"><b>' + eur(r.profit) + '</b> · ' + tx({es: 'ventas perdidas', ca: 'vendes perdudes'}) + ': ' + Math.round(r.lost) + ' u</td></tr></table>' +
@@ -333,6 +334,10 @@ window.Talleres = (() => {
       sheet.querySelectorAll('[data-c]').forEach(b => b.onclick = () => { const [l, c] = b.dataset.c.split(',').map(Number); grid[l][c] = brush; s4(false) });
       $('sim').onclick = () => { pass(['2.3', '2.4']); s4(true) };
       if ($('next')) $('next').onclick = () => { pass(['2.6', '2.8']); s5() };
+      // Lineal en 3D: després de la setmana es veu l'estoc que queda i les ruptures parpellegen en vermell.
+      window.Interior3D && Interior3D.lineal($('int3d'), {grid, colors: Object.fromEntries(PROD.map(p => [p.k, p.c])), levels: LEVELS.map(l => tx(l.n)),
+        onSlot: (l, c) => sheet.querySelector('[data-c="' + l + ',' + c + '"]')?.click(),
+        left: r ? (l, c) => { const row = r.rows.find(x => x.p.k === grid[l][c]); return row ? (row.rupt ? 0 : Math.max(.15, 1 - row.sold / row.cap)) : 1 } : null});
     }
     function s5(msg) { // 2.7 interpretar un planograma
       const plan = [['C', 'C', 'F', 'F', 'D', 'D'], ['E', 'B', 'B', 'G', 'G', 'C'], ['A', 'A', 'B', 'B', 'F', 'F'], ['A', 'A', 'A', 'E', 'D', 'D']];
@@ -419,6 +424,7 @@ window.Talleres = (() => {
       const color = h => 'hsl(' + Math.round(220 - 220 * h) + ',70%,' + (62 - 10 * h) + '%)';
       show(title, sub, head + '<h3>' + tx({es: 'Plano de la tienda', ca: 'Plànol de la botiga'}) + '</h3><p><small>' + tx({es: 'Cada casilla mide 1,20 m. ⇩ entrada · ⇧ salida de emergencia · 🧯 extintor. Elige un elemento y toca el plano; simula para ver el mapa de calor de 30 clientes.', ca: 'Cada casella fa 1,20 m. ⇩ entrada · ⇧ sortida d\'emergència · 🧯 extintor. Tria un element i toca el plànol; simula per veure el mapa de calor de 30 clients.'}) + '</small></p>' +
         '<div class="brush">' + Object.entries(ITEMS).map(([k, it]) => '<button data-b="' + k + '" class="' + (brush === k ? 'on' : '') + '"><span class="sw" style="background:' + it.c + '">' + k + '</span> ' + tx(it.n) + '</button>').join('') + '<button data-b="" class="' + (brush === '' ? 'on' : '') + '">' + tx({es: 'Borrar', ca: 'Esborrar'}) + '</button></div>' +
+        '<div id="int3d" class="int3d"></div><p class="hint">' + tx({es: 'Arrastra para girar la tienda; toca el suelo para colocar. Abajo tienes el plano en 2D.', ca: 'Arrossega per girar la botiga; toca el terra per col·locar. A sota tens el plànol en 2D.'}) + '</p>' +
         '<div class="floorplan">' + plan.map((row, y) => row.map((k, x) => { const f = fixed(x, y);
           return '<button data-c="' + x + ',' + y + '"' + (f ? ' disabled' : '') + ' style="' + (k ? 'background:' + ITEMS[k].c + ';color:#fff' : H && H[y][x] !== null ? 'background:' + color(H[y][x]) : '') + '">' + (f || k) + '</button>' }).join('')).join('') + '</div>' +
         (ck ? '<div class="checklist">' + ck.map(([ok, t]) => '<p class="' + (ok ? '' : 'bad') + '">' + (ok ? '✓ ' : '✗ ') + t + '</p>').join('') + '</div>' : '') +
@@ -431,6 +437,15 @@ window.Talleres = (() => {
       });
       $('sim').onclick = () => s2(true);
       if ($('next')) $('next').onclick = () => { pass(['1.2', '1.4', '1.6', '1.8']); s3() };
+      // Botiga en 3D: mobles, mapa de calor i clients que la recorren després de simular.
+      const free = (x, y) => x >= 0 && y >= 0 && x < GW && y < GH && !plan[y][x] && !(fixed(x, y) && !(x === DOOR[0] && y === DOOR[1]));
+      const bfs = (a, b) => { const key = p => p.join(','), prev = new Map([[key(a), null]]), q = [a]; while (q.length) { const p = q.shift(); if (key(p) === key(b)) break;
+        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const n = [p[0] + dx, p[1] + dy]; if (free(...n) && !prev.has(key(n))) { prev.set(key(n), p); q.push(n) } } }
+        const out = []; for (let p = b; p; p = prev.get(key(p))) out.unshift(p); return prev.has(key(b)) ? out : [] };
+      const hot = H ? H.flatMap((r, y) => r.map((h, x) => [h, x, y])).filter(v => v[0] !== null).sort((a, b) => b[0] - a[0]) : [];
+      window.Interior3D && Interior3D.tienda($('int3d'), {plan, heat: H, door: DOOR, exit: EXIT, ext: EXT,
+        onCell: (x, y) => sheet.querySelector('[data-c="' + x + ',' + y + '"]:not([disabled])')?.click(),
+        path: n => { const t1 = hot[n * 2] || hot[0], t2 = hot[n * 3 + 1] || hot[1]; if (!t1) return []; const a = bfs(DOOR, [t1[1], t1[2]]), b = t2 ? bfs([t1[1], t1[2]], [t2[1], t2[2]]) : [], c = bfs(b.length ? [t2[1], t2[2]] : [t1[1], t1[2]], DOOR); return [...a, ...b.slice(1), ...c.slice(1)] }});
     }
     const s3 = () => quiz({es: 'Has puesto las bombillas al fondo y focos en la zona fría. ¿Qué técnica de merchandising es?', ca: 'Has posat les bombetes al fons i focus a la zona freda. Quina tècnica de marxandatge és?'},
       [{es: 'Calentar puntos fríos con productos imán y animación', ca: 'Escalfar punts freds amb productes imant i animació'}, {es: 'Cross merchandising', ca: 'Cross merchandising'}, {es: 'Venta a granel', ca: 'Venda a granel'}], 0,
