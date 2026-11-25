@@ -120,7 +120,7 @@ window.Missions = (() => {
       '<button id="cSolo"><b>' + tx({es: 'Misión suelta', ca: 'Missió solta'}) + '</b><br>' + tx({es: 'Elige un resultado de aprendizaje (RA1–RA6) y juégalo solo, con su informe de evidencias.', ca: 'Tria un resultat d\'aprenentatge (RA1–RA6) i juga\'l sol, amb el seu informe d\'evidències.'}) + '</button>' +
       '<button id="cFree"><b>' + tx({es: 'Pasear libremente', ca: 'Passejar lliurement'}) + '</b><br>' + tx({es: 'Del Passeig de Gràcia al mar, con los 36 comercios y sus encargos.', ca: 'Del Passeig de Gràcia al mar, amb els 36 comerços i els seus encàrrecs.'}) + '</button></div>');
     const pick = m => { saved.modeChosen = m; save() };
-    $('cStory').onclick = () => { pick('story'); storyPanel() };
+    $('cStory').onclick = () => { pick('story'); window.Guia ? Guia.prologue(storyPanel) : storyPanel() };
     $('cSolo').onclick = () => { pick('solo'); menu() };
     $('cFree').onclick = () => { pick('free'); street() };
   }

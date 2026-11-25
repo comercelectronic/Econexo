@@ -2,8 +2,8 @@
    de librillo, acera de panot de flor, asfalto, plátanos de sombra, farolas y bancos.
    Todo se añade al grupo «solid», que index.html agrupa después en InstancedMesh. */
 window.Barcelona3D = (() => {
-  const stucco = ['#dcc6a2', '#cfa77f', '#e6d6ba', '#c08e6e', '#d9b98d', '#cdbfa8', '#e2c9a6', '#b9a08a'];
-  const shutters = ['#4f7556', '#3f6a5e', '#6d7f55', '#5b6f4f', '#7a5a3a'];
+  const stucco = ['#f0c27a', '#e07a5f', '#f4d58d', '#d46a4c', '#f2a7a0', '#8fc1d4', '#f6c9a1', '#c3d88f', '#e9b0cf', '#ffd36e'];
+  const shutters = ['#2f8a5e', '#1f7a8c', '#4e9a3a', '#2e6db3', '#b5482e'];
   const IRON = '#2b3034', GLASS = '#3b5566', STONE = '#efe2c8', BARK = '#a39a82';
   const LEAVES = ['#4a7329', '#5a8531', '#416825', '#638f37'];
 
@@ -72,7 +72,7 @@ window.Barcelona3D = (() => {
     let k = 0; for (let y = -hgt; y < s + hgt; y += hgt) for (let x = 0, c = 0; x < s + 2 * r; x += r * 1.5, c++) hex(x, y + (c % 2 ? hgt / 2 : 0), k++);
   });
   const granitTex = () => canvasTexture((g, s) => {
-    g.fillStyle = '#c9c6bf'; g.fillRect(0, 0, s, s);
+    g.fillStyle = '#b9b4aa'; g.fillRect(0, 0, s, s);
     for (let y = 0; y < s; y += 64) for (let x = (y / 64) % 2 * 64; x < s + 128; x += 128) { g.strokeStyle = '#a9a69f'; g.lineWidth = 2; g.strokeRect(x - 64, y, 128, 64) }
     for (let n = 0; n < 5000; n++) { const v = Math.random() * 120 + 90 | 0; g.fillStyle = 'rgba(' + v + ',' + v + ',' + v + ',.35)'; g.fillRect(Math.random() * s, Math.random() * s, 1.5, 1.5) }
   });
@@ -115,7 +115,7 @@ window.Barcelona3D = (() => {
     const at = asphalt(); at.repeat.set(W / 60, 1); road.map = at; road.color.set('#ffffff'); road.needsUpdate = true;
 
     function windowBay(wx, y0, zf, dir, seed, sh) {
-      const closed = rnd(seed, 1) < .25, plant = rnd(seed, 2) < .3, open = rnd(seed, 3);
+      const closed = rnd(seed, 1) < .25, plant = rnd(seed, 2) < .55, open = rnd(seed, 3);
       B(solid, GLASS, wx, y0 + 18, zf + dir * 1, 24, 30, 2);
       B(solid, STONE, wx, y0 + 34.5, zf + dir * 1.6, 31, 3, 3);                 // dintel
       if (closed) B(solid, sh, wx, y0 + 18, zf + dir * 2.2, 24, 30, 1.2);         // persiana cerrada
@@ -125,7 +125,7 @@ window.Barcelona3D = (() => {
       B(solid, IRON, wx, y0 + 13, zf + dir * 13.6, 38, 1.2, 1.2);               // pasamanos
       for (const s of [-1, 1]) B(solid, IRON, wx + s * 18.6, y0 + 8.5, zf + dir * 7.6, 1, 10, 12);
       for (let k = -4; k <= 4; k++) B(solid, IRON, wx + k * 4.2, y0 + 8.5, zf + dir * 13.6, .7, 10, .7);
-      if (plant) { B(solid, '#a8603f', wx + 12, y0 + 6, zf + dir * 9, 5, 5, 5); shape(solid, 'rock', LEAVES[seed % 4], wx + 12, y0 + 11, zf + dir * 9, 8, 7, 8) }
+      if (plant) { B(solid, '#c0603a', wx + 12, y0 + 6, zf + dir * 9, 5, 5, 5); shape(solid, 'rock', LEAVES[seed % 4], wx + 12, y0 + 11, zf + dir * 9, 8, 7, 8); for (let k = 0; k < 3; k++) E(solid, ['#e0303f', '#ff6fa3', '#ffd23f', '#ffffff'][(seed + k) % 4], wx + 9 + k * 3, y0 + 15, zf + dir * (8 + k), 3, 3, 3) }
     }
 
     for (const s of S) {
