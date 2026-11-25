@@ -12,34 +12,36 @@ export const GRADOS = [
 ] as const;
 
 // para: mòduls (ciclo/modulo de CICLOS) per als quals serveix el simulador
-export type Simulador = { id: string; name: string; desc: string; url: string; idiomas: string; interno?: boolean; para: { ciclo: string; modulo: string }[] };
+// img: captura principal; galeria: més captures; lema: frase curta per a la portada
+export type Simulador = { id: string; name: string; desc: string; url: string; idiomas: string; interno?: boolean; img?: string; galeria?: string[]; lema?: string; para: { ciclo: string; modulo: string }[] };
 export const SIMULADORES: Simulador[] = [
   {
-    id: 'aparadors-bcn', name: 'Aparadors BCN', interno: true,
-    desc: 'Recorre seis zonas inspiradas en Barcelona, conversa con sus vecinos y estudia 36 escaparates. Resuelve 108 encargos de tres dificultades con un taller de composición, iluminación, presupuesto y tiempo.',
-    url: '/jocs/aparadors-bcn/', idiomas: 'Castellano',
+    id: 'aparadors-bcn', name: 'Aparadors BCN', interno: true, lema: 'Salva los escaparates de Barcelona',
+    img: '/media/simuladores/aparadors-placa.png', galeria: ['/media/simuladores/aparadors-rambla.png', '/media/simuladores/aparadors-pg.png', '/media/simuladores/aparadors-port.png'],
+    desc: 'Del Passeig de Gràcia al mar: una empresa quiere tapar los escaparates con pantallas. Convence a los vecinos, monta escaparates en 3D y demuestra con datos que funcionan. Seis misiones, una por cada resultado de aprendizaje de Dinamización del punto de venta.',
+    url: '/jocs/aparadors-bcn/', idiomas: 'Catalán y castellano',
     para: [{ ciclo: 'actividades-comerciales', modulo: 'dinamizacion-del-punto-de-venta' }]
   },
   {
-    id: 'agencia-digital', name: 'Agència Digital',
+    id: 'agencia-digital', name: 'Agència Digital', lema: 'Dirige tu agencia de marketing digital', img: '/media/simuladores/agencia-digital.png',
     desc: 'Dirige tu propia agencia de marketing digital en Vic: clientes reales, decisiones con consecuencias, proyectos que corrige la IA y tu profesor, mundo explorable y mercado entre las agencias de tu clase.',
     url: '/jocs/agencia-digital/', idiomas: 'Catalán, castellano e inglés',
     para: [{ ciclo: 'actividades-comerciales', modulo: 'comercio-electronico' }]
   },
   {
-    id: 'supermercat-petit', name: 'Cas Supermercat Petit', interno: true,
+    id: 'supermercat-petit', name: 'Cas Supermercat Petit', interno: true, lema: 'Escape room y murdoku en clase', img: '/media/simuladores/supermercat-petit.png',
     desc: 'Un caso de clase en equipos y en dos sesiones: un escape room de una hora (dinamización del punto de venta y hojas de cálculo) y un murdoku para descubrir quién atacó a la profe en el supermercado del instituto.',
     url: '/jocs/supermercat-petit/', idiomas: 'Catalán',
     para: [{ ciclo: 'actividades-comerciales', modulo: 'aplicaciones-informaticas-para-el-comercio' }, { ciclo: 'actividades-comerciales', modulo: 'dinamizacion-del-punto-de-venta' }]
   },
   {
-    id: 'mercadeja', name: 'Mercadeja', interno: true,
+    id: 'mercadeja', name: 'Mercadeja', interno: true, lema: 'De la tienda de barrio a gran empresa', img: '/media/simuladores/mercadeja-joc.png',
     desc: 'Juego de tienda: cada alumno empieza con una tienda de barrio y la hace crecer hasta una gran empresa. Decide producto, precio, distribución y promoción y atiende a los clientes con su muñeco. Cuentas de alumno con panel del profesor, retos de clase con ranking en directo y lecciones del currículo de marketing.',
     url: '/jocs/mercadeja/', idiomas: 'Catalán',
     para: [{ ciclo: 'actividades-comerciales', modulo: 'marketing-en-la-actividad-comercial' }]
   },
   {
-    id: 'palet', name: 'Palet', interno: true,
+    id: 'palet', name: 'Palet', interno: true, lema: 'De mozo de almacén a jefe de turno', img: '/media/simuladores/palet-joc.png',
     desc: 'Juego de almacén: empiezas de mozo y la jefa te asciende (o te despide). Eliges el almacén (alimentación, frigorífico, cross-docking, comercio electrónico o recambios), con estanterías convencionales, dinámicas, móviles, compactas, cantilever y de picking. Recepción, ubicación, picking con FEFO, palés bien montados y camiones que salen a su hora, con el reloj en marcha y la seguridad en juego.',
     url: '/jocs/palet/', idiomas: 'Catalán',
     para: [{ ciclo: 'actividades-comerciales', modulo: 'tecnicas-de-almacen' }]

@@ -24,12 +24,16 @@ export default async function Simuladores({ params }: Props) {
       <div className="mt-8 grid gap-5 md:grid-cols-2">
         {SIMULADORES.map((s) => {
           return (
-            <article key={s.id} className="rounded-2xl bg-navy p-6 text-white">
-              <h2 className="text-2xl font-extrabold">{s.name}</h2>
-              <p className="mt-2 text-white/80">{t(s.desc)}</p>
-              <SimModulos s={s} lang={lang} className="mt-4" />
-              <p className="mt-3 text-sm text-white/70">{t('Idiomas')}: {t(s.idiomas)}</p>
-              <a href={simUrl(s, lang)} target="_blank" rel="noopener" className="mt-4 inline-block rounded-lg bg-teal px-4 py-2.5 font-semibold hover:bg-teal-dark">{t('Jugar →')}</a>
+            <article key={s.id} className="overflow-hidden rounded-2xl bg-navy text-white shadow-lg">
+              {s.img && <a href={simUrl(s, lang)} target="_blank" rel="noopener"><img src={s.img} alt={t('Captura de {0}', s.name)} loading="lazy" className="aspect-video w-full object-cover object-top" /></a>}
+              <div className="p-6">
+                {s.lema && <p className="text-xs font-bold uppercase tracking-widest text-[#f8b62d]">{t(s.lema)}</p>}
+                <h2 className="text-2xl font-extrabold">{s.name}</h2>
+                <p className="mt-2 text-white/80">{t(s.desc)}</p>
+                <SimModulos s={s} lang={lang} className="mt-4" />
+                <p className="mt-3 text-sm text-white/70">{t('Idiomas')}: {t(s.idiomas)}</p>
+                <a href={simUrl(s, lang)} target="_blank" rel="noopener" className="mt-4 inline-block rounded-lg bg-gradient-to-r from-[#e5483a] to-[#f08a24] px-5 py-2.5 font-bold">{t('Jugar →')}</a>
+              </div>
             </article>
           );
         })}
