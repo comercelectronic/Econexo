@@ -332,6 +332,12 @@ window.Missions = (() => {
 
   function boot() {
     Vianants.setAppeal(appeal); Vianants.setPrisma(isPrisma);
+    const vista = new URLSearchParams(location.search).get('vista');   // captures i enllaços directes a una zona
+    if (vista) {
+      const V = {rambla: [W / 2 + 120, 4, 20, .7], placa: [W / 2 + 40, 2, 70, -.5], pg: [S[1].x + 150, 0, 0, .55], portal: [W * .3, 3, 0, .4], port: [W / 2 - 60, 5, 40, 2.6]}[vista] || [W / 2, 4, 20, .7];
+      saved.modeChosen ||= 'free'; player.x = V[0]; player.y = (window.Barcelona3D ? Barcelona3D.roadZ(V[1]) : 300) + V[2]; camYaw = V[3]; camDist = 210;
+      document.body.classList.add('vista'); return true;
+    }
     const q = new URLSearchParams(location.search).get('ra');
     if (q && RA[q]) { setTimeout(() => start(q), 400); return true }
     if (!saved.modeChosen) { setTimeout(chooser, 200); return true }

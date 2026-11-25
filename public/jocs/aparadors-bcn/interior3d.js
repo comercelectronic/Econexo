@@ -45,7 +45,8 @@ window.Interior3D = (() => {
     ray.setFromCamera({x: (e.clientX - rc.left) / rc.width * 2 - 1, y: 1 - (e.clientY - rc.top) / rc.height * 2}, R.cam);
     const hit = ray.intersectObjects(R.picks)[0]; if (hit) R.onPick(hit.object.userData.pick);
   }
-  const mat = c => new T.MeshStandardMaterial({color: c, roughness: .8});
+  const lin = c => new T.Color(c).convertSRGBToLinear();   // colors en sRGB → lineal (si no, surten esbandits)
+  const mat = c => new T.MeshStandardMaterial({color: lin(c), roughness: .8});
   function box(g, c, x, y, z, w, h, d) { const m = new T.Mesh(new T.BoxGeometry(w, h, d), typeof c === 'string' ? mat(c) : c); m.position.set(x, y, z); m.castShadow = m.receiveShadow = true; g.add(m); return m }
   function attach(host) { if (host && R && R.renderer.domElement.parentNode !== host) host.append(R.renderer.domElement) }
 
@@ -101,7 +102,7 @@ window.Interior3D = (() => {
     }));
     // Mapa de calor sobre les rajoles
     R.tiles.forEach(t => { const [x, y] = t.userData.pick, h = o.heat && o.heat[y][x];
-      t.material.color.set(h == null ? '#e8dcc3' : new T.Color().setHSL((220 - 220 * h) / 360, .65, .58)) });
+      t.material.color.copy(h == null ? lin('#e8dcc3') : new T.Color().setHSL((220 - 220 * h) / 360, .65, .58).convertSRGBToLinear()) });
     R.onPick = p => o.onCell(p[0], p[1]);
     // Clients: recorren les cel·les accessibles més calentes i surten per la porta.
     clearCustomers();
