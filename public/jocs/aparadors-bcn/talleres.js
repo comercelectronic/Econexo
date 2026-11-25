@@ -451,11 +451,77 @@ window.Talleres = (() => {
     s1();
   }
 
+  /* ------------------------------------------------------------ RA3 · Cartelería y PLV (Laia) */
+  const MONTHS = {es: ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'],
+                  ca: ['gener', 'febrer', 'març', 'abril', 'maig', 'juny', 'juliol', 'agost', 'setembre', 'octubre', 'novembre', 'desembre']};
+  const CAMP = [[{es: 'Reyes y rebajas de invierno', ca: 'Reis i rebaixes d\'hivern'}, 0], [{es: 'San Valentín', ca: 'Sant Valentí'}, 1], [{es: 'Sant Jordi', ca: 'Sant Jordi'}, 3],
+                [{es: 'Día de la Madre', ca: 'Dia de la Mare'}, 4], [{es: 'Vuelta al cole', ca: 'Tornada a l\'escola'}, 8], [{es: 'Black Friday', ca: 'Black Friday'}, 10], [{es: 'Navidad', ca: 'Nadal'}, 11]];
+  const FONTS = {serif: {f: 'Georgia, serif', n: {es: 'Serif (Georgia)', ca: 'Serif (Georgia)'}}, sans: {f: 'Helvetica, Arial, sans-serif', n: {es: 'Sans serif (Helvetica)', ca: 'Sans serif (Helvetica)'}},
+                 script: {f: '"Brush Script MT", "Segoe Script", cursive', n: {es: 'Manuscrita (script)', ca: 'Manuscrita (script)'}}, display: {f: 'Impact, "Arial Black", sans-serif', n: {es: 'Display (Impact)', ca: 'Display (Impact)'}}};
+  const STYLE = {'#111111': {es: 'Negro', ca: 'Negre'}, '#fbf7ef': {es: 'Blanco roto', ca: 'Blanc trencat'}, '#b3262d': {es: 'Rojo rosa', ca: 'Vermell rosa'}, '#e9d8b8': {es: 'Arena', ca: 'Sorra'}};
+  function lum(hex) { const c = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255).map(v => v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2] }
+  const contrast = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + .05) / (y + .05) };
+
+  function carteles(onDone) {
+    const title = tx({es: 'El estudio de Laia', ca: 'L\'estudi de la Laia'}), sub = tx({es: 'Fotografía · Laia', ca: 'Fotografia · Laia'});
+    const head = '<p class="taller-ra">RA3 · ' + tx({es: 'Decoración, rotulación y cartelería', ca: 'Decoració, retolació i cartellisme'}) + '</p>';
+    const L = lang(), M = MONTHS[L] || MONTHS.es;
+    function s1() { // 3.1 planificación anual
+      show(title, sub, head + '<p>' + tx({es: 'Laia: «Prisma cambia la pantalla cada día. Yo quiero un calendario: decorar la tienda en el momento justo de cada campaña.»', ca: 'Laia: «Prisma canvia la pantalla cada dia. Jo vull un calendari: decorar la botiga en el moment just de cada campanya.»'}) + '</p><h3>' + tx({es: '1. ¿En qué mes empieza cada campaña?', ca: '1. En quin mes comença cada campanya?'}) + '</h3><div class="ratios">' +
+        CAMP.map(([n], i) => '<label class="ratio"><span>' + tx(n) + '</span><select data-m="' + i + '"><option value="">—</option>' + M.map((m, j) => '<option value="' + j + '">' + m + '</option>').join('') + '</select><em></em></label>').join('') + '</div><button class="primary" id="ok">' + tx({es: 'Comprobar', ca: 'Comprovar'}) + '</button>');
+      $('ok').onclick = () => { let bad = 0; sheet.querySelectorAll('[data-m]').forEach(s => { const g = +s.value === CAMP[+s.dataset.m][1] && s.value !== ''; s.parentNode.classList.toggle('ok', g); s.parentNode.classList.toggle('ko', !g); bad += !g }); if (!bad) { pass(['3.1']); setTimeout(s2, 400) } };
+    }
+    function s2() { // 3.3 tipografías
+      const eff = [['serif', {es: 'Tradición, calidad, confianza', ca: 'Tradició, qualitat, confiança'}], ['sans', {es: 'Modernidad, claridad, legibilidad', ca: 'Modernitat, claredat, llegibilitat'}],
+                   ['script', {es: 'Emoción, cercanía, regalo', ca: 'Emoció, proximitat, regal'}], ['display', {es: 'Impacto, urgencia, oferta', ca: 'Impacte, urgència, oferta'}]];
+      show(title, sub, head + '<h3>' + tx({es: '2. ¿Qué efecto produce cada tipografía en el cliente?', ca: '2. Quin efecte produeix cada tipografia en el client?'}) + '</h3><div class="ratios">' +
+        eff.map(([k]) => '<label class="ratio"><span style="font-family:' + FONTS[k].f + ';font-size:22px">' + tx(FONTS[k].n) + '</span><select data-t="' + k + '"><option value="">—</option>' + eff.map(([kk, e]) => '<option value="' + kk + '">' + tx(e) + '</option>').join('') + '</select><em></em></label>').join('') + '</div><button class="primary" id="ok">' + tx({es: 'Comprobar', ca: 'Comprovar'}) + '</button>');
+      $('ok').onclick = () => { let bad = 0; sheet.querySelectorAll('[data-t]').forEach(s => { const g = s.value === s.dataset.t; s.parentNode.classList.toggle('ok', g); s.parentNode.classList.toggle('ko', !g); bad += !g }); if (!bad) { pass(['3.3']); setTimeout(s3, 400) } };
+    }
+    const c = {titular: '', precio: '', beneficio: '', font: 'sans', bg: '#fbf7ef', fg: '#111111', accent: '#b3262d', size: 44, plv: ''};
+    function s3() { // 3.2, 3.4, 3.5, 3.6 editor de carteles
+      const words = c.titular.trim().split(/\s+/).filter(Boolean).length;
+      const ck = [
+        [words >= 2 && words <= 6, tx({es: 'Titular breve (de 2 a 6 palabras)', ca: 'Titular breu (de 2 a 6 paraules)'})],
+        [/\d/.test(c.precio), tx({es: 'Precio visible', ca: 'Preu visible'})],
+        [c.beneficio.trim().length >= 8, tx({es: 'Beneficio para el cliente', ca: 'Benefici per al client'})],
+        [contrast(c.bg, c.fg) >= 4.5, tx({es: 'Contraste suficiente entre fondo y texto', ca: 'Contrast suficient entre fons i text'}) + ' (' + num(contrast(c.bg, c.fg), 1) + ':1)'],
+        [c.size >= 40, tx({es: 'Jerarquía: el titular domina el cartel', ca: 'Jerarquia: el titular domina el cartell'})],
+        [['script', 'serif'].includes(c.font), tx({es: 'Tipografía coherente con una campaña emocional (Sant Jordi)', ca: 'Tipografia coherent amb una campanya emocional (Sant Jordi)'})],
+        [c.plv === 'escaparate', tx({es: 'Soporte adecuado: cartel para el escaparate de la calle', ca: 'Suport adequat: cartell per a l\'aparador del carrer'})]
+      ];
+      const opt = (id, obj, val) => '<select id="' + id + '">' + Object.entries(obj).map(([k, v]) => '<option value="' + k + '"' + (k === val ? ' selected' : '') + '>' + tx(v.n || v) + '</option>').join('') + '</select>';
+      show(title, sub, head + '<h3>' + tx({es: '3. Cartel de Sant Jordi: «Retrato con rosa, sesión de 15 minutos, 25 €»', ca: '3. Cartell de Sant Jordi: «Retrat amb rosa, sessió de 15 minuts, 25 €»'}) + '</h3><p><small>' + tx({es: 'Libro de estilo de Laia: negro, blanco roto, rojo rosa y arena.', ca: 'Llibre d\'estil de la Laia: negre, blanc trencat, vermell rosa i sorra.'}) + '</small></p>' +
+        '<div class="poster-wrap"><div class="poster" style="background:' + c.bg + ';color:' + c.fg + ';font-family:' + FONTS[c.font].f + (c.font === 'script' ? ';font-style:italic' : '') + '"><div style="font-size:' + c.size + 'px;line-height:1.05">' + (c.titular || '…').replace(/</g, '&lt;') + '</div><div class="pr" style="color:' + c.accent + '">' + c.precio.replace(/</g, '&lt;') + '</div><div class="bf">' + c.beneficio.replace(/</g, '&lt;') + '</div></div>' +
+        '<div class="poster-form"><label class="field">' + tx({es: 'Titular', ca: 'Titular'}) + ' <input id="titular" value="' + c.titular.replace(/"/g, '&quot;') + '"></label><label class="field">' + tx({es: 'Precio', ca: 'Preu'}) + ' <input id="precio" value="' + c.precio.replace(/"/g, '&quot;') + '"></label><label class="field">' + tx({es: 'Beneficio', ca: 'Benefici'}) + ' <input id="beneficio" value="' + c.beneficio.replace(/"/g, '&quot;') + '"></label>' +
+        '<label class="field">' + tx({es: 'Tipografía', ca: 'Tipografia'}) + ' ' + opt('font', FONTS, c.font) + '</label><label class="field">' + tx({es: 'Fondo', ca: 'Fons'}) + ' ' + opt('bg', STYLE, c.bg) + '</label><label class="field">' + tx({es: 'Texto', ca: 'Text'}) + ' ' + opt('fg', STYLE, c.fg) + '</label><label class="field">' + tx({es: 'Precio en', ca: 'Preu en'}) + ' ' + opt('accent', STYLE, c.accent) + '</label>' +
+        '<label class="field">' + tx({es: 'Tamaño del titular', ca: 'Mida del titular'}) + ' <input type="range" id="size" min="20" max="64" value="' + c.size + '"></label>' +
+        '<label class="field">' + tx({es: 'Dónde irá', ca: 'On anirà'}) + ' ' + opt('plv', {'': {es: '—', ca: '—'}, escaparate: {es: 'Cartel en el escaparate', ca: 'Cartell a l\'aparador'}, stopper: {es: 'Stopper en el lineal', ca: 'Stopper al lineal'}, colgante: {es: 'Colgante del techo', ca: 'Penjoll del sostre'}, display: {es: 'Display de mostrador', ca: 'Display de taulell'}}, c.plv) + '</label></div></div>' +
+        '<div class="checklist">' + ck.map(([ok, t]) => '<p class="' + (ok ? '' : 'bad') + '">' + (ok ? '✓ ' : '✗ ') + t + '</p>').join('') + '</div>' + (ck.every(x => x[0]) ? '<button class="primary" id="next">' + tx({es: 'Imprimir y colgar', ca: 'Imprimir i penjar'}) + '</button>' : ''));
+      ['titular', 'precio', 'beneficio'].forEach(k => $(k).onchange = e => { c[k] = e.target.value; s3() });
+      ['font', 'bg', 'fg', 'accent', 'plv'].forEach(k => $(k).onchange = e => { c[k] = e.target.value; s3() });
+      $('size').onchange = e => { c.size = +e.target.value; s3() };
+      if ($('next')) $('next').onclick = () => { pass(['3.2', '3.4', '3.5', '3.6']); ra().cartel = {...c}; save(); s4() };
+    }
+    function s4(msg) { // 3.7 montaje seguro
+      show(title, sub, head + (msg ? '<p class="reply bad">' + msg + '</p>' : '') + '<h3>' + tx({es: '4. Hay que colgar la guirnalda de rosas a 2,8 m de altura. ¿Cómo lo hacéis?', ca: '4. Cal penjar la garlanda de roses a 2,8 m d\'alçada. Com ho feu?'}) + '</h3><div class="choices">' +
+        [[0, {es: 'Con una silla del estudio, que es más rápido.', ca: 'Amb una cadira de l\'estudi, que és més ràpid.'}],
+         [1, {es: 'Con escalera de tijera homologada, abierta del todo, otra persona sujetándola y anclajes adecuados al techo.', ca: 'Amb escala de tisora homologada, oberta del tot, una altra persona aguantant-la i ancoratges adequats al sostre.'}],
+         [2, {es: 'Desde el mostrador, con cinta adhesiva.', ca: 'Des del taulell, amb cinta adhesiva.'}]].map(([i, t]) => '<button data-s="' + i + '">' + tx(t) + '</button>').join('') + '</div>');
+      sheet.querySelectorAll('[data-s]').forEach(b => b.onclick = () => b.dataset.s === '1' ? (pass(['3.7']), done()) : s4(tx({es: 'Laia: «¡Ni hablar! La prevención de riesgos laborales también va con la decoración.»', ca: 'Laia: «Ni parlar-ne! La prevenció de riscos laborals també va amb la decoració.»'})));
+    }
+    function done() {
+      show(title, sub, head + '<p class="reply">' + tx({es: 'Laia: «El cartel se lee desde la otra acera y la guirnalda está bien sujeta. El domingo vendrá todo el barrio a hacerse fotos.»', ca: 'Laia: «El cartell es llegeix des de l\'altra vorera i la garlanda està ben subjecta. Diumenge vindrà tot el barri a fer-se fotos.»'}) + '</p><button class="primary" id="next">' + tx({es: 'Continuar', ca: 'Continuar'}) + '</button>');
+      $('next').onclick = () => onDone ? onDone() : menu();
+    }
+    s1();
+  }
+
   /* ------------------------------------------------------------ Cuaderno de RA */
   const RAS = [
     {n: 1, t: {es: 'Organizar la superficie comercial', ca: 'Organitzar la superfície comercial'}, ca: 8, who: 'Jan', open: () => tienda()},
     {n: 2, t: {es: 'Colocar y reponer productos en el lineal', ca: 'Col·locar i reposar productes al lineal'}, ca: 8, who: 'Nil', open: () => lineal()},
-    {n: 3, t: {es: 'Decoración, rotulación y cartelería', ca: 'Decoració, retolació i cartellisme'}, ca: 7, who: 'Laia'},
+    {n: 3, t: {es: 'Decoración, rotulación y cartelería', ca: 'Decoració, retolació i cartellisme'}, ca: 7, who: 'Laia', open: () => carteles()},
     {n: 4, t: {es: 'Montar escaparates', ca: 'Muntar aparadors'}, ca: 8, who: tx({es: 'Encargos', ca: 'Encàrrecs'})},
     {n: 5, t: {es: 'Acciones promocionales', ca: 'Accions promocionals'}, ca: 5, who: 'Núria', open: () => promo()},
     {n: 6, t: {es: 'Control de las acciones', ca: 'Control de les accions'}, ca: 5, who: 'Ada', open: () => ra().informe ? report() : control()}
@@ -486,7 +552,8 @@ window.Talleres = (() => {
 
   // Taller que cada vecino ofrece tras convencerle en la historia.
   const byNpc = {4: {label: {es: 'Ayudar a Núria con una promoción (RA5)', ca: 'Ajudar la Núria amb una promoció (RA5)'}, open: promo, done: () => !!ra().promo},
+                 2: {label: {es: 'Preparar la campaña de Sant Jordi de Laia (RA3)', ca: 'Preparar la campanya de Sant Jordi de la Laia (RA3)'}, open: carteles, done: () => !!ra().cartel},
                  3: {label: {es: 'Reorganizar la tienda de Jan (RA1)', ca: 'Reorganitzar la botiga d\'en Jan (RA1)'}, open: tienda, done: () => !!ra().tienda},
                  5: {label: {es: 'Ordenar el lineal de Nil (RA2)', ca: 'Endreçar el lineal d\'en Nil (RA2)'}, open: lineal, done: () => !!ra().lineal}};
-  return {promo, control, report, lineal, tienda, menu, tx, ra, byNpc};
+  return {promo, control, report, lineal, tienda, carteles, menu, tx, ra, byNpc};
 })();
