@@ -75,7 +75,8 @@ window.I18N = (() => {
     ['Desde la acera', 'Des de la vorera'], ['Ángulo desde la acera', 'Angle des de la vorera'], ['Volver al montaje', 'Tornar al muntatge'],
     ['Producto visible', 'Producte visible'], ['Asociación comercial', 'Associació comercial'], ['Jerarquía y aire', 'Jerarquia i aire'],
     ['Ritmo y alturas', 'Ritme i alçades'], ['Iluminación', 'Il·luminació'], ['Soporte y mensaje', 'Suport i missatge'], ['Viabilidad', 'Viabilitat'],
-    ['Plano del barrio', 'Plànol del barri']
+    ['Plano del barrio', 'Plànol del barri'], ['Cristal con reflejos', 'Vidre amb reflexos'], ['Paseo de estudio con Joan (RA4)', 'Passeig d\'estudi amb en Joan (RA4)'], ['Atardecer', 'Capvespre'], ['Noche', 'Nit'],
+    ['Este navegador no ofrece aceleración 3D. Puedes continuar el montaje en el editor.', 'Aquest navegador no ofereix acceleració 3D. Pots continuar el muntatge a l\'editor.']
   ].sort((a, b) => b[0].length - a[0].length);
 
   function tr(s) {

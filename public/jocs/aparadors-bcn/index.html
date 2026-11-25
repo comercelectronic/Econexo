@@ -306,7 +306,7 @@ function dialogueTree(id,tree,title,onWin){
 function storyPanel() {
   let content='<div class="castline">'+storyPortrait(story.fase===2?'lia':story.fase>=3?'ada':'joan')+'<div>';
   if(story.fase===0) content+='<h3>Una carta bajo la persiana</h3><p>Joan despliega un contrato sobre el mostrador. Prisma Exterior quiere alquilar los escaparates de la calle y cubrirlos con pantallas idénticas. La votación es el domingo.</p><p>«Lía, si quieres que rechace una renta fija, enséñame qué hará que la gente se pare aquí».</p><button id="meet" class="primary">Buscar a Joan</button>';
-  else if(story.fase===1) content+='<h3>El ensayo de la calle</h3><p>Diseña una vitrina para la cerería y otra para la tienda de discos. Entrega cada encargo y registra su ensayo frente a la pantalla de Prisma.</p>'+pilotStores.map(i=>{const p=story.pruebas[i];return '<div class="card"><b>'+stores[i][0]+'</b> · '+(p?p.vitrina+' paradas frente a '+p.pantalla:'Pendiente')+' <button data-shop="'+i+'">'+(evidence(i)&&!p?'Registrar ensayo':'Visitar')+'</button></div>'}).join('');
+  else if(story.fase===1) content+='<h3>El ensayo de la calle</h3><p>Diseña una vitrina para la cerería y otra para la tienda de discos. Entrega cada encargo y registra su ensayo frente a la pantalla de Prisma.</p>'+(saved.ra?.estudio?'':'<p><button id="estudio">Paseo de estudio con Joan (RA4)</button></p>')+pilotStores.map(i=>{const p=story.pruebas[i];return '<div class="card"><b>'+stores[i][0]+'</b> · '+(p?p.vitrina+' paradas frente a '+p.pantalla:'Pendiente')+' <button data-shop="'+i+'">'+(evidence(i)&&!p?'Registrar ensayo':'Visitar')+'</button></div>'}).join('');
   else if(story.fase===2){
     content+='<h3>Reunir apoyos</h3><p>Prisma ha dejado su carta en cada tienda. Habla con los vecinos y responde a sus dudas con argumentos de escaparatismo. Necesitas <b>'+NEEDED+' apoyos</b> y escuchar a Ada antes de convocar la asamblea.</p>'
      +Object.keys(HV.apoyos).map(id=>'<div class="card"><b>'+neighbours[id][0]+'</b> · '+neighbours[id][1]+' · '+(story.apoyos[id]?'✓ Te apoya':'Indeciso')+' <button data-npc="'+id+'">'+(story.apoyos[id]?'Visitar':'Buscar')+'</button></div>').join('')
@@ -320,6 +320,7 @@ function storyPanel() {
   const seek=id=>{const a=actors[id];street();go(a.x,a.y,-a.id-1)};
   if($('meet'))$('meet').onclick=()=>seek(story.fase===0?0:1);
   if($('assembly'))$('assembly').onclick=()=>{story.fase=3;save();storyPanel()};
+  if($('estudio'))$('estudio').onclick=()=>Talleres.estudio(storyPanel);
   if($('report'))$('report').onclick=()=>hasReport()?Talleres.report(storyPanel):saved.ra?.promo?Talleres.control(storyPanel):Talleres.promo(storyPanel);
   sheet.querySelectorAll('[data-npc]').forEach(b=>b.onclick=()=>seek(+b.dataset.npc));
   sheet.querySelectorAll('[data-shop]').forEach(b=>b.onclick=()=>{const i=+b.dataset.shop,trial=evidence(i);if(trial&&!story.pruebas[i]){show('Ensayo de atención',stores[i][0],'<p>En una simulación de 40 peatones se detienen <b>'+trial.vitrina+'</b> ante tu vitrina y <b>16</b> ante la pantalla de referencia. Influyen la visibilidad, la composición, la luz y el mensaje. Las paradas miden atención, no ventas.</p><button id="record">Guardar resultado</button>');$('record').onclick=()=>{if(trial.vitrina>16)story.pruebas[i]=trial;if(pilotStores.every(k=>story.pruebas[k]))story.fase=2;save();storyPanel()}}else target(S[i])});
@@ -346,7 +347,7 @@ function campaignDialogue(id){
 /* Diorama de la propuesta, visto desde la acera mediante una cámara de perspectiva. */
 let disposeDiorama=null;
 function openDiorama(d,back) {
- show('Desde la acera',stores[d.i][0],'<div id="diorama"></div><label class="field">Ángulo desde la acera <input id="orbit" type="range" min="-38" max="38" value="0"></label><button id="resume">Volver al montaje</button>');
+ show('Desde la acera',stores[d.i][0],'<div id="diorama"></div><label class="field">Ángulo desde la acera <input id="orbit" type="range" min="-38" max="38" value="0"></label><label class="field">Hora <select id="hora"><option value="dia">Día</option><option value="tarde">Atardecer</option><option value="noche">Noche</option></select></label><label class="field"><input type="checkbox" id="cristal" checked> Cristal con reflejos</label><button id="resume">Volver al montaje</button>');
  $('resume').onclick=()=>{disposeDiorama?.();back()};
  const host=$('diorama'),T=window.THREE;
  let r;try{r=new T.WebGLRenderer({antialias:true,alpha:false})}catch{host.textContent='Este navegador no ofrece aceleración 3D. Puedes continuar el montaje en el editor.';return}
@@ -357,12 +358,22 @@ function openDiorama(d,back) {
   const material=tracked(new T.MeshStandardMaterial({color,metalness:finish==='Metal cepillado'?.68:.04,roughness:finish==='Lacado'?.17:finish==='Metal cepillado'?.32:.84}));
   const m=new T.Mesh(tracked(new T.BoxGeometry(w,h,l)),material);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;sc.add(m);return m;
  }
- sc.background=new T.Color('#38443e');sc.add(new T.HemisphereLight(0xfff2dd,0xa89a8d,.85));
+ sc.background=new T.Color('#38443e');const hemi=new T.HemisphereLight(0xfff2dd,0xa89a8d,.85);sc.add(hemi);const spots=[];
+ // Fachada, acera y cristal: el escaparate se ve como desde la calle, con el reflejo de la acera de enfrente.
+ for(const x of [-3.35,3.35])block(x,1.7,1.32,.7,3.6,.3,'#d9c3a0');block(0,3.62,1.32,7.4,.5,.3,'#efe2c8');block(0,-.12,2.6,9,.06,2.6,'#c9c4ba');
+ const refl=document.createElement('canvas');refl.width=512;refl.height=256;{const g=refl.getContext('2d'),gr=g.createLinearGradient(0,0,0,256);gr.addColorStop(0,'#cfe6f3');gr.addColorStop(.55,'#f2e6d2');gr.addColorStop(1,'#8d8a83');g.fillStyle=gr;g.fillRect(0,0,512,256);
+  for(let i=0;i<9;i++){g.fillStyle=['#c9a27a','#dcc6a2','#b9876a'][i%3];const x=i*60-10,h=110+((i*37)%60);g.fillRect(x,150-h,54,h);g.fillStyle='#4f6a7a';for(let y=150-h+12;y<140;y+=24)for(const wx of [x+8,x+30])g.fillRect(wx,y,12,14)}
+  g.fillStyle='#5a8531';for(let i=0;i<6;i++){g.beginPath();g.arc(40+i*90,120,34,0,7);g.fill()}g.fillStyle='rgba(255,255,255,.35)';g.save();g.rotate(-.5);for(let i=0;i<6;i++)g.fillRect(i*120-60,140,26,400);g.restore()}
+ const reflTex=tracked(new T.CanvasTexture(refl));reflTex.encoding=T.sRGBEncoding;reflTex.wrapS=T.MirroredRepeatWrapping;reflTex.repeat.set(.6,1);
+ const glassMat=tracked(new T.MeshBasicMaterial({map:reflTex,transparent:true,opacity:.2,depthWrite:false}));const glass=new T.Mesh(tracked(new T.PlaneGeometry(6,3.4)),glassMat);glass.position.set(0,1.6,1.3);glass.renderOrder=9;sc.add(glass);
+ const lampLight=new T.PointLight(0xffc77a,0,9);lampLight.position.set(2.8,3.2,3.2);sc.add(lampLight);
+ function daylight(){const h=hora.value,night=h==='noche',dusk=h==='tarde';sc.background.set(night?'#141a24':dusk?'#6b5a6e':'#38443e');hemi.intensity=night?.12:dusk?.45:.85;hemi.color.set(dusk?'#ffc59a':'#fff2dd');
+  spots.forEach(l=>l.intensity=l.userData.base*(night?1.45:dusk?1.15:1));lampLight.intensity=night?.9:dusk?.35:0;glass.visible=cristal.checked;glassMat.opacity=night?.06:dusk?.11:.16}
  block(0,1.6,-1.2,6,3.4,.12,d.bg);block(0,-.09,0,6,.18,2.55,d.floor,d.finish);
  for(const x of [-3,3])block(x,1.65,0,.13,3.4,2.55,'#494e47');
  const warm=d.temp==='Fría'?0xd3e6ff:d.temp==='Neutra'?0xfff7ea:0xffd09b;
  for(const x of (d.lighting==='Doble'?[-1.4,1.4]:[d.lighting==='Lateral'?-2:0])){
- const l=new T.SpotLight(warm,.8+d.power/38,12,d.lighting==='Difusa'?1.1:.75,.68);l.position.set(x,3.9,2.1);l.castShadow=true;l.target.position.set(x*.7,1,-.4);sc.add(l,l.target)}
+ const l=new T.SpotLight(warm,.8+d.power/38,12,d.lighting==='Difusa'?1.1:.75,.68);l.position.set(x,3.9,2.1);l.castShadow=true;l.target.position.set(x*.7,1,-.4);l.userData.base=l.intensity;spots.push(l);sc.add(l,l.target)}
  d.pieces.forEach((p,i)=>{const x=(p.x-.5)*6,y=(1-p.y)*3.3,z=clamp((p.depth??0)*.008+i*.017,-.9,1),s=p.scale;
  if(['balda','pedestal','panel','cortina','escalón','tarima','listón','caja'].includes(p.k)){
  const [aw,ah]=bounds(p);const m=block(x,y,z,aw*12/700*s,ah*6.6/400*s,p.k==='balda'?.32:.43,p.color,d.finish);m.rotation.z=-p.rot*Math.PI/180;return}
@@ -371,8 +382,8 @@ function openDiorama(d,back) {
  const tex=tracked(new T.CanvasTexture(art));tex.encoding=T.sRGBEncoding;const mat=tracked(new T.MeshBasicMaterial({map:tex,transparent:true,alphaTest:.05,side:T.DoubleSide}));
  const m=new T.Mesh(tracked(new T.PlaneGeometry(1.37*s,1.32*s)),mat);m.position.set(x,y,z+.025);m.rotation.z=-p.rot*Math.PI/180;sc.add(m);
  });
- function render(){let w=host.clientWidth||600,h=Math.max(210,Math.min(390,w*.57));r.setSize(w,h);cam.aspect=w/h;cam.updateProjectionMatrix();let a=+$('orbit').value*Math.PI/180;let radius=Math.max(6,5/cam.aspect);cam.position.set(radius*Math.sin(a),1.85,radius*Math.cos(a));cam.lookAt(0,1.6,0);r.render(sc,cam)}
- $('orbit').oninput=render;const ro=new ResizeObserver(render);ro.observe(host);render();
+ function render(){let w=host.clientWidth||600,h=Math.max(210,Math.min(390,w*.57));r.setSize(w,h);cam.aspect=w/h;cam.updateProjectionMatrix();let a=+$('orbit').value*Math.PI/180;let radius=Math.max(6,5/cam.aspect);cam.position.set(radius*Math.sin(a),1.85,radius*Math.cos(a));cam.lookAt(0,1.6,0);reflTex.offset.x=.2+a*.35;daylight();r.render(sc,cam)}
+ $('orbit').oninput=render;$('hora').onchange=render;$('cristal').onchange=render;const ro=new ResizeObserver(render);ro.observe(host);render();
  disposeDiorama=()=>{ro.disconnect();resources.forEach(o=>o.dispose());r.dispose();r.forceContextLoss();disposeDiorama=null}
 }
 

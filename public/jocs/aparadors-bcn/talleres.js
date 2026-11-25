@@ -375,7 +375,7 @@ window.Talleres = (() => {
                  {t: {es: 'Escaparate tapado que no deja ver el interior', ca: 'Aparador tapat que no deixa veure l\'interior'}, fix: {es: 'Interior visible e iluminado desde la calle', ca: 'Interior visible i il·luminat des del carrer'}},
                  {t: {es: 'Vendedor esperando en la puerta', ca: 'Venedor esperant a la porta'}, fix: {es: 'Saludar desde dentro y dejar mirar con calma', ca: 'Saludar des de dins i deixar mirar amb calma'}}];
       show(title, sub, head + '<p>' + tx({es: 'Jan: «La gente mira mis lámparas desde fuera pero no entra.» Elige una solución para cada barrera física o psicológica.', ca: 'Jan: «La gent mira els meus llums des de fora però no entra.» Tria una solució per a cada barrera física o psicològica.'}) + '</p><div class="ratios">' +
-        B.map((b, i) => '<label class="ratio"><span>' + tx(b.t) + '</span><select data-i="' + i + '"><option value="">—</option>' + B.map((x, j) => '<option value="' + j + '">' + tx(x.fix) + '</option>').join('') + '</select><em></em></label>').join('') + '</div><button class="primary" id="ok">' + tx({es: 'Comprobar', ca: 'Comprovar'}) + '</button>');
+        B.map((b, i) => '<label class="ratio"><span>' + tx(b.t) + '</span><select data-i="' + i + '"><option value="">—</option>' + [2, 0, 3, 1].map(j => '<option value="' + j + '">' + tx(B[j].fix) + '</option>').join('') + '</select><em></em></label>').join('') + '</div><button class="primary" id="ok">' + tx({es: 'Comprobar', ca: 'Comprovar'}) + '</button>');
       $('ok').onclick = () => { let bad = 0; sheet.querySelectorAll('[data-i]').forEach(s => { const g = s.value === s.dataset.i; s.parentNode.classList.toggle('ok', g); s.parentNode.classList.toggle('ko', !g); bad += !g }); if (!bad) { pass(['1.5']); setTimeout(s2, 400) } };
     }
     const plan = Array.from({length: GH}, () => Array(GW).fill(''));
@@ -475,7 +475,7 @@ window.Talleres = (() => {
       const eff = [['serif', {es: 'Tradición, calidad, confianza', ca: 'Tradició, qualitat, confiança'}], ['sans', {es: 'Modernidad, claridad, legibilidad', ca: 'Modernitat, claredat, llegibilitat'}],
                    ['script', {es: 'Emoción, cercanía, regalo', ca: 'Emoció, proximitat, regal'}], ['display', {es: 'Impacto, urgencia, oferta', ca: 'Impacte, urgència, oferta'}]];
       show(title, sub, head + '<h3>' + tx({es: '2. ¿Qué efecto produce cada tipografía en el cliente?', ca: '2. Quin efecte produeix cada tipografia en el client?'}) + '</h3><div class="ratios">' +
-        eff.map(([k]) => '<label class="ratio"><span style="font-family:' + FONTS[k].f + ';font-size:22px">' + tx(FONTS[k].n) + '</span><select data-t="' + k + '"><option value="">—</option>' + eff.map(([kk, e]) => '<option value="' + kk + '">' + tx(e) + '</option>').join('') + '</select><em></em></label>').join('') + '</div><button class="primary" id="ok">' + tx({es: 'Comprobar', ca: 'Comprovar'}) + '</button>');
+        eff.map(([k]) => '<label class="ratio"><span style="font-family:' + FONTS[k].f + ';font-size:22px">' + tx(FONTS[k].n) + '</span><select data-t="' + k + '"><option value="">—</option>' + [2, 0, 3, 1].map(j => '<option value="' + eff[j][0] + '">' + tx(eff[j][1]) + '</option>').join('') + '</select><em></em></label>').join('') + '</div><button class="primary" id="ok">' + tx({es: 'Comprobar', ca: 'Comprovar'}) + '</button>');
       $('ok').onclick = () => { let bad = 0; sheet.querySelectorAll('[data-t]').forEach(s => { const g = s.value === s.dataset.t; s.parentNode.classList.toggle('ok', g); s.parentNode.classList.toggle('ko', !g); bad += !g }); if (!bad) { pass(['3.3']); setTimeout(s3, 400) } };
     }
     const c = {titular: '', precio: '', beneficio: '', font: 'sans', bg: '#fbf7ef', fg: '#111111', accent: '#b3262d', size: 44, plv: ''};
@@ -517,12 +517,68 @@ window.Talleres = (() => {
     s1();
   }
 
+  /* ------------------------------------------------------------ RA4 · Estudio de escaparates (Joan) */
+  function estudio(onDone) {
+    const title = tx({es: 'Paseo de estudio con Joan', ca: 'Passeig d\'estudi amb en Joan'}), sub = tx({es: 'Joan · Artesano', ca: 'Joan · Artesà'});
+    const head = '<p class="taller-ra">RA4 · ' + tx({es: 'Montar escaparates', ca: 'Muntar aparadors'}) + '</p>';
+    const Q = [
+      {ca: '4.1', q: {es: 'Joan señala cuatro vitrinas de la calle. ¿Qué tipo de escaparate es cada una?', ca: 'En Joan assenyala quatre vitrines del carrer. Quin tipus d\'aparador és cadascuna?'}, match: [
+        [{es: 'Joyería: una sola pieza, mucho espacio vacío y luz puntual', ca: 'Joieria: una sola peça, molt d\'espai buit i llum puntual'}, {es: 'De prestigio o imagen', ca: 'De prestigi o imatge'}],
+        [{es: 'Ferretería: muchas referencias con precio', ca: 'Ferreteria: moltes referències amb preu'}, {es: 'Comercial o de surtido', ca: 'Comercial o d\'assortiment'}],
+        [{es: 'Pastelería decorada para Navidad', ca: 'Pastisseria decorada per Nadal'}, {es: 'Estacional o de campaña', ca: 'Estacional o de campanya'}],
+        [{es: 'Zapatería con «-30 %» en grande', ca: 'Sabateria amb «-30 %» en gran'}, {es: 'Promocional', ca: 'Promocional'}]]},
+      {ca: '4.2', q: {es: '¿Qué efecto psicológico suele producir cada color?', ca: 'Quin efecte psicològic sol produir cada color?'}, match: [
+        [{es: 'Rojo', ca: 'Vermell'}, {es: 'Urgencia, pasión, llama la atención', ca: 'Urgència, passió, crida l\'atenció'}],
+        [{es: 'Azul', ca: 'Blau'}, {es: 'Confianza, calma, frescor', ca: 'Confiança, calma, frescor'}],
+        [{es: 'Verde', ca: 'Verd'}, {es: 'Naturaleza, salud, sostenibilidad', ca: 'Natura, salut, sostenibilitat'}],
+        [{es: 'Negro', ca: 'Negre'}, {es: 'Elegancia, lujo, sobriedad', ca: 'Elegància, luxe, sobrietat'}]]},
+      {ca: '4.3', q: {es: '¿Qué funciones tiene un escaparate?', ca: 'Quines funcions té un aparador?'}, opts: [
+        {es: 'Atraer, informar, diferenciar la tienda y vender: es la primera venta del comercio.', ca: 'Atraure, informar, diferenciar la botiga i vendre: és la primera venda del comerç.'},
+        {es: 'Solo guardar el producto que no cabe dentro.', ca: 'Només guardar el producte que no cap a dins.'},
+        {es: 'Decorar la calle, aunque no tenga relación con la tienda.', ca: 'Decorar el carrer, encara que no tingui relació amb la botiga.'}], ok: 0},
+      {ca: '4.4', q: {es: '¿Con qué ratio valoras el impacto del escaparate en las ventas?', ca: 'Amb quina ràtio valores l\'impacte de l\'aparador en les vendes?'}, opts: [
+        {es: 'Número de fotos que le hacen.', ca: 'Nombre de fotos que li fan.'},
+        {es: 'Atracción (paradas ÷ pasantes), entrada (entradas ÷ paradas) y conversión (tickets ÷ entradas), antes y después del cambio.', ca: 'Atracció (aturades ÷ vianants), entrada (entrades ÷ aturades) i conversió (tiquets ÷ entrades), abans i després del canvi.'},
+        {es: 'El precio del atrezo.', ca: 'El preu de l\'atrezzo.'}], ok: 1},
+      {ca: '4.6', q: {es: 'Para transmitir equilibrio y calma en la cerería, ¿qué composición eliges?', ca: 'Per transmetre equilibri i calma a la cereria, quina composició tries?'}, opts: [
+        {es: 'Simétrica, con el protagonista en el eje central y formas triangulares estables.', ca: 'Simètrica, amb el protagonista a l\'eix central i formes triangulars estables.'},
+        {es: 'Asimétrica, con diagonales y muchos puntos de atención.', ca: 'Asimètrica, amb diagonals i molts punts d\'atenció.'},
+        {es: 'Todo apilado en una esquina.', ca: 'Tot apilat en un racó.'}], ok: 0},
+      {ca: '4.7', q: {es: 'Ordena el cronograma de un montaje. ¿Cuál es el orden correcto?', ca: 'Ordena el cronograma d\'un muntatge. Quin és l\'ordre correcte?'}, opts: [
+        {es: 'Montaje → boceto → presupuesto → objetivo → mantenimiento', ca: 'Muntatge → esbós → pressupost → objectiu → manteniment'},
+        {es: 'Objetivo → boceto → presupuesto y materiales → montaje → mantenimiento y medición', ca: 'Objectiu → esbós → pressupost i materials → muntatge → manteniment i mesura'},
+        {es: 'Presupuesto → montaje → objetivo → boceto', ca: 'Pressupost → muntatge → objectiu → esbós'}], ok: 1}
+    ];
+    let i = 0;
+    function step(msg) {
+      const x = Q[i];
+      let body = head + (msg ? '<p class="reply bad">' + msg + '</p>' : '') + '<h3>' + (i + 1) + '. ' + tx(x.q) + '</h3>';
+      if (x.match) {
+        const opts = x.match.map(m => m[1]);
+        body += '<div class="ratios">' + x.match.map((m, k) => '<label class="ratio"><span>' + tx(m[0]) + '</span><select data-k="' + k + '"><option value="">—</option>' + [3, 1, 0, 2].map(j => '<option value="' + j + '">' + tx(opts[j]) + '</option>').join('') + '</select><em></em></label>').join('') + '</div><button class="primary" id="ok">' + tx({es: 'Comprobar', ca: 'Comprovar'}) + '</button>';
+        show(title, sub, body);
+        $('ok').onclick = () => { let bad = 0; sheet.querySelectorAll('[data-k]').forEach(s => { const g = s.value === s.dataset.k; s.parentNode.classList.toggle('ok', g); s.parentNode.classList.toggle('ko', !g); bad += !g }); if (!bad) { pass([x.ca]); setTimeout(next, 400) } };
+      } else {
+        body += '<div class="choices">' + x.opts.map((o, k) => '<button data-o="' + k + '">' + tx(o) + '</button>').join('') + '</div>';
+        show(title, sub, body);
+        sheet.querySelectorAll('[data-o]').forEach(b => b.onclick = () => +b.dataset.o === x.ok ? (pass([x.ca]), next()) : step(tx({es: 'Joan: «Piénsalo otra vez, mirando la calle.»', ca: 'Joan: «Pensa-ho un altre cop, mirant el carrer.»'})));
+      }
+    }
+    function next() {
+      i++; if (i < Q.length) return step();
+      ra().estudio = true; save();
+      show(title, sub, head + '<p class="reply">' + tx({es: 'Joan: «Ya miras los escaparates como una profesional. Ahora, a montar los encargos: cada uno es una prueba para la asamblea.»', ca: 'Joan: «Ja mires els aparadors com una professional. Ara, a muntar els encàrrecs: cadascun és una prova per a l\'assemblea.»'}) + '</p><button class="primary" id="next">' + tx({es: 'Continuar', ca: 'Continuar'}) + '</button>');
+      $('next').onclick = () => onDone ? onDone() : menu();
+    }
+    step();
+  }
+
   /* ------------------------------------------------------------ Cuaderno de RA */
   const RAS = [
     {n: 1, t: {es: 'Organizar la superficie comercial', ca: 'Organitzar la superfície comercial'}, ca: 8, who: 'Jan', open: () => tienda()},
     {n: 2, t: {es: 'Colocar y reponer productos en el lineal', ca: 'Col·locar i reposar productes al lineal'}, ca: 8, who: 'Nil', open: () => lineal()},
     {n: 3, t: {es: 'Decoración, rotulación y cartelería', ca: 'Decoració, retolació i cartellisme'}, ca: 7, who: 'Laia', open: () => carteles()},
-    {n: 4, t: {es: 'Montar escaparates', ca: 'Muntar aparadors'}, ca: 8, who: tx({es: 'Encargos', ca: 'Encàrrecs'})},
+    {n: 4, t: {es: 'Montar escaparates', ca: 'Muntar aparadors'}, ca: 8, who: 'Joan', open: () => estudio()},
     {n: 5, t: {es: 'Acciones promocionales', ca: 'Accions promocionals'}, ca: 5, who: 'Núria', open: () => promo()},
     {n: 6, t: {es: 'Control de las acciones', ca: 'Control de les accions'}, ca: 5, who: 'Ada', open: () => ra().informe ? report() : control()}
   ];
@@ -544,7 +600,7 @@ window.Talleres = (() => {
         const live = x.open || x.n === 4;
         return '<div class="card"><b>RA' + x.n + ' · ' + tx(x.t) + '</b> <small>(' + x.who + ')</small><div class="cas">' +
           Array.from({length: x.ca}, (_, k) => '<span class="' + (got[x.n + '.' + (k + 1)] ? 'on' : '') + '">' + x.n + '.' + (k + 1) + '</span>').join('') + '</div>' +
-          (x.open ? '<button data-ra="' + x.n + '">' + tx({es: 'Abrir taller', ca: 'Obrir taller'}) + '</button>' : live ? '<small>' + tx({es: 'Se trabaja con los encargos de escaparates.', ca: 'Es treballa amb els encàrrecs d\'aparadors.'}) + '</small>' : '<small>' + tx({es: 'Próximamente', ca: 'Properament'}) + '</small>') +
+          (x.open ? '<button data-ra="' + x.n + '">' + tx({es: 'Abrir taller', ca: 'Obrir taller'}) + '</button>' + (x.n === 4 ? ' <small>' + tx({es: 'y los encargos de escaparates (4.4, 4.5, 4.7, 4.8)', ca: 'i els encàrrecs d\'aparadors (4.4, 4.5, 4.7, 4.8)'}) + '</small>' : '') : live ? '<small>' + tx({es: 'Se trabaja con los encargos de escaparates.', ca: 'Es treballa amb els encàrrecs d\'aparadors.'}) + '</small>' : '<small>' + tx({es: 'Próximamente', ca: 'Properament'}) + '</small>') +
           ' <small>' + done.length + ' / ' + x.ca + ' CA</small></div>';
       }).join('') + '</div>');
     sheet.querySelectorAll('[data-ra]').forEach(b => b.onclick = () => RAS.find(x => x.n === +b.dataset.ra).open());
@@ -555,5 +611,5 @@ window.Talleres = (() => {
                  2: {label: {es: 'Preparar la campaña de Sant Jordi de Laia (RA3)', ca: 'Preparar la campanya de Sant Jordi de la Laia (RA3)'}, open: carteles, done: () => !!ra().cartel},
                  3: {label: {es: 'Reorganizar la tienda de Jan (RA1)', ca: 'Reorganitzar la botiga d\'en Jan (RA1)'}, open: tienda, done: () => !!ra().tienda},
                  5: {label: {es: 'Ordenar el lineal de Nil (RA2)', ca: 'Endreçar el lineal d\'en Nil (RA2)'}, open: lineal, done: () => !!ra().lineal}};
-  return {promo, control, report, lineal, tienda, carteles, menu, tx, ra, byNpc};
+  return {promo, control, report, lineal, tienda, carteles, estudio, menu, tx, ra, byNpc};
 })();
