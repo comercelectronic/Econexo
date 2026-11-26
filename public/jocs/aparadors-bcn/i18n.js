@@ -113,6 +113,7 @@ window.I18N = (() => {
   }
   function start() {
     document.documentElement.lang = lang;
+    if (lang === 'ca') document.title = 'Aparadors BCN · La ciutat dels aparadors';
     const sel = document.createElement('select'); sel.id = 'langSel'; sel.title = 'Idioma / Llengua';
     sel.innerHTML = '<option value="es">ES · Castellano</option><option value="ca">CA · Català</option>'; sel.value = lang;
     sel.onchange = () => {

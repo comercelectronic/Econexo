@@ -64,7 +64,7 @@ export default async function Home({ params }: Props) {
       </section>
 
       {/* 2 · Graella de simuladors */}
-      <section id="simuladores" aria-labelledby="tria" className="mt-10 scroll-mt-28">
+      <section id="simuladores" aria-labelledby="tria" className="mt-10 scroll-mt-40">
         <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
           <div><p className="text-xs font-bold uppercase tracking-widest text-[#c2378a]">{t('Juega y aprende')}</p><h2 id="tria" className="text-3xl font-extrabold text-navy">{t('Elige tu simulador')}</h2></div>
           <Link href={l(lang, '/simuladores/')} className="text-sm font-semibold text-blue hover:underline">{t('Ver todo')} →</Link>
@@ -85,7 +85,7 @@ export default async function Home({ params }: Props) {
           <ul className="mt-2 grid gap-1">{TOOLS.slice(0, 4).map((x) => <li key={x.slug}><Link href={l(lang, `/herramientas/${x.slug}/`)} className="text-blue hover:underline">{t(x.name)}</Link></li>)}</ul>
         </div>
         <div>
-          <h2 className="font-extrabold text-navy">{news.length ? <Link href={l(lang, '/actualidad/')} className="hover:underline">📰 {t('Actualidad')} →</Link> : <>📰 {t('Actualidad')}</>}</h2>
+          <h2 className="font-extrabold text-navy"><Link href={l(lang, '/actualidad/')} className="hover:underline">📰 {t('Actualidad')} →</Link></h2>
           <ul className="mt-2 grid gap-1">{extra.map((a) => <li key={a.url}><Link href={l(lang, a.url)} className="text-blue hover:underline">{a.titulo}</Link></li>)}</ul>
         </div>
       </section>
