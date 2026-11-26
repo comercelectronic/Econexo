@@ -6,6 +6,12 @@ window.I18N = (() => {
   const KEY = 'aparadors-barrio-v1';
   let lang = 'es';
   try { lang = JSON.parse(localStorage.getItem(KEY) || '{}').lang || 'es' } catch {}
+  // ?lang=ca|es (enllaços des de la web): mana sobre l'idioma desat i es desa a la partida abans que el joc la carregui.
+  const q = new URLSearchParams(location.search).get('lang');
+  if (q === 'ca' || q === 'es') {
+    lang = q;
+    try { const s = JSON.parse(localStorage.getItem(KEY) || '{}'); s.lang = q; localStorage.setItem(KEY, JSON.stringify(s)) } catch {}
+  }
   const CA = [
     // Cabecera y paseo
     ['Toca el suelo para caminar, una vitrina para visitarla o un vecino para hablar · WASD / flechas para moverte · E para entrar', 'Toca el terra per caminar, una vitrina per visitar-la o un veí per parlar-hi · WASD / fletxes per moure\'t · E per entrar'],
@@ -109,7 +115,10 @@ window.I18N = (() => {
     document.documentElement.lang = lang;
     const sel = document.createElement('select'); sel.id = 'langSel'; sel.title = 'Idioma / Llengua';
     sel.innerHTML = '<option value="es">ES · Castellano</option><option value="ca">CA · Català</option>'; sel.value = lang;
-    sel.onchange = () => { if (typeof saved !== 'undefined') { saved.lang = sel.value; save() } location.reload() };
+    sel.onchange = () => {
+      if (typeof saved !== 'undefined') { saved.lang = sel.value; save() }
+      const u = new URL(location.href); u.searchParams.delete('lang'); location.href = u.toString();   // la tria manual mana sobre l'enllaç
+    };
     (document.querySelector('.tools') || document.querySelector('header') || document.body).prepend(sel);
     if (lang !== 'ca') return;
     walk(document.body);

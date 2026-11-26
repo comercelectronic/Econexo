@@ -12,39 +12,54 @@ export const GRADOS = [
 ] as const;
 
 // para: mòduls (ciclo/modulo de CICLOS) per als quals serveix el simulador
-// img: captura principal; galeria: més captures; lema: frase curta per a la portada
-export type Simulador = { id: string; name: string; desc: string; url: string; idiomas: string; interno?: boolean; img?: string; galeria?: string[]; lema?: string; para: { ciclo: string; modulo: string }[] };
+// img: captura principal; galeria: més captures; lema: frase curta; repte: el repte del joc en una frase (targetes de la portada)
+// idiomaUrl: el joc llegeix ?lang= (sense això, els jocs interns s'obren tal qual)
+// docent: informació per preparar la sessió; només el que consta al projecte (els camps que falten s'ometen)
+export type Docent = { durada?: string; agrupament?: string; ra?: string; evidencies?: string; notes?: string };
+export type Simulador = { id: string; name: string; desc: string; url: string; idiomas: string; interno?: boolean; idiomaUrl?: boolean; img?: string; galeria?: string[]; lema?: string; repte?: string; docent?: Docent; para: { ciclo: string; modulo: string }[] };
 export const SIMULADORES: Simulador[] = [
   {
-    id: 'aparadors-bcn', name: 'Aparadors BCN', interno: true, lema: 'Salva los escaparates de Barcelona',
+    id: 'aparadors-bcn', name: 'Aparadors BCN', interno: true, idiomaUrl: true, lema: 'Salva los escaparates de Barcelona',
     img: '/media/simuladores/aparadors-placa.png', galeria: ['/media/simuladores/aparadors-rambla.png', '/media/simuladores/aparadors-pg.png', '/media/simuladores/aparadors-port.png'],
     desc: 'Del Passeig de Gràcia al mar: una empresa quiere tapar los escaparates con pantallas. Convence a los vecinos, monta escaparates en 3D y demuestra con datos que funcionan. Seis misiones, una por cada resultado de aprendizaje de Dinamización del punto de venta.',
+    repte: 'Una empresa quiere cubrirlos con pantallas. Convence a los comerciantes, monta un escaparate en 3D y demuestra con datos que funciona.',
+    docent: { durada: 'Una sesión por misión; la historia completa ocupa varias sesiones.', agrupament: 'Individual, con reto de clase y ranking opcional.',
+      ra: 'RA1–RA6 de Dinamización del punto de venta (módulo 1231): una misión por RA, con enlace directo ?ra=1 … ?ra=6.',
+      evidencies: 'Informe de evidencias imprimible por misión: criterios de evaluación conseguidos, estrellas, tiempo y dudas.' },
     url: '/jocs/aparadors-bcn/', idiomas: 'Catalán y castellano',
     para: [{ ciclo: 'actividades-comerciales', modulo: 'dinamizacion-del-punto-de-venta' }]
   },
   {
+    id: 'palet', name: 'Palet', interno: true, lema: 'De mozo de almacén a jefe de turno', img: '/media/simuladores/palet-joc.png',
+    desc: 'Juego de almacén: empiezas de mozo y la jefa te asciende (o te despide). Eliges el almacén (alimentación, frigorífico, cross-docking, comercio electrónico o recambios), con estanterías convencionales, dinámicas, móviles, compactas, cantilever y de picking. Recepción, ubicación, picking con FEFO, palés bien montados y camiones que salen a su hora, con el reloj en marcha y la seguridad en juego.',
+    repte: 'El camión tiene que salir a su hora. ¿Cómo organizarás los pedidos y cargarás los palés con seguridad?',
+    docent: { agrupament: 'Individual, con cuenta de alumno.', evidencies: 'Modo docente con el progreso de cada alumno e informe de la jefa al final de cada turno: pedidos a tiempo, errores de picking, roturas e incidentes de seguridad.' },
+    url: '/jocs/palet/', idiomas: 'Catalán',
+    para: [{ ciclo: 'actividades-comerciales', modulo: 'tecnicas-de-almacen' }]
+  },
+  {
+    id: 'mercadeja', name: 'Mercadeja', interno: true, lema: 'De la tienda de barrio a gran empresa', img: '/media/simuladores/mercadeja-joc.png',
+    desc: 'Juego de tienda: cada alumno empieza con una tienda de barrio y la hace crecer hasta una gran empresa. Decide producto, precio, distribución y promoción y atiende a los clientes con su muñeco. Cuentas de alumno con panel del profesor, retos de clase con ranking en directo y lecciones del currículo de marketing.',
+    repte: 'Tienes una tienda de barrio. ¿Qué venderás y a qué precio para hacerla crecer?',
+    docent: { durada: 'Partidas de 12, 16 o 20 días de juego, o modo libre.', agrupament: 'Individual, con reto de clase por código y ranking en directo.', evidencies: 'Modo docente con retos y ranking, y preguntas de las lecciones del currículo dentro del juego.' },
+    url: '/jocs/mercadeja/', idiomas: 'Catalán',
+    para: [{ ciclo: 'actividades-comerciales', modulo: 'marketing-en-la-actividad-comercial' }]
+  },
+  {
     id: 'agencia-digital', name: 'Agència Digital', lema: 'Dirige tu agencia de marketing digital', img: '/media/simuladores/agencia-digital.png',
     desc: 'Dirige tu propia agencia de marketing digital en Vic: clientes reales, decisiones con consecuencias, proyectos que corrige la IA y tu profesor, mundo explorable y mercado entre las agencias de tu clase.',
+    repte: 'Dirige una agencia en Vic y decide cómo resolverás los encargos de los clientes.',
+    docent: { agrupament: 'Individual, con mercado entre las agencias de la clase.', evidencies: 'Proyectos corregidos por la IA y por el profesor, con panel del profesorado.', notes: 'Cada lección del módulo indica en qué capítulo del juego se practica.' },
     url: '/jocs/agencia-digital/', idiomas: 'Catalán, castellano e inglés',
     para: [{ ciclo: 'actividades-comerciales', modulo: 'comercio-electronico' }]
   },
   {
     id: 'supermercat-petit', name: 'Cas Supermercat Petit', interno: true, lema: 'Escape room y murdoku en clase', img: '/media/simuladores/supermercat-petit.png',
     desc: 'Un caso de clase en equipos y en dos sesiones: un escape room de una hora (dinamización del punto de venta y hojas de cálculo) y un murdoku para descubrir quién atacó a la profe en el supermercado del instituto.',
+    repte: 'Resolved en equipo un escape room y descubrid quién atacó a la profe. Dos sesiones de clase.',
+    docent: { durada: 'Dos sesiones: un escape room de una hora y un murdoku sin cronómetro.', agrupament: 'En equipos.', evidencies: 'Seis pruebas (tres de dinamización del punto de venta y tres de hoja de cálculo) y la acusación final del murdoku.', notes: 'El juego tiene una pestaña «Docent» para el profesorado.' },
     url: '/jocs/supermercat-petit/', idiomas: 'Catalán',
     para: [{ ciclo: 'actividades-comerciales', modulo: 'aplicaciones-informaticas-para-el-comercio' }, { ciclo: 'actividades-comerciales', modulo: 'dinamizacion-del-punto-de-venta' }]
-  },
-  {
-    id: 'mercadeja', name: 'Mercadeja', interno: true, lema: 'De la tienda de barrio a gran empresa', img: '/media/simuladores/mercadeja-joc.png',
-    desc: 'Juego de tienda: cada alumno empieza con una tienda de barrio y la hace crecer hasta una gran empresa. Decide producto, precio, distribución y promoción y atiende a los clientes con su muñeco. Cuentas de alumno con panel del profesor, retos de clase con ranking en directo y lecciones del currículo de marketing.',
-    url: '/jocs/mercadeja/', idiomas: 'Catalán',
-    para: [{ ciclo: 'actividades-comerciales', modulo: 'marketing-en-la-actividad-comercial' }]
-  },
-  {
-    id: 'palet', name: 'Palet', interno: true, lema: 'De mozo de almacén a jefe de turno', img: '/media/simuladores/palet-joc.png',
-    desc: 'Juego de almacén: empiezas de mozo y la jefa te asciende (o te despide). Eliges el almacén (alimentación, frigorífico, cross-docking, comercio electrónico o recambios), con estanterías convencionales, dinámicas, móviles, compactas, cantilever y de picking. Recepción, ubicación, picking con FEFO, palés bien montados y camiones que salen a su hora, con el reloj en marcha y la seguridad en juego.',
-    url: '/jocs/palet/', idiomas: 'Catalán',
-    para: [{ ciclo: 'actividades-comerciales', modulo: 'tecnicas-de-almacen' }]
   }
 ];
 
@@ -81,7 +96,7 @@ export const CICLOS: Ciclo[] = [
 ];
 
 // El simulador se abre en el idioma de la web (se puede cambiar dentro del juego)
-export const simUrl = (s: Simulador, lang: Lang) => (s.interno ? s.url : `${s.url}?lang=${lang}`);
+export const simUrl = (s: Simulador, lang: Lang) => (s.interno && !s.idiomaUrl ? s.url : `${s.url}?lang=${lang}`);
 // Solo se muestra lo que ya está disponible: ciclos con algún módulo activo y, dentro de cada uno, solo sus módulos activos
 export const ciclosLive = (): Ciclo[] => CICLOS.filter((c) => c.modulos.some((m) => m.live)).map((c) => ({ ...c, modulos: c.modulos.filter((m) => m.live) }));
 export const cicloBySlug = (s: string) => CICLOS.find((c) => c.slug === s);
