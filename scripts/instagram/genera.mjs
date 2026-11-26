@@ -6,15 +6,16 @@ import { createRequire } from 'module';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
+const fileURL = (f) => pathToFileURL(f).href;   // file:///… també a Windows
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
 const ARREL = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const CAL = JSON.parse(fs.readFileSync(path.join(ARREL, 'instagram/calendario.json'), 'utf8'));
-const PERS = 'file://' + path.join(ARREL, 'public/media/personajes/');
-const FONTS = 'file://' + path.join(ARREL, 'instagram/fonts/');
-const LOGO = 'file://' + path.join(ARREL, 'public/logo.png');
+const PERS = fileURL(path.join(ARREL, 'public/media/personajes')) + '/';
+const FONTS = fileURL(path.join(ARREL, 'instagram/fonts')) + '/';
+const LOGO = fileURL(path.join(ARREL, 'public/logo.png'));
 
 const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const md = (t) => esc(t).replace(/ (%|€)/g, '\u00a0$1').replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
@@ -27,7 +28,7 @@ const CSS = `
 @font-face { font-family: Comic; src: url(${FONTS}comic-a.woff2); font-weight: 400; }
 @font-face { font-family: Comic; src: url(${FONTS}comic-b.woff2); font-weight: 700; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { width: 1080px; height: 1350px; }
+html, body { width: 1080px; height: 100%; }
 body { font-family: Inter, sans-serif; color: #1d2733; background: #fff; position: relative; overflow: hidden; --c: #12A6A0; }
 .s { position: absolute; inset: 0; padding: 96px 88px 150px; display: flex; flex-direction: column; }
 h1, h2, .fm { font-family: Manrope, sans-serif; color: #10243D; letter-spacing: -0.02em; }
@@ -74,6 +75,15 @@ li::before { content: ''; position: absolute; left: 0; top: 16px; width: 32px; h
 .op i { font-style: normal; width: 74px; height: 74px; flex: none; border-radius: 50%; background: var(--c); color: #fff; display: grid; place-items: center; font-size: 40px; }
 .llisca { max-width: 560px; margin-top: 36px; font: 700 34px Manrope; color: var(--c); }
 .ok { width: 120px; height: 120px; border-radius: 50%; background: #2e9d6a; color: #fff; display: grid; place-items: center; font: 800 76px Manrope; margin-bottom: 26px; }
+/* Captura d'un simulador */
+.shot { width: 100%; border-radius: 28px; box-shadow: 0 24px 60px rgba(16,36,61,.25); border: 8px solid #fff; outline: 4px solid var(--c); margin: 10px 0 40px; }
+/* Història (1080×1920): Instagram tapa uns 250 px a dalt i a baix */
+.historia .s { padding: 250px 88px 420px; justify-content: center; }
+.historia .shot { margin-bottom: 50px; }
+.historia.portada .s { justify-content: flex-start; padding-top: 330px; }
+.historia .peu { bottom: 290px; }
+.historia .pers { bottom: 400px; }
+.historia.cta .targeta { position: static; margin-top: 70px; }
 /* Crida final */
 .cta { background: #10243D; color: #fff; }
 .cta h2 { color: #fff; font-size: 84px; line-height: 1.05; font-weight: 800; margin-top: 30px; max-width: 900px; }
@@ -111,12 +121,16 @@ function slideHTML(post, sl, i, n) {
     cos = `<div class="dial">${sl.lineas.map(l => { const q = l.quien === 'eco' ? '#e8644a' : '#12A6A0';
       return `<div class="lin ${l.quien}" style="--q:${q}"><div class="cara"><img src="${PERS}cara-${l.quien}-${l.gesto}.webp"></div><div class="bafarada"><em>${l.quien.toUpperCase()}</em>${md(l.texto)}</div></div>`; }).join('')}</div>`;
   } else if (sl.tipo === 'quiz') {
-    cos = `<span class="etq">${esc(sl.etiqueta)}</span><h1 class="fm preg">${md(sl.pregunta)}</h1><div class="ops">${sl.opciones.map((o, k) => `<div class="op"><i>${'ABCD'[k]}</i>${md(o)}</div>`).join('')}</div><p class="llisca">Piénsalo y desliza para ver la respuesta →</p>${pers(sl.imagen, 400)}`;
+    cos = `<span class="etq">${esc(sl.etiqueta)}</span><h1 class="fm preg">${md(sl.pregunta)}</h1><div class="ops">${sl.opciones.map((o, k) => `<div class="op"><i>${'ABCD'[k]}</i>${md(o)}</div>`).join('')}</div><p class="llisca">${esc(sl.llisca || 'Piénsalo y desliza para ver la respuesta →')}</p>${pers(sl.imagen, 400)}`;
+  } else if (sl.tipo === 'captura') { // captura d'un simulador (public/media/...)
+    cos = (sl.etiqueta ? `<span class="etq">${esc(sl.etiqueta)}</span>` : '') + `<h2 class="titol">${md(sl.titulo)}</h2><img class="shot" src="${fileURL(path.join(ARREL, 'public', sl.imagen))}">`
+      + (sl.texto ? `<p class="p">${md(sl.texto)}</p>` : '');
   } else if (sl.tipo === 'cta') {
     cls = 'cta';
     cos = `<h2>${md(sl.titulo)}</h2><p class="p">${md(sl.texto)}</p><span class="boto">${esc(sl.boton)}</span><div class="targeta"><img src="${PERS}eco-y-nexo.webp"></div>`;
   } else throw new Error('Tipus de diapositiva desconegut: ' + sl.tipo);
-  return `<!doctype html><html><head><meta charset="utf-8"><style>${CSS}</style></head><body style="--c:${c}" class="${cls}"><div class="s">${cos}</div>${peu}</body></html>`;
+  const H = post.historia ? 1920 : 1350;
+  return `<!doctype html><html style="height:${H}px"><head><meta charset="utf-8"><style>${CSS}</style></head><body style="--c:${c}" class="${cls}${post.historia ? ' historia' : ''}"><div class="s">${cos}</div>${peu}</body></html>`;
 }
 
 const TMP = path.join(os.tmpdir(), 'ecoynexo-ig.html');
@@ -127,9 +141,11 @@ for (const post of CAL.posts) {
   if (nomes && post.id !== nomes) continue;
   if (post.reel) continue; // els reels es generen amb scripts/instagram/reel.mjs
   if (post.slides.length > 10) throw new Error(post.id + ': com a molt 10 imatges per carrusel');
+  if (post.historia && post.slides.length !== 1) throw new Error(post.id + ': una història és una sola imatge');
+  await pg.setViewportSize({ width: 1080, height: post.historia ? 1920 : 1350 });
   const dir = path.join(ARREL, 'public/ig', post.id); fs.mkdirSync(dir, { recursive: true });
   for (let i = 0; i < post.slides.length; i++) {
-    fs.writeFileSync(TMP, slideHTML(post, post.slides[i], i, post.slides.length)); await pg.goto('file://' + TMP, { waitUntil: 'load' });
+    fs.writeFileSync(TMP, slideHTML(post, post.slides[i], i, post.slides.length)); await pg.goto(fileURL(TMP), { waitUntil: 'load' });
     await pg.evaluate(() => document.fonts.ready);
     // Avís si el text no hi cap (es menja el peu)
     const desborda = await pg.evaluate(() => { const s = document.querySelector('.s'), peu = document.querySelector('.peu'); const ult = [...s.querySelectorAll('h1,h2,p,li,.form,.op,.dial,.boto')].pop(); return ult ? ult.getBoundingClientRect().bottom > peu.getBoundingClientRect().top - 10 : false; });

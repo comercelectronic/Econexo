@@ -16,15 +16,16 @@ import os from 'os';
 import path from 'path';
 import http from 'http';
 import { execFileSync } from 'child_process';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
+const fileURL = (f) => pathToFileURL(f).href;   // file:///… també a Windows
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
 const ARREL = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const CAL = JSON.parse(fs.readFileSync(path.join(ARREL, 'instagram/calendario.json'), 'utf8'));
-const FONTS = 'file://' + path.join(ARREL, 'instagram/fonts/');
-const LOGO = 'file://' + path.join(ARREL, 'public/logo.png');
-const PERS = 'file://' + path.join(ARREL, 'public/media/personajes/');
+const FONTS = fileURL(path.join(ARREL, 'instagram/fonts')) + '/';
+const LOGO = fileURL(path.join(ARREL, 'public/logo.png'));
+const PERS = fileURL(path.join(ARREL, 'public/media/personajes')) + '/';
 const W = 1080, H = 1920, VX = 24, VY = 600, VW = 1032, VH = 774, GANXO = 2.6, FINAL = 3.2;
 const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const md = (t) => esc(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
@@ -60,17 +61,25 @@ async function grava(b, base, guio, sortida) {
   cdp.on('Page.screencastFrame', (f) => { fs.writeFileSync(path.join(dir, 'f' + String(frames.length).padStart(5, '0') + '.jpg'), Buffer.from(f.data, 'base64')); frames.push(f.metadata.timestamp); cdp.send('Page.screencastFrameAck', { sessionId: f.sessionId }).catch(() => { }); });
   await p.goto(base + guio.url);
   await cdp.send('Page.startScreencast', { format: 'jpeg', quality: 92, maxWidth: 1080, maxHeight: 810, everyNthFrame: 1 }); t0 = Date.now() / 1000;
-  const toca = async (loc) => { const bb = await loc.boundingBox({ timeout: 3000 }).catch(() => null);
+  const toca = async (loc) => { const bb = await loc.boundingBox({ timeout: 12000 }).catch(() => null);
     if (bb) { const x = bb.x + bb.width / 2, y = bb.y + bb.height / 2; await p.mouse.move(x, y, { steps: 8 }); await p.evaluate(([a, c]) => window.__tap(a, c), [x, y]); await p.waitForTimeout(250); }
-    if (bb) await loc.click({ timeout: 3000 }).catch(() => console.warn('  no s\'ha pogut clicar', String(loc))); else console.warn('  no hi és:', String(loc)); };
+    if (bb) await loc.click({ timeout: 12000 }).catch(() => console.warn('  no s\'ha pogut clicar', String(loc))); else console.warn('  no hi és:', String(loc)); };
   for (const s of guio.passos) { const i = s.indexOf(':'), k = s.slice(0, i), a = s.slice(i + 1);
     if (k === 'mark') marques[a] = Date.now() / 1000 - t0;
     else if (k === 'click') await toca(p.getByText(a, { exact: false }).locator('visible=true').first());
     else if (k === 'css') await toca(p.locator(a).locator('visible=true').first());
     else if (k === 'wait') await p.waitForTimeout(+a);
     else if (k === 'down') await p.keyboard.down(a); else if (k === 'up') await p.keyboard.up(a); else if (k === 'key') await p.keyboard.press(a);
-    else if (k === 'eval') await p.evaluate(a).catch(e => console.warn('  eval:', e.message));
+    else if (k === 'eval') { const r = await p.evaluate(a).catch(e => console.warn('  eval:', e.message)); if (r !== undefined) console.log('  eval →', JSON.stringify(r)); }
     else if (k === 'scroll') await p.mouse.wheel(0, +a);
+    else if (k === 'drag') { // "drag:selector|x,y": arrossega l'element fins al punt (x, y) de la pantalla de 960×720
+      const [sel, xy] = a.split('|'), [x, y] = xy.split(',').map(Number);
+      const bb = await p.locator(sel).locator('visible=true').first().boundingBox({ timeout: 12000 }).catch(() => null);
+      if (!bb) { console.warn('  no hi és:', sel); continue; }
+      const x0 = bb.x + bb.width / 2, y0 = bb.y + bb.height / 2;
+      await p.mouse.move(x0, y0, { steps: 6 }); await p.evaluate(([u, v]) => window.__tap(u, v), [x0, y0]); await p.mouse.down();
+      await p.mouse.move(x, y, { steps: 24 }); await p.waitForTimeout(120); await p.mouse.up();
+    }
   }
   marques.fi = Date.now() / 1000 - t0;
   await cdp.send('Page.stopScreencast'); await ctx.close();
@@ -116,7 +125,7 @@ const pagina = (cos) => `<!doctype html><html><head><meta charset="utf-8"><style
 async function png(b, html, fitxer, transparent = true, tipus = 'png') {
   // Des d'un fitxer local perquè carreguin les fonts, el logotip i els personatges (file://)
   const tmp = fitxer.replace(/\.\w+$/, '.html'); fs.writeFileSync(tmp, html);
-  const pg = await b.newPage({ viewport: { width: W, height: H } }); await pg.goto('file://' + tmp, { waitUntil: 'load' }); await pg.evaluate(() => document.fonts.ready); await pg.waitForTimeout(150);
+  const pg = await b.newPage({ viewport: { width: W, height: H } }); await pg.goto(fileURL(tmp), { waitUntil: 'load' }); await pg.evaluate(() => document.fonts.ready); await pg.waitForTimeout(150);
   await pg.screenshot({ path: fitxer, omitBackground: transparent, type: tipus, ...(tipus === 'jpeg' ? { quality: 90 } : {}) }); await pg.close();
 }
 // Marc de cantonades arrodonides que tapa les puntes del vídeo
@@ -168,5 +177,6 @@ const nomes = process.argv[2];
 const reels = CAL.posts.filter(p => p.reel && (!nomes || p.id === nomes));
 if (!reels.length) { console.log('No hi ha cap reel' + (nomes ? ' amb aquest id' : '') + ' al calendari.'); process.exit(0); }
 const srv = await servidor(); const base = 'http://127.0.0.1:' + srv.address().port;
-const b = await chromium.launch();
+// A Windows, el WebGL per programari (SwiftShader) va a 1 fps i fa inservibles els jocs 3D: es fa servir la GPU
+const b = await chromium.launch({ args: process.platform === 'win32' ? ['--use-angle=d3d11', '--enable-gpu', '--ignore-gpu-blocklist'] : [] });
 try { for (const post of reels) await fesReel(b, base, post); } finally { await b.close(); srv.close(); }

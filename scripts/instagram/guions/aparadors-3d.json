@@ -1,0 +1,14 @@
+{
+  "url": "/jocs/aparadors-bcn/?lang=es",
+  "passos": [
+    "wait:3500", "click:Pasear libremente", "wait:1200",
+    "eval:Aparador3D.open(0)", "wait:1800", "mark:inici",
+    "drag:.ap-card:has-text('Peana')|480,470", "wait:700",
+    "drag:.ap-card:has-text('Tarta') >> nth=0|480,400", "wait:800",
+    "drag:.ap-card:has-text('Regalo')|650,470", "wait:700",
+    "drag:.ap-card:has-text('Tarta') >> nth=1|330,470", "wait:900", "mark:muntat",
+    "css:[data-bg] >> nth=2", "wait:700", "css:.ap-side button:has-text('●')", "wait:900", "mark:llum",
+    "css:.ap-go", "wait:1200", "mark:rush",
+    "wait:17000", "mark:rushfi", "wait:3500", "mark:resultat"
+  ]
+}

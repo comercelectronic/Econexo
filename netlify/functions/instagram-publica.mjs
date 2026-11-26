@@ -11,6 +11,7 @@
 //   IG_USER_ID  identificador del compte d'Instagram (obligatori amb el testimoni de Facebook; opcional amb el d'Instagram).
 //   IG_PROVA=1  (opcional) mode de prova: ho escriu al registre però no publica res.
 // Les imatges es serveixen des de la mateixa web: <URL>/ig/<id>/<n>.jpg (es generen amb scripts/instagram/genera.mjs).
+// Les històries (posts amb «historia»: true): una sola imatge 1080×1920, <URL>/ig/<id>/1.jpg, sense text (Instagram no en té).
 // Els reels (posts amb «reel»): <URL>/ig/<id>/reel.mp4 i portada.jpg (es generen amb scripts/instagram/reel.mjs).
 // Instagram tarda uns minuts a processar un vídeo: la funció el deixa en procés i el publica en una execució següent.
 // Netlify Blobs, magatzem 'instagram': 'publicats' (posts ja fets) i 'token' (testimoni renovat).
@@ -100,7 +101,8 @@ export async function executa({ cal = CAL, store, env, fetch, avui, hora, ara = 
     const ja = recents.find(m => mateixText(m.caption, post.texto));
     if (ja) { fets[post.id] = { media: ja.id, at: ja.timestamp || iso(), trobat: true }; await desa(); console.log('Ja era a Instagram, no es torna a publicar:', post.id); return { fet: false, jaHiEra: true, post: post.id }; }
     const imgs = (post.slides || []).map((_, k) => `${base}/ig/${post.id}/${k + 1}.jpg`);
-    if (post.reel) st = { fase: 'contenidor', contenidor: (await api.crida('POST', `/${usuari}/media`, { media_type: 'REELS', video_url: `${base}/ig/${post.id}/reel.mp4`, cover_url: `${base}/ig/${post.id}/portada.jpg`, caption: post.texto, share_to_feed: 'true' })).id, at: iso() };
+    if (post.historia) st = { fase: 'contenidor', contenidor: (await api.crida('POST', `/${usuari}/media`, { media_type: 'STORIES', image_url: imgs[0] })).id, at: iso() };
+    else if (post.reel) st = { fase: 'contenidor', contenidor: (await api.crida('POST', `/${usuari}/media`, { media_type: 'REELS', video_url: `${base}/ig/${post.id}/reel.mp4`, cover_url: `${base}/ig/${post.id}/portada.jpg`, caption: post.texto, share_to_feed: 'true' })).id, at: iso() };
     else if (imgs.length === 1) st = { fase: 'contenidor', contenidor: (await api.crida('POST', `/${usuari}/media`, { image_url: imgs[0], caption: post.texto })).id, at: iso() };
     else st = { fase: 'fills', fills: (await Promise.all(imgs.map(u => api.crida('POST', `/${usuari}/media`, { image_url: u, is_carousel_item: 'true' })))).map(x => x.id), at: iso() };
     fets[post.id] = st; await desa();

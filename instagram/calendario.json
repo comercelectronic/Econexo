@@ -603,6 +603,826 @@
         }
       },
       "texto": "Profe de FP: ¿y si tu alumnado aprendiera almacén trabajando en uno? 📦\n\nPalet es un simulador gratuito para el módulo de Técnicas de almacén:\n🚚 Reciben camiones y revisan la mercancía\n🏷️ Ubican palés, preparan pedidos con FEFO y cargan el camión a su hora\n🛒 En el taller, conducen el transpalet y la carretilla con física real\n🧑‍🏫 Y tú lo sigues desde el panel del profe\n\nFunciona en el navegador, sin instalar nada. De momento, en catalán.\n\n📌 Guárdalo para tu próxima programación y compártelo con tu departamento.\nEnlace en la bio → Simuladores. #ProfesFP #FPComercio #FormaciónProfesional #DocentesFP #Gamificación #RecursosEducativos #InnovaciónEducativa #AprendizajeBasadoEnJuegos #ClaustroVirtual #ecoynexo #TécnicasDeAlmacén #Logística"
+    },
+    {
+      "id": "2026-11-30-story-aparadors",
+      "fecha": "2026-11-30",
+      "hora": "09:00",
+      "tema": "presentacion",
+      "historia": true,
+      "slides": [
+        {
+          "tipo": "captura",
+          "etiqueta": "Nuevo juego",
+          "titulo": "¿Puedes salvar los **escaparates de Barcelona**?",
+          "imagen": "/media/simuladores/aparadors-placa.png",
+          "texto": "Aparadors BCN · gratis en el navegador. Enlace en la bio"
+        }
+      ],
+      "texto": ""
+    },
+    {
+      "id": "2026-11-30-5-simuladores",
+      "fecha": "2026-11-30",
+      "hora": "19:00",
+      "tema": "profes",
+      "slides": [
+        {
+          "tipo": "portada",
+          "etiqueta": "Para profes de FP",
+          "titulo": "5 simuladores **gratis** para Comercio y Marketing",
+          "sub": "Sin instalar nada. Desliza y elige el tuyo →",
+          "imagen": "eco-senalando"
+        },
+        {
+          "tipo": "captura",
+          "titulo": "1 · **Aparadors BCN**",
+          "imagen": "/media/simuladores/aparadors-placa.png",
+          "texto": "Salva los escaparates de Barcelona: 6 misiones de **Dinamización del punto de venta**."
+        },
+        {
+          "tipo": "captura",
+          "titulo": "2 · **Palet**",
+          "imagen": "/media/simuladores/palet-joc.png",
+          "texto": "El camión tiene que salir a su hora: **Técnicas de almacén**."
+        },
+        {
+          "tipo": "captura",
+          "titulo": "3 · **Mercadeja**",
+          "imagen": "/media/simuladores/mercadeja-joc.png",
+          "texto": "Tu tienda de barrio: producto, precio y promoción. **Marketing**."
+        },
+        {
+          "tipo": "captura",
+          "titulo": "4 · **Agència Digital**",
+          "imagen": "/media/simuladores/agencia-digital.png",
+          "texto": "Dirige una agencia en Vic: **Comercio electrónico**."
+        },
+        {
+          "tipo": "captura",
+          "titulo": "5 · **Cas Supermercat Petit**",
+          "imagen": "/media/simuladores/supermercat-petit.png",
+          "texto": "Escape room en equipo: **dos sesiones de clase**."
+        },
+        {
+          "tipo": "cta",
+          "titulo": "Todos en un mismo sitio",
+          "texto": "Gratis, en el navegador, con información para preparar la sesión.",
+          "boton": "ecoynexo.com/es/simuladores"
+        }
+      ],
+      "texto": "Profe de FP de Comercio y Marketing: estos son los 5 simuladores gratuitos de ECOyNEXO 🎮\n\n1️⃣ Aparadors BCN · Dinamización del punto de venta: salva los escaparates de Barcelona en 6 misiones, una por cada RA.\n2️⃣ Palet · Técnicas de almacén: recepción, ubicación, picking y camiones que salen a su hora.\n3️⃣ Mercadeja · Marketing en la actividad comercial: una tienda de barrio que crece con tus decisiones.\n4️⃣ Agència Digital · Comercio electrónico: dirige una agencia en Vic y resuelve encargos de clientes.\n5️⃣ Cas Supermercat Petit: escape room en equipo para dos sesiones de clase.\n\nTodos funcionan en el navegador, sin instalar nada. En cada uno encontrarás «Prepara la sesión» con el módulo, la duración y las evidencias de evaluación.\n\n📌 Guárdalo y compártelo con tu departamento. Enlace en la bio → Simuladores.\n\n#ProfesFP #FPComercio #FormaciónProfesional #DocentesFP #Gamificación #RecursosEducativos #InnovaciónEducativa #AprendizajeBasadoEnJuegos #ClaustroVirtual #ecoynexo #Simuladores"
+    },
+    {
+      "id": "2026-12-01-story-reel-avui",
+      "fecha": "2026-12-01",
+      "hora": "09:00",
+      "tema": "profes",
+      "historia": true,
+      "slides": [
+        {
+          "tipo": "portada",
+          "etiqueta": "Hoy a las 12:00",
+          "titulo": "Una empresa quiere **tapar los escaparates** con pantallas",
+          "sub": "Mira qué pasa en el nuevo reel",
+          "imagen": "eco-sorprendido"
+        }
+      ],
+      "texto": ""
+    },
+    {
+      "id": "2026-12-01-reel-aparadors-historia",
+      "fecha": "2026-12-01",
+      "hora": "12:00",
+      "tema": "profes",
+      "reel": {
+        "guio": "aparadors-historia",
+        "etiqueta": "Nuevo juego gratis",
+        "ganxo": "¿Puedes salvar los **escaparates de Barcelona**?",
+        "escenes": [
+          {
+            "de": "inici",
+            "a": "barri",
+            "text": "Del Passeig de Gràcia al mar, en **3D**"
+          },
+          {
+            "de": "barri",
+            "a": "prisma",
+            "text": "Una empresa quiere **tapar los escaparates** con pantallas"
+          },
+          {
+            "de": "prisma",
+            "a": "repte",
+            "text": "Convence a los comerciantes **con argumentos**"
+          },
+          {
+            "de": "repte",
+            "a": "fi",
+            "text": "Y demuestra **con datos** que un buen escaparate funciona"
+          }
+        ],
+        "personatge": "eco-senalando",
+        "final": {
+          "titol": "Aparadors BCN: **Dinamización del punto de venta**",
+          "boto": "ecoynexo.com/es/simuladores",
+          "text": "Gratis, en el navegador. En castellano y en catalán."
+        }
+      },
+      "texto": "¿Puedes salvar los escaparates de Barcelona? 🏙️\n\nUna empresa, Prisma, quiere tapar los escaparates con pantallas. Tu misión: convencer a los comerciantes, montar escaparates en 3D y demostrar con datos que un buen escaparate atrae a más gente.\n\nAparadors BCN es nuestro nuevo simulador gratuito para Dinamización del punto de venta:\n🗺️ Del Passeig de Gràcia al mar, con zonas reales de Barcelona\n🎯 6 misiones, una por cada resultado de aprendizaje\n🪟 Escaparates en 3D que se abren en hora punta\n🧑‍🏫 Informe de evidencias imprimible para el profe\n\nEn castellano y en catalán, sin instalar nada.\n\nEnlace en la bio → Simuladores.\n\n#ProfesFP #FPComercio #FormaciónProfesional #DocentesFP #Gamificación #RecursosEducativos #InnovaciónEducativa #AprendizajeBasadoEnJuegos #ClaustroVirtual #ecoynexo #VisualMerchandising #Escaparatismo"
+    },
+    {
+      "id": "2026-12-02-story-quiz-simuladors",
+      "fecha": "2026-12-02",
+      "hora": "09:00",
+      "tema": "test",
+      "historia": true,
+      "slides": [
+        {
+          "tipo": "quiz",
+          "etiqueta": "Pregunta del día",
+          "pregunta": "¿Cuántos simuladores **gratis** hay en ecoynexo.com?",
+          "opciones": [
+            "2",
+            "3",
+            "5",
+            "10"
+          ],
+          "correcta": 2,
+          "imagen": "eco-confuso",
+          "llisca": "Respuesta mañana en historias"
+        }
+      ],
+      "texto": ""
+    },
+    {
+      "id": "2026-12-02-aparadors-ra",
+      "fecha": "2026-12-02",
+      "hora": "19:00",
+      "tema": "profes",
+      "slides": [
+        {
+          "tipo": "portada",
+          "etiqueta": "Para profes de FP",
+          "titulo": "6 misiones, **6 resultados de aprendizaje**",
+          "sub": "Así se trabaja Dinamización del punto de venta en Aparadors BCN",
+          "imagen": "nexo-explicando"
+        },
+        {
+          "tipo": "captura",
+          "titulo": "Una ciudad **real**",
+          "imagen": "/media/simuladores/aparadors-pg.png",
+          "texto": "Passeig de Gràcia, plaça Catalunya, Portal de l'Àngel, la Rambla y el port."
+        },
+        {
+          "tipo": "texto",
+          "titulo": "Dos formas de jugar",
+          "puntos": [
+            "**Historia completa**: una aventura de varios días con todos los RA",
+            "**Misión suelta**: un solo RA para una sesión de clase, con enlace directo"
+          ],
+          "personaje": "eco-contento"
+        },
+        {
+          "tipo": "captura",
+          "titulo": "Escaparates en **3D**",
+          "imagen": "/media/simuladores/aparadors-rambla.png",
+          "texto": "Se abren en hora punta: ¿cuántos peatones se paran frente a tu escaparate?"
+        },
+        {
+          "tipo": "texto",
+          "titulo": "Para evaluar",
+          "puntos": [
+            "**Informe de evidencias** imprimible por misión",
+            "Criterios conseguidos, estrellas, tiempo y dudas",
+            "Reto de clase con **ranking** opcional"
+          ],
+          "personaje": "nexo-satisfecha"
+        },
+        {
+          "tipo": "cta",
+          "titulo": "Pruébalo antes de clase",
+          "texto": "Gratis, en castellano y en catalán.",
+          "boton": "ecoynexo.com/es/simuladores"
+        }
+      ],
+      "texto": "Aparadors BCN, pensado para Dinamización del punto de venta (módulo 1231) 🪟\n\n🎯 6 misiones, una por cada resultado de aprendizaje (RA1–RA6)\n📖 Historia completa o misión suelta: puedes trabajar un solo RA en una sesión\n🗺️ Zonas reales de Barcelona: del Passeig de Gràcia al port\n🧱 Escaparates en 3D que se abren en hora punta\n📄 Informe de evidencias imprimible: criterios conseguidos, estrellas, tiempo y dudas\n🏆 Reto de clase con ranking, si quieres\n\nFunciona en el navegador, en castellano y en catalán.\n\n📌 Guárdalo para tu programación. Enlace en la bio → Simuladores.\n\n#ProfesFP #FPComercio #FormaciónProfesional #DocentesFP #Gamificación #RecursosEducativos #InnovaciónEducativa #AprendizajeBasadoEnJuegos #ClaustroVirtual #ecoynexo #DinamizaciónDelPuntoDeVenta #VisualMerchandising"
+    },
+    {
+      "id": "2026-12-03-story-resposta-simuladors",
+      "fecha": "2026-12-03",
+      "hora": "09:00",
+      "tema": "test",
+      "historia": true,
+      "slides": [
+        {
+          "tipo": "respuesta",
+          "titulo": "Respuesta: **5 simuladores**",
+          "puntos": [
+            "Aparadors BCN",
+            "Palet",
+            "Mercadeja",
+            "Agència Digital",
+            "Cas Supermercat Petit"
+          ],
+          "personaje": "nexo-satisfecha"
+        }
+      ],
+      "texto": ""
+    },
+    {
+      "id": "2026-12-03-test-escaparate",
+      "fecha": "2026-12-03",
+      "hora": "19:00",
+      "tema": "test",
+      "slides": [
+        {
+          "tipo": "quiz",
+          "etiqueta": "Test rápido",
+          "pregunta": "En un escaparate, ¿dónde colocas el **producto estrella**?",
+          "opciones": [
+            "En el suelo, delante",
+            "A la altura de los ojos",
+            "Arriba del todo",
+            "Da igual"
+          ],
+          "correcta": 1,
+          "imagen": "eco-confuso"
+        },
+        {
+          "tipo": "respuesta",
+          "titulo": "Respuesta: B) A la altura de los ojos",
+          "parrafos": [
+            "Es la zona que el peatón ve **sin esfuerzo** al pasar.",
+            "Si hace falta, súbelo con una **peana** o una caja."
+          ],
+          "personaje": "nexo-satisfecha"
+        },
+        {
+          "tipo": "texto",
+          "titulo": "Y además…",
+          "puntos": [
+            "Un **protagonista** claro, no veinte productos iguales",
+            "**Luz** sobre lo que quieres vender",
+            "Un **fondo** que haga contraste"
+          ],
+          "personaje": "nexo-explicando"
+        },
+        {
+          "tipo": "cta",
+          "titulo": "Practícalo en 3D",
+          "texto": "Monta escaparates y ábrelos en hora punta en Aparadors BCN.",
+          "boton": "ecoynexo.com/es/simuladores"
+        }
+      ],
+      "texto": "🧠 TEST RÁPIDO\n\nEn un escaparate, ¿dónde colocas el producto estrella?\n\nA) En el suelo, delante\nB) A la altura de los ojos\nC) Arriba del todo\nD) Da igual\n\nPiénsalo antes de deslizar 👉\n\nLa altura de los ojos es la zona que el peatón ve sin esfuerzo. Súmale un protagonista claro, buena luz y un fondo con contraste.\n\nPractícalo montando escaparates en 3D en Aparadors BCN, gratis en ecoynexo.com (enlace en la bio).\n\n#EstudiarFP #FPComercio #FPMarketing #FormaciónProfesional #AprenderJugando #ecoynexo #VisualMerchandising #Escaparatismo"
+    },
+    {
+      "id": "2026-12-04-story-palet",
+      "fecha": "2026-12-04",
+      "hora": "09:00",
+      "tema": "profes",
+      "historia": true,
+      "slides": [
+        {
+          "tipo": "captura",
+          "etiqueta": "Técnicas de almacén",
+          "titulo": "¿Llegará el camión **a su hora**?",
+          "imagen": "/media/simuladores/palet-joc.png",
+          "texto": "Palet · simulador de almacén gratis. Enlace en la bio"
+        }
+      ],
+      "texto": ""
+    },
+    {
+      "id": "2026-12-04-reel-aparadors-3d",
+      "fecha": "2026-12-04",
+      "hora": "12:00",
+      "tema": "profes",
+      "reel": {
+        "guio": "aparadors-3d",
+        "etiqueta": "Aparadors BCN",
+        "ganxo": "¿Tu escaparate atrae más que **una pantalla**?",
+        "escenes": [
+          {
+            "de": "inici",
+            "a": "muntat",
+            "text": "Arrastra las piezas y monta el escaparate **en 3D**",
+            "vel": 1.3
+          },
+          {
+            "de": "muntat",
+            "a": "llum",
+            "text": "Elige el **fondo** y la **luz**"
+          },
+          {
+            "de": "rush",
+            "a": "rushfi",
+            "text": "Ábrelo en **hora punta**: ¿cuántos peatones se paran?",
+            "vel": 1.6
+          },
+          {
+            "de": "rushfi",
+            "a": "resultat",
+            "text": "La pantalla de Prisma para a **16 de 40**. ¿Y tú?"
+          }
+        ],
+        "personatge": "eco-sorprendido",
+        "final": {
+          "titol": "Monta tu escaparate en **Aparadors BCN**",
+          "boto": "ecoynexo.com/es/simuladores",
+          "text": "Gratis, en el navegador. En castellano y en catalán."
+        }
+      },
+      "texto": "¿Tu escaparate atrae más que una pantalla? 🪟 vs 📺\n\nEn Aparadors BCN montas el escaparate en 3D: arrastras el producto, lo subes a una peana, eliges fondo y luz… y lo abres en hora punta.\n\nPasan 40 peatones. La pantalla de Prisma consigue que se paren 16. ¿Tu escaparate lo supera?\n\nEs la parte más visual de nuestro simulador gratuito de Dinamización del punto de venta. Pruébalo tú y reta a tu clase.\n\nEnlace en la bio → Simuladores.\n\n#EstudiarFP #FPComercio #FPMarketing #FormaciónProfesional #AprenderJugando #ecoynexo #VisualMerchandising #Escaparatismo #DinamizaciónDelPuntoDeVenta"
+    },
+    {
+      "id": "2026-12-05-story-profe-dilluns",
+      "fecha": "2026-12-05",
+      "hora": "09:00",
+      "tema": "profes",
+      "historia": true,
+      "slides": [
+        {
+          "tipo": "texto",
+          "titulo": "Profe: prueba esto **el lunes**",
+          "puntos": [
+            "Elige un simulador en **ecoynexo.com**",
+            "Abre «**Prepara la sesión**»",
+            "Proyecta el primer minuto y deja jugar"
+          ],
+          "personaje": "eco-senalando"
+        }
+      ],
+      "texto": ""
+    },
+    {
+      "id": "2026-12-05-sesion-simulador",
+      "fecha": "2026-12-05",
+      "hora": "19:00",
+      "tema": "profes",
+      "slides": [
+        {
+          "tipo": "portada",
+          "etiqueta": "Para profes de FP",
+          "titulo": "Una clase con simulador en **55 minutos**",
+          "sub": "Una propuesta para empezar sin complicarte",
+          "imagen": "nexo-explicando"
+        },
+        {
+          "tipo": "texto",
+          "titulo": "5 min · **El reto**",
+          "parrafos": [
+            "Proyecta el juego y plantea la pregunta: «¿Puedes salvar este escaparate?», «¿Saldrá el camión a su hora?»."
+          ],
+          "personaje": "eco-hablando"
+        },
+        {
+          "tipo": "texto",
+          "titulo": "35 min · **Juegan**",
+          "parrafos": [
+            "Individual o por parejas. Tú paseas por la clase y apuntas **dudas y decisiones** interesantes."
+          ],
+          "personaje": "eco-contento"
+        },
+        {
+          "tipo": "texto",
+          "titulo": "10 min · **Lo comentáis**",
+          "parrafos": [
+            "¿Qué ha funcionado? ¿Por qué? Aquí conectas el juego con **la teoría** del módulo."
+          ],
+          "personaje": "nexo-satisfecha"
+        },
+        {
+          "tipo": "texto",
+          "titulo": "5 min · **La evidencia**",
+          "parrafos": [
+            "Recoge el informe o el progreso que da cada simulador. Lo tienes en «**Prepara la sesión**»."
+          ],
+          "personaje": "nexo-explicando"
+        },
+        {
+          "tipo": "cta",
+          "titulo": "Elige tu simulador",
+          "texto": "Con módulo, duración y evidencias de cada uno.",
+          "boton": "ecoynexo.com/es/simuladores"
+        }
+      ],
+      "texto": "¿Cómo se usa un simulador en una clase de 55 minutos? Una propuesta sencilla 👇\n\n⏱️ 5 min · El reto: proyecta el juego y plantea la pregunta.\n🎮 35 min · Juegan, solos o por parejas. Tú apuntas dudas y decisiones interesantes.\n💬 10 min · Lo comentáis: qué ha funcionado y por qué. Aquí entra la teoría.\n📄 5 min · La evidencia: el informe o el progreso que da cada simulador.\n\nEn ecoynexo.com, cada simulador tiene «Prepara la sesión» con el módulo, la duración, el agrupamiento y las evidencias de evaluación.\n\n📌 Guárdalo para tu próxima clase. Enlace en la bio.\n\n#ProfesFP #FPComercio #FormaciónProfesional #DocentesFP #Gamificación #RecursosEducativos #InnovaciónEducativa #AprendizajeBasadoEnJuegos #ClaustroVirtual #ecoynexo"
+    },
+    {
+      "id": "2026-12-06-story-mercadeja",
+      "fecha": "2026-12-06",
+      "hora": "09:00",
+      "tema": "presentacion",
+      "historia": true,
+      "slides": [
+        {
+          "tipo": "captura",
+          "etiqueta": "Marketing",
+          "titulo": "Tu tienda de barrio, **tus precios**",
+          "imagen": "/media/simuladores/mercadeja-joc.png",
+          "texto": "Mercadeja · juega gratis. Enlace en la bio"
+        }
+      ],
+      "texto": ""
+    },
+    {
+      "id": "2026-12-07-story-web",
+      "fecha": "2026-12-07",
+      "hora": "09:00",
+      "tema": "presentacion",
+      "historia": true,
+      "slides": [
+        {
+          "tipo": "cta",
+          "titulo": "Todo gratis en **ecoynexo.com**",
+          "texto": "Simuladores, teoría y 14 calculadoras para Comercio y Marketing.",
+          "boton": "Enlace en la bio"
+        }
+      ],
+      "texto": ""
+    },
+    {
+      "id": "2026-12-07-que-hay-en-la-web",
+      "fecha": "2026-12-07",
+      "hora": "19:00",
+      "tema": "presentacion",
+      "slides": [
+        {
+          "tipo": "portada",
+          "etiqueta": "ecoynexo.com",
+          "titulo": "Todo lo que tienes **gratis** en la web",
+          "sub": "Para estudiantes y profes de FP de Comercio y Marketing",
+          "imagen": "eco-y-nexo"
+        },
+        {
+          "tipo": "captura",
+          "titulo": "🎮 **Simuladores**",
+          "imagen": "/media/simuladores/aparadors-rambla.png",
+          "texto": "Lo principal: aprende jugando con casos y decisiones reales."
+        },
+        {
+          "tipo": "texto",
+          "titulo": "📘 **Teoría** por módulos",
+          "parrafos": [
+            "Lecciones cortas con ejemplos, tests y el capítulo del simulador donde **lo practicas**."
+          ],
+          "personaje": "nexo-explicando"
+        },
+        {
+          "tipo": "texto",
+          "titulo": "🧮 **14 calculadoras**",
+          "puntos": [
+            "Margen y precio de venta",
+            "Punto de equilibrio",
+            "ROAS, ROI, CTR y CPC",
+            "Stock y punto de pedido"
+          ],
+          "personaje": "eco-contento"
+        },
+        {
+          "tipo": "cta",
+          "titulo": "Entra y elige",
+          "texto": "Sin registro para empezar a jugar.",
+          "boton": "ecoynexo.com"
+        }
+      ],
+      "texto": "Todo lo que tienes gratis en ecoynexo.com 👇\n\n🎮 Simuladores: Aparadors BCN, Palet, Mercadeja, Agència Digital y Cas Supermercat Petit. Aprende jugando con casos y decisiones reales.\n📘 Teoría por módulos: lecciones cortas, con tests y el capítulo del simulador donde lo practicas.\n🧮 14 calculadoras: margen, punto de equilibrio, ROAS, ROI, CTR, stock y punto de pedido, IVA…\n\nPensado para la FP de Comercio y Marketing, para estudiantes y para profes.\n\n📌 Guárdalo y compártelo con tu clase. Enlace en la bio.\n\n#EstudiarFP #FPComercio #FPMarketing #FormaciónProfesional #AprenderJugando #ecoynexo #RecursosEducativos #Simuladores"
+    },
+    {
+      "id": "2026-12-08-story-quiz-ull",
+      "fecha": "2026-12-08",
+      "hora": "09:00",
+      "tema": "test",
+      "historia": true,
+      "slides": [
+        {
+          "tipo": "quiz",
+          "etiqueta": "Pregunta del día",
+          "pregunta": "De 40 peatones, **16 se paran** frente a un escaparate. ¿Qué porcentaje es?",
+          "opciones": [
+            "16 %",
+            "25 %",
+            "40 %",
+            "60 %"
+          ],
+          "correcta": 2,
+          "imagen": "eco-confuso",
+          "llisca": "Respuesta mañana en historias"
+        }
+      ],
+      "texto": ""
+    },
+    {
+      "id": "2026-12-08-reel-palet-alumnos",
+      "fecha": "2026-12-08",
+      "hora": "12:00",
+      "tema": "concepto",
+      "reel": {
+        "guio": "palet",
+        "etiqueta": "Para alumnos de FP",
+        "ganxo": "¿Te ves **dirigiendo un almacén**?",
+        "escenes": [
+          {
+            "de": "inici",
+            "a": "torn",
+            "text": "Empiezas de mozo y **eliges tu almacén**"
+          },
+          {
+            "de": "torn",
+            "a": "tornfi",
+            "text": "Recibe camiones y ubica palés **contra reloj**"
+          },
+          {
+            "de": "taller",
+            "a": "tallerfi",
+            "text": "Y conduce el **transpalet** sin romper nada",
+            "vel": 1.5
+          }
+        ],
+        "personatge": "eco-contento",
+        "final": {
+          "titol": "Juega a **Palet**",
+          "boto": "ecoynexo.com/es/simuladores",
+          "text": "Gratis, en el navegador. De momento, en catalán."
+        }
+      },
+      "texto": "¿Te ves dirigiendo un almacén? 📦\n\nEn Palet empiezas de mozo y, según cómo trabajes, la jefa te asciende… o no.\n🚚 Recibes camiones y revisas la mercancía\n🏷️ Ubicas palés y preparas pedidos contra reloj\n🛻 Conduces el transpalet sin romper nada\n\nEs gratis y funciona en el navegador. De momento, en catalán.\n\nEnlace en la bio → Simuladores. ¿Llegarás a jefe de almacén?\n\n#EstudiarFP #FPComercio #FPMarketing #FormaciónProfesional #AprenderJugando #ecoynexo #TécnicasDeAlmacén #Logística"
+    },
+    {
+      "id": "2026-12-09-story-resposta-ull",
+      "fecha": "2026-12-09",
+      "hora": "09:00",
+      "tema": "test",
+      "historia": true,
+      "slides": [
+        {
+          "tipo": "respuesta",
+          "titulo": "Respuesta: **40 %**",
+          "parrafos": [
+            "16 ÷ 40 = 0,40 → **40 %**",
+            "Es la marca de la pantalla de Prisma en **Aparadors BCN**. ¿Tu escaparate la supera?"
+          ],
+          "personaje": "nexo-satisfecha"
+        }
+      ],
+      "texto": ""
+    },
+    {
+      "id": "2026-12-09-claves-escaparate",
+      "fecha": "2026-12-09",
+      "hora": "19:00",
+      "tema": "concepto",
+      "slides": [
+        {
+          "tipo": "portada",
+          "etiqueta": "Concepto en 1 minuto",
+          "titulo": "4 claves de un escaparate **que para a la gente**",
+          "sub": "Las mismas que practicas en Aparadors BCN",
+          "imagen": "nexo-explicando"
+        },
+        {
+          "tipo": "texto",
+          "titulo": "1 · Un **protagonista**",
+          "parrafos": [
+            "Un producto estrella, no veinte iguales. El ojo necesita **un sitio donde mirar**."
+          ],
+          "personaje": "eco-hablando"
+        },
+        {
+          "tipo": "texto",
+          "titulo": "2 · A la **altura de los ojos**",
+          "parrafos": [
+            "El protagonista, donde el peatón lo ve sin esfuerzo. Si hace falta, **sobre una peana**."
+          ],
+          "personaje": "eco-senalando"
+        },
+        {
+          "tipo": "texto",
+          "titulo": "3 · **Luz y fondo**",
+          "parrafos": [
+            "Ilumina el producto, no el cristal. Un fondo que haga **contraste** lo despega."
+          ],
+          "personaje": "nexo-satisfecha"
+        },
+        {
+          "tipo": "texto",
+          "titulo": "4 · Un **mensaje** corto",
+          "parrafos": [
+            "Una idea que se lea en dos segundos: **novedad**, **regalo**, **rebajas**…"
+          ],
+          "personaje": "eco-contento"
+        },
+        {
+          "tipo": "cta",
+          "titulo": "Ponlo a prueba",
+          "texto": "Monta tu escaparate en 3D y ábrelo en hora punta.",
+          "boton": "ecoynexo.com/es/simuladores"
+        }
+      ],
+      "texto": "4 claves de un escaparate que para a la gente 🪟\n\n1️⃣ Un protagonista: un producto estrella, no veinte iguales.\n2️⃣ A la altura de los ojos: si hace falta, sobre una peana.\n3️⃣ Luz y fondo: ilumina el producto y busca contraste.\n4️⃣ Un mensaje corto: una idea que se lea en dos segundos.\n\nEn Aparadors BCN las pones a prueba: montas el escaparate en 3D, lo abres en hora punta y cuentas cuántos peatones se paran.\n\n📌 Guárdalo para tu próximo escaparate. Juega gratis en ecoynexo.com (enlace en la bio).\n\n#EstudiarFP #FPComercio #FPMarketing #FormaciónProfesional #AprenderJugando #ecoynexo #VisualMerchandising #Escaparatismo #DinamizaciónDelPuntoDeVenta"
+    },
+    {
+      "id": "2026-12-10-story-supermercat",
+      "fecha": "2026-12-10",
+      "hora": "09:00",
+      "tema": "profes",
+      "historia": true,
+      "slides": [
+        {
+          "tipo": "captura",
+          "etiqueta": "Escape room",
+          "titulo": "¿Quién atacó **a la profe**?",
+          "imagen": "/media/simuladores/supermercat-petit.png",
+          "texto": "Cas Supermercat Petit · para jugar en equipo en clase."
+        }
+      ],
+      "texto": ""
+    },
+    {
+      "id": "2026-12-10-supermercat-petit",
+      "fecha": "2026-12-10",
+      "hora": "19:00",
+      "tema": "profes",
+      "slides": [
+        {
+          "tipo": "portada",
+          "etiqueta": "Para profes de FP",
+          "titulo": "Un **escape room** para tu clase de Comercio",
+          "sub": "Cas Supermercat Petit: dos sesiones, en equipos",
+          "imagen": "eco-sorprendido"
+        },
+        {
+          "tipo": "captura",
+          "titulo": "El caso",
+          "imagen": "/media/simuladores/supermercat-petit.png",
+          "texto": "Alguien ha atacado a la profe en el supermercado del instituto. ¿Quién ha sido?"
+        },
+        {
+          "tipo": "texto",
+          "titulo": "Sesión 1 · **Escape room**",
+          "parrafos": [
+            "Una hora para superar **seis pruebas**: tres de dinamización del punto de venta y tres de hoja de cálculo."
+          ],
+          "personaje": "eco-hablando"
+        },
+        {
+          "tipo": "texto",
+          "titulo": "Sesión 2 · **Murdoku**",
+          "parrafos": [
+            "Sin cronómetro: con las pistas, cada equipo hace su **acusación final**."
+          ],
+          "personaje": "nexo-esceptica"
+        },
+        {
+          "tipo": "cta",
+          "titulo": "Para el profesorado",
+          "texto": "El juego tiene una pestaña «Docent». De momento, en catalán.",
+          "boton": "ecoynexo.com/es/simuladores"
+        }
+      ],
+      "texto": "¿Un escape room para tu clase de Comercio? 🔎\n\nCas Supermercat Petit es un caso para jugar en equipos y en dos sesiones:\n\n🔐 Sesión 1 · Escape room de una hora con seis pruebas: tres de dinamización del punto de venta y tres de hoja de cálculo.\n🧩 Sesión 2 · Murdoku sin cronómetro: con las pistas, cada equipo hace su acusación final.\n\nLa pregunta: ¿quién atacó a la profe en el supermercado del instituto?\n\nTiene una pestaña «Docent» para el profesorado. Gratis y, de momento, en catalán.\n\n📌 Guárdalo para el final del trimestre. Enlace en la bio → Simuladores.\n\n#ProfesFP #FPComercio #FormaciónProfesional #DocentesFP #Gamificación #RecursosEducativos #InnovaciónEducativa #AprendizajeBasadoEnJuegos #ClaustroVirtual #ecoynexo #EscapeRoom #EscapeRoomEducativo"
+    },
+    {
+      "id": "2026-12-11-story-agencia",
+      "fecha": "2026-12-11",
+      "hora": "09:00",
+      "tema": "presentacion",
+      "historia": true,
+      "slides": [
+        {
+          "tipo": "captura",
+          "etiqueta": "Comercio electrónico",
+          "titulo": "Dirige una **agencia digital** en Vic",
+          "imagen": "/media/simuladores/agencia-digital.png",
+          "texto": "Agència Digital · juega gratis. Enlace en la bio"
+        }
+      ],
+      "texto": ""
+    },
+    {
+      "id": "2026-12-11-reel-mercadeja-alumnos",
+      "fecha": "2026-12-11",
+      "hora": "12:00",
+      "tema": "concepto",
+      "reel": {
+        "guio": "mercadeja",
+        "etiqueta": "Para alumnos de FP",
+        "ganxo": "¿Serías capaz de **hacer crecer una tienda**?",
+        "escenes": [
+          {
+            "de": "inici",
+            "a": "llico",
+            "text": "Abres tu **tienda de barrio**"
+          },
+          {
+            "de": "pla",
+            "a": "plafi",
+            "text": "Decides **qué vendes y a qué precio**",
+            "vel": 1.2
+          },
+          {
+            "de": "dia",
+            "a": "diafi",
+            "text": "Y atiendes a los clientes **antes de que se vayan**",
+            "vel": 1.2
+          }
+        ],
+        "personatge": "eco-contento",
+        "final": {
+          "titol": "Juega a **Mercadeja**",
+          "boto": "ecoynexo.com/es/simuladores",
+          "text": "Gratis, con retos de clase y ranking en directo. De momento, en catalán."
+        }
+      },
+      "texto": "¿Serías capaz de hacer crecer una tienda? 🏪\n\nEn Mercadeja abres tu tienda de barrio y decides tú:\n🛒 Qué productos vendes\n💶 A qué precio\n📣 Qué promoción haces\n🙋 Y atiendes a los clientes… antes de que se cansen de esperar\n\nSi tu profe crea un reto de clase, compites con tus compañeros en un ranking en directo.\n\nGratis y en el navegador. De momento, en catalán. Enlace en la bio → Simuladores.\n\n#EstudiarFP #FPComercio #FPMarketing #FormaciónProfesional #AprenderJugando #ecoynexo #Marketing #Emprendimiento"
+    },
+    {
+      "id": "2026-12-12-story-repte-classe",
+      "fecha": "2026-12-12",
+      "hora": "09:00",
+      "tema": "profes",
+      "historia": true,
+      "slides": [
+        {
+          "tipo": "texto",
+          "titulo": "Reto de clase en **3 pasos**",
+          "puntos": [
+            "Creas el reto y te da un **código**",
+            "Lo compartes con la clase",
+            "Ves el **ranking** en directo"
+          ],
+          "personaje": "nexo-satisfecha"
+        }
+      ],
+      "texto": ""
+    },
+    {
+      "id": "2026-12-12-reto-de-clase",
+      "fecha": "2026-12-12",
+      "hora": "19:00",
+      "tema": "profes",
+      "slides": [
+        {
+          "tipo": "portada",
+          "etiqueta": "Para profes de FP",
+          "titulo": "Convierte la clase en una **competición**",
+          "sub": "Retos de clase con ranking en directo",
+          "imagen": "eco-contento"
+        },
+        {
+          "tipo": "texto",
+          "titulo": "Cómo funciona",
+          "puntos": [
+            "Creas un **reto** con el nombre de tu grupo",
+            "El juego te da un **código** para compartir",
+            "Cada alumno entra con su nombre o un alias",
+            "Ves el **ranking** actualizado al momento"
+          ],
+          "personaje": "nexo-explicando"
+        },
+        {
+          "tipo": "texto",
+          "titulo": "¿En qué simuladores?",
+          "puntos": [
+            "**Aparadors BCN**: reputación, nivel y estrellas",
+            "**Mercadeja**: ranking en directo de las tiendas"
+          ],
+          "personaje": "eco-senalando"
+        },
+        {
+          "tipo": "texto",
+          "titulo": "Un consejo",
+          "parrafos": [
+            "Pide que usen el **nombre de pila o un alias**: no hace falta ningún dato personal más."
+          ],
+          "personaje": "nexo-satisfecha"
+        },
+        {
+          "tipo": "cta",
+          "titulo": "Prepara tu reto",
+          "texto": "Gratis, sin instalar nada.",
+          "boton": "ecoynexo.com/es/simuladores"
+        }
+      ],
+      "texto": "Convierte la clase en una competición sana 🏆\n\nAparadors BCN y Mercadeja tienen retos de clase con ranking en directo:\n\n1️⃣ Creas el reto con el nombre de tu grupo\n2️⃣ El juego te da un código para compartir\n3️⃣ Cada alumno entra con su nombre de pila o un alias\n4️⃣ Ves el ranking actualizado al momento\n\nIdeal para cerrar una unidad o para el último día antes de vacaciones.\n\n📌 Guárdalo. Enlace en la bio → Simuladores.\n\n#ProfesFP #FPComercio #FormaciónProfesional #DocentesFP #Gamificación #RecursosEducativos #InnovaciónEducativa #AprendizajeBasadoEnJuegos #ClaustroVirtual #ecoynexo"
+    },
+    {
+      "id": "2026-12-13-story-quin-falta",
+      "fecha": "2026-12-13",
+      "hora": "09:00",
+      "tema": "presentacion",
+      "historia": true,
+      "slides": [
+        {
+          "tipo": "portada",
+          "etiqueta": "Fin de semana",
+          "titulo": "¿Qué simulador **te falta probar**?",
+          "sub": "Aparadors BCN · Palet · Mercadeja · Agència Digital · Supermercat Petit",
+          "imagen": "eco-y-nexo"
+        }
+      ],
+      "texto": ""
     }
   ]
 }

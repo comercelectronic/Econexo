@@ -15,7 +15,7 @@ for (const p of CAL.posts) {
     t(fs.statSync(new URL(`../public/ig/${p.id}/reel.mp4`, import.meta.url)).size < 100 * 1048576, 'el vídeo del reel fa menys de 100 MB: ' + p.id);
     t(fs.existsSync(new URL(`./instagram/guions/${p.reel.guio}.json`, import.meta.url)) && p.reel.escenes.length >= 1, 'guió i escenes del reel: ' + p.id);
   } else {
-    t(p.slides.length >= 1 && p.slides.length <= 10, 'entre 1 i 10 imatges: ' + p.id);
+    t(p.slides.length >= 1 && p.slides.length <= 10 && (!p.historia || p.slides.length === 1), 'entre 1 i 10 imatges (una sola si és història): ' + p.id);
     t(p.slides.every((_, k) => fs.existsSync(new URL(`../public/ig/${p.id}/${k + 1}.jpg`, import.meta.url))), 'imatges generades: ' + p.id);
   }
   t(p.texto.length <= 2200 && (p.texto.match(/#\w/g) || []).length <= 30, 'text i etiquetes dins del límit: ' + p.id);
@@ -170,5 +170,13 @@ const env = { IG_TOKEN: 'IGTOKEN-INICIAL-1234567890', URL: 'https://ecoynexo.com
   const aR2 = lent();
   const rR2 = await executa({ cal: calR, store: sR, env: envE, fetch: aR2.fetch, avui: '2026-11-29', hora: '19:15', espera, ara: Date.parse('2026-11-29T18:15:00Z') });
   t(rR2.fet && !aR2.crides.some(c => c.metode === 'POST' && c.ruta.endsWith('/media')) && aR2.crides.filter(c => c.ruta.endsWith('/media_publish')).length === 1, 'quan el vídeo està processat, el reel es publica una sola vegada');
+}
+{ // Històries: contenidor STORIES amb la imatge vertical i sense text
+  const calH = { posts: [{ id: '2026-12-01-story-x', fecha: '2026-12-01', hora: '09:00', historia: true, slides: [{}], texto: '' }] };
+  const api = simula(), sH = magatzem();
+  const rH = await executa({ cal: calH, store: sH, env: Object.assign({ IG_USER_ID: '9' }, env), fetch: api.fetch, avui: '2026-12-01', hora: '09:00', espera, ara: Date.parse('2026-12-01T08:00:00Z') });
+  const cH = api.crides.find(c => c.metode === 'POST' && c.ruta.endsWith('/media'));
+  t(rH.fet && cH.p.media_type === 'STORIES' && cH.p.image_url === 'https://ecoynexo.com/ig/2026-12-01-story-x/1.jpg' && !cH.p.caption, 'la història es publica com a STORIES amb la seva imatge');
+  t(JSON.parse(sH.d.publicats)['2026-12-01-story-x'].media && triaPost(calH, JSON.parse(sH.d.publicats), '2026-12-01', '10:00').post === null, 'la història no es repeteix');
 }
 console.log('✔ ' + ok + ' comprovacions de la publicació a Instagram');

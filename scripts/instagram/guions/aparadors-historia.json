@@ -1,0 +1,9 @@
+{
+  "url": "/jocs/aparadors-bcn/?lang=es",
+  "passos": [
+    "wait:3500", "mark:inici", "click:Historia completa", "wait:3500", "mark:barri",
+    "css:#cine", "wait:3200", "css:#cine", "wait:3200", "mark:prisma",
+    "css:#cine", "wait:3200", "css:#cine", "wait:3200", "css:#cine", "wait:3200", "mark:repte",
+    "css:#cine", "wait:3200", "css:#cine", "wait:3500", "mark:fi"
+  ]
+}
