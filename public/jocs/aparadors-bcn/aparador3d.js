@@ -13,7 +13,12 @@ window.Aparador3D = (() => {
     planta: {n: {es: 'Planta', ca: 'Planta'}, icon: '🪴', cost: 6, kind: 'atr'},
     flores: {n: {es: 'Flores', ca: 'Flors'}, icon: '💐', cost: 6, kind: 'atr'},
     cartel: {n: {es: 'Cartel', ca: 'Cartell'}, icon: '🪧', cost: 7, kind: 'atr'},
-    esfera: {n: {es: 'Esfera', ca: 'Esfera'}, icon: '●', cost: 5, kind: 'atr'}
+    esfera: {n: {es: 'Esfera', ca: 'Esfera'}, icon: '●', cost: 5, kind: 'atr'},
+    arc: {n: {es: 'Arco', ca: 'Arc'}, icon: '⌒', cost: 18, kind: 'atr'},
+    garlanda: {n: {es: 'Guirnalda', ca: 'Garlanda'}, icon: '✨', cost: 9, kind: 'atr'},
+    neo: {n: {es: 'Neón', ca: 'Neó'}, icon: '💡', cost: 16, kind: 'atr'},
+    maniqui: {n: {es: 'Maniquí', ca: 'Maniquí'}, icon: '🧍', cost: 20, kind: 'atr'},
+    mirall: {n: {es: 'Espejo', ca: 'Mirall'}, icon: '🪞', cost: 15, kind: 'atr'}
   };
   const SPOTS = [-75, 0, 75];
   let R = null;
@@ -63,6 +68,12 @@ window.Aparador3D = (() => {
     else if (k === 'tarima') { add(new T.BoxGeometry(110, 10, 60), '#8b6a4a', 5); h = 10 }
     else if (k === 'planta') { add(new T.CylinderGeometry(9, 7, 16, 14), '#c0603a', 8); for (let j = 0; j < 5; j++) add(new T.SphereGeometry(11, 10, 8), ['#3f7d2c', '#5a9a38', '#2e6b25'][j % 3], 26 + (j % 2) * 8, Math.cos(j * 1.3) * 8, Math.sin(j * 1.3) * 6); h = 40 }
     else if (k === 'flores') { add(new T.CylinderGeometry(6, 5, 18, 12), '#e8e2d3', 9); for (let j = 0; j < 7; j++) add(new T.SphereGeometry(4.5, 8, 6), ['#e0303f', '#ff6fa3', '#ffd23f', '#ffffff'][j % 4], 24 + (j % 3) * 4, Math.cos(j) * 6, Math.sin(j) * 5); h = 32 }
+    else if (k === 'arc') { const a = new T.Mesh(new T.TorusGeometry(42, 4, 10, 40, Math.PI), R.mat('#f2c13a', {metalness: .4, roughness: .35})); a.position.y = 2; a.castShadow = true; g.add(a); h = 4 }
+    else if (k === 'garlanda') { for (let j = 0; j < 13; j++) { const x = (j - 6) * 9, y = 60 - Math.sin(j / 12 * Math.PI) * 14; const b = new T.Mesh(new T.SphereGeometry(2.6, 8, 6), new T.MeshBasicMaterial({color: R.lin(['#ffd27a', '#ff6fa3', '#7ad3ff', '#b6ff7a'][j % 4])})); b.position.set(x, y, 0); g.add(b) } h = 4 }
+    else if (k === 'neo') { const cv = document.createElement('canvas'); cv.width = 256; cv.height = 96; const q = cv.getContext('2d'); q.shadowColor = '#ff4fd8'; q.shadowBlur = 18; q.strokeStyle = '#ff8ef0'; q.lineWidth = 5; q.font = 'bold 54px Georgia'; q.textAlign = 'center'; q.strokeText(tx({es: 'ABIERTO', ca: 'OBERT'}), 128, 66);
+      const tt = new T.CanvasTexture(cv); tt.encoding = T.sRGBEncoding; const o = new T.Mesh(new T.PlaneGeometry(60, 22), new T.MeshBasicMaterial({map: tt, transparent: true})); o.position.y = 60; g.add(o); const pl = new T.PointLight(R.lin('#ff5fe0'), .8, 120); pl.position.set(0, 60, 20); g.add(pl); h = 4 }
+    else if (k === 'maniqui') { add(new T.CylinderGeometry(9, 12, 4, 16), '#2a2a2e', 2); add(new T.CylinderGeometry(1.5, 1.5, 30, 8), '#2a2a2e', 18); add(new T.CylinderGeometry(11, 8, 34, 14), color || '#c2378a', 50); add(new T.SphereGeometry(7, 14, 10), '#efe6da', 74); for (const s of [-1, 1]) { const arm = add(new T.CylinderGeometry(2.4, 2.2, 28, 8), color || '#c2378a', 52, s * 13); arm.rotation.z = s * .25 } h = 82 }
+    else if (k === 'mirall') { add(new T.CylinderGeometry(24, 24, 3, 32), '#d4a640', 30).rotation.x = Math.PI / 2; const m2 = add(new T.CylinderGeometry(21, 21, 3.4, 32), '#dfe9f0', 30); m2.rotation.x = Math.PI / 2; m2.material.metalness = 1; m2.material.roughness = .05; add(new T.BoxGeometry(3, 30, 3), '#d4a640', 2); h = 56 }
     else if (k === 'esfera') { add(new T.SphereGeometry(13, 20, 14), color || '#f8b62d', 13); h = 26 }
     else if (k === 'cartel') {
       const cv = document.createElement('canvas'); cv.width = 256; cv.height = 160; const q = cv.getContext('2d');
@@ -97,6 +108,7 @@ window.Aparador3D = (() => {
     add(P.some(p => PIECES[p.k]?.kind === 'est'), 6, {es: 'Usa una estructura (peana, caja o tarima)', ca: 'Fes servir una estructura (peanya, caixa o tarima)'});
     add(P.some(p => p.k === 'cartel'), 5, {es: 'Añade un cartel con mensaje', ca: 'Afegeix-hi un cartell amb missatge'});
     add(H && Math.abs(lum(R.bg) - lum(H.o.userData.color || '#ca7053')) > .25, 5, {es: 'Cambia el fondo para que el protagonista contraste', ca: 'Canvia el fons perquè el protagonista contrasti'});
+    if (P.some(p => ['arc', 'garlanda', 'neo', 'mirall', 'maniqui'].includes(p.k))) parts.push(6);   // decoració especial desbloquejada
     const score = Math.min(100, parts.reduce((a, b) => a + b, 0));
     return {score, tips: tips.slice(0, 2), stars: score >= 80 ? 3 : score >= 60 ? 2 : score >= 40 ? 1 : 0, H, P, lit};
   }
@@ -115,7 +127,8 @@ window.Aparador3D = (() => {
     R = build($('apView'), i); R.onDone = onDone; R.claim = '';
     const prods = [s[6], s[6], s[7], ...Object.keys(catalog).filter(k => catalog[k].group === 'Producto' && k !== s[6] && k !== s[7]).slice(i % 9, i % 9 + 2)];
     const tray = [...prods.map((k, n) => ({k, label: k, icon: catalog[k]?.icon || '🎁', color: n < 2 ? color : DistrictArt.paint[(i + n) % 6], product: true})), ...Object.entries(PIECES).map(([k, p]) => ({k, label: tx(p.n), icon: p.icon}))];
-    $('apTray').innerHTML = tray.map((t, n) => '<button class="ap-card' + (t.product ? ' prod' : '') + '" data-n="' + n + '"><span>' + t.icon + '</span>' + t.label + '</button>').join('');
+    const lockLv = k => window.Progres && !Progres.unlocked(k) ? (Progres.PIECE_LEVEL[k] || 0) + 1 : 0; tray.forEach(t => t.lock = lockLv(t.k));
+    $('apTray').innerHTML = tray.map((t, n) => '<button class="ap-card' + (t.product ? ' prod' : '') + (t.lock ? ' lock' : '') + '" data-n="' + n + '"><span>' + (t.lock ? '🔒' : t.icon) + '</span>' + t.label + (t.lock ? '<small>Nv ' + t.lock + '</small>' : '') + '</button>').join('');
     R.tray = tray; R.time = 90; R.started = performance.now(); R.phase = 'build';
     wire(); loop(); Sons.play('whoosh');
     tip({es: 'Arrastra piezas desde abajo hasta la vitrina. Pulsa una pieza para moverla, agrandarla o girarla.', ca: 'Arrossega peces des de baix fins a la vitrina. Toca una peça per moure-la, fer-la més gran o girar-la.'});
@@ -135,6 +148,7 @@ window.Aparador3D = (() => {
     // arrossegar des de la safata
     document.querySelectorAll('#apTray .ap-card').forEach(b => b.onpointerdown = e => {
       if (R.phase !== 'build') return; e.preventDefault(); const t = R.tray[+b.dataset.n];
+      if (t.lock) { window.Sons?.play('error'); return tip({es: 'Se desbloquea en el nivel ' + t.lock + '. ¡Gana reputación!', ca: 'Es desbloqueja al nivell ' + t.lock + '. Guanya reputació!'}) }
       if (R.pieces.children.length >= 12) return tip({es: 'Máximo 12 piezas: un escaparate saturado no se lee.', ca: 'Màxim 12 peces: un aparador saturat no es llegeix.'});
       const o = makePiece(t.k, t.color); o.visible = false; R.pieces.add(o); R.drag = o; R.fromTray = true; Sons.play('pop');
       const mv = ev => { const p = surfaceAt(ev); if (p) { o.visible = true; o.position.set(p.x, p.y, p.z) } };
@@ -216,7 +230,8 @@ window.Aparador3D = (() => {
       lighting: ev.lit.length >= 3 ? 'Difusa' : ev.lit.length === 2 ? 'Doble' : ev.lit[0]?.x === 0 ? 'Central' : 'Lateral',
       pieces: ev.P.map(p => ({k: catalog[p.k] ? p.k : p.k === 'flores' ? 'flor' : p.k === 'planta' ? 'hojas' : p.k === 'tarima' ? 'escalón' : 'esfera', x: .5 + p.x / WW, y: .95 - p.y / WH, scale: p.sc, rot: 0, color: p.o.userData.color || '#bd765b', text: p.k === 'cartel' ? (R.claim || 'Novetat') : 'Campaña'}))};
     const rating = Math.round(ev.score / 100 * 8);
-    const prev = saved.jobs[i + '-0']; if (!prev || (prev.rating || 0) <= rating) saved.jobs[i + '-0'] = {rating, seconds: Math.round((performance.now() - R.started) / 1000), design};
+    const prev = saved.jobs[i + '-0']; if (!prev || (prev.rating || 0) <= rating) saved.jobs[i + '-0'] = {rating, seconds: Math.round((performance.now() - R.started) / 1000), design, stops: Math.max(r.stops, prev?.stops || 0)};
+    else prev.stops = Math.max(r.stops, prev.stops || 0);
     let trial = '';
     if (typeof story !== 'undefined' && story.fase === 1 && [4, 9].includes(i)) {
       if (won) { story.pruebas[i] = {pasantes: 40, pantalla: 16, vitrina: r.stops}; trial = tx({es: 'Ensayo registrado para la asamblea.', ca: 'Assaig registrat per a l\'assemblea.'}) }

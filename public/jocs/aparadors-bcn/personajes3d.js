@@ -28,11 +28,12 @@ window.Personajes3D = (() => {
       inner.traverse(o => {
         if (!o.isMesh) return;
         o.frustumCulled = false; o.castShadow = true;
-        if (tint && o.material && palette[o.material.name]) {
+        if (typeof tint === 'number' && tint && o.material && palette[o.material.name]) {
           const opts = palette[o.material.name]; o.material = o.material.clone();
           o.material.color.set(opts[(tint * 7 + o.material.name.length) % opts.length]);
         }
       });
+      if (tint && typeof tint === 'object') applyTint(tint);
       g.add(inner); mixer = new T.AnimationMixer(inner);
       src.animations.forEach(a => actions[a.name] = mixer.clipAction(a));
       ['saludar', 'senalar'].forEach(n => { if (actions[n]) { actions[n].setLoop(T.LoopRepeat) } });
@@ -40,6 +41,13 @@ window.Personajes3D = (() => {
       play('reposo', 0);
     }
     let requested = false;   // el GLB es descarrega el primer cop que el personatge és visible
+    // Vestuari: {nomDelMaterial: '#color'} (p. ex. prenda, pantalon, bufanda0, armilla0…). {} torna als colors originals.
+    function applyTint(t) {
+      tint = t; if (!inner) return;
+      inner.traverse(o => { if (!o.isMesh || !o.material) return;
+        if (!o.userData.orig) { o.material = o.material.clone(); o.userData.orig = o.material.color.clone() }
+        const c = t[o.material.name]; if (c) o.material.color.set(c).convertSRGBToLinear(); else o.material.color.copy(o.userData.orig) });
+    }
 
     function play(name, fade = .22) {
       const a = actions[name]; if (!a || a === current) return;
@@ -51,6 +59,7 @@ window.Personajes3D = (() => {
     return {
       g,
       get loaded() { return !!inner },
+      retint: t => applyTint(t || {}),
       /** Lanza un gesto durante unos segundos: 'saludar', 'senalar' o 'hablar'. */
       gesture(name, seconds = 2.2) { oneShot = name; oneShotUntil = performance.now() + seconds * 1000 },
       /** Estado de ánimo mientras está quieto: null (reposo) o 'hablar'. */
