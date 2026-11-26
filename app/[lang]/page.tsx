@@ -32,7 +32,7 @@ export default async function Home({ params }: Props) {
       <JsonLd data={{ '@context': 'https://schema.org', '@type': 'WebSite', name: SITE.name, url: SITE.url + l(lang), description: t(SITE.description), inLanguage: lang }} />
 
       {/* 1 · Joc destacat */}
-      <section aria-labelledby="destacat" className="mt-4 overflow-hidden rounded-3xl bg-gradient-to-br from-[#1d2340] via-[#3b2b7a] to-[#c2378a] p-5 text-white md:mt-6 md:p-8">
+      <section aria-labelledby="destacat" className="mt-4 overflow-hidden rounded-3xl bg-navy bg-[radial-gradient(ellipse_at_72%_45%,rgba(18,166,160,0.30),transparent_62%)] p-5 text-white md:mt-6 md:p-8">
         <h1 className="text-sm font-bold uppercase tracking-widest text-[#f8b62d]">{t('Aprende comercio')} {t('jugando')} · {t('Simuladores para Comercio y Marketing · FP')}</h1>
         <div className="mt-4 grid items-center gap-6 lg:grid-cols-[1fr_1.45fr] lg:gap-8">
           <div>
