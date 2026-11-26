@@ -17,7 +17,7 @@ const nouCodi = () => 'AP' + Array.from({ length: 5 }, () => LLETRES[Math.floor(
 export default async (req) => {
   if (req.method !== 'POST') return json({ error: 'Només POST' }, 405);
   let b; try { b = await req.json() } catch { return json({ error: 'JSON no vàlid' }, 400) }
-  const store = getStore('aparadors-reptes');
+  const store = getStore({ name: 'aparadors-reptes', consistency: 'strong' });   // el rànquing s'ha de veure a l'instant
   const codi = net(b.codi, 8).toUpperCase();
 
   if (b.action === 'crear') {
